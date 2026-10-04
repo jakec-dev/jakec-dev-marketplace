@@ -21,7 +21,8 @@ this skill's directory. Read `format.md` before starting.
    upstream/claude-code/toc.tsv '<pattern>'`, which lists the sections whose own text matches. Start with
    path-shaped and distinctive patterns, such as a directory name; a broad word will match unrelated sections.
    A match where the word means something else is not a candidate: summarise those matches in one line at step 4
-   instead of listing them.
+   instead of listing them. Then read the type's own sections and search again for every command, setting, event
+   and environment variable they name, to find the other pages that document them.
    - A candidate is a section whose subject is this type, or a section on another page that states how this type
      behaves there, such as at subagent startup or after compaction.
    - A section whose subject is another tool type is not a candidate because it mentions this one; mark it
