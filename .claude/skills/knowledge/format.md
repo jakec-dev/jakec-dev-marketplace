@@ -64,6 +64,10 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   heading's `id` in the live page exactly. Where an anchor exists only in the browser, such as an interactive
   explorer's, link the nearest heading instead and keep the text.
 - When two pages disagree, state both, each with its link.
+- A file may end with a `## Not stated by the documentation` section: one bullet per question an agent working
+  with this type will meet that the documentation leaves open, linked to the section closest to it, such as
+  "Stated for CLAUDE.md files; the documentation does not say whether it applies to rules." It holds questions,
+  never answers.
 - Lines stay within 120 characters, except a line holding a link and a table row.
 
 ## Examples
@@ -76,12 +80,14 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 ## Leaving out
 
 - History: version numbers, minimum versions, and what used to happen. From a sentence describing a change, keep
-  what is true now, in the source's words and inside the setting it came from. The changelog and release notes are
+  what is true now, in the source's words and inside the setting it came from; where the sentence states only the
+  old behaviour, the current behaviour is its opposite, linked to that sentence. The changelog and release notes are
   never a source.
 - Sections about the Agent SDK, the web or the desktop app, and sections whose point is to compare tool types or
   recommend one over another, which belong to `choosing.md`. These are excluded at the section level; inside an
   included section, keep each sentence with its subject.
-- Tutorial steps, marketing, statements about how the documentation is written, and what any capable model knows.
+- Tutorial steps, marketing, statements about how the documentation is written (apart from the `Not stated`
+  section), and what any capable model knows.
 
 ## The ledger
 

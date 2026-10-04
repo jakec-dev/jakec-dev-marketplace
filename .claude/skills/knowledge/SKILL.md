@@ -32,7 +32,8 @@ conflict between instructions.
    - Take the most specific section. From a broad table, take one row only when no other section states its fact,
      and name the row.
 4. **Propose, and wait for confirmation.** If `maintenance/topics/<type>.md` exists, keep its topics and propose a
-   change only where a candidate fits none, with the reason. Otherwise propose topic files, one line each on its
+   change only where a candidate fits none, with the reason. If `maintenance/ledger/<type>.tsv` exists, every
+   section in it appears in the new list, included or excluded, so nothing drops out unseen. Otherwise propose topic files, one line each on its
    task. Then list every candidate, one line each, as `page › heading (lines) → owning file` or
    `→ excluded: reason`, adding `, the sentence on <subject> → <file>` where one sentence goes to another file.
    Summarise in one line the matches that meant something else. Use plain lists, not tables. Change the list as

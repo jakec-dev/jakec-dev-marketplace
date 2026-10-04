@@ -22,7 +22,7 @@ report:
 3. **Examples.** An example that is invalid, uses a field or value the documentation does not show, or drops a
    detail its point depends on.
 4. **Loss.** Anything in the owned sections that an agent doing the file's task needs and no file of the type
-   states.
+   states, and any open question the file should list under `Not stated by the documentation` but does not.
 5. **Placement.** A fact restated from a section another file owns (a sentence or row handed to this file by name
    is not a restatement), a fact stated twice in the file, or a file
    that serves more than its task in `maintenance/topics/<type>.md`; propose the move, merge, split or topic change
