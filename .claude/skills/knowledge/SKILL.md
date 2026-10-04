@@ -32,7 +32,8 @@ this skill's directory. Read `format.md` before starting.
    - Describe the terminal Claude Code that consumers run. A section about the Agent SDK, the web or the desktop
      app is excluded, even when it states something the terminal pages do not.
    - Always choose the most specific section. Never take a parent section, or a section covering many events,
-     fields or types, to pick one row out of it.
+     fields or types, to pick one row out of it, unless that row is the only place the documentation states the
+     fact; then take the section with a scope note naming the row.
 4. **Propose topics and candidates to the user, and wait for confirmation**. If `maintenance/topics/<type>.md`
    exists, use its topic files and assign every candidate to one of them; propose a new, split, merged or
    renamed topic only where a candidate fits none or a topic no longer serves one task, and say why. If it does
