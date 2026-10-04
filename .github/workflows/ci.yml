@@ -36,7 +36,7 @@ jobs:
         run: |
           status=0
           squashed="$TITLE (#$NUMBER)"
-          printf '%s\n' "$squashed" | bash scripts/check-commit-msg.sh - || { echo "in the pull request title"; status=1; }
+          printf '%s\n' "$squashed" | bash scripts/check-commit-msg.sh - || { echo "in the title"; status=1; }
           for sha in $(git rev-list --no-merges "$BASE..$HEAD"); do
             git log -1 --format=%B "$sha" | bash scripts/check-commit-msg.sh - || { echo "in commit $sha"; status=1; }
           done
