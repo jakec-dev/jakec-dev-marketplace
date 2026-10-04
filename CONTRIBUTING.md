@@ -1,7 +1,8 @@
 # Contributing
 
 Thank you for helping. This repository is a Claude Code plugin marketplace maintained by one person, so the process is
-kept small and will grow as contributions show what it needs.
+kept small and will grow as contributions show what it needs. Everyone taking part is expected to follow the
+[Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Reporting a bug or suggesting a change
 
