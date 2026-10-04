@@ -26,7 +26,8 @@ this skill's directory. Read `format.md` before starting.
      belongs to `choosing.md`.
    - Describe the terminal Claude Code that consumers run. A section about the Agent SDK, the web or the desktop
      app is excluded, even when it states something the terminal pages do not.
-   - Always choose the most specific section. Never take a parent section to pick rows out of it.
+   - Always choose the most specific section. Never take a parent section, or a section covering many events,
+     fields or types, to pick one row out of it.
 4. **Propose topics and candidates to the user, and wait for confirmation**. Show the topic files you would write,
    one line each on what question it answers, and every candidate section as a plain list, one line each:
    `page › heading (lines) → topic`, or `→ excluded: reason`. Do not use a table. Change the list as the user
