@@ -7,8 +7,8 @@ tools: Read, Grep, Write, Bash
 Write one knowledge file for the agent-setup plugin, from the sections of Claude Code's documentation you are
 given, following `.claude/skills/knowledge/format.md` exactly. Read that file first.
 
-You are given a tool type, a topic file name, the question the file answers, the other topic files of the type
-and their questions, and a list of sections as page, heading, start line and end line in
+You are given a tool type, a topic file name, the task the file serves, the other topic files of the type and
+their tasks, and a list of sections as page, heading, start line and end line in
 `upstream/claude-code/llms-full.txt`. Leave what the other topic files answer to them.
 
 1. **Read every section in full** with the Read tool, using its line range. Read nothing else of the

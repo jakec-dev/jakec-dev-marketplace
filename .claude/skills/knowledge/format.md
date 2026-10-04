@@ -14,7 +14,7 @@ Consumers run the latest Claude Code, so knowledge describes current behaviour o
 
 ```text
 plugins/agent-setup/knowledge/<type>/index.md     one per tool type
-plugins/agent-setup/knowledge/<type>/<topic>.md   one file per kind of question an agent asks
+plugins/agent-setup/knowledge/<type>/<topic>.md   one file per task an agent does with the type
 maintenance/ledger/<type>.tsv                     every documentation section considered for the type
 ```
 
@@ -26,10 +26,12 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## Knowledge files
 
-- Start with `# <Title>` and one sentence saying what the file answers.
+- Start with `# <Title>` and one sentence saying which task the file serves.
 - A file over 100 lines has a `## Contents` section listing its `##` headings, straight after that sentence.
-- Group facts under `##` headings. Split a topic into two files rather than let one file cover two kinds of
-  question.
+- Split topics by the task an agent is doing when it reads the file, so that one task means one file: for example
+  placing the file, writing each part of its configuration, sharing or excluding it, knowing when it takes effect,
+  and checking why it did not. A file that would serve two tasks is two files.
+- Group facts under `##` headings.
 - Identifiers, field names and messages exactly as Claude Code spells them. Lines at most 120 characters, not
   counting links. A copied table keeps its rows whatever their length; do not turn a table into a list to fit.
 

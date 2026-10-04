@@ -30,11 +30,11 @@ this skill's directory. Read `format.md` before starting.
    - Always choose the most specific section. Never take a parent section, or a section covering many events,
      fields or types, to pick one row out of it.
 4. **Propose topics and candidates to the user, and wait for confirmation**. Show the topic files you would write,
-   one line each on what question it answers, and every candidate section as a plain list, one line each:
+   one line each on the task it serves, and every candidate section as a plain list, one line each:
    `page › heading (lines) → topic`, or `→ excluded: reason`. Do not use a table. Change the list as the user
    asks. Do not write anything until the user confirms.
 5. **Write the topic files**. Start one `knowledge-writer` agent per topic, in parallel. Give each the tool type,
-   its topic file name and the question it answers, the other topic files and their questions so it leaves those
+   its topic file name and the task it serves, the other topic files and their tasks so it leaves those
    to them, and its sections as page, heading, start and end lines: each section's own range, with subsections
    listed separately. Each writes its file and returns ledger rows.
 6. **Write the index and the ledger**. Write `index.md` with one bullet per topic file, as `format.md` shows,
