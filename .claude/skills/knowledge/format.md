@@ -35,7 +35,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## Facts
 
-- One fact per top-level bullet, stated as current behaviour in one to three sentences.
+- One fact per top-level bullet, stated as current behaviour in one to three sentences. A nested bullet is
+  covered by its parent's link.
 - Each bullet carries at least one source link to the section that supports it, written
   `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`. Copy the anchor from the heading's `id`
   in the live page; never build one from the heading text, which often differs. `scripts/check-links.sh` checks
@@ -43,10 +44,13 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 - Every claim must be supported by the linked section of the documentation copy. If the documentation does not say
   it, leave it out, however sure you are.
 - State a fact no more broadly than its source. A statement made about one setting, mode, surface or case stays
-  scoped to it, and nothing is added to it, such as when it does or does not happen.
+  scoped to it, and nothing is added to it, such as when it does or does not happen. The sentence decides the
+  scope, not the heading above it: apply a sentence to this type only if it names the type or a group that
+  clearly includes it.
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
-  events and tools. Paraphrase only explanation. A relative link in copied text, such as `(/docs/en/skills)`,
-  becomes the absolute `https://code.claude.com/docs/en/skills` link; keep the link, do not flatten it to text.
+  events and tools. Paraphrase only explanation. A copied table may keep only its relevant rows, with its header.
+- A relative link in copied text, such as `(/docs/en/skills)`, becomes the absolute
+  `https://code.claude.com/docs/en/skills` link; keep the link, do not flatten it to text.
 - When two pages disagree, state both, each with its link, and say which to rely on only if the documentation does.
 
 ## Examples
@@ -66,9 +70,13 @@ maintenance/ledger/<type>.tsv                     every documentation section co
   earlier one. Where one contradicts a current page, the page stands. Status the
   documentation gives for current use, such as "legacy" or "deprecated", stays.
 - Tutorial steps, marketing, and anything about other surfaces (web, desktop, SDK) unless it changes how a Claude
-  tool in a repository behaves.
+  tool in a repository behaves. Naming another surface as an exception, to keep a fact accurate, is fine;
+  describing its behaviour is not.
+- Minimum-version requirements, and statements about how the documentation is written or organised. A
+  contradiction between two pages is the one exception (see Facts).
 - Advice on choosing between tool types, such as using a skill instead of the type being written, even when the
-  type's own pages give it. That advice belongs to `choosing.md`.
+  type's own pages give it. That advice belongs to `choosing.md`. Where one sentence mixes the two, keep the part
+  about this type.
 - Facts any capable model already knows, such as YAML syntax.
 
 ## The ledger
