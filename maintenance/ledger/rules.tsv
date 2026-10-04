@@ -1,0 +1,60 @@
+page	heading	decision	file	reason
+memory	Set up rules	included	placing.md	
+memory	User-level rules	included	placing.md	
+memory	Path-specific rules	included	writing.md	
+memory	Rule frontmatter reference	included	writing.md	
+memory	Organize rules with `.claude/rules/`	included	loading.md	
+memory	When Claude Code reads AGENTS.md	included	loading.md	
+context-window	What survives compaction	included	loading.md	
+prompt-caching	Editing CLAUDE.md mid-session	included	loading.md	
+prompt-caching	How the cache is organized	included	loading.md	Project context row
+sub-agents	What loads at startup	included	loading.md	
+worktrees	Isolate subagents with worktrees	included	loading.md	
+memory	Share rules across projects with symlinks	included	sharing.md	
+memory	Import additional files	included	sharing.md	
+memory	Load from additional directories	included	sharing.md	
+large-codebases	Grant access across packages or repositories	included	sharing.md	
+large-codebases	Check out only the directories you need	included	sharing.md	
+memory	Exclude specific CLAUDE.md files	included	excluding.md	
+large-codebases	Exclude irrelevant CLAUDE.md files	included	excluding.md	
+memory	Choose which instruction files load	included	excluding.md	managed-only row
+debug-your-config	See what loaded into context	included	troubleshooting.md	
+hooks	InstructionsLoaded	included	troubleshooting.md	
+hooks	InstructionsLoaded input	included	troubleshooting.md	
+hooks	InstructionsLoaded decision control	included	troubleshooting.md	
+memory	Claude isn't following my CLAUDE.md	included	troubleshooting.md	
+memory	My CLAUDE.md is too large	included	troubleshooting.md	
+memory	Write effective instructions	included	troubleshooting.md	
+memory	Audit your instruction files	included	troubleshooting.md	
+memory	How Claude remembers your project	excluded		only links to the rules section
+memory	When to add to CLAUDE.md	excluded		recommends rules over CLAUDE.md (choosing.md)
+memory	Choose where to put CLAUDE.md files	excluded		repeats Organize rules with `.claude/rules/`
+memory	How CLAUDE.md files load	excluded		only a link for rules
+memory	Instructions seem lost after `/compact`	excluded		repeats What survives compaction
+large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	excluded		compares tool types (choosing.md)
+features-overview	Compare similar features	excluded		compares tool types (choosing.md)
+permissions	Additional directories grant file access, not configuration	excluded		repeats Load from additional directories and Grant access across packages or repositories
+env-vars	Variables	excluded		CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD row repeats Load from additional directories
+hooks	Hook lifecycle	excluded		InstructionsLoaded row repeats InstructionsLoaded
+hooks-guide	How hooks work	excluded		InstructionsLoaded row repeats InstructionsLoaded
+context-window	What the timeline shows	excluded		repeats Path-specific rules
+errors	Prompt is too long	excluded		repeats My CLAUDE.md is too large
+glossary	Rules	excluded		repeats Organize rules and Path-specific rules
+claude-directory	File reference	excluded		rules row repeats Set up rules
+claude-directory	Frontmatter fields by file	excluded		rules row repeats Rule frontmatter reference
+cloud-environments	What carries over from your setup	excluded		web
+agent-sdk/claude-code-features	Control filesystem settings with settingSources	excluded		Agent SDK
+agent-sdk/claude-code-features	Project instructions (CLAUDE.md and rules)	excluded		Agent SDK
+agent-sdk/claude-code-features	CLAUDE.md load locations	excluded		Agent SDK
+agent-sdk/typescript	`Options`	excluded		Agent SDK
+changelog	Claude Code changelog	excluded		release notes
+whats-new/2026-w22	Week 22 · May 25–29, 2026	excluded		release notes
+settings-reference	`claudeMdExcludes`	included	excluding.md	
+memory	View and edit with `/memory`	included	troubleshooting.md	only the /context pointer for loaded rules files
+hooks-guide	Filter hooks with matchers	excluded		InstructionsLoaded row repeats the hooks reference
+commands	All commands	excluded		/doctor row repeats Audit your instruction files
+memory	Where AGENTS.md differs from CLAUDE.md	excluded		subject is AGENTS.md
+large-codebases	Settings on this page	excluded		index table of sections used elsewhere
+large-codebases	Put it together	excluded		combined example of sections used elsewhere
+memory	Migrate instructions from other tools	excluded		about other tools' rule files
+skills	Frontmatter reference	excluded		skills' own paths field, belongs to skills

@@ -33,8 +33,8 @@ conflict between instructions.
      and name the row.
 4. **Propose, and wait for confirmation.** If `maintenance/topics/<type>.md` exists, keep its topics and propose a
    change only where a candidate fits none, with the reason. If `maintenance/ledger/<type>.tsv` exists, every
-   section in it appears in the new list, included or excluded, so nothing drops out unseen. Otherwise propose topic files, one line each on its
-   task. Then list every candidate, one line each, as `page › heading (lines) → owning file` or
+   section in it appears in the new list, included or excluded, so nothing drops out unseen. Otherwise propose
+   topic files, one line each on its task. Then list every candidate, one line each, as `page › heading (lines) → owning file` or
    `→ excluded: reason`, adding `, the sentence on <subject> → <file>` where one sentence goes to another file.
    Summarise in one line the matches that meant something else. Use plain lists, not tables. Change the list as
    the user asks, and write nothing until the user confirms.
