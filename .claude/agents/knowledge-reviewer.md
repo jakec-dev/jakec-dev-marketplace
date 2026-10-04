@@ -21,7 +21,8 @@ Check, and report every failure:
 3. **Examples.** Each example is valid, uses only fields and values the documentation shows, and keeps every detail
    the point it illustrates depends on.
 4. **Loss.** Given a file, read every section its `included` rows name and list anything an agent building or
-   checking this kind of Claude tool would need that the file leaves out; do not read `excluded` sections. Given
+   checking this kind of Claude tool would need that the file leaves out, after checking that no other topic
+   file of the type covers it; respect any scope note in a row's reason. Do not read `excluded` sections. Given
    only `excluded` rows, read each of those sections and say whether its reason holds.
 5. **Format.** Anything in the file that breaks `format.md`, such as version history or a fact without a link.
    Do not check whether link anchors exist; `scripts/check-links.sh` does that.

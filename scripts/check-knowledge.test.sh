@@ -121,6 +121,14 @@ included_missing() {
   ledger_row "memory${tab}Auto memory${tab}included${tab}gone.md${tab}"
   expect 1 'included row names a missing file'
 }
+included_with_scope() {
+  ledger_row "memory${tab}Auto memory${tab}included${tab}loading.md${tab}only the sentences on rules"
+  expect 0 'included row with a scope note passes'
+}
+included_no_file() {
+  ledger_row "memory${tab}Auto memory${tab}included${tab}${tab}"
+  expect 1 'included row without a file'
+}
 topic_not_in_ledger() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
   echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
@@ -133,7 +141,8 @@ duplicate_row() {
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
   version_number long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section \
-  bad_decision excluded_no_reason included_missing topic_not_in_ledger duplicate_row; do
+  bad_decision excluded_no_reason included_missing \
+  included_with_scope included_no_file topic_not_in_ledger duplicate_row; do
   run "$test"
 done
 

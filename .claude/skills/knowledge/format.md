@@ -19,8 +19,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 ```
 
 - `<type>` and `<topic>` are lowercase words joined by hyphens, such as `rules` and `loading.md`.
-- `index.md` lists every topic file in the directory, one bullet each:
-  `- [loading.md](loading.md): when a rule enters Claude's context. Read when choosing paths or debugging.`
+- `index.md` opens with a title and one sentence, then lists every topic file in the directory, one bullet each,
+  wrapped as needed: `- [loading.md](loading.md): when a rule enters Claude's context. Read when …`
 - Only `index.md` links to topic files. A topic file never links to another knowledge file, so every read is one
   level deep from the index.
 
@@ -37,20 +37,22 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## Facts
 
-- One fact per top-level bullet, stated as current behaviour in one to three sentences. A nested bullet is
-  covered by its parent's link.
+- One fact per top-level bullet, stated as current behaviour in one to three sentences. A nested bullet, or a
+  table placed straight after a bullet, is covered by that bullet's link.
 - Each bullet carries at least one source link to the section that supports it, written
   `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`. Copy the anchor from the heading's `id`
-  in the live page; never build one from the heading text, which often differs. `scripts/check-links.sh` checks
-  every link.
+  in the live page exactly, without percent-encoding; never build one from the heading text, which often
+  differs. `scripts/check-links.sh` checks every link.
 - Every claim must be supported by the linked section of the documentation copy. If the documentation does not say
   it, leave it out, however sure you are.
 - State a fact no more broadly than its source. A statement made about one setting, mode, surface or case stays
   scoped to it, and nothing is added to it, such as when it does or does not happen. The sentence decides the
   scope, not the heading above it: apply a sentence to this type only if it names the type or a group that
-  clearly includes it.
+  clearly includes it. A sentence that refers back to an earlier one, as "the file" does, takes that sentence's
+  scope.
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
-  events and tools. Paraphrase only explanation. A copied table may keep only its relevant rows, with its header.
+  events and tools. Paraphrase only explanation. A copied table may keep only its relevant rows,
+  with its header, all its columns, and any sentence that limits how to read it.
 - A relative link in copied text, such as `(/docs/en/skills)`, becomes the absolute
   `https://code.claude.com/docs/en/skills` link; keep the link, do not flatten it to text.
 - When two pages disagree, state both, each with its link, and say which to rely on only if the documentation does.
@@ -62,7 +64,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 - Prefer the documentation's own example. Shorten a long one to the lines that carry the point. A shortened example
   must still be valid (it parses, and every field and value appears in the documentation) and must keep every
   detail the point depends on.
-- Never invent a field, value or behaviour for an example.
+- Never invent a field, value or behaviour for an example, and keep the documentation's own values rather than
+  swapping in another documented one.
 
 ## What to leave out
 
@@ -78,7 +81,7 @@ maintenance/ledger/<type>.tsv                     every documentation section co
   contradiction between two pages is the one exception (see Facts).
 - Advice on choosing between tool types, such as using a skill instead of the type being written, even when the
   type's own pages give it. That advice belongs to `choosing.md`. Where one sentence mixes the two, keep the part
-  about this type.
+  about this type. An either/or remedy, such as two ways to fix a problem, is not choosing advice: keep it whole.
 - Facts any capable model already knows, such as YAML syntax.
 
 ## The ledger
@@ -92,7 +95,8 @@ page	heading	decision	file	reason
 - One row for every section that was a candidate for the type: `page` and `heading` exactly as
   `scripts/docs-toc.sh` prints them.
 - `decision` is `included` or `excluded`.
-- An `included` row names the topic file that draws on the section in `file`, and leaves `reason` empty. A section
-  used by two files has two rows.
+- An `included` row names the topic file that draws on the section in `file`. It leaves `reason` empty, unless
+  only part of the section is used: then `reason` says which part, such as `only the sentences on symlinks`. A
+  section used by two files has two rows.
 - An `excluded` row leaves `file` empty and says why in `reason`, in a few words.
 - Every topic file appears in at least one `included` row.

@@ -96,7 +96,7 @@ for dir in "$knowledge"/*/; do
       !(($1 "\t" $2) in known) { print at "no section \"" $2 "\" on page " $1 " in the table of contents" }
       seen[$1 "\t" $2 "\t" $4]++ { print at "duplicate row" }
       $3 == "included" {
-        if ($4 == "" || $5 != "") { print at "an included row must name a file and give no reason"; next }
+        if ($4 == "") { print at "an included row must name a file"; next }
         used[$4] = 1
         if ((getline probe < (dir $4)) < 0) print at $4 " does not exist"
         close(dir $4)

@@ -18,7 +18,10 @@ this skill's directory. Read `format.md` before starting.
    Read sections by line range with the Read tool, never by guessing a heading or searching for its text.
 3. **Find candidate sections**. Search for the tool type's directory and file names, settings, frontmatter
    fields, events and commands with `scripts/docs-find.sh upstream/claude-code/llms-full.txt
-   upstream/claude-code/toc.tsv '<pattern>'`, which lists the sections whose own text matches.
+   upstream/claude-code/toc.tsv '<pattern>'`, which lists the sections whose own text matches. Start with
+   path-shaped and distinctive patterns, such as a directory name; a broad word will match unrelated sections.
+   A match where the word means something else is not a candidate: summarise those matches in one line at step 4
+   instead of listing them.
    - A candidate is a section whose subject is this type, or a section on another page that states how this type
      behaves there, such as at subagent startup or after compaction.
    - A section whose subject is another tool type is not a candidate because it mentions this one; mark it
@@ -36,7 +39,8 @@ this skill's directory. Read `format.md` before starting.
 5. **Write the topic files**. Start one `knowledge-writer` agent per topic, in parallel. Give each the tool type,
    its topic file name and the task it serves, the other topic files and their tasks so it leaves those
    to them, and its sections as page, heading, start and end lines: each section's own range, with subsections
-   listed separately. Each writes its file and returns ledger rows.
+   listed separately, and a scope note where only part of a section was agreed. That note becomes the ledger
+   row's reason. Each writes its file and returns ledger rows.
 6. **Write the index and the ledger**. Write `index.md` with one bullet per topic file, as `format.md` shows,
    describing what each file contains. Create `maintenance/ledger/` if it is missing, then write the ledger: the
    writers' rows, plus an `excluded` row with the agreed reason for every candidate no writer used.
@@ -44,7 +48,8 @@ this skill's directory. Read `format.md` before starting.
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every new file. Fix what they report and run them
    again until both exit 0.
 8. **Review**. Start one `knowledge-reviewer` agent per topic file, in parallel, giving each the file and its
-   `included` ledger rows, and one more giving it only the type's `excluded` rows. Fix each finding the
+   `included` ledger rows and the other topic files, and one more giving it the type's `excluded` rows, the
+   exclusion grounds from step 3 and the topic files. Fix each finding the
    documentation supports. Where you disagree with a finding, keep the narrower statement unless the
    documentation states the broader one outright. If a finding needs a section the user agreed to exclude, ask
    the user before using it. Run the checks again.
