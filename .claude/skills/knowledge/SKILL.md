@@ -21,7 +21,11 @@ this skill's directory. Read `format.md` before starting.
    - A candidate is a section whose subject is this type, or a section on another page that states how this type
      behaves there, such as at subagent startup or after compaction.
    - A section whose subject is another tool type is not a candidate because it mentions this one; mark it
-     excluded and name the type it belongs to. Advice on choosing between tool types belongs to `choosing.md`.
+     excluded and name the type it belongs to. The exception is a section that documents how to configure or
+     observe this type, such as a hook event that reports when it loads. Advice on choosing between tool types
+     belongs to `choosing.md`.
+   - Describe the terminal Claude Code that consumers run. A section about the Agent SDK, the web or the desktop
+     app is excluded, even when it states something the terminal pages do not.
    - Always choose the most specific section. Never take a parent section to pick rows out of it.
 4. **Propose topics and candidates to the user, and wait for confirmation**. Show the topic files you would write,
    one line each on what question it answers, and every candidate section as a plain list, one line each:
