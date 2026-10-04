@@ -1,0 +1,15 @@
+{
+  "name": "jakec-dev-marketplace",
+  "description": "Claude Code plugins by Jake Clayton.",
+  "owner": {
+    "name": "Jake Clayton",
+    "url": "https://github.com/jakec-dev"
+  },
+  "plugins": [
+    {
+      "name": "agent-setup",
+      "source": "./plugins/agent-setup",
+      "description": "Keeps a repository's Claude Code setup current as Claude Code changes."
+    }
+  ]
+}
