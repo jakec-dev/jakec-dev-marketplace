@@ -42,6 +42,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
   every link.
 - Every claim must be supported by the linked section of the documentation copy. If the documentation does not say
   it, leave it out, however sure you are.
+- State a fact no more broadly than its source. A statement made about one setting, mode, surface or case stays
+  scoped to it, and nothing is added to it, such as when it does or does not happen.
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
   events and tools. Paraphrase only explanation.
 - When two pages disagree, state both, each with its link, and say which to rely on only if the documentation does.
@@ -62,6 +64,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
   documentation gives for current use, such as "legacy" or "deprecated", stays.
 - Tutorial steps, marketing, and anything about other surfaces (web, desktop, SDK) unless it changes how a Claude
   tool in a repository behaves.
+- Advice on choosing between tool types, such as using a skill instead of the type being written, even when the
+  type's own pages give it. That advice belongs to `choosing.md`.
 - Facts any capable model already knows, such as YAML syntax.
 
 ## The ledger

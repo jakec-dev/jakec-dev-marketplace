@@ -42,6 +42,7 @@ this skill's directory. Read `format.md` before starting.
    again until both exit 0.
 8. **Review**. Start one `knowledge-reviewer` agent per topic file, in parallel, giving each the file and its
    `included` ledger rows, and one more giving it only the type's `excluded` rows. Fix each finding the
-   documentation supports, then run the checks again.
+   documentation supports. Where you disagree with a finding, keep the narrower statement unless the
+   documentation states the broader one outright. Run the checks again.
 9. **Report**. List the files written with their line counts, every excluded section with its reason, the
    reviewers' findings and what was done about each, and the final exit status of each check.
