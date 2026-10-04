@@ -1,0 +1,2 @@
+# Check out every text file with LF endings, so shell scripts still run from a Windows checkout.
+* text=auto eol=lf

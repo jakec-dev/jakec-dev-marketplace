@@ -1,0 +1,14 @@
+# macOS folder metadata.
+.DS_Store
+
+# Claude Code: per-developer settings and instructions, and worktrees for isolated sessions.
+**/.claude/settings.local.json
+CLAUDE.local.md
+**/.claude/worktrees/
+
+# Results that `claude plugin eval` writes under each plugin's eval directory.
+**/evals/results/
+
+# Local environment files, which may hold an API key.
+.env
+.env.*
