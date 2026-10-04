@@ -1,0 +1,74 @@
+# The same checks as lefthook.yml, for changes that skipped the local hooks: `git commit --no-verify`, GitHub's web
+# editor, or a clone where `lefthook install` was never run.
+name: CI
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commit-messages:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      # A squash merge makes the pull request title the commit message, so the title is checked too. It reaches the
+      # script through the environment, never the script text, because anyone opening a pull request writes it.
+      - name: Check the pull request title and every commit message
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          status=0
+          printf '%s\n' "$TITLE" | bash scripts/check-commit-msg.sh - || { echo "in the pull request title"; status=1; }
+          for sha in $(git rev-list --no-merges "$BASE..$HEAD"); do
+            git log -1 --format=%B "$sha" | bash scripts/check-commit-msg.sh - || { echo "in commit $sha"; status=1; }
+          done
+          exit "$status"
+
+  lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install ShellCheck and shfmt
+        run: brew install shellcheck shfmt
+      - name: ShellCheck
+        run: git ls-files -z '*.sh' | xargs -0 shellcheck
+      - name: shfmt
+        run: git ls-files -z '*.sh' | xargs -0 shfmt --diff
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # /bin/bash is 3.2 on macOS, the oldest bash the scripts must support, and 5 on Ubuntu.
+      - name: Run every test suite under /bin/bash
+        run: |
+          /bin/bash --version | head -1
+          status=0
+          for suite in $(git ls-files '*.test.sh'); do
+            echo "== $suite"
+            BASH_UNDER_TEST=/bin/bash /bin/bash "$suite" || status=1
+          done
+          exit "$status"

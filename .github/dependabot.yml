@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    # Writes `chore(deps): bump ...`, which the Conventional Commits check accepts.
+    commit-message:
+      prefix: chore
+      include: scope
