@@ -1,0 +1,13 @@
+{
+  "name": "agent-setup",
+  "version": "0.1.0",
+  "description": "Keeps a repository's Claude Code setup current as Claude Code changes.",
+  "author": {
+    "name": "Jake Clayton",
+    "url": "https://github.com/jakec-dev"
+  },
+  "homepage": "https://github.com/jakec-dev/jakec-dev-marketplace/tree/master/plugins/agent-setup",
+  "repository": "https://github.com/jakec-dev/jakec-dev-marketplace",
+  "license": "MIT",
+  "keywords": ["claude-md", "agents-md", "skills", "hooks", "audit"]
+}

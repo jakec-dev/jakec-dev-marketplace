@@ -52,6 +52,40 @@ jobs:
       - name: shfmt
         run: git ls-files -z '*.sh' | xargs -0 shfmt --diff
 
+  plugins:
+    runs-on: ubuntu-latest
+    env:
+      CLAUDE_CODE_VERSION: 2.1.289
+      DISABLE_AUTOUPDATER: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Claude Code
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash -s "$CLAUDE_CODE_VERSION"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      # Validating the marketplace does not open its plugins, and does not catch an entry whose source path is
+      # missing, so each listed plugin is validated on its own.
+      - name: Validate the marketplace and each plugin it lists
+        run: |
+          claude plugin validate . --strict
+          status=0
+          for source in $(jq -r '.plugins[].source | strings' .claude-plugin/marketplace.json); do
+            echo "== $source"
+            claude plugin validate "$source" --strict || status=1
+          done
+          exit "$status"
+      - name: Install each plugin from the marketplace
+        run: |
+          export CLAUDE_CONFIG_DIR="$RUNNER_TEMP/claude-config"
+          claude plugin marketplace add "$PWD"
+          marketplace=$(jq -r .name .claude-plugin/marketplace.json)
+          for plugin in $(jq -r '.plugins[].name' .claude-plugin/marketplace.json); do
+            claude plugin install "$plugin@$marketplace"
+          done
+          claude plugin list
+
   test:
     strategy:
       fail-fast: false

@@ -5,18 +5,15 @@ plugins that Claude Code can install from this repository.
 
 ## Status
 
-Early development. No plugin has been released yet, so the install steps below will not work until the first one is.
+Early development. The plugins install, but none is ready for use yet.
 
 ## Plugins
 
 | Plugin | What it does | Status |
 | --- | --- | --- |
-| `agent-setup` | Keeps a repository's Claude Code setup current and healthy | In development |
+| [`agent-setup`](plugins/agent-setup) | Keeps a repository's Claude Code setup current | In development |
 
-A Claude Code setup is everything that shapes how Claude Code behaves in a repository: the instruction file
-(`CLAUDE.md` or `AGENTS.md`), rules, skills, subagents, hooks and settings. `agent-setup` notices when Claude Code's
-behaviour or guidance changes, works out which parts of a repository's setup are affected, and proposes the fix for
-review. Each plugin has its own README with the detail.
+Each plugin's README describes it in full.
 
 ## Install
 
