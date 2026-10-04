@@ -31,14 +31,15 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 - Group facts under `##` headings. Split a topic into two files rather than let one file cover two kinds of
   question.
 - Identifiers, field names and messages exactly as Claude Code spells them. Lines at most 120 characters, not
-  counting links.
+  counting links. A copied table keeps its rows whatever their length; do not turn a table into a list to fit.
 
 ## Facts
 
 - One fact per top-level bullet, stated as current behaviour in one to three sentences.
 - Each bullet carries at least one source link to the section that supports it, written
-  `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`. Confirm the anchor exists in the live
-  page; `scripts/check-links.sh` checks every link.
+  `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`. Copy the anchor from the heading's `id`
+  in the live page; never build one from the heading text, which often differs. `scripts/check-links.sh` checks
+  every link.
 - Every claim must be supported by the linked section of the documentation copy. If the documentation does not say
   it, leave it out, however sure you are.
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
@@ -56,7 +57,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## What to leave out
 
-- Version history: no "since", "before", "now" or "new", and no description of earlier behaviour. Status the
+- Version history: no "since", "before", "now" or "new", and no description of earlier behaviour. A sentence that
+  describes a change supports its current half: state that, without the history. Status the
   documentation gives for current use, such as "legacy" or "deprecated", stays.
 - Tutorial steps, marketing, and anything about other surfaces (web, desktop, SDK) unless it changes how a Claude
   tool in a repository behaves.

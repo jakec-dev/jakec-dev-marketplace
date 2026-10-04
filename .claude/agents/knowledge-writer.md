@@ -16,9 +16,9 @@ heading, start line and subtree end line in `upstream/claude-code/llms-full.txt`
    developer's repository. Keep every fact that changes whether such a tool is correct: where files go, when
    they load or run, fields and their valid values, defaults, limits, what is ignored or silently dropped, and how
    it interacts with other parts of Claude Code. Leave out what `format.md` says to leave out.
-3. **Write the file** to `plugins/agent-setup/knowledge/<type>/<topic>.md`. Link each fact to its section. Build the
-   anchor from the heading the way the documentation site does (lowercase, spaces to hyphens, punctuation
-   dropped) and confirm it with `curl -sL https://code.claude.com/docs/en/<page>` and a search for `id="<anchor>"`.
+3. **Write the file** to `plugins/agent-setup/knowledge/<type>/<topic>.md`. Link each fact to its section, copying the
+   anchor from the heading's `id` in `curl -sL https://code.claude.com/docs/en/<page>`. Never build an anchor from
+   the heading text.
 4. **Check your own file** against `format.md`: every bullet linked, no version history, examples valid and not
    invented, tables and limits copied word for word, a `## Contents` section only if the file is over 100 lines.
 5. **Return** the ledger rows for every section you were given, tab-separated as `format.md` describes: `included`

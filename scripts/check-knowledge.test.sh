@@ -90,6 +90,10 @@ cross_link() {
 version_word() { topic_line "- Rules load on Write since 2.1.288. $link" && expect 1 'version history in words'; }
 version_number() { topic_line "- Requires v2.1.288. $link" && expect 1 'version number'; }
 long_line() { topic_line "- $(printf 'x%.0s' {1..130}) $link" && expect 1 'line over 120 characters'; }
+long_table_row() {
+  topic_line "| \`field\` | $(printf 'x%.0s' {1..130}) |"
+  expect 0 'long table row passes'
+}
 no_contents() { hundred_facts >>knowledge/rules/loading.md && expect 1 'over 100 lines without contents'; }
 with_contents() {
   {
@@ -127,8 +131,8 @@ duplicate_row() {
 }
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link version_word version_number \
-  long_line no_contents with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason \
-  included_missing topic_not_in_ledger duplicate_row; do
+  long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section bad_decision \
+  excluded_no_reason included_missing topic_not_in_ledger duplicate_row; do
   run "$test"
 done
 

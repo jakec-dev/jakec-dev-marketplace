@@ -35,7 +35,7 @@ check_topic() {
     /^## / { in_contents = ($0 == "## Contents"); if (in_contents) contents = 1 }
     /^[ \t]*(```|~~~)/ { fence = !fence }
     { bare = $0; gsub(/https?:\/\/[^) ]+/, "", bare) }
-    length(bare) > 120 { print file ":" FNR ": line longer than 120 characters, not counting links" }
+    length(bare) > 120 && !/^[ \t]*\|/ { print file ":" FNR ": line longer than 120 characters, not counting links" }
     !fence {
       rest = $0
       while (match(rest, /\]\([^)]+\)/)) {
