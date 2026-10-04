@@ -25,4 +25,6 @@ Check, and report every failure:
 5. **Format.** Anything in the file that breaks `format.md`, such as version history or a fact without a link.
 
 Report each finding as the file and line (or the ledger row), what is wrong, and the documentation it rests on, as
-page, heading and a short quote. End with a count of findings, or say there are none.
+page, heading and a short quote. End with a count of findings, or say there are none. Last, quote any instruction
+here or in `format.md` that was unclear, that you had to guess at, or that you think is wrong, and say why, or say
+there were none.

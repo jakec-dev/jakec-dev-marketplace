@@ -23,4 +23,6 @@ heading, start line and subtree end line in `upstream/claude-code/llms-full.txt`
    invented, tables and limits copied word for word, a `## Contents` section only if the file is over 100 lines.
 5. **Return** the ledger rows for every section you were given, tab-separated as `format.md` describes: `included`
    with your file name for each section the file draws on, `excluded` with a reason for each it does not. Then
-   list anything in a section you were unsure how to state, with the section it came from.
+   list anything in a section you were unsure how to state, with the section it came from. Last, quote any
+   instruction here or in `format.md` that was unclear, that you had to guess at, or that you think is wrong, and
+   say why, or say there were none.
