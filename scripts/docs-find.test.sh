@@ -57,6 +57,9 @@ expect 'matches counted per own section, most first' 0 "2${tab}first${tab}3${tab
 1${tab}second${tab}2${tab}Widget list${tab}15${tab}15" "$root/export.txt" "$root/toc.tsv" 'widget'
 expect 'match in a parent only' 0 "1${tab}first${tab}2${tab}Parent${tab}5${tab}6" \
   "$root/export.txt" "$root/toc.tsv" 'no match'
+expect 'only sections that also match a second pattern' 0 "2${tab}first${tab}3${tab}Child${tab}7${tab}9" \
+  "$root/export.txt" "$root/toc.tsv" 'widget' 'again'
+expect 'second pattern matches nothing' 1 '' "$root/export.txt" "$root/toc.tsv" 'widget' 'absent'
 expect 'no section matches' 1 '' "$root/export.txt" "$root/toc.tsv" 'absent'
 expect 'missing pattern' 2 '' "$root/export.txt" "$root/toc.tsv" ''
 

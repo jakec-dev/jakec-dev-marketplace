@@ -40,20 +40,23 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 ## Owning sections
 
 - Every section has exactly one owner: the topic file whose task it mainly serves. The owner states everything in
-  the section that an agent needs.
-- Another file may mention an owned fact in a few words where its own point needs it, without restating it.
+  the section that an agent needs for its task.
+- Where one sentence or one table row of a section serves another file's task, the ledger may hand it to that
+  file by name. That file states it; the owner leaves it out.
+- Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
+  without which the mention misleads.
 
 ## Writing facts
 
 - Start a topic file with `# <Title>` and a sentence or phrase naming its task. A file over 100 lines then has a
-  `## Contents` section listing its `##` headings.
+  `## Contents` section listing its `##` headings; never cut wording to stay under 100 lines.
 - One fact per bullet, as current behaviour, in one to three sentences. Each bullet links to the section that
   supports it as `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`; a nested bullet, table
   or example straight after it shares that link.
-- **Keep the source's subject.** State a sentence about the subject it names, under the conditions it gives. Where
-  the source says "CLAUDE.md files", "memory files" or "in Cowork", so does the fact: "For CLAUDE.md files, …".
-  Never widen it to this type, never drop it because it names something else, and never add a detail from
-  another sentence, such as a number the sentence itself does not give.
+- **Keep the source's subject.** When you keep a sentence, keep the subject it names and the conditions it gives.
+  Where the source says "CLAUDE.md files", "memory files" or "in Cowork", so does the fact: "For CLAUDE.md files,
+  …". Never widen it to this type, and never add a detail from another sentence, such as a number the sentence
+  itself does not give. Leave out sentences the file's task does not need.
 - Copy exactly: field names, values, defaults, limits, messages, and names of settings, events, commands and tools.
   A copied table keeps its header, its columns and any sentence that limits how to read it, and may drop rows that
   serve no task here.
@@ -73,7 +76,8 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 ## Leaving out
 
 - History: version numbers, minimum versions, and what used to happen. From a sentence describing a change, keep
-  what is true now. The changelog and release notes are never a source.
+  what is true now, in the source's words and inside the setting it came from. The changelog and release notes are
+  never a source.
 - Sections about the Agent SDK, the web or the desktop app, and sections whose point is to compare tool types or
   recommend one over another, which belong to `choosing.md`. These are excluded at the section level; inside an
   included section, keep each sentence with its subject.
@@ -88,6 +92,7 @@ page	heading	decision	file	reason
 ```
 
 - One row per candidate section, with `page` and `heading` exactly as `scripts/docs-toc.sh` prints them.
-- `included` rows name the owning file; `reason` is empty, or names the one row taken from a broad section.
+- `included` rows name the owning file; `reason` is empty, or names the one row or sentence the file takes.
 - `excluded` rows leave `file` empty and give the reason in a few words.
-- Every topic file owns at least one section, and no section has two owners.
+- Every topic file owns at least one section, and no section has two owners, apart from a named row or sentence
+  handed to another file.

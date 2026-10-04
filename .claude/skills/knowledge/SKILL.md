@@ -20,11 +20,12 @@ conflict between instructions.
    tool or `sed -n '<start>,<end>p'`.
 3. **Find candidate sections.** Run `scripts/docs-find.sh upstream/claude-code/llms-full.txt
    upstream/claude-code/toc.tsv '<pattern>'` for the type's directory and file names, then for every field,
-   setting, command, event and environment variable its own sections name. Repeat with what those sections name,
-   until a round finds nothing new. Prefer distinctive patterns; matches where a word means something else are not
+   setting, command, event and environment variable its own sections name, adding the type's name as a fourth
+   argument so that only sections mentioning the type are listed. Repeat with what those sections name, until a
+   round finds nothing new. Prefer distinctive patterns; matches where a word means something else are not
    candidates.
    - A candidate is a section that states how this type behaves, or how to configure or observe it, in at least
-     one sentence that names it.
+     one sentence that names it. A subsection of a candidate is a candidate with it.
    - Exclude sections about the Agent SDK, the web or the desktop app, sections whose point is comparing tool
      types or recommending one (they belong to `choosing.md`), release notes, and sections that only repeat an
      included one.
@@ -33,22 +34,25 @@ conflict between instructions.
 4. **Propose, and wait for confirmation.** If `maintenance/topics/<type>.md` exists, keep its topics and propose a
    change only where a candidate fits none, with the reason. Otherwise propose topic files, one line each on its
    task. Then list every candidate, one line each, as `page › heading (lines) → owning file` or
-   `→ excluded: reason`, and summarise in one line the matches that meant something else. Use plain lists, not
-   tables. Change the list as the user asks, and write nothing until the user confirms.
+   `→ excluded: reason`, adding `, the sentence on <subject> → <file>` where one sentence goes to another file.
+   Summarise in one line the matches that meant something else. Use plain lists, not tables. Change the list as
+   the user asks, and write nothing until the user confirms.
 5. **Write.** Create `maintenance/ledger/` and `maintenance/topics/` if they are missing, and write the confirmed
    topics. Start one `knowledge-writer` per topic file, in parallel, giving each: the type; its file and task; the
-   other files and their tasks; and the sections it owns, as page, heading, start and end lines, with the row
-   named for a section taken for one row.
+   other files and their tasks; and the sections it owns, as page, heading, start and end lines, naming any row or
+   sentence taken alone and any sentence handed to another file.
 6. **Index and ledger.** Write `index.md` from what each file contains. Write the ledger: one `included` row per
-   owned section, and an `excluded` row with its agreed reason for every other candidate.
+   owned section, one per sentence or row handed to another file, and an `excluded` row with its agreed reason
+   for every other candidate.
 7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/knowledge maintenance
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every file of the type, and fix until both exit 0.
-8. **Review.** Start one `knowledge-reviewer` per topic file, in parallel, with the file, its ledger rows and the
-   other files, and one more with the `excluded` rows and the exclusion grounds of step 3.
+8. **Review.** Start one `knowledge-reviewer` per topic file, in parallel, with the file, its ledger rows, the
+   other files and the exclusion grounds of step 3, and one more with the `excluded` rows and those grounds.
    - Fix each finding the documentation supports, by `format.md`'s order of priorities. Moving a fact to the file
      that owns its section is a fix; changing the topics needs the user's agreement.
    - Ask the user before using a section that was excluded or is not in the ledger.
    - After fixing, give each changed file to a fresh reviewer with the changed bullets marked, to review those
      bullets only. Repeat until a round changes nothing, and run step 7 again.
 9. **Report.** Give each file's line count, each excluded section with its reason, each finding with what was done,
-   anything left open for the user, and the final exit status of both checks.
+   anything left open for the user, and the final exit status of both checks. List the documentation's gaps
+   separately: facts stated only on excluded pages, and questions about the type the documentation leaves open.

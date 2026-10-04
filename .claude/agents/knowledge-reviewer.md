@@ -23,7 +23,8 @@ report:
    detail its point depends on.
 4. **Loss.** Anything in the owned sections that an agent doing the file's task needs and no file of the type
    states.
-5. **Placement.** A fact restated from a section another file owns, a fact stated twice in the file, or a file
+5. **Placement.** A fact restated from a section another file owns (a sentence or row handed to this file by name
+   is not a restatement), a fact stated twice in the file, or a file
    that serves more than its task in `maintenance/topics/<type>.md`; propose the move, merge, split or topic change
    that fixes it.
 6. **Format.** Anything else `format.md` rules out, such as history or a fact without a link. Leave link anchors to
