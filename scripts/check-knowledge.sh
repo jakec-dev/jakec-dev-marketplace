@@ -114,6 +114,7 @@ for dir in "$knowledge"/*/; do
       seen[$1 "\t" $2 "\t" $4]++ { print at "duplicate row" }
       $3 == "included" {
         if ($4 == "") { print at "an included row must name a file"; next }
+        if (owner[$1 "\t" $2]++) print at "section already has an owner; a section has one owning file"
         used[$4] = 1
         if ((getline probe < (dir $4)) < 0) print at $4 " does not exist"
         close(dir $4)

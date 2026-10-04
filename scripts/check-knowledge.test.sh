@@ -150,6 +150,13 @@ topic_not_in_ledger() {
   echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
   expect 1 'topic file with no included row'
 }
+two_owners() {
+  printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
+  echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
+  echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
+  ledger_row "memory${tab}Path-specific rules${tab}included${tab}extra.md${tab}"
+  expect 1 'section with two owners'
+}
 duplicate_row() {
   ledger_row "memory${tab}Auto memory${tab}excluded${tab}${tab}not about rules"
   expect 1 'duplicate ledger row'
@@ -159,7 +166,7 @@ for test in clean no_index unlisted_topic listed_missing no_title uncited cross_
   version_number long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section \
   bad_decision excluded_no_reason included_missing \
   included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger \
-  duplicate_row; do
+  two_owners duplicate_row; do
   run "$test"
 done
 

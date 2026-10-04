@@ -1,34 +1,26 @@
 ---
 name: knowledge-writer
-description: Writes one agent-setup knowledge file from the documentation sections it is given, and returns the ledger rows for them. Use when the knowledge skill hands over a topic.
+description: Writes one agent-setup knowledge file from the documentation sections it owns, and returns the ledger rows for them. Use when the knowledge skill hands over a topic.
 tools: Read, Grep, Write, Bash
 ---
 
-Write one knowledge file for the agent-setup plugin, from the sections of Claude Code's documentation you are
-given, following `.claude/skills/knowledge/format.md` exactly. Read that file first.
+Write one knowledge file for the agent-setup plugin from the documentation sections you are given, following
+`.claude/skills/knowledge/format.md`. Read it first; its order of priorities settles any conflict.
 
-You are given a tool type, a topic file name, the task the file serves, the other topic files of the type and
-their tasks, and a list of sections as page, heading, start line and end line in
-`upstream/claude-code/llms-full.txt`. Leave what the other topic files answer to them.
+You are given a tool type, your file and its task, the type's other files and their tasks, and the sections your
+file owns, as page, heading, start line and end line in `upstream/claude-code/llms-full.txt`. In
+`upstream/claude-code/toc.tsv` the columns are page, level, heading, start line, last line of a section's own text,
+and last line including its subsections.
 
-1. **Read every section in full** by its line range, with the Read tool or `sed -n '<start>,<end>p'`. Read nothing
-   else of the documentation except to look up a heading in `upstream/claude-code/toc.tsv`, whose columns are page,
-   level, heading, the line the section starts on, the last line of its own text, and the last line including its
-   subsections.
-2. **Decide what an agent needs.** The agents that read this file build and check Claude tools of this type in a
-   developer's repository. Keep every fact that changes whether such a tool is correct: where files go, when
-   they load or run, fields and their valid values, defaults, limits, what is ignored or silently dropped, and how
-   it interacts with other parts of Claude Code. Leave out what `format.md` says to leave out.
-3. **Write the file** to `plugins/agent-setup/knowledge/<type>/<topic>.md`. Link each fact to its section, copying the
-   anchor from the heading's `id` in `curl -sL https://code.claude.com/docs/en/<page>`. Never build an anchor from
-   the heading text.
-4. **Check your own file** against `format.md`: every bullet linked, no version history, examples valid and not
-   invented, tables and limits copied word for word, a `## Contents` section only if the file is over 100 lines.
-   Run `scripts/check-links.sh` on it. Do not run `scripts/check-knowledge.sh`; the skill runs it once the ledger
-   exists.
-5. **Return** the ledger rows for every section you were given, tab-separated as `format.md` describes: `included`
-   with your file name for each section the file draws on, `excluded` with a reason for each it does not. Where
-   your file uses only part of a section, say which part in the row's reason. Then
-   list anything in a section you were unsure how to state, with the section it came from. Last, quote any
-   instruction here or in `format.md` that was unclear, that you had to guess at, or that you think is wrong, and
-   say why, or say there were none.
+1. **Read every section you own in full,** by line range with the Read tool or `sed -n '<start>,<end>p'`.
+2. **Write the file** at `plugins/agent-setup/knowledge/<type>/<file>`. State everything in your sections that an
+   agent doing your file's task needs, each sentence with the subject and conditions its source gives. For a
+   section given with one named row, use that row. Mention another file's fact only in a few words, where your
+   point needs it.
+3. **Link** each fact to its section, copying the anchor from the heading's `id` in
+   `curl -sL https://code.claude.com/docs/en/<page>`.
+4. **Check** the file against `format.md` and run `scripts/check-links.sh` on it. The skill runs
+   `scripts/check-knowledge.sh` once the ledger exists.
+5. **Return** one `included` ledger row per section you were given, as `format.md` shows. Then list any sentence
+   you were unsure how to state, with its section. Last, name any instruction here or in `format.md` that made your
+   file worse or forced a choice you think was wrong, and why, or say there was none.
