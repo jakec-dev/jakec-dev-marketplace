@@ -1,21 +1,22 @@
 #!/usr/bin/env bash
-# Checks the structure of the plugin's knowledge files and their ledgers against .claude/skills/knowledge/format.md.
+# Checks the structure of the plugin's knowledge files, their topic lists and their ledgers against
+# .claude/skills/knowledge/format.md.
 # It checks shape, not truth: whether a fact is right is the reviewer's job, and links are check-links.sh's.
 #
-# Usage: check-knowledge.sh <knowledge-dir> <ledger-dir> <toc.tsv>
-#   <knowledge-dir>  holds one directory per tool type, such as plugins/agent-setup/knowledge
-#   <ledger-dir>     holds <type>.tsv for each of them, such as maintenance/ledger
+# Usage: check-knowledge.sh <knowledge-dir> <maintenance-dir> <toc.tsv>
+#   <knowledge-dir>    holds one directory per tool type, such as plugins/agent-setup/knowledge
+#   <maintenance-dir>  holds ledger/<type>.tsv and topics/<type>.md for each of them, such as maintenance
 #   <toc.tsv>        is the output of scripts/docs-toc.sh for the documentation copy the knowledge was written from
 # Exit status: 0 when everything passes, 1 when anything fails, 2 on a usage error.
 
 set -euo pipefail
 
 if [ $# -ne 3 ] || [ ! -d "$1" ] || [ ! -d "$2" ] || [ ! -f "$3" ]; then
-  echo 'usage: check-knowledge.sh <knowledge-dir> <ledger-dir> <toc.tsv>' >&2
+  echo 'usage: check-knowledge.sh <knowledge-dir> <maintenance-dir> <toc.tsv>' >&2
   exit 2
 fi
 knowledge=$1
-ledgers=$2
+maintenance=$2
 toc=$3
 
 problems=0
@@ -62,7 +63,8 @@ for dir in "$knowledge"/*/; do
   found_type=1
   type=$(basename "$dir")
   index="$dir/index.md"
-  ledger="$ledgers/$type.tsv"
+  ledger="$maintenance/ledger/$type.tsv"
+  topics="$maintenance/topics/$type.md"
 
   if [ ! -f "$index" ]; then
     report "$dir: no index.md"
@@ -79,6 +81,21 @@ for dir in "$knowledge"/*/; do
   while IFS= read -r name; do
     [ -f "$dir$name" ] || report "$index: lists $name, which does not exist"
   done < <(grep -o -E '\]\([a-z0-9-]+\.md\)' "$index" | sed -E 's/^\]\(//; s/\)$//')
+
+  # The topic list and the topic files match exactly.
+  if [ ! -f "$topics" ]; then
+    report "$topics: missing"
+  else
+    # shellcheck disable=SC2016 # The backticks are literal Markdown, not command substitution.
+    while IFS= read -r name; do
+      [ -f "$dir$name" ] || report "$topics: lists $name, which does not exist"
+    done < <(grep -o -E '^- `[a-z0-9-]+\.md`' "$topics" | sed -E 's/^- `//; s/`$//')
+    for topic in "$dir"*.md; do
+      name=$(basename "$topic")
+      [ "$name" = index.md ] && continue
+      grep -qF -- "- \`$name\`" "$topics" || report "$topics: does not list $name"
+    done
+  fi
 
   if [ ! -f "$ledger" ]; then
     report "$ledger: missing"

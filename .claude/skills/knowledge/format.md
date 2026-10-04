@@ -3,6 +3,16 @@
 How knowledge files and ledger rows are written. The writer follows it, the reviewer checks against it, and
 `scripts/check-knowledge.sh` enforces the mechanical parts.
 
+## Contents
+
+- Purpose
+- Layout
+- Knowledge files
+- Facts
+- Examples
+- What to leave out
+- The ledger
+
 ## Purpose
 
 The plugin's agents read knowledge files to build and check Claude tools (rules, hooks, skills, subagents,
@@ -15,12 +25,17 @@ Consumers run the latest Claude Code, so knowledge describes current behaviour o
 ```text
 plugins/agent-setup/knowledge/<type>/index.md     one per tool type
 plugins/agent-setup/knowledge/<type>/<topic>.md   one file per task an agent does with the type
+maintenance/topics/<type>.md                      the type's topic files and the task each serves
 maintenance/ledger/<type>.tsv                     every documentation section considered for the type
 ```
 
 - `<type>` and `<topic>` are lowercase words joined by hyphens, such as `rules` and `loading.md`.
 - `index.md` opens with a title and one sentence, then lists every topic file in the directory, one bullet each,
   wrapped as needed: `- [loading.md](loading.md): when a rule enters Claude's context. Read when …`
+- `maintenance/topics/<type>.md` lists the type's topic files, one bullet each, as ``- `loading.md`: knowing when
+  a rule enters Claude's context``. It is decided with the user on the type's first build and kept between
+  builds, so the same sections keep feeding the same files. It changes only when a build or update proposes a
+  new, split, merged or renamed topic, with a reason, and the user agrees.
 - Only `index.md` links to topic files. A topic file never links to another knowledge file, so every read is one
   level deep from the index.
 

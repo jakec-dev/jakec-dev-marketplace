@@ -3,7 +3,7 @@ name: knowledge
 description: Builds the agent-setup plugin's knowledge files for one Claude tool type, such as rules or hooks, from the local copy of Claude Code's documentation. Use when adding or rebuilding knowledge for a tool type.
 argument-hint: build <type>
 disable-model-invocation: true
-allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger)
+allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics)
 ---
 
 # Build knowledge for a tool type
@@ -33,19 +33,22 @@ this skill's directory. Read `format.md` before starting.
      app is excluded, even when it states something the terminal pages do not.
    - Always choose the most specific section. Never take a parent section, or a section covering many events,
      fields or types, to pick one row out of it.
-4. **Propose topics and candidates to the user, and wait for confirmation**. Show the topic files you would write,
-   one line each on the task it serves, and every candidate section as a plain list, one line each:
-   `page › heading (lines) → topic`, or `→ excluded: reason`. Do not use a table. Change the list as the user
-   asks. Do not write anything until the user confirms.
+4. **Propose topics and candidates to the user, and wait for confirmation**. If `maintenance/topics/<type>.md`
+   exists, use its topic files and assign every candidate to one of them; propose a new, split, merged or
+   renamed topic only where a candidate fits none or a topic no longer serves one task, and say why. If it does
+   not exist, propose topic files, one line each on the task it serves. Then show every candidate section as a
+   plain list, one line each: `page › heading (lines) → topic`, or `→ excluded: reason`. Do not use a table.
+   Change the list as the user asks. Do not write anything until the user confirms.
 5. **Write the topic files**. Start one `knowledge-writer` agent per topic, in parallel. Give each the tool type,
    its topic file name and the task it serves, the other topic files and their tasks so it leaves those
    to them, and its sections as page, heading, start and end lines: each section's own range, with subsections
    listed separately, and a scope note where only part of a section was agreed. That note becomes the ledger
    row's reason. Each writes its file and returns ledger rows.
 6. **Write the index and the ledger**. Write `index.md` with one bullet per topic file, as `format.md` shows,
-   describing what each file contains. Create `maintenance/ledger/` if it is missing, then write the ledger: the
+   describing what each file contains. Create `maintenance/ledger/` and `maintenance/topics/` if they are missing.
+   Write or update `maintenance/topics/<type>.md` with the confirmed topics, then write the ledger: the
    writers' rows, plus an `excluded` row with the agreed reason for every candidate no writer used.
-7. **Run the checks**. Run `scripts/check-knowledge.sh plugins/agent-setup/knowledge maintenance/ledger
+7. **Run the checks**. Run `scripts/check-knowledge.sh plugins/agent-setup/knowledge maintenance
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every new file. Fix what they report and run them
    again until both exit 0.
 8. **Review**. Start one `knowledge-reviewer` agent per topic file, in parallel, giving each the file and its
@@ -53,6 +56,7 @@ this skill's directory. Read `format.md` before starting.
    exclusion grounds from step 3 and the topic files. Fix each finding the
    documentation supports. Where you disagree with a finding, keep the narrower statement unless the
    documentation states the broader one outright. If a finding needs a section the user agreed to exclude, ask
-   the user before using it. Run the checks again.
+   the user before using it. Bring any topic finding to the user as a proposal; change topics only if the user
+   agrees. Run the checks again.
 9. **Report**. List the files written with their line counts, every excluded section with its reason, the
    reviewers' findings and what was done about each, and the final exit status of each check.

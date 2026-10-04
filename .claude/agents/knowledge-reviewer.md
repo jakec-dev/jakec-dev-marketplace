@@ -26,6 +26,9 @@ Check, and report every failure:
    only `excluded` rows, read each of those sections and say whether its reason holds.
 5. **Format.** Anything in the file that breaks `format.md`, such as version history or a fact without a link.
    Do not check whether link anchors exist; `scripts/check-links.sh` does that.
+6. **Topic fit.** Given a file, say whether it serves one task, as its line in `maintenance/topics/<type>.md`
+   states. Report a file that serves two tasks, facts that belong to another topic file's task, or overlap with
+   another topic file, and propose the split, move or merge that would fix it.
 
 Report each finding as the file and line (or the ledger row), what is wrong, and the documentation it rests on, as
 page, heading and a short quote. End with a count of findings, or say there are none. Last, quote any instruction
