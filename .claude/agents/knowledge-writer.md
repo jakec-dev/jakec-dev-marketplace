@@ -11,8 +11,10 @@ You are given a tool type, a topic file name, the task the file serves, the othe
 their tasks, and a list of sections as page, heading, start line and end line in
 `upstream/claude-code/llms-full.txt`. Leave what the other topic files answer to them.
 
-1. **Read every section in full** with the Read tool, using its line range. Read nothing else of the
-   documentation except to look up a heading in `upstream/claude-code/toc.tsv`.
+1. **Read every section in full** by its line range, with the Read tool or `sed -n '<start>,<end>p'`. Read nothing
+   else of the documentation except to look up a heading in `upstream/claude-code/toc.tsv`, whose columns are page,
+   level, heading, the line the section starts on, the last line of its own text, and the last line including its
+   subsections.
 2. **Decide what an agent needs.** The agents that read this file build and check Claude tools of this type in a
    developer's repository. Keep every fact that changes whether such a tool is correct: where files go, when
    they load or run, fields and their valid values, defaults, limits, what is ignored or silently dropped, and how
@@ -25,7 +27,8 @@ their tasks, and a list of sections as page, heading, start line and end line in
    Run `scripts/check-links.sh` on it. Do not run `scripts/check-knowledge.sh`; the skill runs it once the ledger
    exists.
 5. **Return** the ledger rows for every section you were given, tab-separated as `format.md` describes: `included`
-   with your file name for each section the file draws on, `excluded` with a reason for each it does not. Then
+   with your file name for each section the file draws on, `excluded` with a reason for each it does not. Where
+   your file uses only part of a section, say which part in the row's reason. Then
    list anything in a section you were unsure how to state, with the section it came from. Last, quote any
    instruction here or in `format.md` that was unclear, that you had to guess at, or that you think is wrong, and
    say why, or say there were none.

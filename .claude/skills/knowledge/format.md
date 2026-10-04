@@ -41,7 +41,7 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## Knowledge files
 
-- Start with `# <Title>` and one sentence saying which task the file serves.
+- Start with `# <Title>` and one sentence or phrase saying which task the file serves.
 - A file over 100 lines has a `## Contents` section listing its `##` headings, straight after that sentence.
 - Split topics by the task an agent is doing when it reads the file, so that one task means one file: for example
   placing the file, writing each part of its configuration, sharing it, excluding it, knowing when it takes
@@ -53,7 +53,7 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 ## Facts
 
 - One fact per top-level bullet, stated as current behaviour in one to three sentences. A nested bullet, or a
-  table placed straight after a bullet, is covered by that bullet's link.
+  table or example placed straight after a bullet, is covered by that bullet's link.
 - Each bullet carries at least one source link to the section that supports it, written
   `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`. Copy the anchor from the heading's `id`
   in the live page exactly, without percent-encoding; never build one from the heading text, which often
@@ -64,7 +64,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
   scoped to it, and nothing is added to it, such as when it does or does not happen. The sentence decides the
   scope, not the heading above it: apply a sentence to this type only if it names the type or a group that
   clearly includes it. A sentence that refers back to an earlier one, as "the file" does, takes that sentence's
-  scope.
+  scope. A fact about this type may carry a detail it depends on from an earlier sentence, such as the number
+  behind "the recommended length".
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
   events and tools. Paraphrase only explanation. A copied table may keep only its relevant rows,
   with its header, all its columns, and any sentence that limits how to read it.
@@ -111,7 +112,7 @@ page	heading	decision	file	reason
   `scripts/docs-toc.sh` prints them.
 - `decision` is `included` or `excluded`.
 - An `included` row names the topic file that draws on the section in `file`. It leaves `reason` empty, unless
-  only part of the section is used: then `reason` says which part, such as `only the sentences on symlinks`. A
+  only part of the section is used: then the writer says which part, such as `only the sentences on symlinks`. A
   section used by two files has two rows.
 - An `excluded` row leaves `file` empty and says why in `reason`, in a few words.
 - Every topic file appears in at least one `included` row.

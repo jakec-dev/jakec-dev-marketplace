@@ -10,7 +10,9 @@ nothing. You have not seen how the file was written, and should not assume it is
 You are given either a file's path and its rows from `maintenance/ledger/<type>.tsv`, or only the type's
 `excluded` rows, in which case check those reasons alone (check 4). Read
 `.claude/skills/knowledge/format.md` first. Find each section's line range in `upstream/claude-code/toc.tsv` by its
-page and heading, and read it in `upstream/claude-code/llms-full.txt` with the Read tool.
+page and heading, and read it in `upstream/claude-code/llms-full.txt` with the Read tool or `sed -n`. The table's
+columns are page, level, heading, the line the section starts on, the last line of its own text, and the last line
+including its subsections.
 
 Check, and report every failure:
 
@@ -22,13 +24,15 @@ Check, and report every failure:
    the point it illustrates depends on.
 4. **Loss.** Given a file, read every section its `included` rows name and list anything an agent building or
    checking this kind of Claude tool would need that the file leaves out, after checking that no other topic
-   file of the type covers it; respect any scope note in a row's reason. Do not read `excluded` sections. Given
+   file of the type covers it. A row's reason may say which part of the section the file uses; report it as a loss
+   if the part left out holds something an agent needs. Do not read `excluded` sections. Given
    only `excluded` rows, read each of those sections and say whether its reason holds.
 5. **Format.** Anything in the file that breaks `format.md`, such as version history or a fact without a link.
    Do not check whether link anchors exist; `scripts/check-links.sh` does that.
 6. **Topic fit.** Given a file, say whether it serves one task, as its line in `maintenance/topics/<type>.md`
    states. Report a file that serves two tasks, facts that belong to another topic file's task, or overlap with
-   another topic file, and propose the split, move or merge that would fix it.
+   another topic file, and propose the split, move or merge that would fix it. A short mention of another file's
+   fact, needed to make this file's point clear, is not overlap.
 
 Report each finding as the file and line (or the ledger row), what is wrong, and the documentation it rests on, as
 page, heading and a short quote. End with a count of findings, or say there are none. Last, quote any instruction
