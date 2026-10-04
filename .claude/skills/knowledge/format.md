@@ -45,7 +45,8 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 - State a fact no more broadly than its source. A statement made about one setting, mode, surface or case stays
   scoped to it, and nothing is added to it, such as when it does or does not happen.
 - Copy word for word: tables of fields and their values, defaults, limits, exact messages, and names of settings,
-  events and tools. Paraphrase only explanation.
+  events and tools. Paraphrase only explanation. A relative link in copied text, such as `(/docs/en/skills)`,
+  becomes the absolute `https://code.claude.com/docs/en/skills` link; keep the link, do not flatten it to text.
 - When two pages disagree, state both, each with its link, and say which to rely on only if the documentation does.
 
 ## Examples
@@ -59,8 +60,10 @@ maintenance/ledger/<type>.tsv                     every documentation section co
 
 ## What to leave out
 
-- Version history: no "since", "before", "now" or "new", and no description of earlier behaviour. A sentence that
-  describes a change supports its current half: state that, without the history. Status the
+- Version history: no "since", "before", "now" or "new", and no description of earlier behaviour. A sentence on a
+  documentation page that describes a change supports its current half: state that, without the history.
+- The changelog and release notes are never a source: they record history, and a later entry can supersede an
+  earlier one. Where one contradicts a current page, the page stands. Status the
   documentation gives for current use, such as "legacy" or "deprecated", stays.
 - Tutorial steps, marketing, and anything about other surfaces (web, desktop, SDK) unless it changes how a Claude
   tool in a repository behaves.

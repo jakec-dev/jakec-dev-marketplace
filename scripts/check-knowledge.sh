@@ -40,7 +40,8 @@ check_topic() {
       rest = $0
       while (match(rest, /\]\([^)]+\)/)) {
         target = substr(rest, RSTART + 2, RLENGTH - 3); rest = substr(rest, RSTART + RLENGTH)
-        if (target !~ /^https?:/ && target ~ /\.md(#.*)?$/) print file ":" FNR ": links to another knowledge file"
+        if (target ~ /^\//) print file ":" FNR ": relative link to " target "; use the absolute https link"
+        else if (target !~ /^https?:/ && target ~ /\.md(#.*)?$/) print file ":" FNR ": links to another knowledge file"
       }
     }
     !fence && tolower($0) ~ /(^|[^a-z])(since|before|until) v?[0-9]+\.[0-9]+/ { print file ":" FNR ": version history" }

@@ -87,6 +87,7 @@ cross_link() {
   topic_line "- See [frontmatter](frontmatter.md). $link"
   expect 1 'link to another knowledge file'
 }
+relative_link() { topic_line "- See [skills](/docs/en/skills). $link" && expect 1 'relative link'; }
 version_word() { topic_line "- Rules load on Write since 2.1.288. $link" && expect 1 'version history in words'; }
 version_number() { topic_line "- Requires v2.1.288. $link" && expect 1 'version number'; }
 long_line() { topic_line "- $(printf 'x%.0s' {1..130}) $link" && expect 1 'line over 120 characters'; }
@@ -130,9 +131,9 @@ duplicate_row() {
   expect 1 'duplicate ledger row'
 }
 
-for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link version_word version_number \
-  long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section bad_decision \
-  excluded_no_reason included_missing topic_not_in_ledger duplicate_row; do
+for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
+  version_number long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section \
+  bad_decision excluded_no_reason included_missing topic_not_in_ledger duplicate_row; do
   run "$test"
 done
 
