@@ -126,7 +126,8 @@ included_with_scope() {
   expect 0 'included row with a scope note passes'
 }
 included_no_file() {
-  ledger_row "memory${tab}Auto memory${tab}included${tab}${tab}"
+  # A section with no other empty-file row, so the missing file is the only defect.
+  ledger_row "memory${tab}Path-specific rules${tab}included${tab}${tab}"
   expect 1 'included row without a file'
 }
 topic_not_in_ledger() {
