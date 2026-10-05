@@ -16,7 +16,8 @@ report:
 
 1. **Accuracy.** A statement its linked section does not support, states more broadly, or gives a different
    subject or condition than the source does, or that, read with another file of the type, suggests something the
-   documentation does not say.
+   documentation does not say. Also a `Not stated` question that the documentation answers, wholly or in part,
+   including through a fact the file itself states; say what the answer is.
 2. **Exactness.** A field name, value, default, limit, message or name that differs from the source, or a copied
    table missing its header, a column or a sentence that limits it.
 3. **Examples.** An example that is invalid, uses a field or value the documentation does not show, or drops a

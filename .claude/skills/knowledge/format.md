@@ -70,7 +70,8 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   with this type will meet that the documentation leaves open, linked to the section closest to it, such as
   "Stated for CLAUDE.md files; the documentation does not say whether it applies to rules." It holds questions,
   never answers. Where an excluded page, such as an Agent SDK page, states the point for its own surface, the
-  question says so.
+  question says so. A question the documentation answers, even in part or through another fact in the file, is
+  not open: state the answer instead, or ask only the part that is open.
 - Lines stay within 120 characters, except a line holding a link and a table row.
 
 ## Examples
