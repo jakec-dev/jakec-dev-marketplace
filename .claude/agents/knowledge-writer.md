@@ -21,6 +21,7 @@ and last line including its subsections.
    `curl -sL https://code.claude.com/docs/en/<page>`.
 4. **Check** the file against `format.md` and run `scripts/check-links.sh` on it. The skill runs
    `scripts/check-knowledge.sh` once the ledger exists.
-5. **Return** one `included` ledger row per section you were given, as `format.md` shows. Then list any sentence
+5. **Return** one `included` ledger row per section you were given, as `format.md` shows: an empty reason for a
+   section you own, or the named row, sentence or clause for one handed to you. Then list any sentence
    you were unsure how to state, with its section. Last, name any instruction here or in `format.md` that made your
    file worse or forced a choice you think was wrong, and why, or say there was none.

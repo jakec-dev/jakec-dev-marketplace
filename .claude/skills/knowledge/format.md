@@ -70,8 +70,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   with this type will meet that the documentation leaves open, linked to the section closest to it, such as
   "Stated for CLAUDE.md files; the documentation does not say whether it applies to rules." It holds questions,
   never answers. Where an excluded page, such as an Agent SDK page, states the point for its own surface, the
-  question says so. A question the documentation answers, even in part or through another fact in the file, is
-  not open: state the answer instead, or ask only the part that is open.
+  question says so. A question the documentation answers in its own words, even in part or through another fact in
+  the file, is not open: state the answer instead, or ask only the part that is open. An answer that rests on
+  reading between the lines, such as the force of a single word, does not close a question.
 - Lines stay within 120 characters, except a line holding a link and a table row.
 
 ## Examples
@@ -103,6 +104,7 @@ page	heading	decision	file	reason
 
 - One row per candidate section, with `page` and `heading` exactly as `scripts/docs-toc.sh` prints them.
 - `included` rows name the owning file; `reason` is empty, or names the one row, sentence or clause the file takes.
+  A file taking one table row also takes any sentence that tells you how to read the table.
 - `excluded` rows leave `file` empty and give the reason in a few words.
 - Every topic file owns at least one section, and no section has two owners, apart from a named row, sentence or
   clause handed to another file.

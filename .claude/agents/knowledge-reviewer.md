@@ -23,7 +23,8 @@ report:
 3. **Examples.** An example that is invalid, uses a field or value the documentation does not show, or drops a
    detail its point depends on.
 4. **Loss.** Anything in the owned sections that an agent doing the file's task needs and no file of the type
-   states, and any open question the file should list under `Not stated by the documentation` but does not.
+   states; any section that names this type but has no ledger row; and any open question the file should list
+   under `Not stated by the documentation` but does not.
 5. **Placement.** A fact restated from a section another file owns (a sentence or row handed to this file by name
    is not a restatement), a fact stated twice in the file, or a file
    that serves more than its task in `maintenance/topics/<type>.md`; propose the move, merge, split or topic change
@@ -31,7 +32,8 @@ report:
 6. **Format.** Anything else `format.md` rules out, such as history or a fact without a link. Leave link anchors to
    `scripts/check-links.sh`.
 
-If you are told which bullets changed, review those bullets only.
+If you are told which bullets changed, review those bullets, and anything in another file or the ledger that the
+change makes wrong.
 
 **Given the type's excluded rows and the exclusion grounds,** read each excluded section and report any whose
 reason does not hold, or that states something about the type no included section does.
