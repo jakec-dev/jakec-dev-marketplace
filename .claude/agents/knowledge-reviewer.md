@@ -26,7 +26,8 @@ report:
    states; any section that names this type but has no ledger row; and any open question the file should list
    under `Not stated by the documentation` but does not.
 5. **Placement.** A fact restated from a section another file owns (a sentence or row handed to this file by name
-   is not a restatement), a fact stated twice in the file, or a file
+   is not a restatement), the same fact stated in two files through two different sections, a fact stated twice
+   in the file, or a file
    that serves more than its task in `maintenance/topics/<type>.md`; propose the move, merge, split or topic change
    that fixes it.
 6. **Format.** Anything else `format.md` rules out, such as history or a fact without a link. Leave link anchors to

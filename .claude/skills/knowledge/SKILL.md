@@ -38,11 +38,11 @@ conflict between instructions.
    section in it appears in the new list, included or excluded, so nothing drops out unseen. Otherwise propose
    topic files, one line each on its task. Then list every candidate, one line each, as
    `page › heading (lines) → owning file` or `→ excluded: reason`. Read each included section for sentences or
-   clauses that serve another file's task, including a current fact carried inside a history sentence, and add
-   `, the sentence on <subject> → <file>` (or `the clause on …`) for each, so the user agrees every hand-over before
-   writing.
-   Summarise in one line the matches that meant something else. Use plain lists, not tables. Change the list as
-   the user asks, and write nothing until the user confirms.
+   clauses that serve another file's task, including a current fact carried inside a history sentence, and for
+   facts that two sections both state, which go to one file only. Add `, the sentence on <subject> → <file>` (or
+   `the clause on …`) for each, so the user agrees every hand-over before writing. Summarise in one line the
+   matches that meant something else. Use plain lists, not tables. Change the list as the user asks, and write
+   nothing until the user confirms.
 5. **Write.** Create `maintenance/ledger/` and `maintenance/topics/` if they are missing, and write the confirmed
    topics. Start one `knowledge-writer` per topic file, in parallel, giving each: the type; its file and task; the
    other files and their tasks; and the sections it owns, as page, heading, start and end lines, naming any row or

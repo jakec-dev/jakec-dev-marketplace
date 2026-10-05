@@ -45,7 +45,10 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   file by name. That file states it; the owner leaves it out. A file never hands a fact away in prose, such as
   "covered in loading.md": either it states the fact, or the ledger hands it on.
 - Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
-  without which the mention misleads.
+  without which the mention misleads. Keep such a mention where a hand-over would otherwise leave this file's fact
+  without the fix or caveat that makes it usable, such as a symptom without its cure.
+- One fact, one file. Where two sections state the same fact, it is stated once, in the file whose task it serves:
+  the other section's sentence is handed to that file, or its owner leaves it out.
 
 ## Writing facts
 
@@ -73,7 +76,8 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   question says so. A question the documentation answers in its own words, even in part or through another fact in
   the file, is not open: state the answer instead, or ask only the part that is open. An answer that rests on
   reading between the lines, such as the force of a single word, does not close a question.
-- Lines stay within 120 characters, except a line holding a link and a table row.
+- Lines stay within 120 characters, except a line holding a link, a table row and a line inside a code block, so
+  that the documentation's own examples are copied whole.
 
 ## Examples
 

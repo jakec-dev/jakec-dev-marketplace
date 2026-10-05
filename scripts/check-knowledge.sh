@@ -35,8 +35,10 @@ check_topic() {
     FNR == 1 && !/^# / { print file ":1: first line is not a # title" }
     /^## / { in_contents = ($0 == "## Contents"); if (in_contents) contents = 1 }
     /^[ \t]*(```|~~~)/ { fence = !fence }
-    # format.md exempts a line holding a link and a table row from the length limit.
-    length($0) > 120 && !/\]\(https?:/ && !/^[ \t]*\|/ { print file ":" FNR ": line longer than 120 characters" }
+    # format.md exempts a line holding a link, a table row and a line inside a code block from the length limit.
+    !fence && length($0) > 120 && !/\]\(https?:/ && !/^[ \t]*\|/ {
+      print file ":" FNR ": line longer than 120 characters"
+    }
     !fence {
       rest = $0
       while (match(rest, /\]\([^)]+\)/)) {

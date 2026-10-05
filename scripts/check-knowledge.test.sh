@@ -99,6 +99,13 @@ long_line() {
   expect 1 'line over 120 characters'
 }
 long_line_with_link() { topic_line "- $(printf 'x%.0s' {1..130}) $link" && expect 0 'long line holding a link passes'; }
+long_code_line() {
+  topic_line "- An example. $link"
+  topic_line '  ```json'
+  topic_line "  {\"command\": \"$(printf 'x%.0s' {1..130})\"}"
+  topic_line '  ```'
+  expect 0 'long line inside a code block passes'
+}
 long_index_line() {
   echo "- $(printf 'x%.0s' {1..130})" >>knowledge/rules/index.md
   expect 1 'long line in index.md'
@@ -184,10 +191,10 @@ duplicate_row() {
 }
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
-  version_number long_line long_line_with_link long_index_line two_sentences_same_file long_table_row no_contents \
-  with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason included_missing \
-  included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger \
-  two_owners handed_sentence duplicate_row; do
+  version_number long_line long_line_with_link long_code_line long_index_line two_sentences_same_file \
+  long_table_row no_contents with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason \
+  included_missing included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing \
+  topic_not_in_ledger two_owners handed_sentence duplicate_row; do
   run "$test"
 done
 
