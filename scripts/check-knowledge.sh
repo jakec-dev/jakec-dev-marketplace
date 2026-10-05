@@ -35,8 +35,8 @@ check_topic() {
     FNR == 1 && !/^# / { print file ":1: first line is not a # title" }
     /^## / { in_contents = ($0 == "## Contents"); if (in_contents) contents = 1 }
     /^[ \t]*(```|~~~)/ { fence = !fence }
-    { bare = $0; gsub(/https?:\/\/[^) ]+/, "", bare) }
-    length(bare) > 120 && !/^[ \t]*\|/ { print file ":" FNR ": line longer than 120 characters, not counting links" }
+    # format.md exempts a line holding a link and a table row from the length limit.
+    length($0) > 120 && !/\]\(https?:/ && !/^[ \t]*\|/ { print file ":" FNR ": line longer than 120 characters" }
     !fence {
       rest = $0
       while (match(rest, /\]\([^)]+\)/)) {
@@ -70,6 +70,11 @@ for dir in "$knowledge"/*/; do
     report "$dir: no index.md"
     continue
   fi
+  while IFS= read -r line; do report "$line"; done < <(
+    awk -v file="$index" '
+      length($0) > 120 && !/\]\(https?:/ { print file ":" FNR ": line longer than 120 characters" }
+    ' "$index"
+  )
 
   # Every topic file is listed in the index, and every file the index lists exists.
   for topic in "$dir"*.md; do
@@ -111,7 +116,7 @@ for dir in "$knowledge"/*/; do
       }
       NF != 5 { print at "has " NF " fields, not 5"; next }
       !(($1 "\t" $2) in known) { print at "no section \"" $2 "\" on page " $1 " in the table of contents" }
-      seen[$1 "\t" $2 "\t" $4]++ { print at "duplicate row" }
+      seen[$0]++ { print at "duplicate row" }
       $3 == "included" {
         if ($4 == "") { print at "an included row must name a file"; next }
         # A row with a reason hands one named sentence or row of the section to this file, so it is not an owner.

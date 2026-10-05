@@ -93,7 +93,21 @@ cross_link() {
 relative_link() { topic_line "- See [skills](/docs/en/skills). $link" && expect 1 'relative link'; }
 version_word() { topic_line "- Rules load on Write since 2.1.288. $link" && expect 1 'version history in words'; }
 version_number() { topic_line "- Requires v2.1.288. $link" && expect 1 'version number'; }
-long_line() { topic_line "- $(printf 'x%.0s' {1..130}) $link" && expect 1 'line over 120 characters'; }
+long_line() {
+  topic_line "- A fact. $link"
+  topic_line "  $(printf 'x%.0s' {1..130})"
+  expect 1 'line over 120 characters'
+}
+long_line_with_link() { topic_line "- $(printf 'x%.0s' {1..130}) $link" && expect 0 'long line holding a link passes'; }
+long_index_line() {
+  echo "- $(printf 'x%.0s' {1..130})" >>knowledge/rules/index.md
+  expect 1 'long line in index.md'
+}
+two_sentences_same_file() {
+  ledger_row "memory${tab}Auto memory${tab}included${tab}loading.md${tab}the sentence on order"
+  ledger_row "memory${tab}Auto memory${tab}included${tab}loading.md${tab}the sentence on priority"
+  expect 0 'two named sentences of one section to one file pass'
+}
 long_table_row() {
   topic_line "| \`field\` | $(printf 'x%.0s' {1..130}) |"
   expect 0 'long table row passes'
@@ -170,8 +184,8 @@ duplicate_row() {
 }
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
-  version_number long_line long_table_row no_contents with_contents no_ledger bad_header unknown_section \
-  bad_decision excluded_no_reason included_missing \
+  version_number long_line long_line_with_link long_index_line two_sentences_same_file long_table_row no_contents \
+  with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason included_missing \
   included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger \
   two_owners handed_sentence duplicate_row; do
   run "$test"

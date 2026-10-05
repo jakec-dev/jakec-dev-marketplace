@@ -41,8 +41,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 
 - Every section has exactly one owner: the topic file whose task it mainly serves. The owner states everything in
   the section that an agent needs for its task.
-- Where one sentence or one table row of a section serves another file's task, the ledger may hand it to that
-  file by name. That file states it; the owner leaves it out.
+- Where one sentence, clause or table row of a section serves another file's task, the ledger may hand it to that
+  file by name. That file states it; the owner leaves it out. A file never hands a fact away in prose, such as
+  "covered in loading.md": either it states the fact, or the ledger hands it on.
 - Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
   without which the mention misleads.
 
@@ -62,12 +63,14 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   serve no task here.
 - Links in copied text become absolute `https://code.claude.com/docs/en/…` links. Copy an anchor from the
   heading's `id` in the live page exactly. Where an anchor exists only in the browser, such as an interactive
-  explorer's, link the nearest heading instead and keep the text.
+  explorer's, link the nearest heading instead and keep the text. A copied word that points elsewhere on the page,
+  such as "below", may be replaced by the name of what it points to.
 - When two pages disagree, state both, each with its link.
 - A file may end with a `## Not stated by the documentation` section: one bullet per question an agent working
   with this type will meet that the documentation leaves open, linked to the section closest to it, such as
   "Stated for CLAUDE.md files; the documentation does not say whether it applies to rules." It holds questions,
-  never answers.
+  never answers. Where an excluded page, such as an Agent SDK page, states the point for its own surface, the
+  question says so.
 - Lines stay within 120 characters, except a line holding a link and a table row.
 
 ## Examples
@@ -98,7 +101,7 @@ page	heading	decision	file	reason
 ```
 
 - One row per candidate section, with `page` and `heading` exactly as `scripts/docs-toc.sh` prints them.
-- `included` rows name the owning file; `reason` is empty, or names the one row or sentence the file takes.
+- `included` rows name the owning file; `reason` is empty, or names the one row, sentence or clause the file takes.
 - `excluded` rows leave `file` empty and give the reason in a few words.
-- Every topic file owns at least one section, and no section has two owners, apart from a named row or sentence
-  handed to another file.
+- Every topic file owns at least one section, and no section has two owners, apart from a named row, sentence or
+  clause handed to another file.
