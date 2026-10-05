@@ -15,6 +15,7 @@ if [ $# -ne 3 ] || [ ! -d "$1" ] || [ ! -d "$2" ] || [ ! -f "$3" ]; then
   echo 'usage: check-knowledge.sh <knowledge-dir> <maintenance-dir> <toc.tsv>' >&2
   exit 2
 fi
+here=$(cd "$(dirname "$0")" && pwd)
 knowledge=$1
 maintenance=$2
 toc=$3
@@ -78,16 +79,10 @@ for dir in "$knowledge"/*/; do
     ' "$index"
   )
 
-  # Every topic file is listed in the index, and every file the index lists exists.
   for topic in "$dir"*.md; do
-    name=$(basename "$topic")
-    [ "$name" = index.md ] && continue
-    grep -qF "]($name)" "$index" || report "$index: does not list $name"
+    [ "$(basename "$topic")" = index.md ] && continue
     while IFS= read -r line; do report "$line"; done < <(check_topic "$topic")
   done
-  while IFS= read -r name; do
-    [ -f "$dir$name" ] || report "$index: lists $name, which does not exist"
-  done < <(grep -o -E '\]\([a-z0-9-]+\.md\)' "$index" | sed -E 's/^\]\(//; s/\)$//')
 
   # The topic list and the topic files match exactly.
   if [ ! -f "$topics" ]; then
@@ -102,6 +97,12 @@ for dir in "$knowledge"/*/; do
       [ "$name" = index.md ] && continue
       grep -qF -- "- \`$name\`" "$topics" || report "$topics: does not list $name"
     done
+    # The index's Topics section is generated, so it must match the generator exactly.
+    if ! generated=$("$here/knowledge-index.sh" "$dir" "$topics" 2>/dev/null); then
+      report "$topics: knowledge-index.sh could not build the Topics section"
+    elif [ "$(sed -n '/^## Topics$/,$p' "$index")" != "$generated" ]; then
+      report "$index: the Topics section is out of date; regenerate it with scripts/knowledge-index.sh"
+    fi
   fi
 
   if [ ! -f "$ledger" ]; then

@@ -3,7 +3,7 @@ name: knowledge
 description: Builds the agent-setup plugin's knowledge files for one Claude tool type, such as rules or hooks, from the local copy of Claude Code's documentation. Use when adding or rebuilding knowledge for a tool type.
 argument-hint: build <type>
 disable-model-invocation: true
-allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *)
+allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *), Bash(scripts/knowledge-index.sh *)
 ---
 
 # Build knowledge for a tool type
@@ -49,7 +49,8 @@ conflict between instructions.
    sentence taken alone and any sentence handed to another file.
 6. **Ledger and index.** Write the ledger: one `included` row per owned section, with an empty reason; one per
    sentence, clause or row handed to another file, naming it; and an `excluded` row with its agreed reason for
-   every other candidate. Write `index.md` from what each file contains.
+   every other candidate. Write `index.md`: a title and a sentence, the key facts as `format.md` describes them,
+   then the output of `scripts/knowledge-index.sh plugins/agent-setup/knowledge/<type> maintenance/topics/<type>.md`.
 7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/knowledge maintenance
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every file of the type, and fix until both exit 0.
 8. **Review.** Start one `knowledge-reviewer` per topic file, in parallel, with the file, its ledger rows, the
@@ -62,7 +63,8 @@ conflict between instructions.
    - After fixing, give each changed file to a fresh reviewer with the changed bullets marked, the other files and
      the `excluded` rows. Repeat until a round changes no stated fact. A finding that only rewords a `Not stated`
      bullet, without showing it wrong or incomplete, is not applied.
-   - Update `index.md` to what each file finally contains, then run step 7 again.
+   - Regenerate the Topics section of `index.md`, check each key fact still matches the bullet it summarises, and
+     run step 7 again.
 9. **Report.** Give each file's line count, each excluded section with its reason, each finding with what was done,
    anything left open for the user, and the final exit status of both checks. List the documentation's gaps
    separately: facts stated only on excluded pages, and questions about the type the documentation leaves open.

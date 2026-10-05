@@ -36,6 +36,10 @@ report:
 If you are told which bullets changed, review those bullets, and anything in another file or the ledger that the
 change makes wrong.
 
+**Given the type's `index.md`,** check each key fact against the bullet it points to and the source behind that
+bullet, and report a key fact that says more or less than its detail, or that meets none of the evidence tests in
+`format.md`, and a fact that meets one strongly but is missing from the list.
+
 **Given the type's excluded rows and the exclusion grounds,** read each excluded section and report any whose
 reason does not hold, or that states something about the type no included section does.
 

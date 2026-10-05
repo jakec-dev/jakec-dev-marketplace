@@ -3,6 +3,18 @@
 How knowledge files, topic lists and ledgers are written. The writer follows it, the reviewer checks against it, and
 `scripts/check-knowledge.sh` enforces the mechanical parts.
 
+## Contents
+
+- Purpose
+- When rules pull against each other
+- Layout
+- Key facts
+- Owning sections
+- Writing facts
+- Examples
+- Leaving out
+- The ledger
+
 ## Purpose
 
 The plugin's agents read knowledge files to build and check Claude tools (rules, hooks, skills, subagents,
@@ -33,9 +45,20 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   sharing it, excluding it, knowing when it takes effect, or finding out why it did not. One task, one file.
 - The topic list is agreed with the user on a type's first build and kept between builds. Only a proposal the user
   agrees to changes it: a new, split, merged or renamed topic, with a reason.
-- `index.md` opens with a title and a sentence, then one bullet per topic file:
-  `- [loading.md](loading.md): when a rule enters Claude's context. Read when …`. Only the index links to topic
-  files, so every read is one step from the index.
+- `index.md` is the entry an agent always reads: a title and a sentence, then `## Key facts`, then `## Topics`.
+  The Topics section lists every topic file with its task and its `##` sections; `scripts/knowledge-index.sh`
+  generates it from the topic list, and nobody edits it by hand. Only the index links to topic files, so every
+  read is one step from the index, and an agent reads only the sections its task needs.
+
+## Key facts
+
+- Ten to twenty one-line facts that most tasks with this type need, chosen by evidence, strongest first:
+  1. A model gets it wrong without the knowledge: the eval suite's baseline arm fails on it.
+  2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write that is
+     refused.
+  3. It sits in a section the documentation changed recently, so a model's training may predate it.
+- Each key fact summarises, in one line, a bullet a topic file states in full, and points to it as
+  ``See [loading.md](loading.md) › `## heading`.`` It is the one deliberate repeat of a fact.
 
 ## Owning sections
 

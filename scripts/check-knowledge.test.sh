@@ -6,7 +6,8 @@
 
 set -euo pipefail
 
-check="$(cd "$(dirname "$0")" && pwd)/check-knowledge.sh"
+here="$(cd "$(dirname "$0")" && pwd)"
+check="$here/check-knowledge.sh"
 shell=${BASH_UNDER_TEST:-bash}
 root=$(mktemp -d)
 trap 'rm -rf "$root"' EXIT
@@ -16,17 +17,21 @@ cases=0
 tab=$'\t'
 link='[memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)'
 
+# Writes index.md: a key fact, then the Topics section the generator builds from the topic list.
+regen_index() {
+  {
+    printf '# Rules knowledge\n\nWhat every rules task needs first.\n\n## Key facts\n\n'
+    printf -- '- A path-scoped rule loads on Read, Write or Edit. See [loading.md](loading.md).\n\n'
+    "$shell" "$here/knowledge-index.sh" knowledge/rules maintenance/topics/rules.md
+  } >knowledge/rules/index.md
+}
+
 # Creates a clean tree for one case and enters it.
 fixture() {
   local dir="$root/$cases"
   mkdir -p "$dir/knowledge/rules" "$dir/maintenance/ledger" "$dir/maintenance/topics"
   cd "$dir"
   printf 'memory\t2\tPath-specific rules\t1\t2\t2\nmemory\t2\tAuto memory\t3\t4\t4\n' >toc.tsv
-  cat >knowledge/rules/index.md <<'EOF'
-# Rules knowledge
-
-- [loading.md](loading.md): when a rule enters Claude's context. Read when choosing paths.
-EOF
   cat >knowledge/rules/loading.md <<EOF
 # Rule loading
 
@@ -44,6 +49,7 @@ When a rule in \`.claude/rules/\` enters Claude's context.
   \`\`\`
 EOF
   printf '# Rules topics\n\n- `loading.md`: knowing when a rule enters context\n' >maintenance/topics/rules.md
+  regen_index
   printf 'page\theading\tdecision\tfile\treason\n' >maintenance/ledger/rules.tsv
   printf 'memory\tPath-specific rules\tincluded\tloading.md\t\n' >>maintenance/ledger/rules.tsv
   printf 'memory\tAuto memory\texcluded\t\tnot about rules\n' >>maintenance/ledger/rules.tsv
@@ -78,11 +84,11 @@ unlisted_topic() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
   echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
   ledger_row "memory${tab}Auto memory${tab}included${tab}extra.md${tab}"
-  expect 1 'topic file not in the index'
+  expect 1 'index Topics section misses a topic file'
 }
 listed_missing() {
   echo '- [gone.md](gone.md): gone.' >>knowledge/rules/index.md
-  expect 1 'index lists a missing file'
+  expect 1 'index Topics section lists a missing file'
 }
 no_title() { sed -i.bak '1s/^# //' knowledge/rules/loading.md && expect 1 'first line is not a title'; }
 uncited() { topic_line '- A fact with no source.' && expect 1 'bullet without a link'; }
@@ -107,7 +113,8 @@ long_code_line() {
   expect 0 'long line inside a code block passes'
 }
 long_index_line() {
-  echo "- $(printf 'x%.0s' {1..130})" >>knowledge/rules/index.md
+  awk -v long="- $(printf 'x%.0s' {1..130})" '{ print } /^## Key facts$/ { print ""; print long }' \
+    knowledge/rules/index.md >"$root/index" && mv "$root/index" knowledge/rules/index.md
   expect 1 'long line in index.md'
 }
 two_sentences_same_file() {
@@ -125,6 +132,7 @@ with_contents() {
     printf '# Rule loading\n\nWhen a rule loads.\n\n## Contents\n\n- Facts\n\n## Facts\n\n'
     hundred_facts
   } >knowledge/rules/loading.md
+  regen_index
   expect 0 'over 100 lines with contents passes'
 }
 no_ledger() { rm maintenance/ledger/rules.tsv && expect 1 'missing ledger'; }
@@ -157,7 +165,6 @@ included_no_file() {
 no_topics() { rm maintenance/topics/rules.md && expect 1 'missing topics file'; }
 topic_not_in_topics() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
-  echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
   ledger_row "memory${tab}Auto memory${tab}included${tab}extra.md${tab}"
   expect 1 'topic file not in the topics list'
 }
@@ -167,21 +174,21 @@ listed_topic_missing() {
 }
 topic_not_in_ledger() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
-  echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
   echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
+  regen_index
   expect 1 'topic file with no included row'
 }
 two_owners() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
-  echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
   echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
+  regen_index
   ledger_row "memory${tab}Path-specific rules${tab}included${tab}extra.md${tab}"
   expect 1 'section with two owners'
 }
 handed_sentence() {
   printf '# Extra\n\nText.\n' >knowledge/rules/extra.md
-  echo '- [extra.md](extra.md): extra.' >>knowledge/rules/index.md
   echo '- `extra.md`: an extra task' >>maintenance/topics/rules.md
+  regen_index
   ledger_row "memory${tab}Path-specific rules${tab}included${tab}extra.md${tab}the sentence on symlinks"
   expect 0 'a named sentence handed to a second file passes'
 }
