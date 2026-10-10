@@ -21,7 +21,8 @@ link='[memory › Path-specific rules](https://code.claude.com/docs/en/memory#pa
 regen_index() {
   {
     printf '# Rules knowledge\n\nWhat every rules task needs first.\n\n## Key facts\n\n'
-    printf -- '- A path-scoped rule loads on Read, Write or Edit. See [loading.md](loading.md).\n\n'
+    printf -- '- A path-scoped rule loads on Read, Write or Edit.\n'
+    printf -- '  See [loading.md › Path-scoped rules](loading.md).\n\n'
     "$shell" "$here/knowledge-index.sh" knowledge/rules maintenance/topics/rules.md
   } >knowledge/rules/index.md
 }
@@ -112,6 +113,10 @@ long_code_line() {
   topic_line '  ```'
   expect 0 'long line inside a code block passes'
 }
+dead_pointer() {
+  sed -i.bak 's/loading.md › Path-scoped rules/loading.md › No such section/' knowledge/rules/index.md
+  expect 1 'key fact pointing to a missing section'
+}
 long_index_line() {
   awk -v long="- $(printf 'x%.0s' {1..130})" '{ print } /^## Key facts$/ { print ""; print long }' \
     knowledge/rules/index.md >"$root/index" && mv "$root/index" knowledge/rules/index.md
@@ -129,7 +134,7 @@ long_table_row() {
 no_contents() { hundred_facts >>knowledge/rules/loading.md && expect 1 'over 100 lines without contents'; }
 with_contents() {
   {
-    printf '# Rule loading\n\nWhen a rule loads.\n\n## Contents\n\n- Facts\n\n## Facts\n\n'
+    printf '# Rule loading\n\nWhen a rule loads.\n\n## Contents\n\n- Path-scoped rules\n\n## Path-scoped rules\n\n'
     hundred_facts
   } >knowledge/rules/loading.md
   regen_index
@@ -198,7 +203,7 @@ duplicate_row() {
 }
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
-  version_number long_line long_line_with_link long_code_line long_index_line two_sentences_same_file \
+  version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
   long_table_row no_contents with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason \
   included_missing included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing \
   topic_not_in_ledger two_owners handed_sentence duplicate_row; do

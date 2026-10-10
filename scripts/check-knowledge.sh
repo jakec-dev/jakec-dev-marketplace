@@ -97,6 +97,16 @@ for dir in "$knowledge"/*/; do
       [ "$name" = index.md ] && continue
       grep -qF -- "- \`$name\`" "$topics" || report "$topics: does not list $name"
     done
+    # Every key fact's pointer, written [file.md › heading](file.md), names a heading that exists in that file.
+    while IFS= read -r pointer; do
+      file=${pointer#[}
+      file=${file%% › *}
+      heading=${pointer#* › }
+      heading=${heading%](*}
+      if [ ! -f "$dir$file" ] || ! grep -qxF "## $heading" "$dir$file"; then
+        report "$index: $pointer points to a section that does not exist"
+      fi
+    done < <(grep -o '\[[a-z0-9-]*\.md › [^]]*\]([a-z0-9-]*\.md)' "$index" || true)
     # The index's Topics section is generated, so it must match the generator exactly.
     if ! generated=$("$here/knowledge-index.sh" "$dir" "$topics" 2>/dev/null); then
       report "$topics: knowledge-index.sh could not build the Topics section"

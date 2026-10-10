@@ -57,8 +57,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write that is
      refused.
   3. It sits in a section the documentation changed recently, so a model's training may predate it.
-- Each key fact summarises, in one line, a bullet a topic file states in full, and points to it as
-  ``See [loading.md](loading.md) › `## heading`.`` It is the one deliberate repeat of a fact.
+- Each key fact summarises a bullet a topic file states in full, and ends with a pointer to it on its own line:
+  `See [loading.md › After compaction](loading.md).`, naming the file and its `##` heading. The checker confirms the
+  heading exists. A key fact is the one deliberate repeat of a fact.
 
 ## Owning sections
 
