@@ -22,6 +22,7 @@ Writing the content of CLAUDE.md files and rules so that Claude follows it.
   - "API handlers live in `src/api/handlers/`" instead of "Keep files organized"
 
   [memory › Write effective instructions](https://code.claude.com/docs/en/memory#write-effective-instructions)
+- Evidence: eval case vague-rule
 - Check: someone reading Claude's work could tell whether each instruction was followed.
 
 ## Short files

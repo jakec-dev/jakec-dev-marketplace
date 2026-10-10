@@ -50,6 +50,7 @@ Deciding what in a repository or a way of working deserves a Claude tool, and wh
 - The `/doctor` checkup's trims for a checked-in CLAUDE.md cut "content Claude can derive from the codebase, such
   as directory layouts, dependency lists, and architecture overviews", and keep "pitfalls, rationale, and
   conventions that differ from tool defaults".
+  Evidence: eval case linted-conventions-rule
   Check: no proposed entry restates what reading the repository would tell Claude.
   [memory › My CLAUDE.md is too large](https://code.claude.com/docs/en/memory#my-claude-md-is-too-large)
 - When `/init` generates a CLAUDE.md, the documentation says to "refine from there with instructions Claude wouldn't
