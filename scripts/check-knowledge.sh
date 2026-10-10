@@ -137,6 +137,7 @@ for dir in "$@"; do
         if ($4 == "") { print at "an included row must name a file"; next }
         # A row with a reason hands one named sentence or row of the section to this file, so it is not an owner.
         if ($5 == "" && owner[$1 "\t" $2]++) print at "section already has an owner"
+        if ($5 == "") whole[$1 "\t" $2] = at
         used[$4] = 1
         if ((getline probe < (dir $4)) < 0) print at $4 " does not exist"
         close(dir $4)
@@ -144,10 +145,13 @@ for dir in "$@"; do
       }
       $3 == "excluded" {
         if ($4 != "" || $5 == "") print at "an excluded row must give a reason and name no file"
+        excluded[$1 "\t" $2] = at
         next
       }
       { print at "decision is not included or excluded" }
       END {
+        # A split section has an included row per named part; a row with an empty reason takes the whole section.
+        for (k in whole) if (k in excluded) print excluded[k] "section is included whole, so no part can be excluded"
         cmd = "ls \"" dir "\""
         while ((cmd | getline name) > 0) if (name ~ /\.md$/ && name != "index.md" && !(name in used)) {
           print ledger ": no included row for " name

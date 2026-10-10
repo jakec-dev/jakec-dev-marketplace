@@ -23,8 +23,8 @@ report:
 3. **Examples.** An example that is invalid, uses a field or value the documentation does not show, or drops a
    detail its point depends on.
 4. **Loss.** Anything in the owned sections that an agent doing the file's task needs and no file of the type
-   states; any section that names this type but has no ledger row; and any open question the file should list
-   under `Not stated by the documentation` but does not.
+   states; any section that states how this type behaves (not one that only mentions it) but has no ledger row;
+   and any open question the file should list under `Not stated by the documentation` but does not.
 5. **Placement.** A fact restated from a section another file owns (a sentence or row handed to this file by name
    is not a restatement), the same fact stated in two files through two different sections, a fact stated twice
    in the file, or a file

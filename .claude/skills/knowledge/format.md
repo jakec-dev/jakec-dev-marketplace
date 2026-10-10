@@ -56,10 +56,12 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 ## Key facts
 
 - Ten to twenty one-line facts that most tasks with this type need, chosen by evidence, strongest first:
-  1. A model gets it wrong without the knowledge: the eval suite's baseline arm fails on it.
-  2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write that is
-     refused.
+  1. A model gets it wrong without the knowledge: the eval suite's baseline arm fails on it. Eval results are not
+     kept in the repository, so the person running the build supplies them; without them, this test is not met.
+  2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write refused
+     without saying why. A refusal whose message tells Claude the fix is not silent.
   3. It sits in a section the documentation changed recently, so a model's training may predate it.
+- Among facts that meet a test, prefer the ones most tasks with the type will meet.
 - Each key fact summarises a bullet a topic file states in full, and ends with a pointer to it on its own line:
   `See [loading.md › After compaction](loading.md).`, naming the file and its `##` heading. The checker confirms the
   heading exists. A key fact is the one deliberate repeat of a fact.
@@ -73,7 +75,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   "covered in loading.md": either it states the fact, or the ledger hands it on.
 - Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
   without which the mention misleads. Keep such a mention where a hand-over would otherwise leave this file's fact
-  without the fix or caveat that makes it usable, such as a symptom without its cure.
+  without the fix or caveat that makes it usable, such as a symptom without its cure. A mention is a clause inside
+  a bullet that rests on its own link; a bullet of its own, a link of its own or a copied table cell states the fact
+  again, and needs a hand-over.
 - One fact, one file. Where two sections state the same fact, it is stated once, in the file whose task it serves:
   the other section's sentence is handed to that file, or its owner leaves it out.
 
@@ -83,14 +87,16 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   `## Contents` section listing its `##` headings; never cut wording to stay under 100 lines.
 - One fact per bullet, as current behaviour, in one to three sentences. Each bullet links to the section that
   supports it as `[<page> › <heading>](https://code.claude.com/docs/en/<page>#<anchor>)`; a nested bullet, table
-  or example straight after it shares that link.
+  or example straight after it shares that link, unless it has a link of its own, which then supports it alone.
 - **Keep the source's subject.** When you keep a sentence, keep the subject it names and the conditions it gives.
   Where the source says "CLAUDE.md files", "memory files" or "in Cowork", so does the fact: "For CLAUDE.md files,
   …". Never widen it to this type, and never add a detail from another sentence, such as a number the sentence
-  itself does not give. Leave out sentences the file's task does not need.
+  itself does not give. Where the setting is only implied by the section, such as a tip about prompts, name it in a
+  few words outside any quoted text, such as "In a prompt,". Leave out sentences the file's task does not need.
 - Copy exactly: field names, values, defaults, limits, messages, and names of settings, events, commands and tools.
   A copied table keeps its header, its columns and any sentence that limits how to read it, and may drop rows that
-  serve no task here.
+  serve no task here. A sentence that changes what the table's rows mean stays with the table; a sentence that
+  states a separate fact, such as an order across the rows, may be handed to another file.
 - Links in copied text become absolute `https://code.claude.com/docs/en/…` links. Copy an anchor from the
   heading's `id` in the live page exactly. Where an anchor exists only in the browser, such as an interactive
   explorer's, link the nearest heading instead and keep the text. A copied word that points elsewhere on the page,
@@ -117,11 +123,13 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 
 - History: version numbers, minimum versions, and what used to happen. From a sentence describing a change, keep
   what is true now, in the source's words and inside the setting it came from; where the sentence states only the
-  old behaviour, the current behaviour is its opposite, linked to that sentence. The changelog and release notes are
-  never a source.
+  old behaviour, the current behaviour is its opposite, linked to that sentence, unless the file already states the
+  current behaviour from another sentence. The changelog and release notes are never a source.
 - Sections about the Agent SDK, the web or the desktop app, and sections whose point is to compare tool types or
   recommend one over another, which belong to guidance. These are excluded at the section level; inside an
   included section, keep each sentence with its subject.
+- Sections that only repeat an included section, whose reason names the section they repeat, and sections that only
+  introduce or link to other pages.
 - Tutorial steps, marketing, statements about how the documentation is written (apart from the `Not stated`
   section), and what any capable model knows.
 
@@ -133,7 +141,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 page	heading	decision	file	reason
 ```
 
-- One row per candidate section, with `page` and `heading` exactly as `scripts/docs-toc.sh` prints them.
+- One row per candidate section, with `page` and `heading` exactly as `scripts/docs-toc.sh` prints them, or one per
+  part when a section is split: an `included` row for each named part, and one `excluded` row naming what is left
+  out and why. An `included` row with an empty reason takes the whole section, so a split section has none.
 - `included` rows name the owning file; `reason` is empty, or names the one row, sentence or clause the file takes.
   A file taking one table row also takes any sentence that tells you how to read the table.
 - `excluded` rows leave `file` empty and give the reason in a few words.

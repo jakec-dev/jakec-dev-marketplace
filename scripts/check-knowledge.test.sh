@@ -228,6 +228,15 @@ handed_sentence() {
   ledger_row "memory${tab}Path-specific rules${tab}included${tab}extra.md${tab}the sentence on symlinks"
   expect 0 'a named sentence handed to a second file passes'
 }
+split_section() {
+  ledger_row "memory${tab}Path-specific rules${tab}excluded${tab}${tab}the rest repeats Auto memory"
+  expect 1 'section included whole and partly excluded'
+}
+named_part_and_rest() {
+  sed -i.bak 's/\tloading.md\t$/\tloading.md\tthe sentence on paths/' maintenance/ledger/rules.tsv
+  ledger_row "memory${tab}Path-specific rules${tab}excluded${tab}${tab}the rest repeats Auto memory"
+  expect 0 'named part included and the rest excluded'
+}
 duplicate_row() {
   ledger_row "memory${tab}Auto memory${tab}excluded${tab}${tab}not about rules"
   expect 1 'duplicate ledger row'
@@ -237,7 +246,8 @@ for test in clean no_index unlisted_topic listed_missing no_title uncited cross_
   version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
   long_table_row check_bullet other_bullet_unlinked single_dir single_dir_defect no_contents with_contents no_ledger \
   bad_header unknown_section bad_decision excluded_no_reason included_missing included_with_scope included_no_file \
-  no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence duplicate_row; do
+  no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence split_section \
+  named_part_and_rest duplicate_row; do
   run "$test"
 done
 
