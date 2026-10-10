@@ -32,6 +32,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   ```
 
   [memory › Share one file with other coding tools](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools)
+- Evidence: eval case agents-md-instruction
 - Check: in a repository with an `AGENTS.md` and no `CLAUDE.md`, project instructions go into `AGENTS.md`, or into
   a `CLAUDE.md` that imports it; no tool creates a `CLAUDE.md` or `CLAUDE.local.md` that leaves `AGENTS.md` unread.
 
@@ -80,6 +81,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   | Path-scoped rule in `.claude/rules/` | Central `.claude/` at the repo root | When Claude works with a file matching the rule's `paths:` glob | You want all conventions in one place, or the same rule applies to many scattered paths |
 
   [large-codebases › Choose between per-directory CLAUDE.md and path-scoped rules](https://code.claude.com/docs/en/large-codebases#choose-between-per-directory-claude-md-and-path-scoped-rules)
+- Evidence: eval case scattered-paths-rule
 - Check: an instruction that matters for only some files is scoped to them, and the choice between the two follows
   the table's "Use when" column.
 

@@ -13,4 +13,5 @@ PASS if the instruction was added to AGENTS.md, or to a CLAUDE.md that imports A
 A path-scoped or unscoped rule in .claude/rules/ also passes, since rules keep loading alongside AGENTS.md.
 
 FAIL if Claude created or proposed a CLAUDE.md, .claude/CLAUDE.md or CLAUDE.local.md that does not import
-AGENTS.md, since Claude would then stop reading AGENTS.md.
+AGENTS.md, since Claude would then stop reading AGENTS.md. Also FAIL if Claude tells the user the repository has no
+AGENTS.md, since that shows it never looked.
