@@ -1,7 +1,9 @@
 # Knowledge format
 
-How knowledge files, topic lists and ledgers are written. The writer follows it, the reviewer checks against it, and
-`scripts/check-knowledge.sh` enforces the mechanical parts.
+How the plugin's knowledge is written: reference files, which state what Claude Code does, and guidance files,
+which state what makes a Claude tool good, with their topic lists and ledgers. The writer follows it, the reviewer
+checks against it, and `scripts/check-knowledge.sh` enforces the mechanical parts of reference. Everything before
+`## Guidance` is about reference.
 
 ## Contents
 
@@ -14,6 +16,7 @@ How knowledge files, topic lists and ledgers are written. The writer follows it,
 - Examples
 - Leaving out
 - The ledger
+- Guidance
 
 ## Purpose
 
@@ -117,7 +120,7 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   old behaviour, the current behaviour is its opposite, linked to that sentence. The changelog and release notes are
   never a source.
 - Sections about the Agent SDK, the web or the desktop app, and sections whose point is to compare tool types or
-  recommend one over another, which belong to `choosing.md`. These are excluded at the section level; inside an
+  recommend one over another, which belong to guidance. These are excluded at the section level; inside an
   included section, keep each sentence with its subject.
 - Tutorial steps, marketing, statements about how the documentation is written (apart from the `Not stated`
   section), and what any capable model knows.
@@ -136,3 +139,36 @@ page	heading	decision	file	reason
 - `excluded` rows leave `file` empty and give the reason in a few words.
 - Every topic file owns at least one section, and no section has two owners, apart from a named row, sentence or
   clause handed to another file.
+
+## Guidance
+
+Guidance tells an agent how to decide: what deserves a tool, which kind, how to write it, how tools combine, how to
+prove a tool works and when to cut one. It is organised by decision, not by tool type, because choosing and
+combining cut across types.
+
+```text
+plugins/agent-setup/guidance/index.md      key principles, then the topics
+plugins/agent-setup/guidance/<topic>.md    one file per decision, such as discover.md or choose.md
+maintenance/topics/guidance.md             the topic files and the decision each serves
+maintenance/ledger/guidance.tsv            every documentation section guidance draws on, and which file uses it
+```
+
+- **One guideline per `##` section.** It states the guideline, with its support, then ends with one line starting
+  `Check:`: a question about a tool that has a yes or no answer, which the writer follows and the auditor applies.
+- **The evidence bar.** A guideline gets in only with support of one of these kinds:
+  1. Anthropic says it: Claude Code's documentation, or an Anthropic page that documentation links to, such as the
+     skill authoring best practices. Quote or state it with the source's subject and conditions, linked as in
+     reference.
+  2. Our evals show it: a case in `plugins/agent-setup/evals/` whose baseline arm fails without the guideline and
+     whose plugin arm passes with it. Cite it on its own line as `Evidence: eval case <case>`.
+- Other material, such as another vendor's documentation or published research, may suggest a guideline to test,
+  but is never its support. A guideline drawn from it gets in once an eval case shows it, and is then cited to that
+  case.
+- **Keep the source's subject.** Where the source states a guideline for one tool type, such as CLAUDE.md files, say
+  so. To apply it to another type, give the reference fact that makes it apply, such as rules without `paths`
+  loading like `.claude/CLAUDE.md`.
+- Leave out what any capable model already does unprompted; an eval baseline that passes shows it.
+- `index.md` has a title and a sentence, then `## Key principles`: up to ten one-line principles every task needs,
+  each with a pointer as in `## Key facts`, then the Topics section `scripts/knowledge-index.sh` generates.
+- The ledger has the reference ledger's columns. Sections can serve several decisions, so a section may have no
+  single owner: each row names the file and, unless that file takes the whole section, the part it takes.

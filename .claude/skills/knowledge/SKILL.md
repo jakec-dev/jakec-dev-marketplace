@@ -29,7 +29,7 @@ conflict between instructions.
    - A candidate is a section that states how this type behaves, or how to configure or observe it, in at least
      one sentence that names it. A subsection of a candidate is a candidate with it.
    - Exclude sections about the Agent SDK, the web or the desktop app, sections whose point is comparing tool
-     types or recommending one (they belong to `choosing.md`), release notes, and sections that only repeat an
+     types or recommending one (they belong to guidance), release notes, and sections that only repeat an
      included one. Each excluded row's reason names one of these grounds.
    - Take the most specific section. From a broad table, take one row only when no other section states its fact,
      and name the row.
