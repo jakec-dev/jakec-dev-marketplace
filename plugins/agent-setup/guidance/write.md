@@ -1,6 +1,11 @@
 # Writing instructions
 
-Writing the content of CLAUDE.md files and rules so that Claude follows it.
+Writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it.
+
+The documentation states most of these for CLAUDE.md files. It also says "Claude Code can read `AGENTS.md` as your
+project instructions"
+([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies them to an
+`AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
 
 ## Earn every line
 

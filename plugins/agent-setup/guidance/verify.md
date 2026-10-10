@@ -10,6 +10,14 @@ Proving that a tool works before calling it done.
   subdirectories".
   [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md)
   [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)
+- For an `AGENTS.md` that Claude reads through the **Project instructions** setting, `InstructionsLoaded` hooks
+  don't fire; they fire as usual for an `AGENTS.md` that a `CLAUDE.md` imports or symlinks to.
+  [memory › Where AGENTS.md differs from CLAUDE.md](https://code.claude.com/docs/en/memory#where-agents-md-differs-from-claude-md)
+- When Claude reads `AGENTS.md` at session start, an interactive session shows a line such as
+  `no CLAUDE.md found; AGENTS.md loaded: /home/you/repo/AGENTS.md`. "To check whether Claude read your `AGENTS.md`,
+  run `/memory` and look for its path in the list."
+  [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)
+  [memory › My AGENTS.md isn't loading](https://code.claude.com/docs/en/memory#my-agents-md-isn’t-loading)
 - Check: the tool's user is told how to confirm it loaded, and for a path-scoped rule, which file to open to trigger
   it.
 

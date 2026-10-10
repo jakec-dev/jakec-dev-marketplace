@@ -2,6 +2,39 @@
 
 Picking the kind of Claude tool that fits a goal, before writing anything.
 
+## The instruction file the repository already uses
+
+- "Claude Code can read `AGENTS.md` as your project instructions, so a repository already set up for other coding
+  agents works without adding a `CLAUDE.md`, an import, or a setting." What Claude reads by default:
+
+  | Your repository has | Claude reads |
+  | :- | :- |
+  | An `AGENTS.md`, and no `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `AGENTS.md` |
+  | An `AGENTS.md` and a `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `CLAUDE.md` files only |
+  | A `CLAUDE.md` that already imports `AGENTS.md` | Your `CLAUDE.md`, with `AGENTS.md` included through the import |
+
+  [memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)
+- A `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above it counts, so Claude
+  reads it instead of `AGENTS.md`; `~/.claude/CLAUDE.md`, the organization's managed `CLAUDE.md` and `.claude/rules/`
+  files don't count, and keep loading alongside `AGENTS.md`. "Because `CLAUDE.local.md` counts, adding one to keep
+  your own uncommitted instructions in a project that relies on `AGENTS.md` stops Claude from reading `AGENTS.md`
+  for you."
+  [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)
+- To keep `AGENTS.md` as the one file every tool shares while adding Claude-specific instructions, put an
+  `@AGENTS.md` import in a `CLAUDE.md` next to it, with the Claude-specific instructions below the import:
+
+  ```markdown
+  @AGENTS.md
+
+  ## Claude Code
+
+  Use plan mode for changes under `src/billing/`.
+  ```
+
+  [memory › Share one file with other coding tools](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools)
+- Check: in a repository with an `AGENTS.md` and no `CLAUDE.md`, project instructions go into `AGENTS.md`, or into
+  a `CLAUDE.md` that imports it; no tool creates a `CLAUDE.md` or `CLAUDE.local.md` that leaves `AGENTS.md` unread.
+
 ## Must happen every time: a hook
 
 - "An instruction like "never edit `.env`" in CLAUDE.md or a skill is a request, not a guarantee. A `PreToolUse`

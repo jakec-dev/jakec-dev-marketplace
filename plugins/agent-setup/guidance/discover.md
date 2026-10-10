@@ -2,6 +2,11 @@
 
 Deciding what in a repository or a way of working deserves a Claude tool, and what does not.
 
+The documentation states most of these for CLAUDE.md files. It also says "Claude Code can read `AGENTS.md` as your
+project instructions"
+([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies them to an
+`AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
+
 ## Add a tool when a trigger appears
 
 - The documentation advises against configuring everything up front: "Each feature has a recognizable trigger, and

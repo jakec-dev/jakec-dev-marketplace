@@ -29,3 +29,9 @@ large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	inc
 large-codebases	Layer CLAUDE.md files by directory	included	maintain.md	the bullets on keeping files current
 auto-mode-config	Add a human checkpoint	included	choose.md	the boundaries table and the sentence on a durable guarantee
 permissions	Extend permissions with hooks	included	choose.md	the paragraphs on deny rules and blocking hooks
+memory	AGENTS.md	included	choose.md	the opening sentence and the table
+memory	When Claude Code reads AGENTS.md	included	choose.md	the bullets on which files count, and the note on CLAUDE.local.md
+memory	When Claude Code reads AGENTS.md	included	verify.md	the session-start line
+memory	Share one file with other coding tools	included	choose.md	the import and its example
+memory	Where AGENTS.md differs from CLAUDE.md	included	verify.md	the InstructionsLoaded row
+memory	My AGENTS.md isn't loading	included	verify.md	the sentence on checking with /memory

@@ -10,6 +10,8 @@ follows and the auditor applies.
   See [discover.md › Add a tool when a trigger appears](discover.md).
 - Leave out what Claude can work out from the code or already knows.
   See [discover.md › What the codebase already says](discover.md).
+- In a repository that relies on `AGENTS.md`, never add a lone `CLAUDE.md` or `CLAUDE.local.md`: Claude then stops
+  reading `AGENTS.md`. See [choose.md › The instruction file the repository already uses](choose.md).
 - What must happen every time is a hook; an instruction is a request, not a guarantee.
   See [choose.md › Must happen every time: a hook](choose.md).
 - Load an instruction only where it is needed: every session, some paths, or on demand.
@@ -35,6 +37,7 @@ follows and the auditor applies.
   - Update what exists before adding
 
 - [choose.md](choose.md): picking the kind of Claude tool that fits a goal
+  - The instruction file the repository already uses
   - Must happen every time: a hook
   - Every session needs it: CLAUDE.md
   - One part of the codebase: a path-scoped rule or a nested CLAUDE.md
@@ -44,7 +47,7 @@ follows and the auditor applies.
   - An external system: MCP, with a skill for using it
   - The same setup in another repository: a plugin
 
-- [write.md](write.md): writing the content of CLAUDE.md files and rules so that Claude follows it
+- [write.md](write.md): writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it
   - Earn every line
   - Concrete enough to verify
   - Short files
