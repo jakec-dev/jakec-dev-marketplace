@@ -4,7 +4,8 @@
 # It checks shape, not truth: whether a fact is right is the reviewer's job, and links are check-links.sh's.
 #
 # Usage: check-knowledge.sh <knowledge-dir> <maintenance-dir> <toc.tsv>
-#   <knowledge-dir>    holds one directory per tool type, such as plugins/agent-setup/reference
+#   <knowledge-dir>    holds one directory per tool type, such as plugins/agent-setup/reference, or is itself one
+#                      such directory when it holds an index.md, such as plugins/agent-setup/guidance
 #   <maintenance-dir>  holds ledger/<type>.tsv and topics/<type>.md for each of them, such as maintenance
 #   <toc.tsv>        is the output of scripts/docs-toc.sh for the documentation copy the knowledge was written from
 # Exit status: 0 when everything passes, 1 when anything fails, 2 on a usage error.
@@ -50,7 +51,8 @@ check_topic() {
     }
     !fence && tolower($0) ~ /(^|[^a-z])(since|before|until) v?[0-9]+\.[0-9]+/ { print file ":" FNR ": version history" }
     !fence && /(^|[^0-9a-z])v[0-9]+\.[0-9]+\.[0-9]+/ { print file ":" FNR ": version history" }
-    !fence && /^- / { flush(); if (!in_contents) bullet = FNR }
+    # A guideline'"'"'s closing Check and Evidence bullets rest on the bullets above them, so they need no link.
+    !fence && /^- / { flush(); if (!in_contents && !/^- (Check|Evidence): /) bullet = FNR }
     !fence && /^#/ { flush() }
     bullet && /\]\(https:\/\/code\.claude\.com\/docs\/en\// { cited = 1 }
     END {
@@ -61,7 +63,8 @@ check_topic() {
 }
 
 found_type=0
-for dir in "$knowledge"/*/; do
+if [ -f "$knowledge/index.md" ]; then set -- "${knowledge%/}/"; else set -- "$knowledge"/*/; fi
+for dir in "$@"; do
   [ -d "$dir" ] || continue
   found_type=1
   type=$(basename "$dir")

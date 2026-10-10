@@ -153,14 +153,16 @@ maintenance/topics/guidance.md             the topic files and the decision each
 maintenance/ledger/guidance.tsv            every documentation section guidance draws on, and which file uses it
 ```
 
-- **One guideline per `##` section.** It states the guideline, with its support, then ends with one line starting
-  `Check:`: a question about a tool that has a yes or no answer, which the writer follows and the auditor applies.
+- **One guideline per `##` section.** It states the guideline, with its support, then ends with one bullet starting
+  `- Check:`: a question about a tool that has a yes or no answer, which the writer follows and the auditor applies.
+  The rules for topic files apply, including a `## Contents` section in a file over 100 lines;
+  `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance <toc.tsv>` checks them.
 - **The evidence bar.** A guideline gets in only with support of one of these kinds:
   1. Anthropic says it: Claude Code's documentation, or an Anthropic page that documentation links to, such as the
      skill authoring best practices. Quote or state it with the source's subject and conditions, linked as in
      reference.
   2. Our evals show it: a case in `plugins/agent-setup/evals/` whose baseline arm fails without the guideline and
-     whose plugin arm passes with it. Cite it on its own line as `Evidence: eval case <case>`.
+     whose plugin arm passes with it. Cite it as a bullet just before `- Check:`, as `- Evidence: eval case <case>`.
 - Other material, such as another vendor's documentation or published research, may suggest a guideline to test,
   but is never its support. A guideline drawn from it gets in once an eval case shows it, and is then cited to that
   case.

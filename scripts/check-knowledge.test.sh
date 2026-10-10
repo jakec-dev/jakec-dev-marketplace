@@ -140,6 +140,37 @@ with_contents() {
   regen_index
   expect 0 'over 100 lines with contents passes'
 }
+check_bullet() {
+  topic_line "- A fact. $link"
+  topic_line '- Evidence: eval case some-case'
+  topic_line '- Check: the rule names its paths.'
+  expect 0 'closing Check and Evidence bullets need no link'
+}
+other_bullet_unlinked() {
+  topic_line '- Checked: not a check line.'
+  expect 1 'a bullet that only starts like Check'
+}
+# The case's knowledge/rules directory, given directly, is checked as one type, as the guidance directory is.
+single_dir() {
+  local status=0
+  "$shell" "$check" knowledge/rules maintenance toc.tsv >"$root/out" 2>&1 || status=$?
+  if [ "$status" -ne 0 ]; then
+    printf 'FAIL a directory holding index.md checked as one type: want exit 0, got %s\n' "$status"
+    sed 's/^/  /' "$root/out"
+    return 1
+  fi
+  printf 'ok   %s\n' 'a directory holding index.md checked as one type'
+}
+single_dir_defect() {
+  local status=0
+  topic_line '- A fact with no source.'
+  "$shell" "$check" knowledge/rules maintenance toc.tsv >"$root/out" 2>&1 || status=$?
+  if [ "$status" -ne 1 ]; then
+    printf 'FAIL a defect in a directory given directly: want exit 1, got %s\n' "$status"
+    return 1
+  fi
+  printf 'ok   %s\n' 'a defect in a directory given directly'
+}
 no_ledger() { rm maintenance/ledger/rules.tsv && expect 1 'missing ledger'; }
 bad_header() { sed -i.bak '1s/.*/page heading/' maintenance/ledger/rules.tsv && expect 1 'ledger header'; }
 unknown_section() {
@@ -204,9 +235,9 @@ duplicate_row() {
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
   version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
-  long_table_row no_contents with_contents no_ledger bad_header unknown_section bad_decision excluded_no_reason \
-  included_missing included_with_scope included_no_file no_topics topic_not_in_topics listed_topic_missing \
-  topic_not_in_ledger two_owners handed_sentence duplicate_row; do
+  long_table_row check_bullet other_bullet_unlinked single_dir single_dir_defect no_contents with_contents no_ledger \
+  bad_header unknown_section bad_decision excluded_no_reason included_missing included_with_scope included_no_file \
+  no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence duplicate_row; do
   run "$test"
 done
 
