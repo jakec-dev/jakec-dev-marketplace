@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(script
 
 # Build knowledge for a tool type
 
-Writes `plugins/agent-setup/knowledge/<type>/`, `maintenance/topics/<type>.md` and `maintenance/ledger/<type>.tsv`
+Writes `plugins/agent-setup/reference/<type>/`, `maintenance/topics/<type>.md` and `maintenance/ledger/<type>.tsv`
 by the rules in `format.md`, in this skill's directory. Read `format.md` first; its order of priorities settles any
 conflict between instructions.
 
@@ -50,8 +50,8 @@ conflict between instructions.
 6. **Ledger and index.** Write the ledger: one `included` row per owned section, with an empty reason; one per
    sentence, clause or row handed to another file, naming it; and an `excluded` row with its agreed reason for
    every other candidate. Write `index.md`: a title and a sentence, the key facts as `format.md` describes them,
-   then the output of `scripts/knowledge-index.sh plugins/agent-setup/knowledge/<type> maintenance/topics/<type>.md`.
-7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/knowledge maintenance
+   then the output of `scripts/knowledge-index.sh plugins/agent-setup/reference/<type> maintenance/topics/<type>.md`.
+7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/reference maintenance
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every file of the type, and fix until both exit 0.
 8. **Review.** Start one `knowledge-reviewer` per topic file, in parallel, with the file, its ledger rows, the
    other files and the exclusion grounds of step 3, and one more with the `excluded` rows and those grounds.

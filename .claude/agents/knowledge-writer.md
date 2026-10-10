@@ -13,7 +13,7 @@ file owns, as page, heading, start line and end line in `upstream/claude-code/ll
 and last line including its subsections.
 
 1. **Read every section you own in full,** by line range with the Read tool or `sed -n '<start>,<end>p'`.
-2. **Write the file** at `plugins/agent-setup/knowledge/<type>/<file>`. State everything in your sections that an
+2. **Write the file** at `plugins/agent-setup/reference/<type>/<file>`. State everything in your sections that an
    agent doing your file's task needs, each sentence with the subject and conditions its source gives. For a
    section given with one named row or sentence, use only that; leave out any sentence handed to another file.
    Mention another file's fact only in a few words, where your point needs it.

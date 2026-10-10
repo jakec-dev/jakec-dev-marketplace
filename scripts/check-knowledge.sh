@@ -4,7 +4,7 @@
 # It checks shape, not truth: whether a fact is right is the reviewer's job, and links are check-links.sh's.
 #
 # Usage: check-knowledge.sh <knowledge-dir> <maintenance-dir> <toc.tsv>
-#   <knowledge-dir>    holds one directory per tool type, such as plugins/agent-setup/knowledge
+#   <knowledge-dir>    holds one directory per tool type, such as plugins/agent-setup/reference
 #   <maintenance-dir>  holds ledger/<type>.tsv and topics/<type>.md for each of them, such as maintenance
 #   <toc.tsv>        is the output of scripts/docs-toc.sh for the documentation copy the knowledge was written from
 # Exit status: 0 when everything passes, 1 when anything fails, 2 on a usage error.

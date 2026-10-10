@@ -35,8 +35,8 @@ Settle it in this order:
 ## Layout
 
 ```text
-plugins/agent-setup/knowledge/<type>/index.md     lists the type's topic files
-plugins/agent-setup/knowledge/<type>/<topic>.md   one file per task an agent does with the type
+plugins/agent-setup/reference/<type>/index.md     lists the type's topic files
+plugins/agent-setup/reference/<type>/<topic>.md   one file per task an agent does with the type
 maintenance/topics/<type>.md                      the topic files and the task each serves, agreed with the user
 maintenance/ledger/<type>.tsv                     every section considered, and which file owns it
 ```
