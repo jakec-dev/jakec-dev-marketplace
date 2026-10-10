@@ -4,8 +4,8 @@
 # the sections its task needs.
 #
 # Usage: knowledge-index.sh <type-dir> <topics.md>
-#   <type-dir>   a tool type's knowledge directory, such as plugins/agent-setup/reference/rules
-#   <topics.md>  its topic list, such as maintenance/topics/rules.md
+#   <type-dir>   a tool type's knowledge directory, such as plugins/agent-setup/reference/instructions
+#   <topics.md>  its topic list, such as maintenance/topics/instructions.md
 # Exit status: 0 on success, 1 when a listed topic file is missing, 2 on a usage error.
 
 set -euo pipefail

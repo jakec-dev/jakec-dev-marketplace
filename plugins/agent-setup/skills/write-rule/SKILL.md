@@ -6,10 +6,10 @@ allowed-tools: Read, Glob, Grep
 
 # Write a rule
 
-Base the work on the plugin's reference, which says how rules behave, and its guidance, which says what makes a rule
-good. Not on memory.
+Base the work on the plugin's reference, which says how instruction files and rules behave, and its guidance, which
+says what makes a rule good. Not on memory.
 
-1. **Read both indexes in full:** `${CLAUDE_PLUGIN_ROOT}/reference/rules/index.md` and
+1. **Read both indexes in full:** `${CLAUDE_PLUGIN_ROOT}/reference/instructions/index.md` and
    `${CLAUDE_PLUGIN_ROOT}/guidance/index.md`. Their key facts and key principles apply to every task.
 2. **Pick the sections the task needs** from the two Topics lists. Read each one: find its `## ` heading with Grep,
    then Read from that line to the next `## ` heading.
