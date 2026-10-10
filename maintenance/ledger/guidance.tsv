@@ -1,0 +1,29 @@
+page	heading	decision	file	reason
+features-overview	Build your setup over time	included	discover.md	
+features-overview	Match features to your goal	included	choose.md	the sentence on when to use plugins
+features-overview	Compare similar features	included	choose.md	
+features-overview	Compare similar features	included	compose.md	the paragraph "Hook output lands in context"
+features-overview	Combine features	included	compose.md	
+features-overview	Understand how features layer	included	compose.md	the CLAUDE.md bullet
+features-overview	Understand context costs	included	compose.md	
+features-overview	Context cost by feature	included	compose.md	
+memory	When to add to CLAUDE.md	included	discover.md	
+memory	When to add to CLAUDE.md	included	choose.md	the sentence on multi-step procedures and one part of the codebase
+memory	Set up a project CLAUDE.md	included	discover.md	the sentence on refining after /init
+memory	Set up a project CLAUDE.md	included	verify.md	the sentence on confirming the file loaded
+memory	Write effective instructions	included	write.md	
+memory	Audit your instruction files	included	maintain.md	
+memory	Set up rules	included	write.md	the sentence on one topic per file
+memory	Claude isn't following my CLAUDE.md	included	choose.md	the paragraph on writing it as a hook
+memory	Claude isn't following my CLAUDE.md	included	write.md	the bullet on competing built-in instructions
+memory	Claude isn't following my CLAUDE.md	included	verify.md	the tip on the InstructionsLoaded hook
+memory	My CLAUDE.md is too large	included	discover.md	the paragraph on /doctor trims
+memory	My CLAUDE.md is too large	included	write.md	the paragraph on length warnings
+best-practices	Write an effective CLAUDE.md	included	write.md	
+best-practices	Write an effective CLAUDE.md	included	discover.md	the include and exclude table
+best-practices	Write an effective CLAUDE.md	included	verify.md	the clause on testing changes by observing behaviour
+best-practices	Write an effective CLAUDE.md	included	maintain.md	the sentences on symptoms and treating CLAUDE.md like code
+best-practices	Avoid common failure patterns	included	write.md	the over-specified CLAUDE.md bullet
+best-practices	Give Claude a way to verify its work	included	verify.md	
+large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	included	choose.md	
+large-codebases	Layer CLAUDE.md files by directory	included	maintain.md	the bullets on keeping files current
