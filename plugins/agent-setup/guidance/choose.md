@@ -57,6 +57,9 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - For CLAUDE.md: "If the instruction is something that must run at a specific point, such as before every commit or
   after each file edit, write it as a hook instead."
   [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)
+- For managed settings and a managed CLAUDE.md: "Settings rules are enforced by the client regardless of what
+  Claude decides to do. CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer."
+  [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
 - To stop an action, a permission deny rule also holds every time. For auto mode, the documentation's boundaries
   table gives `permissions.deny` for "Never run the action", which "Blocks before the classifier is consulted.
   Neither the classifier nor user intent can override it", and says "Use an ask or deny rule for a durable

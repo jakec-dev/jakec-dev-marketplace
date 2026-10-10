@@ -35,3 +35,4 @@ memory	When Claude Code reads AGENTS.md	included	verify.md	the session-start lin
 memory	Share one file with other coding tools	included	choose.md	the import and its example
 memory	Where AGENTS.md differs from CLAUDE.md	included	verify.md	the InstructionsLoaded row
 memory	My AGENTS.md isn't loading	included	verify.md	the sentence on checking with /memory
+memory	Deploy organization-wide CLAUDE.md	included	choose.md	the sentences comparing settings rules with CLAUDE.md instructions
