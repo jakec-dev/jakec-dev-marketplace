@@ -24,8 +24,8 @@ project instructions"
   | You want something to happen every time without asking | Write a hook |
   | A second repository needs the same setup | Package it as a plugin |
 
-  Check: each proposed tool names the trigger it answers, and the evidence that the trigger happened.
   [features-overview › Build your setup over time](https://code.claude.com/docs/en/features-overview#build-your-setup-over-time)
+- Check: each proposed tool names the trigger it answers, and the evidence that the trigger happened.
 
 ## Signs that something belongs in CLAUDE.md
 
@@ -33,7 +33,6 @@ project instructions"
   Claude makes the same mistake a second time, when a code review catches something Claude should have known about
   this codebase, when you type the same correction into chat that you typed last session, or when a new teammate
   would need the same context to be productive.
-  Check: each proposed entry traces to one of these four signs.
   [memory › When to add to CLAUDE.md](https://code.claude.com/docs/en/memory#when-to-add-to-claude-md)
 - What to include and exclude in CLAUDE.md:
 
@@ -47,25 +46,25 @@ project instructions"
   | Developer environment quirks (required env vars) | File-by-file descriptions of the codebase |
   | Common gotchas or non-obvious behaviors | Self-evident practices like "write clean code" |
 
-  Check: no entry falls in the Exclude column.
   [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
+- Check: each proposed entry traces to one of these four signs; no entry falls in the Exclude column.
 
 ## What the codebase already says
 
 - The `/doctor` checkup's trims for a checked-in CLAUDE.md cut "content Claude can derive from the codebase, such
   as directory layouts, dependency lists, and architecture overviews", and keep "pitfalls, rationale, and
   conventions that differ from tool defaults".
-  Evidence: eval case linted-conventions-rule
-  Check: no proposed entry restates what reading the repository would tell Claude.
   [memory › My CLAUDE.md is too large](https://code.claude.com/docs/en/memory#my-claude-md-is-too-large)
 - When `/init` generates a CLAUDE.md, the documentation says to "refine from there with instructions Claude wouldn't
   discover on its own".
   [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md)
+- Evidence: eval case linted-conventions-rule
+- Check: no proposed entry restates what reading the repository would tell Claude.
 
 ## Update what exists before adding
 
 - "The same triggers tell you when to update what you already have. A repeated mistake or a recurring review
   comment is a CLAUDE.md edit, not a one-off correction in chat. A workflow you keep tweaking by hand is a skill
   that needs another revision."
-  Check: before proposing a new tool, look for an existing one that the trigger points to.
   [features-overview › Build your setup over time](https://code.claude.com/docs/en/features-overview#build-your-setup-over-time)
+- Check: before proposing a new tool, look for an existing one that the trigger points to.

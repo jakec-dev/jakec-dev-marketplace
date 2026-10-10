@@ -2,6 +2,18 @@
 
 Picking the kind of Claude tool that fits a goal, before writing anything.
 
+## Contents
+
+- The instruction file the repository already uses
+- Must happen every time: a hook
+- Every session needs it: CLAUDE.md
+- One part of the codebase: a path-scoped rule or a nested CLAUDE.md
+- Needed sometimes, or a procedure: a skill
+- About the response, not the project: an output style
+- Isolated or parallel work: a subagent or a dynamic workflow
+- An external system: MCP, with a skill for using it
+- The same setup in another repository: a plugin
+
 ## The instruction file the repository already uses
 
 - "Claude Code can read `AGENTS.md` as your project instructions, so a repository already set up for other coding
