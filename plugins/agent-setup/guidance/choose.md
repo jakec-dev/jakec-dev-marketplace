@@ -11,8 +11,18 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - For CLAUDE.md: "If the instruction is something that must run at a specific point, such as before every commit or
   after each file edit, write it as a hook instead."
   [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)
+- To stop an action, a permission deny rule also holds every time. For auto mode, the documentation's boundaries
+  table gives `permissions.deny` for "Never run the action", which "Blocks before the classifier is consulted.
+  Neither the classifier nor user intent can override it", and says "Use an ask or deny rule for a durable
+  guarantee."
+  [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
+- A deny rule and a `PreToolUse` hook work together: "Claude Code evaluates deny and ask rules regardless of what a
+  PreToolUse hook returns: a matching deny rule blocks the call", and "A hook that exits with code 2 stops the tool
+  call before permission rules are evaluated". A mod that handles `tool.check` can approve a call either one
+  refuses, except where the documentation says deny rules or managed hooks hold over it.
+  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
 - Check: no instruction in CLAUDE.md, a rule or a skill is something that must hold every time or run at a fixed
-  point; each such requirement is a hook.
+  point; each such requirement is a hook, or, to stop a tool call, a permission deny rule.
 
 ## Every session needs it: CLAUDE.md
 

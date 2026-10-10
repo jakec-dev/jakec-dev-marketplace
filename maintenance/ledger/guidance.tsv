@@ -27,3 +27,5 @@ best-practices	Avoid common failure patterns	included	write.md	the over-specifie
 best-practices	Give Claude a way to verify its work	included	verify.md	
 large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	included	choose.md	
 large-codebases	Layer CLAUDE.md files by directory	included	maintain.md	the bullets on keeping files current
+auto-mode-config	Add a human checkpoint	included	choose.md	the boundaries table and the sentence on a durable guarantee
+permissions	Extend permissions with hooks	included	choose.md	the paragraphs on deny rules and blocking hooks
