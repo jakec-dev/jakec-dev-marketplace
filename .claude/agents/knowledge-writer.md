@@ -25,3 +25,9 @@ and last line including its subsections.
    section you own, or the named row, sentence or clause for one handed to you. Then list any sentence
    you were unsure how to state, with its section. Last, name any instruction here or in `format.md` that made your
    file worse or forced a choice you think was wrong, and why, or say there was none.
+
+**When you are writing guidance,** your file is `plugins/agent-setup/guidance/<file>`, and you follow
+`format.md`'s Guidance section. A section may come from `upstream/anthropic/pages.txt` instead, with its lines in
+`upstream/anthropic/toc.tsv`; link it from `https://platform.claude.com/docs/en/<path>`, copying the anchor from
+`curl -sL` of that page. Each guideline is one `##` section ending in its `- Check:` bullet. Read the reference
+`index.md` files you are given, and state nothing that contradicts them.

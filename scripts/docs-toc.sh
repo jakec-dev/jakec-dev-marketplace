@@ -4,7 +4,9 @@
 #
 #   page  level  heading  start  end  subtree_end
 #
-# `page` is the path after https://code.claude.com/docs/en/, taken from the `Source:` line under each page's title.
+# `page` comes from the `Source:` line under each page's title: the path after https://code.claude.com/docs/en/ for
+# Claude Code's pages, and platform.claude.com/ followed by the path after https://platform.claude.com/docs/en/ for
+# the Anthropic pages scripts/fetch-sources.sh writes in the same shape.
 # `start` is the heading's line. `end` is the last line of the section's own text, before the next heading of any
 # level; `subtree_end` is the last line before the next heading at the same or a higher level, so it includes the
 # section's subsections. Read a section with its line range rather than searching for its text.
@@ -39,13 +41,14 @@ awk -F '\t' '
     stack[++sp] = n
   }
   NR == FNR {
-    if (prev ~ /^# / && $0 ~ /^Source: https:\/\/code\.claude\.com\/docs\/en\//) title[FNR - 1] = 1
+    if (prev ~ /^# / && $0 ~ /^Source: https:\/\/(code|platform)\.claude\.com\/docs\/en\//) title[FNR - 1] = 1
     prev = $0
     next
   }
   FNR in title { fence = ""; html_level = 0; pending = substr($0, 3); next }
   pending != "" {
     page = $0; sub(/^Source: https:\/\/code\.claude\.com\/docs\/en\//, "", page)
+    sub(/^Source: https:\/\/platform\.claude\.com\/docs\/en\//, "platform.claude.com/", page)
     add(1, pending, FNR - 1); pending = ""; pages++
     next
   }

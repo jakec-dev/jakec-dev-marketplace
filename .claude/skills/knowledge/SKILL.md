@@ -1,12 +1,16 @@
 ---
 name: knowledge
-description: Builds the agent-setup plugin's knowledge files for one Claude tool type, such as rules or hooks, from the local copy of Claude Code's documentation. Use when adding or rebuilding knowledge for a tool type.
-argument-hint: build <type>
+description: Builds the agent-setup plugin's knowledge files from local copies of Claude Code's documentation and the Anthropic pages it links to, either the reference for one Claude tool type, such as rules or hooks, or the guidance. Use when adding or rebuilding reference or guidance.
+argument-hint: build <type> | build guidance
 disable-model-invocation: true
-allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *), Bash(scripts/knowledge-index.sh *)
+allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/fetch-sources.sh *), Bash(cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *), Bash(scripts/knowledge-index.sh *)
 ---
 
-# Build knowledge for a tool type
+# Build reference or guidance
+
+`build <type>` follows the steps below. `build guidance` follows them with the changes under "Build guidance".
+
+## Build reference for a tool type
 
 Writes `plugins/agent-setup/reference/<type>/`, `maintenance/topics/<type>.md` and `maintenance/ledger/<type>.tsv`
 by the rules in `format.md`, in this skill's directory. Read `format.md` first; its order of priorities settles any
@@ -29,8 +33,13 @@ conflict between instructions.
    - A candidate is a section that states how this type behaves, or how to configure or observe it, in at least
      one sentence that names it. A subsection of a candidate is a candidate with it.
    - Exclude sections about the Agent SDK, the web or the desktop app, sections whose point is comparing tool
-     types or recommending one (they belong to guidance), release notes, and sections that only repeat an
-     included one. Each excluded row's reason names one of these grounds.
+     types or recommending one (they belong to guidance), release notes, sections that only repeat an included
+     one, and sections that belong to another tool type: the section's subject is another tool type, and it
+     states nothing about this type that an included section doesn't. Each excluded row's reason names one of
+     these grounds. The last ground never drops a fact about this type: take that sentence or clause by name.
+   - Read `maintenance/ledger/*.tsv` for the other types. A section another type owns whole is excluded here; one
+     it takes in part leaves its other parts free. Where one sentence lists several types, take this type's
+     clause by name.
    - Take the most specific section. From a broad table, take one row only when no other section states its fact,
      and name the row.
 4. **Propose, and wait for confirmation.** If `maintenance/topics/<type>.md` exists, keep its topics and propose a
@@ -68,3 +77,39 @@ conflict between instructions.
 9. **Report.** Give each file's line count, each excluded section with its reason, each finding with what was done,
    anything left open for the user, and the final exit status of both checks. List the documentation's gaps
    separately: facts stated only on excluded pages, and questions about the type the documentation leaves open.
+
+## Build guidance
+
+Writes `plugins/agent-setup/guidance/`, `maintenance/topics/guidance.md` and `maintenance/ledger/guidance.tsv` by
+`format.md`'s Guidance section. The steps above apply, with these changes.
+
+1. **Check the inputs.** `maintenance/sources.tsv` must exist. Ask the user for any eval results to draw on; without
+   them, only Anthropic's statements can support a guideline.
+2. **Map the sources.** Run step 2, then `scripts/fetch-sources.sh maintenance/sources.tsv
+   upstream/anthropic/pages.txt` and `scripts/docs-toc.sh upstream/anthropic/pages.txt`, saving the output as
+   `upstream/anthropic/toc.tsv`. Then run `cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv >
+   upstream/guidance-toc.tsv` for the checker. Read a page in `pages.txt` by the line ranges in its own table of
+   contents.
+3. **Find candidates.** They are every section a reference ledger excludes on the guidance ground (`compares` or
+   `recommends` in its reason), every section of the pages in `sources.tsv`, every section `guidance.tsv` already
+   lists, and the eval cases the user supplies. Read each in full. Leave out what any capable model does unprompted,
+   and a source's statement that Claude Code's documentation contradicts or that applies only to another surface,
+   such as the API's code execution environment.
+4. **Propose, and wait for confirmation.** Keep the topics in `maintenance/topics/guidance.md`; propose a change only
+   where a guideline fits none. List each guideline on one line as `## <heading> → <file>, support: <page> ›
+   <heading> or eval case <case>, Check: <question>`, then each candidate left out with its reason. Write nothing
+   until the user confirms.
+5. **Write.** Start one `knowledge-writer` per guidance file that gains or changes a guideline, in parallel, saying
+   it is writing guidance, and giving each: its file and decision, the other files and their decisions, its
+   guidelines with their support as page, heading, file (`llms-full.txt` or `pages.txt`) and lines, and the
+   `index.md` of each reference type a guideline touches.
+6. **Ledger and index.** Write the ledger rows the writers return, and an `excluded` row with its reason for each
+   candidate source section left out. Write `index.md` with `## Key principles`, then the generated Topics.
+7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance upstream/guidance-toc.tsv` and
+   `scripts/check-links.sh` on every guidance file, and fix until both exit 0.
+8. **Review.** Start one `knowledge-reviewer` per changed file, saying it is reviewing guidance, with the file, its
+   ledger rows and the other files; one more with the `excluded` rows; and one more that compares every changed
+   guideline with the reference files of the types it touches and reports any guideline that contradicts a
+   reference fact. Fix and repeat as in step 8 above.
+9. **Report** as in step 9 above, listing separately each source statement left out because Claude Code's
+   documentation contradicts it.

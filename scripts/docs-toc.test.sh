@@ -79,6 +79,13 @@ nested/second${tab}2${tab}After an unclosed fence${tab}30${tab}30${tab}30"
 
 expect 'full table' 0 "$expected" "$root/export.txt"
 
+# Anthropic pages that fetch-sources.sh writes get their host in the page name; other hosts are not pages.
+printf '%s\n' '# Platform page' 'Source: https://platform.claude.com/docs/en/agents/skills' '' '## Part' \
+  '# Elsewhere' 'Source: https://example.com/docs/en/other' >"$root/platform.txt"
+expect 'platform page' 0 "platform.claude.com/agents/skills${tab}1${tab}Platform page${tab}1${tab}3${tab}4
+platform.claude.com/agents/skills${tab}2${tab}Part${tab}4${tab}4${tab}4
+platform.claude.com/agents/skills${tab}1${tab}Elsewhere${tab}5${tab}6${tab}6" "$root/platform.txt"
+
 printf 'No pages here.\n# A title with no Source line\n' >"$root/empty.txt"
 expect 'file with no pages' 1 '' "$root/empty.txt"
 expect 'missing file' 2 '' "$root/missing.txt"

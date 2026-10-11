@@ -80,6 +80,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   again, and needs a hand-over.
 - One fact, one file. Where two sections state the same fact, it is stated once, in the file whose task it serves:
   the other section's sentence is handed to that file, or its owner leaves it out.
+- Across tool types, each part of a section has one owner too. Where one sentence lists several types, such as
+  "`--bare` skips hooks, skills, … and CLAUDE.md", each type's ledger takes its own clause by name, such as "the
+  clause that `--bare` skips skills", so the types never own the same words.
 
 ## Writing facts
 
@@ -130,6 +133,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   included section, keep each sentence with its subject.
 - Sections that only repeat an included section, whose reason names the section they repeat, and sections that only
   introduce or link to other pages.
+- Sections that belong to another tool type: the section's subject is another tool type, and it states nothing about
+  this type that an included section doesn't. This ground never drops a fact about this type; where the section
+  states one, take that sentence or clause by name and exclude the rest on this ground.
 - Tutorial steps, marketing, statements about how the documentation is written (apart from the `Not stated`
   section), and what any capable model knows.
 
@@ -161,12 +167,29 @@ plugins/agent-setup/guidance/index.md      key principles, then the topics
 plugins/agent-setup/guidance/<topic>.md    one file per decision, such as discover.md or choose.md
 maintenance/topics/guidance.md             the topic files and the decision each serves
 maintenance/ledger/guidance.tsv            every documentation section guidance draws on, and which file uses it
+maintenance/sources.tsv                    the Anthropic pages guidance draws on, and the section linking to each
+upstream/anthropic/pages.txt               those pages, fetched by scripts/fetch-sources.sh; not committed
 ```
+
+- **Sources.** Claude Code's documentation is in `upstream/claude-code/llms-full.txt`. An Anthropic page it links
+  to, such as the skill authoring best practices, is a source once `maintenance/sources.tsv` lists it with the
+  section that links to it; `scripts/fetch-sources.sh` writes those pages to `upstream/anthropic/pages.txt` in the
+  same shape. In the table of contents and the ledger, such a page is named `platform.claude.com/<path>`, and its
+  facts link to `https://platform.claude.com/docs/en/<path>#<anchor>`, written `[<page name> › <heading>](…)` with
+  the page's last path segment as its name.
+- **Where a source disagrees with Claude Code's documentation,** Claude Code's documentation wins: the guideline
+  states Claude Code's behaviour, or leaves the source's statement out, and the ledger's `excluded` row says why.
+  A source page often writes for every Claude surface, so keep its subject: "for skills uploaded to claude.ai or the
+  API" where Claude Code's documentation says that is where the rule applies.
+- **Headings name the tool type** when a guideline applies to one type only, such as `## Skill descriptions say what
+  and when`, so the Topics list in `index.md` shows which sections a task with that type needs. A guideline that
+  applies to every type leaves the type out.
 
 - **One guideline per `##` section.** It states the guideline, with its support, then ends with one bullet starting
   `- Check:`: a question about a tool that has a yes or no answer, which the writer follows and the auditor applies.
   The rules for topic files apply, including a `## Contents` section in a file over 100 lines;
-  `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance <toc.tsv>` checks them.
+  `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance <toc.tsv>` checks them, given a table of
+  contents of both `llms-full.txt` and `pages.txt`.
 - **The evidence bar.** A guideline gets in only with support of one of these kinds:
   1. Anthropic says it: Claude Code's documentation, or an Anthropic page that documentation links to, such as the
      skill authoring best practices. Quote or state it with the source's subject and conditions, linked as in
