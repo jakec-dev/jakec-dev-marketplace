@@ -17,14 +17,17 @@ python3 -u -m http.server 0 --bind 127.0.0.1 --directory "$root/site" >"$root/se
 server=$!
 # Keeps the suite's own exit status: waiting on the killed server would otherwise replace it.
 trap 'status=$?; kill "$server" 2>/dev/null; wait "$server" 2>/dev/null || true; rm -rf "$root"; exit "$status"' EXIT
+# A cold CI machine can take many seconds to start Python, so this waits up to 60.
 port=
-for _ in 1 2 3 4 5 6 7 8 9 10; do
-  port=$(sed -n 's/.*port \([0-9]*\).*/\1/p' "$root/server.log" | head -n 1)
+for _ in $(seq 1 60); do
+  port=$(sed -n 's/.*port \([0-9][0-9]*\).*/\1/p' "$root/server.log" | head -n 1)
   [ -n "$port" ] && break
+  kill -0 "$server" 2>/dev/null || break
   sleep 1
 done
 if [ -z "$port" ]; then
-  echo 'FAIL the fixture server did not start'
+  echo 'FAIL the fixture server did not start; its output:'
+  sed 's/^/  /' "$root/server.log"
   exit 1
 fi
 base="http://127.0.0.1:$port"
