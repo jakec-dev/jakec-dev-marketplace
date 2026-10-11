@@ -30,10 +30,11 @@ result=$(
     END { for (i in hits) print hits[i] "\t" page[i] "\t" level[i] "\t" head[i] "\t" start[i] "\t" own[i] }
   ' "$2" - | sort -t "$(printf '\t')" -k1,1nr -k5,5n
 )
-# Keeps only the sections whose own lines also match the second pattern.
+# Keeps only the sections whose own lines also match the second pattern. grep reads the whole section rather than
+# stopping at the first match (-q), because under pipefail sed's SIGPIPE would then fail the test and drop the section.
 if [ $# -eq 4 ] && [ -n "$result" ]; then
   result=$(printf '%s\n' "$result" | while IFS=$'\t' read -r hits page level head start end; do
-    if sed -n "${start},${end}p" "$1" | grep -q -i -E -e "$4"; then
+    if sed -n "${start},${end}p" "$1" | grep -i -E -e "$4" >/dev/null; then
       printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$hits" "$page" "$level" "$head" "$start" "$end"
     fi
   done)
