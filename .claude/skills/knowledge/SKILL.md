@@ -42,6 +42,8 @@ conflict between instructions.
      clause by name.
    - Take the most specific section. From a broad table, take one row only when no other section states its fact,
      and name the row.
+   - Where a candidate's sentence leaves its detail to a link, the linked section's detail is a candidate too, by
+     `format.md`'s rule on linked detail, whatever the linked section's type.
 4. **Propose, and wait for confirmation.** If `maintenance/topics/<type>.md` exists, keep its topics and propose a
    change only where a candidate fits none, with the reason. If `maintenance/ledger/<type>.tsv` exists, every
    section in it appears in the new list, included or excluded, so nothing drops out unseen. Otherwise propose
@@ -58,8 +60,11 @@ conflict between instructions.
    sentence taken alone and any sentence handed to another file.
 6. **Ledger and index.** Write the ledger: one `included` row per owned section, with an empty reason; one per
    sentence, clause or row handed to another file, naming it; and an `excluded` row with its agreed reason for
-   every other candidate. Write `index.md`: a title and a sentence, the key facts as `format.md` describes them,
-   then the output of `scripts/knowledge-index.sh plugins/agent-setup/reference/<type> maintenance/topics/<type>.md`.
+   every other candidate. Before writing an `excluded` reason that says a section, or the rest of one, repeats
+   another or is not about this type, check whether step 3's `scripts/docs-find.sh` searches for the type's names,
+   fields, settings and commands list that section, and read each match in it; a `repeats` reason names a part that
+   some file states. Write `index.md`: a title and a sentence, the key facts as `format.md` describes them, then
+   the output of `scripts/knowledge-index.sh plugins/agent-setup/reference/<type> maintenance/topics/<type>.md`.
 7. **Check.** Run `scripts/check-knowledge.sh plugins/agent-setup/reference maintenance
    upstream/claude-code/toc.tsv` and `scripts/check-links.sh` on every file of the type, and fix until both exit 0.
 8. **Review.** Start one `knowledge-reviewer` per topic file, in parallel, with the file, its ledger rows, the

@@ -76,13 +76,17 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
   without which the mention misleads. Keep such a mention where a hand-over would otherwise leave this file's fact
   without the fix or caveat that makes it usable, such as a symptom without its cure. A mention is a clause inside
-  a bullet that rests on its own link; a bullet of its own, a link of its own or a copied table cell states the fact
-  again, and needs a hand-over.
+  a bullet that rests on its own link; a bullet of its own or a link of its own states the fact again, and needs a
+  hand-over.
 - One fact, one file. Where two sections state the same fact, it is stated once, in the file whose task it serves:
   the other section's sentence is handed to that file, or its owner leaves it out.
 - Across tool types, each part of a section has one owner too. Where one sentence lists several types, such as
   "`--bare` skips hooks, skills, … and CLAUDE.md", each type's ledger takes its own clause by name, such as "the
   clause that `--bare` skips skills", so the types never own the same words.
+- Where an owned sentence leaves its detail to a link, such as "the commands listed under Output limits", the owner
+  also takes that detail from the linked section, whatever its type, by name in the ledger, if an agent writing or
+  checking a tool of this type would act differently knowing it. Take only the part that applies to this type;
+  where the owned sentence still means what it says without the detail, leave the detail out.
 
 ## Writing facts
 
@@ -99,7 +103,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - Copy exactly: field names, values, defaults, limits, messages, and names of settings, events, commands and tools.
   A copied table keeps its header, its columns and any sentence that limits how to read it, and may drop rows that
   serve no task here. A sentence that changes what the table's rows mean stays with the table; a sentence that
-  states a separate fact, such as an order across the rows, may be handed to another file.
+  states a separate fact, such as an order across the rows, may be handed to another file. A copied table's cells
+  are copied text: a cell may repeat a fact another file states in full from its own section, and neither cuts it.
+  Prose in the table's own file states only what its cells leave out.
 - Links in copied text become absolute `https://code.claude.com/docs/en/…` links. Copy an anchor from the
   heading's `id` in the live page exactly. Where an anchor exists only in the browser, such as an interactive
   explorer's, link the nearest heading instead and keep the text. A copied word that points elsewhere on the page,
