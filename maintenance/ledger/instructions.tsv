@@ -1,0 +1,290 @@
+page	heading	decision	file	reason
+memory	CLAUDE.md files	included	placing.md	
+memory	Choose where to put CLAUDE.md files	included	placing.md	
+memory	Set up a project CLAUDE.md	included	placing.md	
+memory	Deploy organization-wide CLAUDE.md	included	placing.md	apart from the settings-versus-CLAUDE.md table and its enforcement conclusion
+large-codebases	Layer CLAUDE.md files by directory	included	placing.md	
+settings-reference	`claudeMd`	included	placing.md	
+memory	Set up rules	included	placing.md	
+memory	User-level rules	included	placing.md	
+memory	Import additional files	included	placing.md	the paragraph on `CLAUDE.local.md`
+claude-directory	File reference	included	placing.md	the `CLAUDE.md` and `rules/*.md` rows, and the sentence on where project-scope and global-scope files live
+claude-directory	What's not shown	excluded		the `CLAUDE.local.md` row repeats memory › Import additional files; the other rows are not about instruction files
+memory	Import additional files	included	writing.md	
+memory	How CLAUDE.md files load	included	writing.md	the paragraph on block-level HTML comments being stripped
+memory	Write effective instructions	included	writing.md	the sentences that imports "don't reduce its context cost" and "if two instructions contradict each other, Claude may pick one arbitrarily"
+memory	My CLAUDE.md is too large	included	writing.md	the sentences "Files over 200 lines consume more context and may reduce adherence", "Claude Code skips a file over 4 MiB" and "Splitting into `@path` imports helps organization but doesn't reduce context, since imported files load at launch"
+best-practices	Write an effective CLAUDE.md	included	writing.md	the sentence "There's no required format for CLAUDE.md files"
+memory	Path-specific rules	included	scoping.md	
+memory	Rule frontmatter reference	included	scoping.md	
+glossary	Frontmatter	included	scoping.md	
+memory	How CLAUDE.md files load	included	loading.md	
+context-window	What survives compaction	included	loading.md	
+prompt-caching	Editing CLAUDE.md mid-session	included	loading.md	
+sub-agents	What loads at startup	included	loading.md	
+worktrees	Isolate subagents with worktrees	included	loading.md	
+prompt-caching	How the cache is organized	included	loading.md	the Project context row
+memory	Set up rules	included	loading.md	the sentence on rules without `paths` loading at launch with `.claude/CLAUDE.md` priority, and the clause on rules in nested `.claude/rules/` directories loading on demand
+memory	User-level rules	included	loading.md	the sentences on user rules loading before project rules and neither overriding the other
+memory	Path-specific rules	included	loading.md	the sentences on path-scoped rules triggering on Read, Write or Edit and through symlinked paths
+memory	AGENTS.md	included	agents-md.md	
+memory	When Claude Code reads AGENTS.md	included	agents-md.md	
+memory	Choose which instruction files load	included	agents-md.md	
+memory	When AGENTS.md support is unavailable	included	agents-md.md	
+memory	Where AGENTS.md differs from CLAUDE.md	included	agents-md.md	
+memory	Remove an earlier AGENTS.md workaround	included	agents-md.md	
+memory	Share one file with other coding tools	included	agents-md.md	
+settings-reference	`pluginConfigs`	included	agents-md.md	the sentence naming `pluginConfigs["agents-md@builtin"].options.instructionFiles`
+claude-directory	What's not shown	included	agents-md.md	the `AGENTS.md` row
+plugins/mods/overview	Mods built into Claude Code	included	agents-md.md	the `cc-plugin-agents-md` row, and the sentence that what stops installed mods doesn't stop built-in mods
+memory	Share rules across projects with symlinks	included	sharing.md	
+memory	Load from additional directories	included	sharing.md	
+large-codebases	Grant access across packages or repositories	included	sharing.md	
+large-codebases	Check out only the directories you need	included	sharing.md	
+memory	Import additional files	included	sharing.md	the paragraph on importing a home-directory file across worktrees, and the external-import Warning
+memory	Exclude specific CLAUDE.md files	included	excluding.md	
+large-codebases	Exclude irrelevant CLAUDE.md files	included	excluding.md	
+settings-reference	`claudeMdExcludes`	included	excluding.md	
+memory	Set up rules	included	excluding.md	the sentence that project rules are skipped if you exclude `project` from `--setting-sources`, and the sentence "Before v2.1.211, rules that load on demand ... loaded even when `project` was excluded", for current behaviour only
+memory	Choose which instruction files load	included	excluding.md	the `managed-only` row
+env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_DISABLE_CLAUDE_MDS` row
+headless	Start faster with bare mode	included	excluding.md	the sentence that `--bare` skips auto-discovery of CLAUDE.md, among others
+memory	Migrate instructions from other tools	included	creating.md	
+memory	View and edit with `/memory`	included	creating.md	
+memory	Set up a project CLAUDE.md	included	creating.md	the `/init` Tip
+commands	All commands	included	creating.md	the `/init` and `/import` rows, with the sentences on reading the table
+env-vars	Variables	included	creating.md	the `CLAUDE_CODE_NEW_INIT` row
+debug-your-config	See what loaded into context	included	troubleshooting.md	
+hooks	InstructionsLoaded	included	troubleshooting.md	
+hooks	InstructionsLoaded input	included	troubleshooting.md	
+hooks	InstructionsLoaded decision control	included	troubleshooting.md	
+memory	Claude isn't following my CLAUDE.md	included	troubleshooting.md	
+memory	My AGENTS.md isn't loading	included	troubleshooting.md	
+memory	Audit your instruction files	included	troubleshooting.md	
+memory	My CLAUDE.md is too large	included	troubleshooting.md	
+debug-your-config	Test against a clean configuration	included	troubleshooting.md	
+memory	Set up a project CLAUDE.md	included	troubleshooting.md	the sentence on confirming with `/context` under **Memory files**
+memory	Rule frontmatter reference	included	troubleshooting.md	the sentence on `claude --debug` showing the parse error
+hooks	Exit code 2 behavior per event	included	troubleshooting.md	the InstructionsLoaded row
+hooks	Prompt-based hooks	included	troubleshooting.md	the InstructionsLoaded entry in the list of events without prompt or agent hooks
+commands	All commands	included	troubleshooting.md	the `/doctor` row
+debug-your-config	Check common causes	included	troubleshooting.md	the two CLAUDE.md rows (subdirectory, subagent)
+memory	Organize rules with `.claude/rules/`	excluded		repeats Set up rules and Path-specific rules; skills note compares tool types (guidance: choose.md)
+memory	How Claude remembers your project	excluded		only introduces the page and links to its sections
+memory	When to add to CLAUDE.md	excluded		advises when to add to CLAUDE.md, and recommends skills or path-scoped rules for some entries (guidance)
+memory	Instructions seem lost after `/compact`	excluded		apart from the diagnosis paragraph, repeats What survives compaction
+large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	excluded		compares tool types (guidance: choose.md)
+features-overview	Compare similar features	excluded		compares tool types (guidance: choose.md)
+permissions	Additional directories grant file access, not configuration	excluded		CLAUDE.md and rules row repeats Grant access across packages or repositories; the rest is not about instruction files
+hooks	Hook lifecycle	excluded		InstructionsLoaded row repeats InstructionsLoaded
+hooks-guide	How hooks work	excluded		InstructionsLoaded row repeats InstructionsLoaded
+context-window	What the timeline shows	excluded		repeats How CLAUDE.md files load, AGENTS.md and Path-specific rules
+errors	Prompt is too long	excluded		repeats My CLAUDE.md is too large
+glossary	Rules	excluded		repeats Set up rules and Path-specific rules
+claude-directory	Frontmatter fields by file	excluded		rules row repeats Rule frontmatter reference
+cloud-environments	What carries over from your setup	excluded		web
+agent-sdk/claude-code-features	Control filesystem settings with settingSources	excluded		Agent SDK
+agent-sdk/claude-code-features	Project instructions (CLAUDE.md and rules)	excluded		Agent SDK
+agent-sdk/claude-code-features	CLAUDE.md load locations	excluded		Agent SDK
+agent-sdk/typescript	`Options`	excluded		Agent SDK
+changelog	Claude Code changelog	excluded		release notes
+whats-new/2026-w22	Week 22 · May 25–29, 2026	excluded		release notes
+hooks-guide	Filter hooks with matchers	excluded		InstructionsLoaded row repeats the hooks reference
+large-codebases	Settings on this page	excluded		index table of sections used elsewhere
+large-codebases	Put it together	excluded		combined example of sections used elsewhere
+skills	Frontmatter reference	excluded		skills' own paths field, belongs to skills
+large-codebases	Reduce file reads with code intelligence	excluded		says nothing about instruction files beyond naming claudeMdExcludes
+hooks	Matcher patterns	excluded		InstructionsLoaded row repeats InstructionsLoaded
+hooks	Decision control	excluded		InstructionsLoaded row repeats InstructionsLoaded decision control
+settings-reference	Settings index	excluded		claudeMd and claudeMdExcludes rows repeat `claudeMd` and `claudeMdExcludes`
+agent-sdk/hooks	Available hooks	excluded		Agent SDK
+agent-sdk/typescript	`HookEvent`	excluded		Agent SDK
+agent-sdk/typescript	`HookInput`	excluded		Agent SDK
+agent-sdk/typescript	`InstructionsLoadedHookInput`	excluded		Agent SDK
+whats-new/index	What's new	excluded		release notes
+whats-new/2026-w19	Week 19 · May 4–8, 2026	excluded		release notes
+settings-reference	`worktree.sparsePaths`	excluded		repeats Check out only the directories you need
+settings-reference	`permissions.additionalDirectories`	excluded		repeats Grant access across packages or repositories; the rest is not about instruction files
+memory	Write effective instructions	excluded		advice: owned by guidance
+best-practices	Write an effective CLAUDE.md	excluded		advice: owned by guidance
+memory	Manage CLAUDE.md for large teams	excluded		only introduces its subsections
+memory	Troubleshoot memory issues	excluded		only introduces its subsections
+memory	CLAUDE.md vs auto memory	excluded		compares CLAUDE.md with auto memory (guidance)
+glossary	CLAUDE.md	excluded		repeats CLAUDE.md files, How CLAUDE.md files load, Claude isn't following my CLAUDE.md and What survives compaction
+glossary	AGENTS.md	excluded		repeats AGENTS.md
+features-overview	Understand how features load	excluded		CLAUDE.md tab repeats How CLAUDE.md files load and What loads at startup
+features-overview	Combine features	excluded		compares tool types (guidance)
+features-overview	Build your setup over time	excluded		recommends tool types (guidance)
+features-overview	Context cost by feature	excluded		compares tool types (guidance)
+large-codebases	Choose where to start Claude	excluded		CLAUDE.md column repeats How CLAUDE.md files load
+large-codebases	The example monorepo	excluded		example layout of sections used elsewhere
+large-codebases	Centralize conventions when layering stops scaling	excluded		recommends other tool types (guidance)
+how-claude-code-works	Context Claude Code adds on its own	excluded		CLAUDE.md item repeats Claude isn't following my CLAUDE.md
+cli-reference	CLI flags	excluded		apart from the `--setting-sources` row, --add-dir, --bare and --safe-mode rows repeat sections used elsewhere; the rest is not about instruction files
+errors	Refusing to read, write, or search a path	excluded		apart from the two symlink bullets, not about instruction files
+github-actions	Define project standards in CLAUDE.md	excluded		repeats Set up a project CLAUDE.md
+gitlab-ci-cd	CLAUDE.md configuration	excluded		repeats Set up a project CLAUDE.md
+claude-directory	Choose the right file	excluded		compares tool types (guidance)
+costs	Move instructions from CLAUDE.md to skills	excluded		recommends skills over CLAUDE.md (guidance)
+output-styles	Choose between an output style and other features	excluded		compares tool types (guidance)
+code-review	CLAUDE.md	excluded		web: Code Review runs on Anthropic's infrastructure
+desktop	Shared configuration	excluded		desktop app
+self-hosted-environments-configuration	How each session's config is assembled	excluded		web: cloud session runners
+communications-kit	Project memory	excluded		marketing
+champion-kit	Questions you are likely to hear	excluded		marketing
+claude-projects	Decide which repositories to add	excluded		web: Claude projects
+claude-projects	What threads pick up from your repositories	excluded		web: Claude projects
+claude-projects	Give a project standing context	excluded		web: Claude projects
+claude-projects	Write project instructions	excluded		web: Claude projects
+memory	Choose where to put CLAUDE.md files	included	loading.md	the sentences "CLAUDE.md and CLAUDE.local.md files in the directory hierarchy above the working directory are loaded at launch. Files in subdirectories load on demand when Claude reads files in those directories." and the clause that scopes load "from broadest scope to most specific, so a project instruction appears in context after a user instruction"
+memory	How it works	included	writing.md	the sentence "Claude Code loads a CLAUDE.md file of up to 4 MiB in full and skips a larger file"
+memory	How it works	excluded		auto memory, apart from the CLAUDE.md 4 MiB sentence; "Shorter files produce better adherence" repeats My CLAUDE.md is too large
+memory	Deploy organization-wide CLAUDE.md	excluded		the settings-versus-CLAUDE.md table and its enforcement conclusion: comparison with settings: owned by guidance
+claude-directory	Explore the .claude directory	excluded		apart from the Windows and `CLAUDE_CONFIG_DIR` sentences, its AGENTS.md sentence repeats AGENTS.md
+context-window	Explore the context window	excluded		its AGENTS.md sentence repeats AGENTS.md
+how-claude-code-works	What Claude can access	excluded		its instruction-file mention repeats CLAUDE.md files and AGENTS.md
+overview	What you can do	excluded		its instruction-file mention repeats CLAUDE.md files and AGENTS.md
+plugins/mods/admin	Stop user-installed mods from loading	excluded		its built-in mods note repeats Mods built into Claude Code
+plugins/mods/admin	Choose how much to allow	excluded		its built-in mods note repeats Mods built into Claude Code
+commands	Commands across a typical workflow	excluded		repeats Set up a project CLAUDE.md and View and edit with `/memory`
+features-overview	Understand how features layer	included	writing.md	the sentence "When instructions conflict, Claude uses judgment to reconcile them", and the clause that CLAUDE.md files are additive across levels
+features-overview	Understand how features layer	excluded		apart from the conflict sentence and the CLAUDE.md "additive" clause, describes how features layer (guidance)
+debug-your-config	See what loaded into context	included	loading.md	the sentence "Subdirectory `CLAUDE.md` files load on demand after Claude uses the Read, Write, or Edit tool on a file in that directory, not at session start"
+agent-teams	Context and communication	included	loading.md	the first paragraph: teammates load CLAUDE.md like a regular session, and the restricted `--setting-sources` list, for current behaviour only
+agent-teams	Context and communication	excluded		apart from the first paragraph, about teammate messaging, not instruction files
+env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_SIMPLE` row
+env-vars	Variables	included	troubleshooting.md	the `CLAUDE_CODE_SAFE_MODE` row
+cli-reference	CLI flags	included	excluding.md	the `--setting-sources` row, with the table header
+cli-reference	CLI commands	included	creating.md	the `claude import [source]` row
+cli-reference	CLI commands	excluded		apart from the `claude import` row, not about instruction files
+errors	Refusing to read, write, or search a path	included	agents-md.md	the bullet with the message `it is a symbolic link. Write to the link's target path instead`
+errors	Refusing to read, write, or search a path	included	sharing.md	the bullet on `Refusing to write into symlinked directory: <path>`
+agent-sdk/agent-loop	Automatic compaction	excluded		Agent SDK
+agent-sdk/agent-loop	Keep context efficient	excluded		Agent SDK
+agent-sdk/agent-loop	Next steps	excluded		Agent SDK
+agent-sdk/agent-loop	Put it all together	excluded		Agent SDK
+agent-sdk/agent-loop	The context window	excluded		Agent SDK
+agent-sdk/agent-loop	What consumes context	excluded		Agent SDK
+agent-sdk/claude-code-features	Choose the right feature	excluded		Agent SDK
+agent-sdk/claude-code-features	Related resources	excluded		Agent SDK
+agent-sdk/claude-code-features	Skills	excluded		Agent SDK
+agent-sdk/claude-code-features	Use Claude Code features in the SDK	excluded		Agent SDK
+agent-sdk/configuration	Load settings files	excluded		Agent SDK
+agent-sdk/hosting	Multi-agent container	excluded		Agent SDK
+agent-sdk/hosting	Multi-tenant isolation	excluded		Agent SDK
+agent-sdk/hosting	Session and state persistence	excluded		Agent SDK
+agent-sdk/hosting	State that lives on local disk	excluded		Agent SDK
+agent-sdk/migration-guide	Settings sources default	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	CLAUDE.md files for project-level instructions	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Combine approaches	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Compare the four approaches	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Context Claude Code adds outside the system prompt	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Customize agent behavior	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Improve prompt caching across users and machines	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Load CLAUDE.md with the SDK	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Modifying system prompts	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Reminders Claude Code adds to the conversation	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	See also	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Turn off the context your agent replaces	excluded		Agent SDK
+agent-sdk/python	Read	excluded		Agent SDK
+agent-sdk/python	Why use setting\_sources	excluded		Agent SDK
+agent-sdk/subagents	AgentDefinition configuration	excluded		Agent SDK
+agent-sdk/subagents	What subagents inherit	excluded		Agent SDK
+agent-sdk/typescript	`AgentDefinition`	excluded		Agent SDK
+agent-sdk/typescript	`prewarm()`	excluded		Agent SDK
+agent-sdk/typescript	Read (2)	excluded		Agent SDK
+agent-sdk/typescript	Why use settingSources	excluded		Agent SDK
+champion-kit	Quick-reference sheet	excluded		marketing
+champion-kit	Thirty-day playbook	excluded		marketing
+champion-kit	What is worth sharing	excluded		marketing
+champion-kit	Where to share it	excluded		marketing
+claude-projects	How a project is organized	excluded		web: Claude projects
+code-review	Code Review	excluded		web: Code Review runs on Anthropic's infrastructure
+code-review	Customize reviews	excluded		web: Code Review runs on Anthropic's infrastructure
+code-review	Keep it focused	excluded		web: Code Review runs on Anthropic's infrastructure
+code-review	Related resources	excluded		web: Code Review runs on Anthropic's infrastructure
+code-review	What the review reads and edits	excluded		repeats How CLAUDE.md files load: the review follows CLAUDE.md like any Claude Code session
+code-review	What you can tune	excluded		web: Code Review runs on Anthropic's infrastructure
+desktop-quickstart	Start your first session	excluded		desktop app
+whats-new/2026-w24	Week 24 · June 8–12, 2026	excluded		release notes
+memory	Auto memory	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+cross-session-messaging	How a session treats an incoming message	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+sub-agents	Resume subagents	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+model-config	Check what triggered fallback	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+model-config	Adaptive reasoning and fixed thinking budgets	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+hooks	Add context for Claude	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+hooks	SessionStart	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+hooks	PostModelSwitch	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+hooks-guide	Re-inject context after compaction	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+skills	Types of skill content	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+skills	Run skills in a subagent	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+sub-agents	Built-in subagents	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+sub-agents	Invoke subagents explicitly	excluded		its omitClaudeMd note repeats the Frontmatter reference row handed to loading.md
+permission-modes	How auto mode evaluates actions	excluded		its CLAUDE.md sentence repeats Where the classifier reads configuration
+agent-view	How file edits are isolated	included	troubleshooting.md	the bullet "Your git instructions take precedence", with the sentence introducing its list (a background session that made code changes in a worktree Claude entered)
+agent-view	How file edits are isolated	excluded		apart from the git-instructions bullet and the sentence that introduces its list, about agent view isolation, not instruction files
+plugins/mods/admin	Know what happens by default	excluded		belongs to mods: the guard on managed instructions applies only where it loads
+settings-reference	`permissions.blockReadsOutsideWorkingDirectories`	excluded		belongs to permissions; mentions CLAUDE.md in passing
+costs	Manage context proactively	included	writing.md	the sentence on customizing compaction behavior in the CLAUDE.md file at the root of your project, with its `# Compact instructions` example
+costs	Manage context proactively	excluded		apart from the CLAUDE.md compaction sentence and example, about managing context, not instruction files
+best-practices	Manage context aggressively	excluded		repeats When context fills up (Compact Instructions); cited in writing.md's open question for its unheaded example
+plugins/manifest-reference	Standard layout	excluded		repeats the plugin-root CLAUDE.md sentence of plugins/components › Skills
+plugins/cli-reference	Validate a directory	excluded		repeats the plugin-root CLAUDE.md sentence of plugins/components › Skills
+glossary	Compaction	excluded		repeats What survives compaction
+glossary	System prompt	excluded		repeats Claude isn't following my CLAUDE.md
+glossary	System reminder	included	troubleshooting.md	the sentences that CLAUDE.md files reach Claude as system reminders, and that a system reminder appears inside a user message or, on some models, as a separate message with the `system` role
+glossary	System reminder	excluded		apart from the CLAUDE.md delivery sentences, about system reminders in general, not instruction files
+glossary	Surface	excluded		web: cloud sessions
+glossary	Context window	excluded		repeats How CLAUDE.md files load
+glossary	Auto memory	excluded		belongs to another tool type; mentions CLAUDE.md in passing
+glossary	Bare mode	excluded		repeats Start faster with bare mode
+glossary	Output style	excluded		compares tool types (guidance)
+admin-setup	Decide what to enforce	excluded		repeats Deploy organization-wide CLAUDE.md and Exclude specific CLAUDE.md files
+agent-teams	Give teammates enough context	excluded		repeats Context and communication
+costs	Agent team token costs	excluded		repeats Context and communication
+context-window	Check your own session	excluded		repeats See what loaded into context
+how-claude-code-works	The context window	excluded		repeats How CLAUDE.md files load
+how-claude-code-works	Work with sessions	excluded		repeats CLAUDE.md files
+prompt-caching	Compacting the conversation	excluded		repeats What survives compaction
+prompt-caching	Actions that keep the cache	excluded		repeats Editing CLAUDE.md mid-session
+deep-links	What a launched session shows	excluded		repeats How CLAUDE.md files load
+headless	Examples	excluded		repeats Start faster with bare mode
+common-workflows	Work in notes and non-code folders	excluded		repeats CLAUDE.md files
+errors	Responses seem lower quality than usual	excluded		repeats My CLAUDE.md is too large
+features-overview	Extend Claude Code	excluded		compares or recommends tool types (guidance)
+features-overview	Overview	excluded		compares or recommends tool types (guidance)
+features-overview	Match features to your goal	excluded		compares or recommends tool types (guidance)
+permissions	Manage permissions	excluded		compares or recommends tool types (guidance)
+permissions	Read-only commands	excluded		compares or recommends tool types (guidance)
+github-actions	Manage costs	excluded		compares or recommends tool types (guidance)
+gitlab-ci-cd	Optimizing performance	excluded		compares or recommends tool types (guidance)
+gitlab-ci-cd	Customizing Claude's behavior	excluded		compares or recommends tool types (guidance)
+third-party-integrations	Invest in documentation and memory	excluded		compares or recommends tool types (guidance)
+memory	Related resources	excluded		only links to other pages
+context-window	Related resources	excluded		only links to other pages
+claude-directory	Related resources	excluded		only links to other pages
+features-overview	Learn more	excluded		only links to other pages
+overview	Use Claude Code everywhere	excluded		only links to other pages
+overview	Next steps	excluded		only links to other pages
+third-party-integrations	Next steps	excluded		only links to other pages
+self-hosted-environments-configuration	Pass the system prompt flags through	excluded		web: cloud session runners
+vs-code	Use the prompt box	included	creating.md	the **Command menu** clause (click `/` or type `/` to open the command menu, with its Customize section) and the **Instructions** bullet: select **Instructions** to edit the CLAUDE.md files Claude reads; pick a file to open it; Claude Code creates it first if it doesn't exist yet
+vs-code	Use the prompt box	excluded		apart from the **Command menu** clause and the **Instructions** bullet, about the VS Code prompt box, not instruction files
+memory	Instructions seem lost after `/compact`	included	troubleshooting.md	the paragraph that diagnoses an instruction lost after compaction and its fix
+settings-reference	`attribution`	included	troubleshooting.md	the sentence that your own instructions about attribution take precedence over the commit and PR lines unless set in managed settings
+settings-reference	`attribution`	excluded		apart from the CLAUDE.md precedence sentence, about attribution settings, not instruction files
+common-workflows	Reference files and directories	included	loading.md	the tip "@ file references add `CLAUDE.md` in the file's directory and parent directories to context"
+common-workflows	Reference files and directories	excluded		apart from the CLAUDE.md tip, about referencing files, not instruction files
+permissions	Move the session to another directory	included	loading.md	the clause that `/cd <path>` keeps the conversation and loads the new directory's `CLAUDE.md`
+permissions	Move the session to another directory	excluded		apart from the CLAUDE.md clause, about moving the session, not instruction files
+sub-agents	Frontmatter reference	included	loading.md	the `omitClaudeMd` row's condition "Ignored when the agent runs as the main session agent via `--agent` or the `agent` setting"
+sub-agents	Frontmatter reference	excluded		apart from the omitClaudeMd condition, belongs to subagents
+auto-mode-config	Where the classifier reads configuration	included	loading.md	the sentence "The classifier reads the same CLAUDE.md content Claude itself loads, so an instruction like "never force push" in your project's CLAUDE.md steers both Claude and the classifier at the same time"
+auto-mode-config	Where the classifier reads configuration	excluded		apart from the CLAUDE.md sentence, belongs to auto mode
+claude-directory	Explore the .claude directory	included	placing.md	the sentence that `~/.claude` resolves to `%USERPROFILE%\.claude` on Windows, and the sentence that with `CLAUDE_CONFIG_DIR` set every `~/.claude` path lives under that directory instead
+plugins/components	Skills	included	placing.md	the sentence that to include instructions in a plugin you write them as a skill, because Claude Code doesn't load a `CLAUDE.md` at the plugin root and `claude plugin validate` warns `CLAUDE.md at the plugin root is not loaded as project context`
+plugins/components	Skills	excluded		apart from the plugin-root CLAUDE.md sentence, belongs to plugins
+server-managed-settings	Security approval dialogs	included	placing.md	the sentence that a managed CLAUDE.md delivered through the `claudeMd` key doesn't require approval, with the following sentence that Claude Code still checks permissions for the tools Claude uses
+server-managed-settings	Security approval dialogs	excluded		apart from the claudeMd sentences, belongs to managed settings
+how-claude-code-works	When context fills up	included	writing.md	the clause "To control what's preserved during compaction, add a "Compact Instructions" section to CLAUDE.md"
+how-claude-code-works	When context fills up	excluded		apart from the Compact Instructions clause, about managing context, not instruction files
