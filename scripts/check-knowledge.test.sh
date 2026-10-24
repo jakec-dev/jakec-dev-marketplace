@@ -140,6 +140,16 @@ with_contents() {
   regen_index
   expect 0 'over 100 lines with contents passes'
 }
+# Pads the index's key facts past 100 lines, with or without a Contents section.
+long_index() {
+  awk -v contents="$1" '
+    /^## Key facts$/ && contents { print "## Contents"; print ""; print "- Key facts"; print "- Topics"; print "" }
+    { print }
+    /^## Key facts$/ { print ""; for (i = 1; i <= 100; i++) print "- Fact " i "." }
+  ' knowledge/rules/index.md >"$root/index" && mv "$root/index" knowledge/rules/index.md
+}
+long_index_no_contents() { long_index 0 && expect 1 'index over 100 lines without contents'; }
+long_index_with_contents() { long_index 1 && expect 0 'index over 100 lines with contents passes'; }
 check_bullet() {
   topic_line "- A fact. $link"
   topic_line '- Evidence: eval case some-case'
@@ -261,7 +271,7 @@ duplicate_row() {
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
   version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
   long_table_row check_bullet other_bullet_unlinked single_dir single_dir_defect platform_link_in_guidance \
-  platform_link_in_reference no_contents with_contents no_ledger \
+  platform_link_in_reference no_contents with_contents long_index_no_contents long_index_with_contents no_ledger \
   bad_header unknown_section bad_decision excluded_no_reason included_missing included_with_scope included_no_file \
   no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence split_section \
   named_part_and_rest duplicate_row; do

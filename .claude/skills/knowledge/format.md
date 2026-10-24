@@ -49,6 +49,7 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - The topic list is agreed with the user on a type's first build and kept between builds. Only a proposal the user
   agrees to changes it: a new, split, merged or renamed topic, with a reason.
 - `index.md` is the entry an agent always reads: a title and a sentence, then `## Key facts`, then `## Topics`.
+  Over 100 lines, it opens with `## Contents` like a topic file, since the Topics list comes last.
   The Topics section lists every topic file with its task and its `##` sections; `scripts/knowledge-index.sh`
   generates it from the topic list, and nobody edits it by hand. Only the index links to topic files, so every
   read is one step from the index, and an agent reads only the sections its task needs.

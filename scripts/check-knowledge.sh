@@ -87,6 +87,9 @@ for dir in "$@"; do
   while IFS= read -r line; do report "$line"; done < <(
     awk -v file="$index" '
       length($0) > 120 && !/\]\(https?:/ { print file ":" FNR ": line longer than 120 characters" }
+      $0 == "## Contents" { contents = 1 }
+      # The index lists the topics last, so a long one needs contents up front for a reader who previews it.
+      END { if (FNR > 100 && !contents) print file ": over 100 lines with no ## Contents section" }
     ' "$index"
   )
 

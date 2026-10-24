@@ -3,6 +3,11 @@
 What Claude Code does with skills and custom commands: where they live, how they are written, invoked and loaded,
 and how to turn them off or find out why one isn't working.
 
+## Contents
+
+- [Key facts](#key-facts)
+- [Topics](#topics)
+
 ## Key facts
 
 - A skill is a folder holding `SKILL.md`; a skill file at `.claude/skills/name.md` doesn't appear in `/skills`.

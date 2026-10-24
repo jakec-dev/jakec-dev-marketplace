@@ -4,6 +4,11 @@ Instruction files are the markdown files Claude Code loads as instructions: CLAU
 `CLAUDE.local.md`, `AGENTS.md`, the files they import, and rules in `.claude/rules/` or `~/.claude/rules/`. Read the
 key facts first; they are what models most often get wrong. Then read only the sections your task needs.
 
+## Contents
+
+- [Key facts](#key-facts)
+- [Topics](#topics)
+
 ## Key facts
 
 - By default a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above it stops Claude
