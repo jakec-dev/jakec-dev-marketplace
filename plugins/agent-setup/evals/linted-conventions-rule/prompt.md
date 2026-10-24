@@ -1,5 +1,6 @@
 ---
 description: Rules requested for conventions the repository's tooling already enforces.
+tags: [instructions]
 max_turns: 30
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]

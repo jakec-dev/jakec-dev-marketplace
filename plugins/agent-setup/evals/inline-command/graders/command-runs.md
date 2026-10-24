@@ -1,8 +1,6 @@
 ---
 type: regex
-pattern: '[^\s]!`'
+pattern: '"name":"Write","input":\{"file_path":"[^"]*\.claude/skills/release-notes/SKILL\.md","content":"(?:[^"\\]|\\.)*?(?<!\s|\\n|\\t)!`'
 match: not_contains
-target:
-  source: file
-  path: .claude/skills/release-notes/SKILL.md
+target: trace
 ---

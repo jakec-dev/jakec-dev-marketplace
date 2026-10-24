@@ -1,8 +1,5 @@
 ---
 type: regex
-flags: m
-pattern: '(^|\s)!`|```!'
-target:
-  source: file
-  path: .claude/skills/release-notes/SKILL.md
+pattern: '"name":"Write","input":\{"file_path":"[^"]*\.claude/skills/release-notes/SKILL\.md","content":"(?:[^"\\]|\\.)*?(?:(?:\\n|\s)!`|```!)'
+target: trace
 ---

@@ -1,5 +1,6 @@
 ---
 description: A glob for a folder name containing a square bracket.
+tags: [instructions]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]

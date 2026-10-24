@@ -1,5 +1,6 @@
 ---
 description: An instruction for files in many directories.
+tags: [instructions]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]

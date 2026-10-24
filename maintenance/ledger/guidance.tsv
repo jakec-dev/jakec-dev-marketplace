@@ -86,15 +86,15 @@ platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 2: Doma
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 3: Conditional details	excluded		repeats Pattern 1 and the reference supporting-files fact
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Workflows and feedback loops	excluded		heading only
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Content guidelines	excluded		heading only
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid time-sensitive information	excluded		judged done unprompted by a capable model, pending an eval case
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Use consistent terminology	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid time-sensitive information	excluded		a capable model does it unprompted: the baseline of eval case inline-command writes no dated wording
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use consistent terminology	excluded		a capable model does it unprompted: the baseline of eval case inline-command keeps one term per concept
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Common patterns	excluded		heading only
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	excluded		its branching example is judged done unprompted by a capable model, pending an eval case
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Evaluation and iteration	excluded		heading only
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	excluded		the Claude A and Claude B authoring routine is for a person; its fresh-instance test is covered by A skill is compared with a fresh run without it
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Anti-patterns to avoid	excluded		heading only
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid Windows-style paths	excluded		judged done unprompted by a capable model, pending an eval case
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid offering too many options	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid Windows-style paths	excluded		a capable model does it unprompted: the baseline of eval case inline-command uses no Windows paths
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid offering too many options	excluded		a capable model does it unprompted: the baseline of eval case inline-command names one default
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Advanced: Skills with executable code	excluded		heading and a pointer only
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Use visual analysis	excluded		a technique, not a decision rule; judged done unprompted by a capable model, pending an eval case
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Package dependencies	excluded		another surface: it describes the code execution environment of claude.ai and the API, including its list-and-verify advice

@@ -1,5 +1,6 @@
 ---
 description: An instruction too vague to follow, asked for as a rule.
+tags: [instructions]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]
