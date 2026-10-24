@@ -62,13 +62,6 @@ key facts first; they are what models most often get wrong. Then read only the s
   See [excluding.md › `claudeMdExcludes`](excluding.md).
 - Project rules are skipped if `project` is excluded from `--setting-sources`.
   See [excluding.md › `--setting-sources`](excluding.md).
-- If two instructions contradict each other, Claude may pick one arbitrarily (memory); for CLAUDE.md files at
-  different levels, features-overview says Claude uses judgment to reconcile them.
-  See [writing.md › Contradicting instructions](writing.md).
-- To see which CLAUDE.md and rules files loaded, run `/context`; to log when and why each loads, use the
-  `InstructionsLoaded` hook.
-  See [troubleshooting.md › Check whether it loaded](troubleshooting.md) and
-  [troubleshooting.md › Log loads with the `InstructionsLoaded` hook](troubleshooting.md).
 
 ## Topics
 
