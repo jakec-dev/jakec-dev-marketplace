@@ -47,3 +47,13 @@ Making several tools work together, and keeping the whole setup within Claude's 
   [features-overview › Understand context costs](https://code.claude.com/docs/en/features-overview#understand-context-costs)
   [features-overview › Context cost by feature](https://code.claude.com/docs/en/features-overview#context-cost-by-feature)
 - Check: a proposal says what it adds to every request, and prefers the tool that loads only when needed.
+
+## Skill descriptions do not overlap
+
+- For skills Claude can invoke: "Claude matches your task against skill descriptions to decide which are relevant. If
+  descriptions are vague or overlap, Claude may load the wrong skill or miss one that would help. To tell Claude to
+  use a specific skill, invoke it with `/<name>`." User-only skills (`disable-model-invocation: true`) load nothing
+  until invoked.
+  [features-overview › Understand how features load](https://code.claude.com/docs/en/features-overview#understand-how-features-load)
+- Check: among skills Claude can invoke, is any `description` vague, or does it overlap another skill's
+  `description`?

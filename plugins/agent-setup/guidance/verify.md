@@ -2,6 +2,20 @@
 
 Proving that a tool works before calling it done.
 
+## Contents
+
+- [It loaded](#it-loaded)
+- [It changes what Claude does](#it-changes-what-claude-does)
+- [Work the tool does has a check](#work-the-tool-does-has-a-check)
+- [A skill is checked for triggering and for output, separately](#a-skill-is-checked-for-triggering-and-for-output-separately)
+- [A skill is compared with a fresh run without it](#a-skill-is-compared-with-a-fresh-run-without-it)
+- [Watch which bundled files Claude opens](#watch-which-bundled-files-claude-opens)
+- [A skill is tested on every model it will run on](#a-skill-is-tested-on-every-model-it-will-run-on)
+- [Skills that change many files validate a plan first](#skills-that-change-many-files-validate-a-plan-first)
+- [A skill's validation script names the problem](#a-skills-validation-script-names-the-problem)
+- [A skill's steps loop until validation passes](#a-skills-steps-loop-until-validation-passes)
+- [A skill is tried on real tasks and by its users](#a-skill-is-tried-on-real-tasks-and-by-its-users)
+
 ## It loaded
 
 - For a project CLAUDE.md: "To confirm the file loaded, run `/context` in a session and check the list under
@@ -32,12 +46,93 @@ Proving that a tool works before calling it done.
 - "Give Claude a check it can run: tests, a build, a screenshot to compare." "Give Claude something that produces a
   pass or fail, and the loop closes on its own." How hard the check gates the stop:
   - In one prompt: ask Claude to run the check and iterate in the same message.
-  - Across a session: set the check as a `/goal` condition.
+  - Across a session: set the check as a `/goal` condition. If Claude stalls, Claude Code eventually stops the run
+    with the goal still set.
   - As a deterministic gate: a Stop hook runs the check as a script and blocks the turn from ending until it passes.
-  - By a second opinion: a verification subagent or a dynamic workflow has a fresh model try to refute the result.
+    The block has a cap: after stop hooks have continued the turn eight times in a row, Claude Code overrides the next
+    block and ends the turn; `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` raises it.
+  - By a second opinion: a verification subagent or a dynamic workflow that checks its own findings has a fresh model
+    try to refute the result.
 
   [best-practices › Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)
+  [hooks › Stop input](https://code.claude.com/docs/en/hooks#stop-input)
+  [goal › How evaluation works](https://code.claude.com/docs/en/goal#how-evaluation-works)
 - "Have Claude show evidence rather than asserting success: the test output, the command it ran and what it
   returned, or a screenshot of the result."
   [best-practices › Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)
 - Check: a tool that directs work names the check that ends it and asks for evidence, not a claim of success.
+
+## A skill is checked for triggering and for output, separately
+
+- "Seeing a skill trigger tells you Claude found it, not that it did what you intended. To know a skill is working,
+  measure separately whether Claude invokes it on the prompts it should, and whether the output matches what you
+  expect when it does." The skill-creator plugin's description tuning "generates should-trigger and
+  should-not-trigger prompts, measures the hit rate, and proposes description edits when the skill activates on the
+  wrong requests".
+  [skills › Evaluate and iterate on a skill](https://code.claude.com/docs/en/skills#evaluate-and-iterate-on-a-skill)
+  [skills › Run evals with skill-creator](https://code.claude.com/docs/en/skills#run-evals-with-skill-creator)
+- Check: Do the test prompts include some where the skill should trigger and some where it should not, and is the
+  output checked when it does?
+
+## A skill is compared with a fresh run without it
+
+- "Collect a few realistic prompts, run each one in a fresh session with the skill available and again with it
+  turned off, and compare the results. A fresh session matters because leftover context from authoring the skill
+  will mask gaps in the written instructions."
+  [skills › Evaluate and iterate on a skill](https://code.claude.com/docs/en/skills#evaluate-and-iterate-on-a-skill)
+- To turn the skill off for the second run: for a personal or project skill, set it to `"off"` in `skillOverrides`.
+  `skillOverrides` doesn't apply to a skill a plugin provides; use `claude plugin eval`, which repeats each run with no
+  plugin loaded.
+  [skills › Evaluate and iterate on a skill](https://code.claude.com/docs/en/skills#evaluate-and-iterate-on-a-skill)
+- Check: Was the skill's output compared with a fresh-session run of the same prompts with the skill turned off?
+
+## Watch which bundled files Claude opens
+
+- When iterating on a skill, watch how Claude uses it. "**Ignored content:** If Claude never accesses a bundled
+  file, it might be unnecessary or poorly signaled in the main instructions". "**Missed connections:** Does Claude
+  fail to follow references to important files? Your links might need to be more explicit or prominent".
+  [best-practices › Observe how Claude navigates Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#observe-how-claude-navigates-skills)
+- Check: For a skill with bundled files, has a real run been checked for files Claude never opened?
+
+## A skill is tested on every model it will run on
+
+- "Skills act as additions to models, so effectiveness depends on the underlying model. Test your Skill with all the
+  models you plan to use it with."
+  [best-practices › Test with all models you plan to use](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#test-with-all-models-you-plan-to-use)
+- Check: Has the skill been run on each model it is expected to run on?
+
+## Skills that change many files validate a plan first
+
+- "The "plan-validate-execute" pattern catches errors early by having Claude first create a plan in a structured
+  format, then validate that plan with a script before executing it." When to use it: "Batch operations,
+  destructive changes, complex validation rules, high-stakes operations."
+  [best-practices › Create verifiable intermediate outputs](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#create-verifiable-intermediate-outputs)
+- Check: Does a skill that makes batch or destructive changes write a plan file and validate it with a script before
+  applying it?
+
+## A skill's validation script names the problem
+
+- For the plan-validate-execute pattern: "Make validation scripts verbose with specific error messages such as "Field
+  'signature_date' not found. Available fields: customer_name, order_total, signature_date_signed" to help Claude fix
+  issues."
+  [best-practices › Create verifiable intermediate outputs](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#create-verifiable-intermediate-outputs)
+- Check: Does the validation script's error message say which item failed and what would have been valid?
+
+## A skill's steps loop until validation passes
+
+- "**Common pattern:** Run validator → fix errors → repeat". The validator can be a script or a reference document
+  such as a style guide that Claude reads and compares against. The source's script example tells Claude to validate
+  right after an edit, fix the errors, validate again, and "Only proceed when validation passes"; its style-guide
+  example ends "Only proceed when all requirements are met".
+  [best-practices › Implement feedback loops](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#implement-feedback-loops)
+- Check: Do the skill's steps say to fix the errors and validate again, and to proceed only when validation passes?
+
+## A skill is tried on real tasks and by its users
+
+- When iterating on an existing skill, give Claude (with the skill loaded) "actual tasks, not test scenarios", and
+  observe where it struggles, succeeds or makes unexpected choices. To gather team feedback, share the skill with
+  teammates, observe their usage, and ask: "Does the Skill activate when expected? Are instructions clear? What's
+  missing?"
+  [best-practices › Develop Skills iteratively with Claude](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#develop-skills-iteratively-with-claude)
+  [best-practices › Checklist for effective Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#checklist-for-effective-skills)
+- Check: Has the skill been run on real tasks, and has someone who uses it said whether it activates when expected?

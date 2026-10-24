@@ -36,3 +36,107 @@ memory	Share one file with other coding tools	included	choose.md	the import and 
 memory	Where AGENTS.md differs from CLAUDE.md	included	verify.md	the InstructionsLoaded row
 memory	My AGENTS.md isn't loading	included	verify.md	the sentence on checking with /memory
 memory	Deploy organization-wide CLAUDE.md	included	choose.md	the sentences comparing settings rules with CLAUDE.md instructions
+skills	Evaluate and iterate on a skill	included	verify.md	
+skills	Run evals with skill-creator	included	verify.md	the Description tuning bullet (should-trigger and should-not-trigger prompts)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Observe how Claude navigates Skills	included	verify.md	the Ignored content and Missed connections bullets
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Test with all models you plan to use	included	verify.md	the first paragraph; the per-model questions are left out
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	included	verify.md	the plan-validate-execute sentence, the When to use line and the Implementation tip
+skills	Control who invokes a skill	included	choose.md	
+plugins/components	Skills	included	choose.md	the sentence that instructions in a plugin are written as a skill, and that Claude Code doesn't load a CLAUDE.md at the plugin root
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Build evaluations first	included	discover.md	the sentence "Create evaluations BEFORE writing extensive documentation" and the first step, run Claude on representative tasks without a skill, for a skill meant to fix a failure or missing context
+features-overview	Understand how features load	included	compose.md	the "How Claude chooses skills" sentences on vague or overlapping descriptions and invoking a skill with /<name>, and the sentence that user-only skills load nothing until invoked
+skills	Find unused skills	included	maintain.md	the sentences on every listed skill costing context each turn, /skill-doctor flagging never-invoked skills, starting with the highest context cost, the report leaving out bundled and enterprise skills, and /skill-doctor being unavailable in sessions that skip feature-flag fetching
+skills	Pre-approve tools for a skill	included	maintain.md	the sentences that workspace trust doesn't gate allowed-tools, so a project skill's allowed-tools applies even in a -p run in a never-trusted folder, and that a skill can grant itself broad tool access, so review the allowed-tools of checked-in skills
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Writing effective descriptions	included	write.md	used for three guidelines: what and when; the words a user would say; third person, without the system-prompt claim
+skills	Frontmatter reference	included	write.md	the `description` row's first sentence and its "Put the key use case first" sentence
+skills	Skill not triggering	included	write.md	the sentence to check the description includes keywords users would naturally say
+skills	Types of skill content	included	write.md	the paragraph to keep the body concise
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Concise is key	included	write.md	the paragraph to add only context Claude doesn't already have, and its three questions; the pre-loading paragraph contradicts Claude Code
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Set appropriate degrees of freedom	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid deeply nested references	included	write.md	
+skills	Add supporting files	included	write.md	the sentence to reference supporting files from SKILL.md
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with table of contents	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use workflows for complex tasks	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Examples pattern	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don't defer	included	write.md	the script error-handling advice and its examples; the constants part is judged done unprompted, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Provide utility scripts	included	write.md	used for two guidelines: the advantages of pre-made scripts; say whether Claude runs or reads a script
+skills	Control who invokes a skill	included	maintain.md	the table row that a skill with disable-model-invocation: true has its description out of context
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Implement feedback loops	included	verify.md	the Common pattern line and the two example loops
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	included	verify.md	the Use the Skill in real workflows step and the Gathering team feedback list
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Checklist for effective Skills	included	verify.md	the Testing items on real usage scenarios and team feedback
+hooks	Stop input	included	verify.md	the cap on consecutive blocks and `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`
+goal	How evaluation works	included	verify.md	the sentence that Claude Code stops a stalled run with the goal still set
+skills	Frontmatter reference	included	choose.md	the `disable-model-invocation` and `user-invocable` rows
+scheduled-tasks	Run a prompt repeatedly with /loop	included	choose.md	the sentence that a scheduled fire only runs skills Claude can invoke on its own, and its `disable-model-invocation: true` entry
+skills	Run your checks before each commit	included	choose.md	the condition that Claude can invoke the `verify` or `simplify` skill
+costs	Offload processing to hooks and skills	included	choose.md	the skill paragraph on the "codebase-overview" example
+skills	Available string substitutions	included	write.md	the `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` rows, for a script's path
+skills	Generate visual output	included	write.md	the sentence that the script path uses `${CLAUDE_SKILL_DIR}` so it resolves at personal, project or plugin level
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Template pattern	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	included	write.md	the Tip only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid assuming tools are installed	included	write.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill authoring best practices	excluded		introduction only; states no guideline
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Core principles	excluded		heading only; its subsections have their own rows
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill structure	excluded		contradicts Claude Code, where all frontmatter fields are optional (skills › Frontmatter reference); its `name` and `description` limits apply to skills uploaded to claude.ai or the API (skills › Using skill frontmatter outside Claude Code), another surface
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Naming conventions	excluded		optional naming advice that judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Progressive disclosure patterns	excluded		its 500-line limit repeats a reference fact (writing.md)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Visual overview: From simple to complex	excluded		a directory diagram; states no guideline
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 1: High-level guide with references	excluded		repeats a reference fact (writing.md › Supporting files)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 2: Domain-specific organization	excluded		judged done unprompted by a capable model, pending an eval case; the loading risk is covered by Skill files link one level deep from SKILL.md
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 3: Conditional details	excluded		repeats Pattern 1 and the reference supporting-files fact
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Workflows and feedback loops	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Content guidelines	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid time-sensitive information	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use consistent terminology	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Common patterns	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	excluded		its branching example is judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Evaluation and iteration	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	excluded		the Claude A and Claude B authoring routine is for a person; its fresh-instance test is covered by A skill is compared with a fresh run without it
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Anti-patterns to avoid	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid Windows-style paths	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid offering too many options	excluded		judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Advanced: Skills with executable code	excluded		heading and a pointer only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use visual analysis	excluded		a technique, not a decision rule; judged done unprompted by a capable model, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Package dependencies	excluded		another surface: it describes the code execution environment of claude.ai and the API, including its list-and-verify advice
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Runtime environment	excluded		its bullet that every skill's name and description load into the system prompt contradicts Claude Code, which drops descriptions over the listing budget (skills › Skill descriptions are cut short); its other bullets repeat Provide utility scripts and Add supporting files, or are used in verify.md (Watch which bundled files Claude opens)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	MCP tool references	excluded		contradicts Claude Code: MCP tools are named `mcp__<server>__<tool>` (hooks › Match MCP tools)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Technical notes	excluded		heading only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	YAML frontmatter requirements	excluded		contradicts Claude Code, where all frontmatter fields are optional (skills › Frontmatter reference); its limits apply to skills uploaded to claude.ai or the API, another surface
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Token budgets	excluded		repeats a reference fact (writing.md, the 500-line limit)
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Checklist for effective Skills	excluded		the other items repeat the guidelines and exclusions of their sections
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Core quality	excluded		each item repeats a guideline or an excluded section
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Code and scripts	excluded		each item repeats a guideline or an excluded section
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Testing	excluded		its count of three evaluations is judged a detail, pending an eval case; its real-usage and team-feedback items are used in verify.md through Checklist for effective Skills
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Next steps	excluded		links only
+skills	Bundled skills	excluded		a list of bundled skills; states no guideline
+skills	Run your checks before each commit	excluded		repeats a reference fact (invoking.md)
+skills	Work on Claude API projects	excluded		bundled-skill subcommands; states no guideline
+skills	Create your first skill	excluded		a tutorial
+skills	Getting started	excluded		a tutorial
+skills	Choose where skills load	excluded		placement facts owned by the reference
+skills	Edit a skill during a session	excluded		facts owned by the reference
+skills	Remove a skill	excluded		facts owned by the reference
+skills	Skill content lifecycle	excluded		repeats reference key facts
+skills	Pass arguments to skills	excluded		facts owned by the reference
+skills	Inject dynamic context	excluded		facts owned by the reference
+skills	Run skills in a subagent	excluded		repeats a reference fact (forking.md)
+skills	Restrict Claude's skill access	excluded		facts owned by the reference
+skills	Override skill visibility from settings	excluded		facts owned by the reference
+skills	Share skills	excluded		facts owned by the reference
+skills	Generate visual output	excluded		the example repeats a reference example (writing.md › Bundled scripts)
+skills	Skill triggers too often	excluded		repeats reference troubleshooting.md
+skills	Claude stops following a skill	excluded		repeats reference key facts; its hook rule is already in guidance (choose.md)
+skills	Skill descriptions are cut short	excluded		repeats reference loading.md
+skills	Personal skills disappeared	excluded		states no guideline
+agent-view	From agent view	excluded		already in guidance (discover.md); the rest is about agent view
+skills	Extend Claude with skills	excluded		already in guidance (discover.md, choose.md)
+best-practices	Create skills	excluded		repeats reference facts; its `disable-model-invocation` sentence repeats the support of A skill with side effects is user-only
+claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill and rule rows repeat choose.md
+costs	Offload processing to hooks and skills	excluded		the hook half belongs to the hooks guidance, not yet built
+costs	Move instructions from CLAUDE.md to skills	excluded		already in guidance (choose.md, write.md)
+plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md
+workflows	When to use a workflow	excluded		compares workflows with other tools; belongs to the patterns guidance, not yet built
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	excluded		the worked example repeats the guideline
+hooks	Stop input	excluded		the rest belongs to the hooks guidance, not yet built
+goal	How evaluation works	excluded		the rest is not about verifying a tool
+scheduled-tasks	Run a prompt repeatedly with /loop	excluded		the rest belongs to the reference, not guidance
