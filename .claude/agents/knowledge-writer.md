@@ -2,6 +2,7 @@
 name: knowledge-writer
 description: Writes one agent-setup knowledge file from the documentation sections it owns, and returns the ledger rows for them. Use when the knowledge skill hands over a topic.
 tools: Read, Grep, Write, Bash
+model: sonnet
 ---
 
 Write one knowledge file for the agent-setup plugin from the documentation sections you are given, following

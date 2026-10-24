@@ -55,13 +55,16 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 
 ## Key facts
 
-- Ten to twenty one-line facts that most tasks with this type need, chosen by evidence, strongest first:
+- Every task reads the index, so each key fact must justify its cost in context: "Only add context Claude doesn't
+  already have" (Skill authoring best practices › Concise is key). A fact is a key fact only if it meets one of
+  these tests, and the list runs strongest first:
   1. A model gets it wrong without the knowledge: the eval suite's baseline arm fails on it. Eval results are not
      kept in the repository, so the person running the build supplies them; without them, this test is not met.
   2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write refused
      without saying why. A refusal whose message tells Claude the fix is not silent.
   3. It sits in a section the documentation changed recently, so a model's training may predate it.
 - Among facts that meet a test, prefer the ones most tasks with the type will meet.
+- A key fact is one or two sentences, wrapped at 120 characters like any line. It never drops a condition to fit.
 - Each key fact summarises a bullet a topic file states in full, and ends with a pointer to it on its own line:
   `See [loading.md › After compaction](loading.md).`, naming the file and its `##` heading. The checker confirms the
   heading exists. A key fact is the one deliberate repeat of a fact.
@@ -209,7 +212,8 @@ upstream/anthropic/pages.txt               those pages, fetched by scripts/fetch
   so. To apply it to another type, give the reference fact that makes it apply, such as rules without `paths`
   loading like `.claude/CLAUDE.md`.
 - Leave out what any capable model already does unprompted; an eval baseline that passes shows it.
-- `index.md` has a title and a sentence, then `## Key principles`: up to ten one-line principles every task needs,
-  each with a pointer as in `## Key facts`, then the Topics section `scripts/knowledge-index.sh` generates.
+- `index.md` has a title and a sentence, then `## Key principles`: only the principles every task needs, each
+  written as `## Key facts` describes and with a pointer, then the Topics section `scripts/knowledge-index.sh`
+  generates.
 - The ledger has the reference ledger's columns. Sections can serve several decisions, so a section may have no
   single owner: each row names the file and, unless that file takes the whole section, the part it takes.
