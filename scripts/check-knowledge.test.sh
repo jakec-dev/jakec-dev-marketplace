@@ -127,6 +127,11 @@ two_sentences_same_file() {
   ledger_row "memory${tab}Auto memory${tab}included${tab}loading.md${tab}the sentence on priority"
   expect 0 'two named sentences of one section to one file pass'
 }
+long_anchor_line() {
+  topic_line "- A fact. $link"
+  topic_line "  [$(printf 'x%.0s' {1..130})](#a-long-heading)"
+  expect 0 'long line holding an anchor link passes'
+}
 long_table_row() {
   topic_line "| \`field\` | $(printf 'x%.0s' {1..130}) |"
   expect 0 'long table row passes'
@@ -270,7 +275,7 @@ duplicate_row() {
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
   version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
-  long_table_row check_bullet other_bullet_unlinked single_dir single_dir_defect platform_link_in_guidance \
+  long_table_row long_anchor_line check_bullet other_bullet_unlinked single_dir single_dir_defect platform_link_in_guidance \
   platform_link_in_reference no_contents with_contents long_index_no_contents long_index_with_contents no_ledger \
   bad_header unknown_section bad_decision excluded_no_reason included_missing included_with_scope included_no_file \
   no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence split_section \

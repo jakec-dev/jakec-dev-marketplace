@@ -39,7 +39,7 @@ check_topic() {
     /^## / { in_contents = ($0 == "## Contents"); if (in_contents) contents = 1 }
     /^[ \t]*(```|~~~)/ { fence = !fence }
     # format.md exempts a line holding a link, a table row and a line inside a code block from the length limit.
-    !fence && length($0) > 120 && !/\]\(https?:/ && !/^[ \t]*\|/ {
+    !fence && length($0) > 120 && !/\]\((https?:|#)/ && !/^[ \t]*\|/ {
       print file ":" FNR ": line longer than 120 characters"
     }
     !fence {
