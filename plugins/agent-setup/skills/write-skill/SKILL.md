@@ -11,8 +11,9 @@ which says what makes a skill good. Not on memory: much of what goes wrong with 
 
 1. **Read both indexes in full:** `${CLAUDE_PLUGIN_ROOT}/reference/skills/index.md` and
    `${CLAUDE_PLUGIN_ROOT}/guidance/index.md`. Their key facts and key principles apply to every task.
-2. **Pick the sections the task needs** from the two Topics lists, including every guidance section whose heading
-   names skills. Read each one: find its `## ` heading with Grep, then Read from that line to the next `## ` heading.
+2. **Read `${CLAUDE_PLUGIN_ROOT}/guidance/write-skills.md` in full,** then pick the other sections the task needs
+   from the two Topics lists. Read each one: find its `## ` heading with Grep, then Read from that line to the next
+   `## ` heading.
 3. **Find the skills that already exist** with Glob: `.claude/skills/*/SKILL.md` and `.claude/commands/**/*.md` at
    any depth, and `skills/*/SKILL.md` in a plugin. Read the ones whose name or description is close to the new
    skill's, so that it doesn't clash with a name or overlap a description.

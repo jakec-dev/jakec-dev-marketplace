@@ -57,14 +57,16 @@ follows and the auditor applies.
   - The same setup in another repository: a plugin
   - Instructions shipped in a plugin are skills
 
-- [write.md](write.md): writing the content of CLAUDE.md files, AGENTS.md files, rules and skills so that Claude follows
-  it
+- [write.md](write.md): writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it
   - Earn every line
   - Concrete enough to verify
   - Short files
   - Headings and bullets
   - No contradictions
   - Emphasis on one line, not many
+
+- [write-skills.md](write-skills.md): writing a skill's description, body and bundled files so that Claude finds the
+  skill and follows it
   - Skill descriptions say what and when
   - Skill descriptions use the words a user would say
   - Skill descriptions are in the third person

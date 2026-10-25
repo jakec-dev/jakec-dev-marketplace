@@ -170,11 +170,12 @@ page	heading	decision	file	reason
 
 Guidance tells an agent how to decide: what deserves a tool, which kind, how to write it, how tools combine, how to
 prove a tool works and when to cut one. It is organised by decision, not by tool type, because choosing and
-combining cut across types.
+combining cut across types. Writing doesn't: a good skill and a good CLAUDE.md are different crafts, so writing
+has one file per tool type, such as `write.md` for instruction files and `write-skills.md` for skills.
 
 ```text
 plugins/agent-setup/guidance/index.md      key principles, then the topics
-plugins/agent-setup/guidance/<topic>.md    one file per decision, such as discover.md or choose.md
+plugins/agent-setup/guidance/<topic>.md    one file per decision, such as choose.md; writing has one per type
 maintenance/topics/guidance.md             the topic files and the decision each serves
 maintenance/ledger/guidance.tsv            every documentation section guidance draws on, and which file uses it
 maintenance/sources.tsv                    the Anthropic pages guidance draws on, and the section linking to each

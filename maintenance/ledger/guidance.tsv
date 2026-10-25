@@ -47,19 +47,19 @@ platform.claude.com/agents-and-tools/agent-skills/best-practices	Build evaluatio
 features-overview	Understand how features load	included	compose.md	the "How Claude chooses skills" sentences on vague or overlapping descriptions and invoking a skill with /<name>, and the sentence that user-only skills load nothing until invoked
 skills	Find unused skills	included	maintain.md	the sentences on every listed skill costing context each turn, /skill-doctor flagging never-invoked skills, starting with the highest context cost, the report leaving out bundled and enterprise skills, and /skill-doctor being unavailable in sessions that skip feature-flag fetching
 skills	Pre-approve tools for a skill	included	maintain.md	the sentences that workspace trust doesn't gate allowed-tools, so a project skill's allowed-tools applies even in a -p run in a never-trusted folder, and that a skill can grant itself broad tool access, so review the allowed-tools of checked-in skills
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Writing effective descriptions	included	write.md	used for three guidelines: what and when; the words a user would say; third person, without the system-prompt claim
-skills	Frontmatter reference	included	write.md	the `description` row's first sentence and its "Put the key use case first" sentence
-skills	Skill not triggering	included	write.md	the sentence to check the description includes keywords users would naturally say
-skills	Types of skill content	included	write.md	the paragraph to keep the body concise
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Concise is key	included	write.md	the paragraph to add only context Claude doesn't already have, and its three questions; the pre-loading paragraph contradicts Claude Code
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Set appropriate degrees of freedom	included	write.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid deeply nested references	included	write.md	
-skills	Add supporting files	included	write.md	the sentence to reference supporting files from SKILL.md
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with table of contents	included	write.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Use workflows for complex tasks	included	write.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Examples pattern	included	write.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don't defer	included	write.md	the script error-handling advice and its examples; the constants part is judged done unprompted, pending an eval case
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Provide utility scripts	included	write.md	used for two guidelines: the advantages of pre-made scripts; say whether Claude runs or reads a script
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Writing effective descriptions	included	write-skills.md	used for three guidelines: what and when; the words a user would say; third person, without the system-prompt claim
+skills	Frontmatter reference	included	write-skills.md	the `description` row's first sentence and its "Put the key use case first" sentence
+skills	Skill not triggering	included	write-skills.md	the sentence to check the description includes keywords users would naturally say
+skills	Types of skill content	included	write-skills.md	the paragraph to keep the body concise
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Concise is key	included	write-skills.md	the paragraph to add only context Claude doesn't already have, and its three questions; the pre-loading paragraph contradicts Claude Code
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Set appropriate degrees of freedom	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid deeply nested references	included	write-skills.md	
+skills	Add supporting files	included	write-skills.md	the sentence to reference supporting files from SKILL.md
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with table of contents	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use workflows for complex tasks	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Examples pattern	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don't defer	included	write-skills.md	the script error-handling advice and its examples; the constants part is judged done unprompted, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Provide utility scripts	included	write-skills.md	used for two guidelines: the advantages of pre-made scripts; say whether Claude runs or reads a script
 skills	Control who invokes a skill	included	maintain.md	the table row that a skill with disable-model-invocation: true has its description out of context
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Implement feedback loops	included	verify.md	the Common pattern line and the two example loops
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	included	verify.md	the Use the Skill in real workflows step and the Gathering team feedback list
@@ -70,11 +70,11 @@ skills	Frontmatter reference	included	choose.md	the `disable-model-invocation` a
 scheduled-tasks	Run a prompt repeatedly with /loop	included	choose.md	the sentence that a scheduled fire only runs skills Claude can invoke on its own, and its `disable-model-invocation: true` entry
 skills	Run your checks before each commit	included	choose.md	the condition that Claude can invoke the `verify` or `simplify` skill
 costs	Offload processing to hooks and skills	included	choose.md	the skill paragraph on the "codebase-overview" example
-skills	Available string substitutions	included	write.md	the `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` rows, for a script's path
-skills	Generate visual output	included	write.md	the sentence that the script path uses `${CLAUDE_SKILL_DIR}` so it resolves at personal, project or plugin level
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Template pattern	included	write.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	included	write.md	the Tip only
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid assuming tools are installed	included	write.md	
+skills	Available string substitutions	included	write-skills.md	the `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PLUGIN_ROOT}` rows, for a script's path
+skills	Generate visual output	included	write-skills.md	the sentence that the script path uses `${CLAUDE_SKILL_DIR}` so it resolves at personal, project or plugin level
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Template pattern	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	included	write-skills.md	the Tip only
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid assuming tools are installed	included	write-skills.md	
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill authoring best practices	excluded		introduction only; states no guideline
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Core principles	excluded		heading only; its subsections have their own rows
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill structure	excluded		contradicts Claude Code, where all frontmatter fields are optional (skills › Frontmatter reference); its `name` and `description` limits apply to skills uploaded to claude.ai or the API (skills › Using skill frontmatter outside Claude Code), another surface
