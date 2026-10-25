@@ -63,5 +63,15 @@ expect 'second pattern matches nothing' 1 '' "$root/export.txt" "$root/toc.tsv" 
 expect 'no section matches' 1 '' "$root/export.txt" "$root/toc.tsv" 'absent'
 expect 'missing pattern' 2 '' "$root/export.txt" "$root/toc.tsv" ''
 
+# A section far longer than a pipe's buffer, whose second-pattern match is on its first line, so a check that stops
+# reading at the first match would leave the rest of the section unread.
+{
+  printf '# Long page\nSource: https://code.claude.com/docs/en/long\n\n## Long\nA gadget and a widget.\n'
+  for _ in $(seq 1 5000); do printf 'Filler line long enough to fill a pipe buffer quickly.\n'; done
+} >"$root/long.txt"
+"$shell" "$dir/docs-toc.sh" "$root/long.txt" >"$root/long.tsv"
+expect 'second pattern matched early in a long section' 0 "1${tab}long${tab}2${tab}Long${tab}4${tab}5005" \
+  "$root/long.txt" "$root/long.tsv" 'widget' 'gadget'
+
 printf '%s cases, %s failed\n' "$cases" "$failures"
 [ "$failures" -eq 0 ]

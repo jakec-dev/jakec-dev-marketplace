@@ -4,6 +4,11 @@ Instruction files are the markdown files Claude Code loads as instructions: CLAU
 `CLAUDE.local.md`, `AGENTS.md`, the files they import, and rules in `.claude/rules/` or `~/.claude/rules/`. Read the
 key facts first; they are what models most often get wrong. Then read only the sections your task needs.
 
+## Contents
+
+- [Key facts](#key-facts)
+- [Topics](#topics)
+
 ## Key facts
 
 - By default a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above it stops Claude
@@ -62,13 +67,6 @@ key facts first; they are what models most often get wrong. Then read only the s
   See [excluding.md › `claudeMdExcludes`](excluding.md).
 - Project rules are skipped if `project` is excluded from `--setting-sources`.
   See [excluding.md › `--setting-sources`](excluding.md).
-- If two instructions contradict each other, Claude may pick one arbitrarily (memory); for CLAUDE.md files at
-  different levels, features-overview says Claude uses judgment to reconcile them.
-  See [writing.md › Contradicting instructions](writing.md).
-- To see which CLAUDE.md and rules files loaded, run `/context`; to log when and why each loads, use the
-  `InstructionsLoaded` hook.
-  See [troubleshooting.md › Check whether it loaded](troubleshooting.md) and
-  [troubleshooting.md › Log loads with the `InstructionsLoaded` hook](troubleshooting.md).
 
 ## Topics
 

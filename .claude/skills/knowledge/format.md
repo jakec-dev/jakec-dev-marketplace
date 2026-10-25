@@ -49,19 +49,23 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - The topic list is agreed with the user on a type's first build and kept between builds. Only a proposal the user
   agrees to changes it: a new, split, merged or renamed topic, with a reason.
 - `index.md` is the entry an agent always reads: a title and a sentence, then `## Key facts`, then `## Topics`.
+  Over 100 lines, it opens with `## Contents` like a topic file, since the Topics list comes last.
   The Topics section lists every topic file with its task and its `##` sections; `scripts/knowledge-index.sh`
   generates it from the topic list, and nobody edits it by hand. Only the index links to topic files, so every
   read is one step from the index, and an agent reads only the sections its task needs.
 
 ## Key facts
 
-- Ten to twenty one-line facts that most tasks with this type need, chosen by evidence, strongest first:
+- Every task reads the index, so each key fact must justify its cost in context: "Only add context Claude doesn't
+  already have" (Skill authoring best practices › Concise is key). A fact is a key fact only if it meets one of
+  these tests, and the list runs strongest first:
   1. A model gets it wrong without the knowledge: the eval suite's baseline arm fails on it. Eval results are not
      kept in the repository, so the person running the build supplies them; without them, this test is not met.
   2. Getting it wrong fails silently, such as an ignored field, a pattern that matches nothing or a write refused
      without saying why. A refusal whose message tells Claude the fix is not silent.
   3. It sits in a section the documentation changed recently, so a model's training may predate it.
 - Among facts that meet a test, prefer the ones most tasks with the type will meet.
+- A key fact is one or two sentences, wrapped at 120 characters like any line. It never drops a condition to fit.
 - Each key fact summarises a bullet a topic file states in full, and ends with a pointer to it on its own line:
   `See [loading.md › After compaction](loading.md).`, naming the file and its `##` heading. The checker confirms the
   heading exists. A key fact is the one deliberate repeat of a fact.
@@ -76,10 +80,17 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - Another file may mention an owned fact in a few words, inside one of its own bullets, keeping any condition
   without which the mention misleads. Keep such a mention where a hand-over would otherwise leave this file's fact
   without the fix or caveat that makes it usable, such as a symptom without its cure. A mention is a clause inside
-  a bullet that rests on its own link; a bullet of its own, a link of its own or a copied table cell states the fact
-  again, and needs a hand-over.
+  a bullet that rests on its own link; a bullet of its own or a link of its own states the fact again, and needs a
+  hand-over.
 - One fact, one file. Where two sections state the same fact, it is stated once, in the file whose task it serves:
   the other section's sentence is handed to that file, or its owner leaves it out.
+- Across tool types, each part of a section has one owner too. Where one sentence lists several types, such as
+  "`--bare` skips hooks, skills, … and CLAUDE.md", each type's ledger takes its own clause by name, such as "the
+  clause that `--bare` skips skills", so the types never own the same words.
+- Where an owned sentence leaves its detail to a link, such as "the commands listed under Output limits", the owner
+  also takes that detail from the linked section, whatever its type, by name in the ledger, if an agent writing or
+  checking a tool of this type would act differently knowing it. Take only the part that applies to this type;
+  where the owned sentence still means what it says without the detail, leave the detail out.
 
 ## Writing facts
 
@@ -96,7 +107,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
 - Copy exactly: field names, values, defaults, limits, messages, and names of settings, events, commands and tools.
   A copied table keeps its header, its columns and any sentence that limits how to read it, and may drop rows that
   serve no task here. A sentence that changes what the table's rows mean stays with the table; a sentence that
-  states a separate fact, such as an order across the rows, may be handed to another file.
+  states a separate fact, such as an order across the rows, may be handed to another file. A copied table's cells
+  are copied text: a cell may repeat a fact another file states in full from its own section, and neither cuts it.
+  Prose in the table's own file states only what its cells leave out.
 - Links in copied text become absolute `https://code.claude.com/docs/en/…` links. Copy an anchor from the
   heading's `id` in the live page exactly. Where an anchor exists only in the browser, such as an interactive
   explorer's, link the nearest heading instead and keep the text. A copied word that points elsewhere on the page,
@@ -130,6 +143,9 @@ maintenance/ledger/<type>.tsv                     every section considered, and 
   included section, keep each sentence with its subject.
 - Sections that only repeat an included section, whose reason names the section they repeat, and sections that only
   introduce or link to other pages.
+- Sections that belong to another tool type: the section's subject is another tool type, and it states nothing about
+  this type that an included section doesn't. This ground never drops a fact about this type; where the section
+  states one, take that sentence or clause by name and exclude the rest on this ground.
 - Tutorial steps, marketing, statements about how the documentation is written (apart from the `Not stated`
   section), and what any capable model knows.
 
@@ -154,19 +170,37 @@ page	heading	decision	file	reason
 
 Guidance tells an agent how to decide: what deserves a tool, which kind, how to write it, how tools combine, how to
 prove a tool works and when to cut one. It is organised by decision, not by tool type, because choosing and
-combining cut across types.
+combining cut across types. Writing doesn't: a good skill and a good CLAUDE.md are different crafts, so writing
+has one file per tool type, such as `write.md` for instruction files and `write-skills.md` for skills.
 
 ```text
 plugins/agent-setup/guidance/index.md      key principles, then the topics
-plugins/agent-setup/guidance/<topic>.md    one file per decision, such as discover.md or choose.md
+plugins/agent-setup/guidance/<topic>.md    one file per decision, such as choose.md; writing has one per type
 maintenance/topics/guidance.md             the topic files and the decision each serves
 maintenance/ledger/guidance.tsv            every documentation section guidance draws on, and which file uses it
+maintenance/sources.tsv                    the Anthropic pages guidance draws on, and the section linking to each
+upstream/anthropic/pages.txt               those pages, fetched by scripts/fetch-sources.sh; not committed
 ```
+
+- **Sources.** Claude Code's documentation is in `upstream/claude-code/llms-full.txt`. An Anthropic page it links
+  to, such as the skill authoring best practices, is a source once `maintenance/sources.tsv` lists it with the
+  section that links to it; `scripts/fetch-sources.sh` writes those pages to `upstream/anthropic/pages.txt` in the
+  same shape. In the table of contents and the ledger, such a page is named `platform.claude.com/<path>`, and its
+  facts link to `https://platform.claude.com/docs/en/<path>#<anchor>`, written `[<page name> › <heading>](…)` with
+  the page's last path segment as its name.
+- **Where a source disagrees with Claude Code's documentation,** Claude Code's documentation wins: the guideline
+  states Claude Code's behaviour, or leaves the source's statement out, and the ledger's `excluded` row says why.
+  A source page often writes for every Claude surface, so keep its subject: "for skills uploaded to claude.ai or the
+  API" where Claude Code's documentation says that is where the rule applies.
+- **Headings name the tool type** when a guideline applies to one type only, such as `## Skill descriptions say what
+  and when`, so the Topics list in `index.md` shows which sections a task with that type needs. A guideline that
+  applies to every type leaves the type out.
 
 - **One guideline per `##` section.** It states the guideline, with its support, then ends with one bullet starting
   `- Check:`: a question about a tool that has a yes or no answer, which the writer follows and the auditor applies.
   The rules for topic files apply, including a `## Contents` section in a file over 100 lines;
-  `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance <toc.tsv>` checks them.
+  `scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance <toc.tsv>` checks them, given a table of
+  contents of both `llms-full.txt` and `pages.txt`.
 - **The evidence bar.** A guideline gets in only with support of one of these kinds:
   1. Anthropic says it: Claude Code's documentation, or an Anthropic page that documentation links to, such as the
      skill authoring best practices. Quote or state it with the source's subject and conditions, linked as in
@@ -180,7 +214,8 @@ maintenance/ledger/guidance.tsv            every documentation section guidance 
   so. To apply it to another type, give the reference fact that makes it apply, such as rules without `paths`
   loading like `.claude/CLAUDE.md`.
 - Leave out what any capable model already does unprompted; an eval baseline that passes shows it.
-- `index.md` has a title and a sentence, then `## Key principles`: up to ten one-line principles every task needs,
-  each with a pointer as in `## Key facts`, then the Topics section `scripts/knowledge-index.sh` generates.
+- `index.md` has a title and a sentence, then `## Key principles`: only the principles every task needs, each
+  written as `## Key facts` describes and with a pointer, then the Topics section `scripts/knowledge-index.sh`
+  generates.
 - The ledger has the reference ledger's columns. Sections can serve several decisions, so a section may have no
   single owner: each row names the file and, unless that file takes the whole section, the part it takes.

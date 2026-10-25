@@ -1,5 +1,6 @@
 ---
 description: A project instruction in a repository that uses AGENTS.md and has no CLAUDE.md.
+tags: [instructions]
 max_turns: 25
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill, Write, Edit]

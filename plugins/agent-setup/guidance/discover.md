@@ -2,10 +2,11 @@
 
 Deciding what in a repository or a way of working deserves a Claude tool, and what does not.
 
-The documentation states most of these for CLAUDE.md files. It also says "Claude Code can read `AGENTS.md` as your
+The documentation states the "Signs that something belongs in CLAUDE.md" and "What the codebase already says"
+sections for CLAUDE.md files. It also says "Claude Code can read `AGENTS.md` as your
 project instructions"
-([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies them to an
-`AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
+([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies those two sections to
+an `AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
 
 ## Add a tool when a trigger appears
 
@@ -68,3 +69,14 @@ project instructions"
   that needs another revision."
   [features-overview › Build your setup over time](https://code.claude.com/docs/en/features-overview#build-your-setup-over-time)
 - Check: before proposing a new tool, look for an existing one that the trigger points to.
+
+## A skill closes a gap seen without it
+
+- For a skill meant to fix a failure or missing context, the best-practices page says: "Create evaluations BEFORE
+  writing extensive documentation. This ensures your Skill solves real problems rather than documenting imagined
+  ones." Its first step, before writing the skill, is to run Claude on representative tasks without a skill and
+  document the specific failures or missing context. A skill saved from a repeated prompt is covered by the trigger
+  table above.
+  [best-practices › Build evaluations first](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#build-evaluations-first)
+- Check: for a skill meant to fix a failure or missing context, is there a recorded task where Claude failed, or
+  lacked context, without this skill, from a run made before writing it?

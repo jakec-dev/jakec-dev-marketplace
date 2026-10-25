@@ -1,5 +1,6 @@
 ---
 description: Diagnosing why a path-scoped rule does not load.
+tags: [instructions]
 max_turns: 20
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill]

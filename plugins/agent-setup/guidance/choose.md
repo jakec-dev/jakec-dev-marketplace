@@ -9,10 +9,14 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - Every session needs it: CLAUDE.md
 - One part of the codebase: a path-scoped rule or a nested CLAUDE.md
 - Needed sometimes, or a procedure: a skill
+- Context Claude would otherwise explore for: a skill
+- A skill with side effects is user-only
+- Background knowledge is a skill only Claude invokes
 - About the response, not the project: an output style
 - Isolated or parallel work: a subagent or a dynamic workflow
 - An external system: MCP, with a skill for using it
 - The same setup in another repository: a plugin
+- Instructions shipped in a plugin are skills
 
 ## The instruction file the repository already uses
 
@@ -108,6 +112,41 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
 - Check: no multi-step procedure or occasional reference material sits in CLAUDE.md or a rule without `paths`.
 
+## Context Claude would otherwise explore for: a skill
+
+- "A skill can give Claude domain knowledge so it doesn't have to explore." A "codebase-overview" skill could
+  describe the project's architecture, key directories and naming conventions; when Claude invokes it, "it gets this
+  context immediately instead of spending tokens reading multiple files to understand the structure."
+  [costs › Offload processing to hooks and skills](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills)
+- Check: is architecture, key-directory or naming-convention context that Claude would read many files to learn held
+  in a skill that loads when invoked?
+
+## A skill with side effects is user-only
+
+- For a skill, `disable-model-invocation: true` means Claude can't invoke the skill on its own: "Use this for
+  workflows with side effects or that you want to control timing, like `/commit`, `/deploy`, or
+  `/send-slack-message`. You don't want Claude deciding to deploy because your code looks ready."
+  [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+- `disable-model-invocation: true` also stops the skill being preloaded into a subagent or run when a scheduled task
+  fires with it as the prompt. A `/loop` scheduled fire only runs skills Claude is allowed to invoke on its own, so a
+  `disable-model-invocation: true` skill reaches Claude as plain text instead. Claude gets the instruction to run a
+  `verify` or `simplify` skill before each commit only when Claude can invoke that skill.
+  [skills › Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference)
+  [scheduled-tasks › Run a prompt repeatedly with /loop](https://code.claude.com/docs/en/scheduled-tasks#run-a-prompt-repeatedly-with-/loop)
+  [skills › Run your checks before each commit](https://code.claude.com/docs/en/skills#run-your-checks-before-each-commit)
+- Check: does each skill with side effects, or whose timing you want to control, such as one that commits, deploys or
+  sends something, set `disable-model-invocation: true`? A skill meant for subagent preload, scheduled-task or
+  `/loop` runs, or the commit-time `verify` instruction does not set it.
+
+## Background knowledge is a skill only Claude invokes
+
+- With `user-invocable: false`, "Only Claude can invoke the skill. Use this for background knowledge that isn't
+  actionable as a command." Claude Code hides it from the `/` menu and doesn't run it when you type `/name`; its
+  description stays in context ("Description always in context, full skill loads when invoked").
+  [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+  [skills › Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference)
+- Check: use `user-invocable: false` for a skill that holds only background knowledge, with no action a user would run.
+
 ## About the response, not the project: an output style
 
 - Put it in CLAUDE.md "if it's true of the project whatever style you're in". "Use an output style if it's about the
@@ -138,3 +177,10 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   marketplace."
   [features-overview › Match features to your goal](https://code.claude.com/docs/en/features-overview#match-features-to-your-goal)
 - Check: a setup copied into a second repository is proposed as a plugin instead.
+
+## Instructions shipped in a plugin are skills
+
+- "To include instructions in a plugin, write them as a skill. Claude Code doesn't load a `CLAUDE.md` at the plugin
+  root, and `claude plugin validate` warns `CLAUDE.md at the plugin root is not loaded as project context`."
+  [plugins/components › Skills](https://code.claude.com/docs/en/plugins/components#skills)
+- Check: does a plugin that must carry instructions hold them in a skill, not in a plugin-root `CLAUDE.md`?

@@ -1,5 +1,6 @@
 ---
 description: A request this plugin's rule skill should not handle.
+tags: [skills]
 max_turns: 10
 timeout_seconds: 300
 allowed_tools: [Read, Glob, Grep, Skill]

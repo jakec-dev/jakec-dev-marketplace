@@ -27,9 +27,10 @@ report() {
   problems=$((problems + 1))
 }
 
-# Prints a problem for each line of one topic file that breaks the format, as "<file>:<line>: <problem>".
+# Prints a problem for each line of one topic file that breaks the format, as "<file>:<line>: <problem>". A second
+# argument of 1 marks a guidance file, which may also cite the Anthropic pages Claude Code's documentation links to.
 check_topic() {
-  awk -v file="$1" '
+  awk -v file="$1" -v guidance="${2:-0}" '
     function flush() {
       if (bullet && !cited) print file ":" bullet ": bullet has no link to the documentation"
       bullet = 0; cited = 0
@@ -38,7 +39,7 @@ check_topic() {
     /^## / { in_contents = ($0 == "## Contents"); if (in_contents) contents = 1 }
     /^[ \t]*(```|~~~)/ { fence = !fence }
     # format.md exempts a line holding a link, a table row and a line inside a code block from the length limit.
-    !fence && length($0) > 120 && !/\]\(https?:/ && !/^[ \t]*\|/ {
+    !fence && length($0) > 120 && !/\]\((https?:|#)/ && !/^[ \t]*\|/ {
       print file ":" FNR ": line longer than 120 characters"
     }
     !fence {
@@ -55,6 +56,7 @@ check_topic() {
     !fence && /^- / { flush(); if (!in_contents && !/^- (Check|Evidence): /) bullet = FNR }
     !fence && /^#/ { flush() }
     bullet && /\]\(https:\/\/code\.claude\.com\/docs\/en\// { cited = 1 }
+    bullet && guidance && /\]\(https:\/\/platform\.claude\.com\/docs\/en\// { cited = 1 }
     END {
       flush()
       if (FNR > 100 && !contents) print file ": over 100 lines with no ## Contents section"
@@ -63,7 +65,13 @@ check_topic() {
 }
 
 found_type=0
-if [ -f "$knowledge/index.md" ]; then set -- "${knowledge%/}/"; else set -- "$knowledge"/*/; fi
+is_guidance=0
+if [ -f "$knowledge/index.md" ]; then
+  set -- "${knowledge%/}/"
+  is_guidance=1
+else
+  set -- "$knowledge"/*/
+fi
 for dir in "$@"; do
   [ -d "$dir" ] || continue
   found_type=1
@@ -79,12 +87,15 @@ for dir in "$@"; do
   while IFS= read -r line; do report "$line"; done < <(
     awk -v file="$index" '
       length($0) > 120 && !/\]\(https?:/ { print file ":" FNR ": line longer than 120 characters" }
+      $0 == "## Contents" { contents = 1 }
+      # The index lists the topics last, so a long one needs contents up front for a reader who previews it.
+      END { if (FNR > 100 && !contents) print file ": over 100 lines with no ## Contents section" }
     ' "$index"
   )
 
   for topic in "$dir"*.md; do
     [ "$(basename "$topic")" = index.md ] && continue
-    while IFS= read -r line; do report "$line"; done < <(check_topic "$topic")
+    while IFS= read -r line; do report "$line"; done < <(check_topic "$topic" "$is_guidance")
   done
 
   # The topic list and the topic files match exactly.

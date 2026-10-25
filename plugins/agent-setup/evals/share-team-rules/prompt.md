@@ -1,5 +1,6 @@
 ---
 description: Sharing rules from another directory by symlink.
+tags: [instructions]
 max_turns: 20
 timeout_seconds: 600
 allowed_tools: [Read, Glob, Grep, Skill]

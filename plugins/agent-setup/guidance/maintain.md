@@ -34,3 +34,25 @@ Keeping existing tools useful as the codebase and models change, and finding the
 - "A `Stop` hook receives the path to the session transcript when Claude finishes responding, so a script can review
   the session and propose CLAUDE.md updates while the gap it exposed is fresh."
   [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
+
+## Cut skills that are never invoked
+
+- "Every skill in the skill listing adds to your context on every turn, whether or not Claude ever uses it." The
+  `/skill-doctor` report "flags skills in the listing that have never been invoked and says where to turn them off";
+  of the skills it tells you where to turn off, start with the ones that have the highest context cost. The report
+  covers the skills in your session other than bundled skills and enterprise skills.
+  [skills › Find unused skills](https://code.claude.com/docs/en/skills#find-unused-skills)
+- `/skill-doctor` "isn't available in sessions that skip feature-flag fetching".
+  [skills › Find unused skills](https://code.claude.com/docs/en/skills#find-unused-skills)
+- A skill with `disable-model-invocation: true` has no description in context.
+  [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+- Check: has `/skill-doctor` been run, starting with the highest context cost, and does each skill it flags as never
+  invoked have a reason to stay?
+
+## Review allowed-tools before running a repository's skills
+
+- "A skill can grant itself broad tool access, so review the `allowed-tools` of skills checked into a repository
+  before you run Claude Code there." The reason: "Workspace trust doesn't gate this field. Claude Code applies a
+  project skill's `allowed-tools` even in a `-p` run in a folder you've never trusted."
+  [skills › Pre-approve tools for a skill](https://code.claude.com/docs/en/skills#pre-approve-tools-for-a-skill)
+- Check: has each checked-in skill's `allowed-tools` been reviewed, with any broad grant flagged?

@@ -127,6 +127,11 @@ two_sentences_same_file() {
   ledger_row "memory${tab}Auto memory${tab}included${tab}loading.md${tab}the sentence on priority"
   expect 0 'two named sentences of one section to one file pass'
 }
+long_anchor_line() {
+  topic_line "- A fact. $link"
+  topic_line "  [$(printf 'x%.0s' {1..130})](#a-long-heading)"
+  expect 0 'long line holding an anchor link passes'
+}
 long_table_row() {
   topic_line "| \`field\` | $(printf 'x%.0s' {1..130}) |"
   expect 0 'long table row passes'
@@ -140,6 +145,16 @@ with_contents() {
   regen_index
   expect 0 'over 100 lines with contents passes'
 }
+# Pads the index's key facts past 100 lines, with or without a Contents section.
+long_index() {
+  awk -v contents="$1" '
+    /^## Key facts$/ && contents { print "## Contents"; print ""; print "- Key facts"; print "- Topics"; print "" }
+    { print }
+    /^## Key facts$/ { print ""; for (i = 1; i <= 100; i++) print "- Fact " i "." }
+  ' knowledge/rules/index.md >"$root/index" && mv "$root/index" knowledge/rules/index.md
+}
+long_index_no_contents() { long_index 0 && expect 1 'index over 100 lines without contents'; }
+long_index_with_contents() { long_index 1 && expect 0 'index over 100 lines with contents passes'; }
 check_bullet() {
   topic_line "- A fact. $link"
   topic_line '- Evidence: eval case some-case'
@@ -170,6 +185,22 @@ single_dir_defect() {
     return 1
   fi
   printf 'ok   %s\n' 'a defect in a directory given directly'
+}
+# Anthropic pages count as a source only in guidance, which is a directory given directly.
+platform='[best-practices › Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key)'
+platform_link_in_guidance() {
+  local status=0
+  topic_line "- Only add what Claude lacks. $platform"
+  "$shell" "$check" knowledge/rules maintenance toc.tsv >"$root/out" 2>&1 || status=$?
+  if [ "$status" -ne 0 ]; then
+    printf 'FAIL a platform citation in guidance: want exit 0, got %s\n' "$status"
+    sed 's/^/  /' "$root/out"
+    return 1
+  fi
+  printf 'ok   %s\n' 'a platform citation in guidance'
+}
+platform_link_in_reference() {
+  topic_line "- Only add what Claude lacks. $platform" && expect 1 'a platform citation in reference'
 }
 no_ledger() { rm maintenance/ledger/rules.tsv && expect 1 'missing ledger'; }
 bad_header() { sed -i.bak '1s/.*/page heading/' maintenance/ledger/rules.tsv && expect 1 'ledger header'; }
@@ -244,7 +275,8 @@ duplicate_row() {
 
 for test in clean no_index unlisted_topic listed_missing no_title uncited cross_link relative_link version_word \
   version_number long_line long_line_with_link long_code_line dead_pointer long_index_line two_sentences_same_file \
-  long_table_row check_bullet other_bullet_unlinked single_dir single_dir_defect no_contents with_contents no_ledger \
+  long_table_row long_anchor_line check_bullet other_bullet_unlinked single_dir single_dir_defect platform_link_in_guidance \
+  platform_link_in_reference no_contents with_contents long_index_no_contents long_index_with_contents no_ledger \
   bad_header unknown_section bad_decision excluded_no_reason included_missing included_with_scope included_no_file \
   no_topics topic_not_in_topics listed_topic_missing topic_not_in_ledger two_owners handed_sentence split_section \
   named_part_and_rest duplicate_row; do
