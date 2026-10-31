@@ -16,4 +16,7 @@ CLAUDE.local.md
 # Anthropic's documentation exports stay local, since they are Anthropic's text; their tables of contents and
 # fingerprints are committed.
 upstream/claude-code/llms-full*.txt
-upstream/anthropic/pages.txt
+upstream/anthropic/pages*.txt
+
+# docs-diff.sh reports for a refresh in progress.
+upstream/refresh/
