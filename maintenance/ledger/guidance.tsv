@@ -131,12 +131,63 @@ skills	Personal skills disappeared	excluded		states no guideline
 agent-view	From agent view	excluded		already in guidance (discover.md); the rest is about agent view
 skills	Extend Claude with skills	excluded		already in guidance (discover.md, choose.md)
 best-practices	Create skills	excluded		repeats reference facts; its `disable-model-invocation` sentence repeats the support of A skill with side effects is user-only
-claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill and rule rows repeat choose.md
-costs	Offload processing to hooks and skills	excluded		the hook half belongs to the hooks guidance, not yet built
+claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill, rule and hook rows repeat choose.md
 costs	Move instructions from CLAUDE.md to skills	excluded		already in guidance (choose.md, write.md)
-plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md
+plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md and its settings-hook column repeats choose.md
 workflows	When to use a workflow	excluded		compares workflows with other tools; belongs to the patterns guidance, not yet built
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	excluded		the worked example repeats the guideline
-hooks	Stop input	excluded		the rest belongs to the hooks guidance, not yet built
 goal	How evaluation works	excluded		the rest is not about verifying a tool
 scheduled-tasks	Run a prompt repeatedly with /loop	excluded		the rest belongs to the reference, not guidance
+hooks-guide	Automate actions with hooks	included	write-hooks.md	the sentence on deterministic control
+hooks-guide	Prompt-based hooks	included	write-hooks.md	the first sentence only
+goal	Compare ways to keep a session running	included	write-hooks.md	the sentence that a Stop hook can run a script for deterministic checks or a prompt for model-evaluated ones
+hooks-guide	Agent-based hooks	included	write-hooks.md	the Warning only
+hooks	PostToolUse decision control	included	write-hooks.md	the first paragraph of the `updatedToolOutput` Warning, and the sentence on stripping error details Claude needs
+hooks	PreToolUse	included	write-hooks.md	the FileChanged paragraph and the Warning on `@` references
+hooks	Common fields	included	write-hooks.md	the sentences that a hook runs regardless when Claude Code can't determine the Bash commands, and that the `if` filter is best-effort
+hooks-guide	Limitations	included	write-hooks.md	the `updatedInput` bullet only
+costs	Offload processing to hooks and skills	included	write-hooks.md	the hook paragraph and the PreToolUse filter-test-output example
+features-overview	Understand how features load	included	write-hooks.md	the Hooks tab's Tip on side effects; its context-cost line repeats compose.md
+hooks	Add context for Claude	included	write-hooks.md	the factual-statements sentences and the resume-replay paragraph
+hooks	Stop input	included	write-hooks.md	the `stop_hook_active` sentences and the `last_assistant_message` paragraph's current advice
+hooks	Common input fields	included	write-hooks.md	the `transcript_path` row's sentences on the file lagging
+hooks-guide	Hook error in output	included	write-hooks.md	the "command not found" bullet and the sentence on building the payload with a JSON encoder
+hooks	Reference scripts by path	included	write-hooks.md	the `${CLAUDE_PROJECT_DIR}` and `${CLAUDE_PLUGIN_ROOT}` bullets and the "Prefer exec form" sentences
+hooks	Security best practices	included	write-hooks.md	
+hooks	Disclaimer	included	write-hooks.md	the sentences that command hooks run with full user permissions and can modify, delete or access any file
+hooks	Run hooks in the background	included	write-hooks.md	
+permissions	What a Bash rule doesn't match	included	choose.md	
+auto-mode-config	Add a human checkpoint	included	choose.md	the sentence that a push written another way doesn't match the rule, and the sentence to add a PreToolUse hook for a checkpoint on the full command text
+permissions	Read-only commands	included	choose.md	the Warning on fragile Bash argument patterns, with its options and closing note on WebFetch
+hooks	Common fields	included	choose.md	a mention of the sentence to use the permission system rather than a hook for a hard allow or deny
+hooks	Add context for Claude	included	choose.md	the sentences to prefer CLAUDE.md for instructions that never change, and to use `additionalContext` for current state
+hooks-guide	Re-inject context after compaction	included	choose.md	the sentence on re-injecting context with a `compact` matcher, the sentence on dynamic output and the sentence to consider CLAUDE.md for every session start
+costs	Offload processing to hooks and skills	included	verify.md	the final paragraph, on `/hooks`, `--debug-file` and the `modified tool input keys` line
+hooks	Disclaimer	included	verify.md	the sentence to review and test all hook commands before adding them
+hooks-guide	Filter by tool name and arguments with the `if` field	excluded		its best-effort sentence repeats hooks › Common fields (write-hooks.md); the rest is reference
+best-practices	Set up hooks	excluded		repeats choose.md › Must happen every time; its `/hooks` and settings sentences repeat reference facts
+champion-kit	Quick-reference sheet	excluded		its Stop-hook notification row is marketing
+communications-kit	Automate your workflows	excluded		marketing for a Stop-hook notification
+features-overview	Overview	excluded		introduces and links only
+goal	Compare ways to keep a session running	excluded		the rest compares /goal with /loop and auto mode
+large-codebases	Recommend the right plugin at session start	excluded		one use of a SessionStart hook; its facts are in the hooks reference
+large-codebases	Centralize conventions when layering stops scaling	excluded		about plugins; states no hook guideline
+memory	CLAUDE.md vs auto memory	excluded		its PreToolUse sentence repeats choose.md › Must happen every time
+output-styles	Choose between an output style and other features	excluded		its hook row repeats choose.md › Must happen every time
+permissions	Manage permissions	excluded		its note repeats choose.md › Must happen every time
+plugins/components	Skills	excluded		the rest; its hook-or-skill sentence repeats choose.md › Must happen every time
+plugins/create	Decide when to use a plugin	excluded		repeats choose.md › The same setup in another repository: a plugin
+plugins/overview	Decide whether you need a plugin	excluded		repeats choose.md › The same setup in another repository: a plugin
+plugins/mods/overview	What a mod can do	excluded		about mods; states no hook guideline
+sandbox-environments	Compare sandboxing approaches	excluded		its hooks-run-on-host fact is in the hooks reference (excluding.md › The sandbox boundary)
+security-guidance	Add guidance for the model-backed reviews	excluded		its hard-enforcement sentence repeats choose.md › Must happen every time
+hooks	Stop input	excluded		the rest states input fields, including what `background_tasks` and `session_crons` are for, with no advice; owned by the hooks reference
+hooks	Run tests after file changes	excluded		an example of an async hook; no advice on hook speed beyond Run hooks in the background
+commands	All commands	excluded		the /doctor clause that flags slow hooks is a fact, not advice on hook speed; owned by the hooks reference
+hooks	Prompt-based hooks	included	write-hooks.md	a mention of the events without prompt hooks
+hooks	Configure an async hook	included	write-hooks.md	the sentence that `async` is only available on command hooks
+hooks	SessionStart	included	write-hooks.md	the sentence to keep SessionStart hooks fast
+hooks	UserPromptSubmit	included	write-hooks.md	the sentence that a stuck hook stalls the session
+hooks	MessageDisplay	included	write-hooks.md	the sentence to keep the hook fast
+hooks	How async hooks execute	included	write-hooks.md	the sentence that `additionalContext` and `systemMessage` reach Claude on the next turn
+context-window	What survives compaction	included	choose.md	the rows on project-root CLAUDE.md and unscoped rules, and on context that hooks added earlier

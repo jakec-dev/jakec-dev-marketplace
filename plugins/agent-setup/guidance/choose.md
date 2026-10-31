@@ -6,7 +6,9 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 
 - The instruction file the repository already uses
 - Must happen every time: a hook
+- A rule on a command's text: keep it, and add a PreToolUse hook
 - Every session needs it: CLAUDE.md
+- Context that never changes: CLAUDE.md, not a hook
 - One part of the codebase: a path-scoped rule or a nested CLAUDE.md
 - Needed sometimes, or a procedure: a skill
 - Context Claude would otherwise explore for: a skill
@@ -64,7 +66,8 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - For managed settings and a managed CLAUDE.md: "Settings rules are enforced by the client regardless of what
   Claude decides to do. CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer."
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
-- To stop an action, a permission deny rule also holds every time. For auto mode, the documentation's boundaries
+- To stop an action, a permission deny rule also holds every time, for the form it matches; a Bash command Claude
+  writes another way is covered under "A rule on a command's text" below. For auto mode, the documentation's boundaries
   table gives `permissions.deny` for "Never run the action", which "Blocks before the classifier is consulted.
   Neither the classifier nor user intent can override it", and says "Use an ask or deny rule for a durable
   guarantee."
@@ -75,7 +78,48 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   refuses, except where the documentation says deny rules or managed hooks hold over it.
   [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
 - Check: no instruction in CLAUDE.md, a rule or a skill is something that must hold every time or run at a fixed
-  point; each such requirement is a hook, or, to stop a tool call, a permission deny rule.
+  point; each such requirement is a hook, or, to stop a tool call, a permission deny rule, backed as "A rule on a
+  command's text" asks where Claude could write the command another way.
+
+## A rule on a command's text: keep it, and add a PreToolUse hook
+
+- A Bash deny or ask rule stays, backed by a `PreToolUse` hook that inspects the full command text with your own
+  logic, or by the sandbox for filesystem and network enforcement that doesn't depend on the command text. A Bash
+  rule "matches the command text Claude writes, after Claude Code splits compound commands and strips wrappers. It
+  doesn't match the same program invoked in a different form, so a deny or ask rule covers the invocation Claude
+  usually produces and isn't a security boundary around the program." These rules in `deny` or `ask` stop the first
+  form and not the others:
+
+  | Rule | Stops | Doesn't stop |
+  | :- | :- | :- |
+  | `Bash(curl *)` | `curl https://example.com` | `/usr/bin/curl https://example.com`, `sh -c 'curl https://example.com'` |
+  | `Bash(rm *)` | `rm -rf build/` | `/bin/rm -rf build/`, `bash -c 'rm -rf build/'` |
+  | `Bash(git push *)` | `git push origin main` | `git -C . push origin main`, `git -c push.default=current push origin main`, `git 'push' origin main` |
+
+  "Your other rules and the permission mode decide the commands in the last column." "For filesystem and network
+  enforcement that doesn't depend on the command text, use sandboxing. To inspect the full command text with your own
+  logic before it runs, use a PreToolUse hook." A hook narrowed with `if` is best-effort, so "use the permission
+  system rather than a hook to enforce a hard allow or deny"
+  ([hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)).
+  [permissions › What a Bash rule doesn't match](https://code.claude.com/docs/en/permissions#bash-rule-limits)
+- For an `ask` rule such as `Bash(git push *)`, a push written as `git -C <dir> push` or `git -c <key>=<value> push`
+  doesn't match the rule, so it isn't checkpointed. "For a checkpoint that inspects the full command text, add a
+  PreToolUse hook."
+  [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
+- Bash permission patterns that try to constrain command arguments are fragile: `Bash(curl http://github.com/ *)`
+  won't match options before the URL, a different protocol, redirects or variables. More reliable options:
+  - Use deny rules to stop `curl`, `wget` and similar commands, then `WebFetch(domain:github.com)` permission for
+    allowed domains, paired with the sandbox network allowlist when the restriction must hold.
+  - A `PreToolUse` hook that validates URLs in Bash commands and blocks disallowed domains.
+  - `CLAUDE.md` guidance describing allowed `curl` patterns: it "shapes what Claude tries but doesn't enforce a
+    boundary, so pair it with one of the options above".
+
+  Using WebFetch alone doesn't prevent network access: if Bash is allowed, Claude can still use `curl`, `wget` or
+  other tools to reach any URL.
+  [permissions › Read-only commands](https://code.claude.com/docs/en/permissions#read-only-commands)
+- Check: where a deny or ask rule guards a command Claude could write another way, or constrains its arguments, is the
+  rule backed by a `PreToolUse` hook that inspects the full command text, or by the sandbox for filesystem or network
+  enforcement that doesn't depend on the command text?
 
 ## Every session needs it: CLAUDE.md
 
@@ -84,6 +128,23 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   into topic files: "Use rules to keep CLAUDE.md focused."
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
 - Check: the instruction applies in every session, whatever part of the codebase Claude works in.
+
+## Context that never changes: CLAUDE.md, not a hook
+
+- "For instructions that never change, prefer CLAUDE.md. It loads without running a script and is the standard place
+  for static project conventions." A hook's `additionalContext` suits information about the current state of the
+  environment or the operation that just ran.
+  [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
+- Compaction "summarizes the conversation to free space. This can lose important details", so a `SessionStart` hook
+  with a `compact` matcher re-injects critical context after every compaction, and its command can be "any command
+  that produces dynamic output, like `git log --oneline -5`". For a hook that injects context on every session start:
+  "For injecting context on every session start, consider using CLAUDE.md instead."
+  [hooks-guide › Re-inject context after compaction](https://code.claude.com/docs/en/hooks-guide#re-inject-context-after-compaction)
+- After compaction, a project-root CLAUDE.md and unscoped rules are "Re-injected from disk", while "Context that hooks
+  added earlier" is "Summarized with the rest of the conversation".
+  [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
+- Check: is text that never changes held in CLAUDE.md or a rule rather than injected by a hook, with a hook kept for
+  current state or for context that nothing else reloads after compaction?
 
 ## One part of the codebase: a path-scoped rule or a nested CLAUDE.md
 

@@ -5,7 +5,7 @@ plugins that Claude Code can install from this repository.
 
 ## Status
 
-Early development. The plugins install, but none is ready for use yet.
+Early development. `agent-setup` has its first skills ready to use.
 
 ## Plugins
 

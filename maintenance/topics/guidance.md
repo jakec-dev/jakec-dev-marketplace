@@ -4,6 +4,8 @@
 - `choose.md`: picking the kind of Claude tool that fits a goal
 - `write.md`: writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it
 - `write-skills.md`: writing a skill's description, body and bundled files so that Claude finds the skill and follows it
+- `write-hooks.md`: writing a hook's event, handler, command and output so that it fires when it should and Claude can act
+  on what it returns
 - `compose.md`: making several tools work together within Claude's context
 - `verify.md`: proving that a tool works before calling it done
 - `maintain.md`: keeping existing tools useful, and finding the ones to cut
