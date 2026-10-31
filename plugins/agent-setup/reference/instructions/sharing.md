@@ -27,12 +27,14 @@ directories and sparse worktrees.
   rules don't load until you approve external imports for the project, and after that only the ones without a
   `paths` field load.
   [memory › Share rules across projects with symlinks](https://code.claude.com/docs/en/memory#share-rules-across-projects-with-symlinks)
-- Claude Code asks for that approval only when a project memory file imports a file outside the working directory
-  with `@path`, not for symlinks alone.
+- Claude Code asks for that approval once per project, in a dialog at the start of an interactive session. The
+  dialog lists the linked rule files alongside any external `@path` imports.
   [memory › Share rules across projects with symlinks](https://code.claude.com/docs/en/memory#share-rules-across-projects-with-symlinks)
 - To load shared rules without that approval, keep them in `~/.claude/rules/`, where they apply to every project on
-  your machine.
-  [memory › Share rules across projects with symlinks](https://code.claude.com/docs/en/memory#share-rules-across-projects-with-symlinks)
+  your machine; in Cowork sessions on your desktop, a symlink there that points outside the working directory is
+  skipped.
+  [memory › Share rules across projects with symlinks](https://code.claude.com/docs/en/memory#share-rules-across-projects-with-symlinks),
+  [memory › Import additional files](https://code.claude.com/docs/en/memory#import-additional-files)
 - Claude Code refuses a write with `Refusing to write into symlinked directory: <path>` when the directory that holds
   the file is itself a symbolic link, for example a project's `.claude/` directory linked to another location.
   [errors › Refusing to read, write, or search a path](https://code.claude.com/docs/en/errors#refusing-after-a-symlink-changed)
@@ -72,10 +74,11 @@ directories and sparse worktrees.
 
 - The `--add-dir` flag gives Claude access to additional directories outside your main working directory.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
-- For a directory added with `--add-dir`, setting the `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` environment
-  variable loads `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md`, and `CLAUDE.local.md` from it.
+- For a directory added with `--add-dir` or `/add-dir`, setting the `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`
+  environment variable loads `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md`, and `CLAUDE.local.md` from it.
   `CLAUDE.local.md` is skipped if you exclude `local` from `--setting-sources`.
-  [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
+  [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories),
+  [large-codebases › Grant access across packages or repositories](https://code.claude.com/docs/en/large-codebases#grant-access-across-packages-or-repositories)
 
   ```bash
   CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
@@ -107,6 +110,9 @@ directories and sparse worktrees.
   | `additionalDirectories` setting | Never | Never |
   | `--add-dir` flag or `/add-dir` command | Only with `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` | Yes |
 
+- Passing `--add-dir` at launch grants access at runtime without editing settings, as in
+  `claude --add-dir ../shared`.
+  [large-codebases › Grant access across packages or repositories](https://code.claude.com/docs/en/large-codebases#grant-access-across-packages-or-repositories)
 - For sibling directories that everyone in this area needs, commit `additionalDirectories` to
   `.claude/settings.json`. For a personal selection or one-off access, use `.claude/settings.local.json` or pass
   `--add-dir` at launch.
@@ -139,18 +145,41 @@ directories and sparse worktrees.
   lists merge across scopes, so `.claude/settings.local.json` can add paths to the committed list but not remove
   them.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
-- The `sparsePaths` setting is read from your starting directory before the worktree is created. After creation,
-  the session's working directory is the worktree root, not the subdirectory you launched from.
+- To avoid duplicating large directories like `node_modules` across worktrees, pair `sparsePaths` with
+  `symlinkDirectories` in the same `.claude/settings.json`. This creates a symlink from each worktree's
+  `node_modules/` back to the main repository's copy rather than duplicating it on disk.
+  [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
+
+  ```json
+  {
+    "worktree": {
+      "sparsePaths": [".claude", "packages/api", "packages/shared"],
+      "symlinkDirectories": ["node_modules"]
+    }
+  }
+  ```
+
+- The `sparsePaths` and `symlinkDirectories` settings are read from your starting directory before the worktree is
+  created. After creation, the session's working directory is the worktree root, not the subdirectory you launched
+  from. Project settings inside the worktree therefore load from the worktree root's `.claude/settings.json`, the
+  checked-out copy of the repository root's file, so put any other settings you need inside worktrees, such as
+  permission rules or hooks, in the repository root's `.claude/settings.json`.
+  [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
+- Sparse checkout requires git to enable `extensions.worktreeConfig` in the repository's shared `.git/config` while a
+  sparse worktree exists. Claude Code removes that entry after the last worktree is removed, but only if Claude Code
+  added it. It never removes a value you set yourself.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 
 ## Not stated by the documentation
 
-- The documentation does not say what a `paths` pattern in a rule loaded from an additional directory is matched
-  against: that directory or the working directory.
+- The documentation does not say whether a rule loaded from an additional directory counts as a project rule when
+  its `paths` pattern is matched, which would make the base directory the one containing the rule's `.claude`
+  folder, or whether it is matched against the working directory.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
 - For an additional directory the documentation names `.claude/rules/*.md`; it does not say whether rules in
   subdirectories of that directory's `.claude/rules/` load.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
-- Skills, commands, and subagents from a flag-added directory don't load when `project` is excluded from
-  `--setting-sources`; the documentation does not say the same for CLAUDE.md files or rules from that directory.
-  [permissions › Additional directories grant file access, not configuration](https://code.claude.com/docs/en/permissions#additional-directories-grant-file-access-not-configuration)
+- The documentation does not say whether CLAUDE.md files or rules from a directory added with `--add-dir` depend on
+  the `project` setting source; it states a setting-source dependency only for `CLAUDE.local.md`, which needs
+  `local`.
+  [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)

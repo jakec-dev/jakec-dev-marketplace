@@ -16,15 +16,20 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
 ## When Claude reads AGENTS.md
 
 - Claude Code can read `AGENTS.md` as your project instructions, so a repository already set up for other coding
-  agents works without adding a `CLAUDE.md`, an import, or a setting. Claude Code can load it on its own or alongside
-  `CLAUDE.md`. An `AGENTS.md` lives in the project root, `.claude/`, or any directory.
-  [memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md),
+  agents works without adding a `CLAUDE.md`, an import, or a setting. By default it reads:
+  [memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)
+
+  | Your repository has | Claude reads |
+  | :- | :- |
+  | An `AGENTS.md`, and no `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `AGENTS.md` |
+  | An `AGENTS.md` and a `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `CLAUDE.md` files only |
+  | A `CLAUDE.md` that already imports `AGENTS.md` | Your `CLAUDE.md`, with `AGENTS.md` included through the import |
+
+- An `AGENTS.md` can live in the project root, `.claude/`, or any directory.
   [claude-directory › What's not shown](https://code.claude.com/docs/en/claude-directory#what’s-not-shown)
-- By default, Claude reads `AGENTS.md` only when you have no `CLAUDE.md` in your working directory or above it. A
-  `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` in your working directory or any directory above it counts,
-  so Claude reads it instead of `AGENTS.md`. `~/.claude/CLAUDE.md`, your organization's managed `CLAUDE.md`, and
-  `.claude/rules/` files don't count, and keep loading alongside `AGENTS.md`. A `CLAUDE.md` that already imports
-  `AGENTS.md` has Claude read your `CLAUDE.md`, with `AGENTS.md` included through the import.
+- For the default above, a `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` in your working directory or any
+  directory above it counts, so Claude reads it instead of `AGENTS.md`. `~/.claude/CLAUDE.md`, your organization's
+  managed `CLAUDE.md`, and `.claude/rules/` files don't count, and keep loading alongside `AGENTS.md`.
   [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md),
   [memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)
 - When none count, Claude reads every `AGENTS.md` and `.claude/AGENTS.md` in your working directory and the
@@ -55,17 +60,18 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
   | `claude-md-and-agents-md` | Your `CLAUDE.md` and `AGENTS.md` files together, each directory's `CLAUDE.md` files first and its `AGENTS.md` after them. Claude Code skips an `AGENTS.md` it has already loaded, so one that your `CLAUDE.md` imports or symlinks to isn't read twice |
   | `claude-md` | Your `CLAUDE.md` files only |
 
-- You can also set the value in a settings file instead of `/config`: add it under the built-in `agents-md` plugin's
-  ID in `pluginConfigs`, in `~/.claude/settings.json`, a `--settings` file, or managed settings. Claude Code ignores
-  it in project and local settings files. The setting is `pluginConfigs["agents-md@builtin"].options.instructionFiles`;
-  this example has Claude read both files:
+- You can also set the value in a settings file instead of `/config`: add it under `cc-plugin-agents-md@builtin`, the
+  ID of the built-in plugin that reads `AGENTS.md`, in `pluginConfigs`, in `~/.claude/settings.json`, a `--settings`
+  file, or managed settings. Claude Code ignores it in project and local settings files. The setting is
+  `pluginConfigs["cc-plugin-agents-md@builtin"].options.instructionFiles`, and Claude Code also reads an entry under
+  the earlier ID `agents-md@builtin`. This example has Claude read both files:
   [memory › Choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load),
   [settings-reference › pluginConfigs](https://code.claude.com/docs/en/settings-reference#pluginconfigs)
 
   ```json
   {
     "pluginConfigs": {
-      "agents-md@builtin": {
+      "cc-plugin-agents-md@builtin": {
         "options": { "instructionFiles": "claude-md-and-agents-md" }
       }
     }
@@ -80,10 +86,11 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
 - Claude reads `CLAUDE.md` files only, and **Project instructions** doesn't appear in the `/config` settings panel,
   in these sessions. To give Claude your `AGENTS.md` in any of them, import it from a `CLAUDE.md`.
   [memory › When AGENTS.md support is unavailable](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)
-  - You disabled the built-in `agents-md` plugin in `/plugin`.
+  - You used `/plugin` to disable the built-in plugin that reads `AGENTS.md`.
   - In some cases, your first session after you upgrade from a Claude Code version that couldn't read `AGENTS.md`
     directly. Claude reads `AGENTS.md` from your next session on.
-- Sessions such as those on Amazon Bedrock or with telemetry disabled aren't limited to `CLAUDE.md` files.
+- Some sessions, such as those on Amazon Bedrock or with telemetry disabled, aren't limited to `CLAUDE.md`
+  files.
   [memory › When AGENTS.md support is unavailable](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)
 - The built-in mod that reads `AGENTS.md`, by the name `/plugin` shows:
   [plugins/mods/overview › Mods built into Claude Code](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code)
@@ -104,6 +111,7 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
 
   | | `CLAUDE.md` | `AGENTS.md` read through the setting |
   | :- | :- | :- |
+  | [`InstructionsLoaded` hooks](https://code.claude.com/docs/en/hooks#instructionsloaded) | Fire | Don't fire. They fire as usual for an `AGENTS.md` that a `CLAUDE.md` imports or symlinks to |
   | Directories you add with `--add-dir` while `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` is set | Their `CLAUDE.md` loads | Their `AGENTS.md` doesn't load |
   | An `@path` import of a file outside your working directory | Claude Code asks you to approve external imports | Loads only if you already approved external imports for this project, with no prompt |
 

@@ -26,13 +26,18 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
   | Scope | Location | Purpose | Use case examples | Shared with |
   | - | - | - | - | - |
   | **Managed policy** | • macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`<br />• Linux and WSL: `/etc/claude-code/CLAUDE.md`<br />• Windows: `C:\Program Files\ClaudeCode\CLAUDE.md` | Organization-wide instructions managed by IT/DevOps | Company coding standards, security policies, compliance requirements | All users in organization |
-  | **User instructions** | `~/.claude/CLAUDE.md` | Personal preferences for all projects | Code styling preferences, personal tooling shortcuts | Just you (all projects) |
+  | **User instructions** | `~/.claude/CLAUDE.md` | Personal preferences for all projects | Code styling preferences, personal tooling shortcuts | Only you (all projects) |
   | **Project instructions** | `./CLAUDE.md` or `./.claude/CLAUDE.md`. See [AGENTS.md](https://code.claude.com/docs/en/memory#agents-md) for when `./AGENTS.md` loads instead of or alongside them | Team-shared instructions for the project | Project architecture, coding standards, common workflows | Team members via source control |
-  | **Local instructions** | `./CLAUDE.local.md` | Personal project-specific preferences; add to `.gitignore` | Your sandbox URLs, preferred test data | Just you (current project) |
+  | **Local instructions** | `./CLAUDE.local.md` | Personal project-specific preferences; add to `.gitignore` | Your sandbox URLs, preferred test data | Only you (current project) |
 
 - To include instructions in a plugin, write them as a skill: Claude Code doesn't load a `CLAUDE.md` at a plugin's
   root, and `claude plugin validate` warns `CLAUDE.md at the plugin root is not loaded as project context`.
   [plugins/components › Skills](https://code.claude.com/docs/en/plugins/components#skills)
+- For large projects, you can break instructions into topic-specific files using project rules, which let you scope
+  instructions to specific file types or subdirectories.
+  [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
+- CLAUDE.md memory works on every provider.
+  [feature-availability › Features available on every provider](https://code.claude.com/docs/en/feature-availability#features-available-on-every-provider)
 
 ## Project CLAUDE.md
 
@@ -83,25 +88,38 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
 
   The first block is the root `CLAUDE.md`; the second is `packages/api/CLAUDE.md`.
 
+- Started from `packages/api/`, Claude Code loads `packages/api/CLAUDE.md` and the root `CLAUDE.md`, with no
+  instructions from `packages/web/` in context; the same holds for any subdirectory in a non-monorepo tree.
+  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
+- To keep the files current: review CLAUDE.md edits in pull requests; revisit them after major model releases,
+  since instructions that worked around an older model's limitation may become overhead; and add a `Stop` hook,
+  which receives the path to the session transcript when Claude finishes responding, so a script can propose
+  CLAUDE.md updates.
+  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
+
 ## Organization-wide instructions
 
-- Organizations can deploy a centrally managed CLAUDE.md that applies to all users on a machine, created at the
-  managed policy location and distributed with MDM, Group Policy, Ansible, or similar tools:
+- Organizations can deploy a centrally managed CLAUDE.md that applies to all users on a machine: create it at the
+  managed policy location, then distribute it across developer machines with MDM, Group Policy, Ansible, or similar
+  tools:
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
   - macOS: `/Library/Application Support/ClaudeCode/CLAUDE.md`
   - Linux and WSL: `/etc/claude-code/CLAUDE.md`
   - Windows: `C:\Program Files\ClaudeCode\CLAUDE.md`
 - The `claudeMd` key puts managed CLAUDE.md content directly inside `managed-settings.json` instead of deploying a
-  separate file. Its scope is every Claude Code session on the machine, in every repository; for
+  separate file. Its scope is all users on the machine, in any repository; for
   repository-specific guidance, commit a project CLAUDE.md instead.
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
-- `claudeMd` has the same precedence as a managed CLAUDE.md file: it loads before user and project CLAUDE.md.
-  [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
+- `claudeMd` has the same precedence as a managed CLAUDE.md file: Claude Code loads the text as a managed memory
+  entry ahead of user and project CLAUDE.md files.
+  [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md),
+  [settings-reference › `claudeMd`](https://code.claude.com/docs/en/settings-reference#claudemd)
 - `claudeMd` is honored in managed and policy settings only. Setting `claudeMd` in user, project, or local settings
   has no effect.
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
 - In the settings reference, `claudeMd` has scope `Managed`, defaults to unset, and is a string: the text of a
-  CLAUDE.md file, written as you would the file, Markdown included, with line breaks as `\n`.
+  CLAUDE.md file, written as you would the file, Markdown included, with line breaks as `\n`. It injects
+  CLAUDE.md-style instructions as organization-managed memory without deploying a separate file.
   [settings-reference › `claudeMd`](https://code.claude.com/docs/en/settings-reference#claudemd)
 
   ```json
@@ -114,10 +132,17 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
   because it's instruction text for Claude rather than a command Claude Code runs. Claude Code still checks
   permissions for the tools Claude uses while following those instructions.
   [server-managed-settings › Security approval dialogs](https://code.claude.com/docs/en/server-managed-settings#security-approval-dialogs)
+- A mod a user installs can't change your managed `CLAUDE.md` and other managed instructions. The built-in guard that
+  protects them, the `sec-default@builtin` mod, loads when the machine has managed settings, or when the session runs on
+  `/login` credentials for a Team or Enterprise plan. A user who authenticates with an API key, or through Amazon
+  Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry, gets the guard only on a machine that has managed
+  settings. A session that runs on a long-lived `CLAUDE_CODE_OAUTH_TOKEN` doesn't count as that login, even when a Team
+  or Enterprise login is stored on the machine.
+  [plugins/mods/admin › Know what happens by default](https://code.claude.com/docs/en/plugins/mods/admin#know-what-happens-by-default)
 
 ## Project rules
 
-- Project rules are markdown files placed in the project's `.claude/rules/` directory. Each file should cover one
+- Place markdown files in the project's `.claude/rules/` directory. Each file should cover one
   topic, with a descriptive filename like `testing.md` or `api-design.md`.
   [memory › Set up rules](https://code.claude.com/docs/en/memory#set-up-rules)
 - All `.md` files in `.claude/rules/` are discovered recursively, so rules can be organised into subdirectories like
@@ -159,7 +184,7 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
 - On Windows, `~/.claude` resolves to `%USERPROFILE%\.claude`. If you set `CLAUDE_CONFIG_DIR`, every `~/.claude`
   path on the `.claude` directory page, including the global `CLAUDE.md` and `rules/*.md`, lives under that
   directory instead.
-  [claude-directory › Explore the .claude directory](https://code.claude.com/docs/en/claude-directory)
+  [claude-directory › Explore the .claude directory](https://code.claude.com/docs/en/claude-directory#explore-the-directory)
 
 ## Not stated by the documentation
 
@@ -173,8 +198,6 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
   documentation does not say whether a `.claude/CLAUDE.local.md` loads, as `./.claude/CLAUDE.md` does for the
   project CLAUDE.md.
   [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
-- A subdirectory's `.claude/CLAUDE.md`, such as `packages/api/.claude/CLAUDE.md`, counts as one of its own CLAUDE.md
-  files when deciding whether to read its `AGENTS.md`; the documentation does not say whether the file itself loads
-  when Claude reads a file there, since per-directory files are given only as `CLAUDE.md`.
-  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory),
-  [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)
+- Per-directory files are named only as `CLAUDE.md`; the documentation does not say whether a subdirectory's
+  `.claude/CLAUDE.md`, such as `packages/api/.claude/CLAUDE.md`, loads when Claude reads a file there.
+  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)

@@ -1,7 +1,17 @@
 # Scoping a rule to files
 
-Limiting a rule to matching files with frontmatter: the `paths` field, its glob patterns, brace expansion and its
-budget, and invalid patterns.
+Limiting a rule to matching files with frontmatter: the `paths` field, its glob patterns, what they are relative to,
+brace expansion and its budget, and invalid patterns.
+
+## Contents
+
+- The frontmatter
+- Scoping with `paths`
+- Base directory
+- Glob patterns
+- Brace expansion budget
+- Invalid patterns
+- Not stated by the documentation
 
 ## The frontmatter
 
@@ -26,8 +36,8 @@ budget, and invalid patterns.
 ## Scoping with `paths`
 
 - Rules can be scoped to specific files using YAML frontmatter with the `paths` field. These conditional rules only
-  apply when Claude is working with files matching the specified patterns; rules without a `paths` field apply to all
-  files.
+  apply when Claude is working with files matching the specified patterns; rules without a `paths` field are loaded
+  unconditionally and apply to all files.
   [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
 
   ```markdown
@@ -40,6 +50,15 @@ budget, and invalid patterns.
 
   - All API endpoints must include input validation
   ```
+
+## Base directory
+
+- Each pattern is relative to the rule's base directory. For project rules, that is the directory that contains the
+  rule's `.claude` folder; for user-level rules, it is the session's primary working directory.
+  [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
+- To have path-scoped rules load for files in a sibling git worktree, start Claude Code in that worktree or move the
+  session there with `/cd`.
+  [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
 
 ## Glob patterns
 
@@ -87,9 +106,6 @@ budget, and invalid patterns.
 - The documentation does not say how the comma-separated string form of `paths` is split: whether a comma inside a
   brace group, such as `src/**/*.{ts,tsx}`, separates patterns, or whether spaces after commas are trimmed.
   [memory › Rule frontmatter reference](https://code.claude.com/docs/en/memory#rules-frontmatter-reference)
-- The pattern table matches `*.md` against the project root; the documentation does not say what patterns are
-  matched against for a rule in `~/.claude/rules/` or in a nested `.claude/rules/` directory.
-  [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
 - The documentation does not say what happens to a rule whose opening `---` is not on the first line, such as after
   a blank line: whether the block is read as frontmatter, or loads as instructions with the rule unscoped.
   [glossary › Frontmatter](https://code.claude.com/docs/en/glossary#frontmatter)
