@@ -45,7 +45,9 @@ follows and the auditor applies.
 - [choose.md](choose.md): picking the kind of Claude tool that fits a goal
   - The instruction file the repository already uses
   - Must happen every time: a hook
+  - A rule on a command's text: keep it, and add a PreToolUse hook
   - Every session needs it: CLAUDE.md
+  - Context that never changes: CLAUDE.md, not a hook
   - One part of the codebase: a path-scoped rule or a nested CLAUDE.md
   - Needed sometimes, or a procedure: a skill
   - Context Claude would otherwise explore for: a skill
@@ -82,6 +84,25 @@ follows and the auditor applies.
   - Skill instructions say whether Claude runs a script or reads it
   - Skills list the packages they need
 
+- [write-hooks.md](write-hooks.md): writing a hook's event, handler, command and output so that it fires when it should
+  and Claude can act on what it returns
+  - Hooks run a command for a rule, a prompt hook for judgement
+  - Production hooks prefer command hooks to agent hooks
+  - A hook that must prevent a tool call runs before it
+  - Hooks on a file's change use FileChanged
+  - Hook enforcement doesn't rest on an if filter
+  - Only one hook rewrites a tool's input
+  - Hooks pass Claude only what it acts on
+  - Hook context is written as facts
+  - Hook context that goes stale on resume is refreshed by SessionStart
+  - A blocking Stop hook lets the turn end
+  - Hooks on the finished turn read last_assistant_message
+  - Hook commands use absolute paths
+  - Hook JSON is built with an encoder
+  - Hook scripts treat their input as untrusted
+  - Long-running hooks run async when they needn't block
+  - Hooks on every session, prompt or message stay fast
+
 - [compose.md](compose.md): making several tools work together within Claude's context
   - Each tool does what it is best at
   - Instructions at several levels add up
@@ -92,6 +113,7 @@ follows and the auditor applies.
   - It loaded
   - It changes what Claude does
   - Work the tool does has a check
+  - A hook is seen to load and to act
   - A skill is checked for triggering and for output, separately
   - A skill is compared with a fresh run without it
   - Watch which bundled files Claude opens

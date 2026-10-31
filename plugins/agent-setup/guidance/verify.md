@@ -7,6 +7,7 @@ Proving that a tool works before calling it done.
 - [It loaded](#it-loaded)
 - [It changes what Claude does](#it-changes-what-claude-does)
 - [Work the tool does has a check](#work-the-tool-does-has-a-check)
+- [A hook is seen to load and to act](#a-hook-is-seen-to-load-and-to-act)
 - [A skill is checked for triggering and for output, separately](#a-skill-is-checked-for-triggering-and-for-output-separately)
 - [A skill is compared with a fresh run without it](#a-skill-is-compared-with-a-fresh-run-without-it)
 - [Watch which bundled files Claude opens](#watch-which-bundled-files-claude-opens)
@@ -61,6 +62,20 @@ Proving that a tool works before calling it done.
   returned, or a screenshot of the result."
   [best-practices › Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)
 - Check: a tool that directs work names the check that ends it and asks for evidence, not a claim of success.
+
+## A hook is seen to load and to act
+
+- For a `PreToolUse` hook that rewrites a Bash command, as in the documentation's example: "To verify the setup, run
+  `/hooks` and check that the hook appears under PreToolUse." Start Claude Code with
+  `claude --debug-file ./claude-debug.txt` and ask Claude to run `npm test`; when the hook rewrites the command, that
+  log file contains a `modified tool input keys` line listing `command` and the other Bash input fields.
+  [costs › Offload processing to hooks and skills](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills)
+- Because command hooks run with your full user permissions: "Review and test all hook commands before adding them to
+  your configuration."
+  [hooks › Disclaimer](https://code.claude.com/docs/en/hooks#disclaimer)
+- Check: was each hook command tested before it was added, and seen under its event in `/hooks`, and, for a hook that
+  rewrites a tool's input, does the debug log show a `modified tool input keys` line after a task that should trigger
+  it?
 
 ## A skill is checked for triggering and for output, separately
 
