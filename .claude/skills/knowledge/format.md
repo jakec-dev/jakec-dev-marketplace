@@ -187,7 +187,9 @@ upstream/anthropic/pages.txt               those pages, fetched by scripts/fetch
   section that links to it; `scripts/fetch-sources.sh` writes those pages to `upstream/anthropic/pages.txt` in the
   same shape. In the table of contents and the ledger, such a page is named `platform.claude.com/<path>`, and its
   facts link to `https://platform.claude.com/docs/en/<path>#<anchor>`, written `[<page name> › <heading>](…)` with
-  the page's last path segment as its name.
+  the page's last path segment as its name. Neither export is committed, since both are Anthropic's text; their
+  `toc.tsv` and `fingerprints.tsv` are, and `scripts/docs-diff.sh` compares two fingerprint files to show which
+  sections changed between snapshots.
 - **Where a source disagrees with Claude Code's documentation,** Claude Code's documentation wins: the guideline
   states Claude Code's behaviour, or leaves the source's statement out, and the ledger's `excluded` row says why.
   A source page often writes for every Claude surface, so keep its subject: "for skills uploaded to claude.ai or the

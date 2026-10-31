@@ -3,7 +3,7 @@ name: knowledge
 description: Builds the agent-setup plugin's knowledge files from local copies of Claude Code's documentation and the Anthropic pages it links to, either the reference for one Claude tool type, such as rules or hooks, or the guidance. Use when adding or rebuilding reference or guidance.
 argument-hint: build <type> | build guidance
 disable-model-invocation: true
-allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/fetch-sources.sh *), Bash(cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *), Bash(scripts/knowledge-index.sh *)
+allowed-tools: Read, Grep, Write, Edit, Bash(scripts/docs-toc.sh *), Bash(scripts/docs-fingerprint.sh *), Bash(scripts/fetch-sources.sh *), Bash(cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv *), Bash(scripts/docs-find.sh *), Bash(scripts/check-knowledge.sh *), Bash(scripts/check-links.sh *), Bash(mkdir -p maintenance/ledger maintenance/topics), Bash(sed -n *), Bash(scripts/knowledge-index.sh *)
 ---
 
 # Build reference or guidance
@@ -21,7 +21,9 @@ conflict between instructions.
 2. **Map the documentation.** Run `scripts/docs-toc.sh upstream/claude-code/llms-full.txt` and save the output as
    `upstream/claude-code/toc.tsv`. Its columns are page, level, heading, the line a section starts on, the last
    line of its own text, and the last line including its subsections. Read sections by line range, with the Read
-   tool or `sed -n '<start>,<end>p'`.
+   tool or `sed -n '<start>,<end>p'`. Then run `scripts/docs-fingerprint.sh upstream/claude-code/llms-full.txt
+   upstream/claude-code/toc.tsv` and save the output as `upstream/claude-code/fingerprints.tsv`, so that the next
+   snapshot can be compared with this one.
 3. **Find candidate sections.** Run `scripts/docs-find.sh upstream/claude-code/llms-full.txt
    upstream/claude-code/toc.tsv '<pattern>'` for the type's directory and file names, then for every field,
    setting, command, event, environment variable and concept (such as frontmatter) its own sections name. Add a
@@ -92,9 +94,10 @@ Writes `plugins/agent-setup/guidance/`, `maintenance/topics/guidance.md` and `ma
    them, only Anthropic's statements can support a guideline.
 2. **Map the sources.** Run step 2, then `scripts/fetch-sources.sh maintenance/sources.tsv
    upstream/anthropic/pages.txt` and `scripts/docs-toc.sh upstream/anthropic/pages.txt`, saving the output as
-   `upstream/anthropic/toc.tsv`. Then run `cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv >
-   upstream/guidance-toc.tsv` for the checker. Read a page in `pages.txt` by the line ranges in its own table of
-   contents.
+   `upstream/anthropic/toc.tsv`, and `scripts/docs-fingerprint.sh upstream/anthropic/pages.txt
+   upstream/anthropic/toc.tsv`, saving the output as `upstream/anthropic/fingerprints.tsv`. Then run
+   `cat upstream/claude-code/toc.tsv upstream/anthropic/toc.tsv > upstream/guidance-toc.tsv` for the checker. Read a
+   page in `pages.txt` by the line ranges in its own table of contents.
 3. **Find candidates.** They are every section a reference ledger excludes on the guidance ground (`compares` or
    `recommends` in its reason), every section of the pages in `sources.tsv`, every section `guidance.tsv` already
    lists, and the eval cases the user supplies. Read each in full. Leave out what any capable model does unprompted,
