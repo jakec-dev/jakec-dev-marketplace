@@ -1,6 +1,6 @@
 {
   "name": "agent-setup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Keeps a repository's Claude Code setup current as Claude Code changes.",
   "author": {
     "name": "Jake Clayton",
