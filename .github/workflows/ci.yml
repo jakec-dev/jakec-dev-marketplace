@@ -109,3 +109,17 @@ jobs:
             BASH_UNDER_TEST=/bin/bash /bin/bash "$suite" || status=1
           done
           exit "$status"
+
+  # The ledgers name documentation sections by page and heading; the committed tables of contents say which exist.
+  knowledge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the reference and the guidance against their tables of contents
+        run: |
+          status=0
+          scripts/check-knowledge.sh plugins/agent-setup/reference maintenance upstream/claude-code/toc.tsv || status=1
+          scripts/check-knowledge.sh plugins/agent-setup/guidance maintenance upstream/guidance-toc.tsv || status=1
+          exit "$status"

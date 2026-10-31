@@ -1,0 +1,49 @@
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill authoring best practices	64550c53c45b0d5a985cc0083c004b2c7ed49ebb1749f0792d6bcfb5ad0973bc
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Core principles	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Concise is key	8469a59813225f59ca9077a9b9d931749ff4f139fcc59ac4ea14389f4d4f0ba0
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Set appropriate degrees of freedom	fccd3d377051f99b59f5d610f93ef72698f3a8e5275f5bb7ca4bf76c03e5206c
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Test with all models you plan to use	355aa3dd2361dd25ec068144a7ac903fb310a3fda12ea437c6da5ff46041f955
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Skill structure	b9c111cfbe60905a724cd403a51d138f656d6029b6a4b28ed419ca8e63d73f6d
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Naming conventions	8eaa1c389cadc298e0687f215add5e9e84666837ca35b6ec8e4b2aa7d19f090b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Writing effective descriptions	b754bca2f2ffe35576fe830a909027650cd08c43780612186053d9360689cc3b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Progressive disclosure patterns	17cec6012cbfc5eb6e67637d71f2bd69e877420166643380fcb9e42afef4c1c1
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Visual overview: From simple to complex	d5a3678741b7b9434ac6d7e827f2c8d58edecadb99d3636b18bd33cb37ca605d
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 1: High-level guide with references	81921869bb7596c113b58082a23143f57b3446f55920a82f86f9591490cca831
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 2: Domain-specific organization	f39a6fd94582f57d3745818c029eda57fe70e3e3559d7e819d14f25b9df159c3
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Pattern 3: Conditional details	df8c27e0e91509fa27d313f7b3fc3f608ddaaab58996db36eba17ef77106e9e8
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid deeply nested references	c0efa02f876866a71fecd9cd0185e42fbbcdeceeb91a054a007ab7bd2da069ff
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with table of contents	e746c67a379743be9c408d4caffa217e49ad007f018b0b316e0b5d95a4709d72
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Workflows and feedback loops	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use workflows for complex tasks	d65246331b5e2404d90c7a01b99e1329d360cb8b1da209b58a7b381debae0f5f
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Implement feedback loops	81d12330c894bbc54189291b12dbdff2d5712eed3e7cb0a4df722bc4564ceecb
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Content guidelines	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid time-sensitive information	50c2dc7c1ab82b7e5219f13163ca6acb101e15e0e30146e8de3991fa6d7041a0
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use consistent terminology	cc80246765ce9eea9ce7030e104379023fa6a8f41b573ef3b8f0fcf82bf4744a
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Common patterns	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Template pattern	1d06d76aaf817eb6bde7120d4db48a09886f7a2959f5ef9189c9fe2f7dc2066e
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Examples pattern	447f3e4459b41411064c4c0b0303953b9ab895d1f8e87410acfc5f84dd5e03e2
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Conditional workflow pattern	749a1fc64418e6867438d8850b8223900c31d2810e3ca6faf6d5c41b21746431
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Evaluation and iteration	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Build evaluations first	8007ba424c7efa3465c480f48e7fd725d89a02fe90ae216bdeab1eb8081690fe
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	c88f3d2aa486a81cb6d606a7f38a1e844be17367bdbd51d1daf90f9ba3ac002c
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Observe how Claude navigates Skills	8a4e342d7428940a6da175739609d0da5585f3e45bfadb90cb627f78de2b6962
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Anti-patterns to avoid	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid Windows-style paths	047268481df5f17f30ed6388b217a1be78c21a1a34517615131e69d9c90c06dd
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid offering too many options	048d4434f188c0343eb19adebd410ea7a4a874836a69c606a1d663d33f56bcd3
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Advanced: Skills with executable code	afaa2330b574960cd5c2ff5d47737963ce103989d770357eeb491e4722d3db61
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don't defer	36ea209d5a2f27536c2a4668240e0f3f9645e2540c14032eb7bebb0585c2f250
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Provide utility scripts	0caec9a35d6182bb45da54d240a3221be5d88e92f5f620f680a50e95eb33f44c
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Use visual analysis	8f085ee2963a094e04f5065b796561793e0ac57349c227161ab2663c53ab7c2f
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	40ea3f3e16642d7518fd3cc8f5c63a0671b4686f01f81bac3d904dd1ede02de7
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Package dependencies	5778a576f65fb5ae5ebb88f060e1636c3875e71502009def99340e5fb232ceab
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Runtime environment	23c95575935692eecef7155e64a1ab33a4c4e648058a871a4670cf4441393a9d
+platform.claude.com/agents-and-tools/agent-skills/best-practices	MCP tool references	28969e878d9c43ef686708923df5b5c3075c4655f009b2ab458970f3d141dbb5
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid assuming tools are installed	fd017a2433332cdd517c6f2b67abf50068973128c93a4cbc1afbaa5b6680df20
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Technical notes	01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+platform.claude.com/agents-and-tools/agent-skills/best-practices	YAML frontmatter requirements	845e6888357a9c98fd417f9731ae039308fb476b8078877f08911b00c35febea
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Token budgets	59a9df0eb48ed57114a25994c1aeb1e54ada76fec769004a8085e109aaea0309
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Checklist for effective Skills	cc9247e5b939beacbf96fad2118f62db5871c36547248f6e1e95771401fa3483
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Core quality	a3a1af08c2d34496a1b46ee07d3920b4f96fe141e3e310ee7e4c4739558282bb
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Code and scripts	d5656e5c0fa9f25d639d3e2740882342762f6c5767662cd2043b31dc7e506d3a
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Testing	ec4fd61f3c9164aa4cd7b14441ca3ef1d54a25837d9534ac405fa3c7a7fa54ad
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Next steps	9f0c074ce6fed7eb85c4ca6927315de7ae95710d1a070106042cf87109798b27
