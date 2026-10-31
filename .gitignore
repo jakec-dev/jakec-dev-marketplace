@@ -12,3 +12,8 @@ CLAUDE.local.md
 # Local environment files, which may hold an API key.
 .env
 .env.*
+
+# Anthropic's documentation exports stay local, since they are Anthropic's text; their tables of contents and
+# fingerprints are committed.
+upstream/claude-code/llms-full*.txt
+upstream/anthropic/pages.txt
