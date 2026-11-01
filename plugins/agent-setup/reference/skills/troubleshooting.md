@@ -25,6 +25,11 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   | :- | :- |
   | `/skills` | List available [skills](https://code.claude.com/docs/en/skills). Type to filter the list by name, description, or source. Press `t` to sort by token count, `Space` or `Enter` to [cycle a skill's visibility to Claude and the `/` menu](https://code.claude.com/docs/en/skills#override-skill-visibility-from-settings), and `Esc` to save and close. You can't cycle plugin skills, skills whose frontmatter sets `disable-model-invocation: true`, or skills with a `skillOverrides` entry in managed settings or the `--settings` flag |
 
+- A hook in a skill's frontmatter is absent from `/hooks` until you or Claude invoke the skill in the session. Invoke
+  it or ask Claude to, then run `/hooks` again. If the hook still doesn't appear, check for other causes, such as
+  [frontmatter that didn't parse](https://code.claude.com/docs/en/skills#skill-not-triggering) or one of the
+  [limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks).
+  [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - Run `/context` first to confirm whether skill descriptions are present at all. Its skills section also includes
   [bundled skills](https://code.claude.com/docs/en/skills#bundled-skills), which `/skills` doesn't list.
   [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)
@@ -60,16 +65,40 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   and open the plugin's details pane, which lists what the plugin contains. A plugin that lists no skills there has
   none to offer when you type `/`.
   [plugins/troubleshooting › Plugin doesn't appear or its skills don't show up](https://code.claude.com/docs/en/plugins/troubleshooting#plugin-doesnt-appear-or-its-skills-dont-show-up)
+- A message that gives the full path of one of a marketplace plugin's own files, such as the plugin's root `SKILL.md`,
+  means Claude Code skipped that file because it couldn't confirm the file is inside the plugin or, for a plugin in a
+  local marketplace, inside that marketplace. The message reports a root `SKILL.md` as the `skills` component.
+  [errors › Path escapes plugin directory](https://code.claude.com/docs/en/errors#path-escapes-plugin-directory)
+- A `commands` path that leads outside the plugin directory, whether declared in `plugin.json` or in a marketplace
+  entry, is dropped and Claude Code loads the rest of the plugin. The message reads
+  `commands path escapes plugin directory: ./../shared.md`, and in `claude plugin` command output
+  `Path escapes plugin directory: ./../shared.md (commands)`. Move the referenced file inside the plugin directory
+  and point the path at it with a `./` relative path. If you installed the plugin and don't maintain it, report the
+  message to its author. If the path, or a folder above it inside the plugin, is a symlink leading outside the plugin,
+  replace the symlink with a copy of what it points to. For a symlink, the message adds where the path resolves, for
+  example:
+
+  ```text
+  commands path escapes plugin directory: ./commands/deploy.md — it resolves to /home/user/shared/deploy.md, outside the plugin directory
+  ```
+
+  On macOS and Linux, Claude Code also rejects a component path that contains a backslash anywhere in it, even when
+  the path stays inside the plugin, with a message such as:
+
+  ```text
+  commands path escapes plugin directory: ./commands\deploy.md — its path contains a backslash, which is not resolved reliably on this platform
+  ```
+
+  For a declared path, write it with forward slashes, for example `./commands/deploy.md`. These rules apply to any
+  component path; for a skills author the declaring fields that matter are `commands` and `skills`, and the component
+  name in the message names the declaring field.
+  [errors › Path escapes plugin directory](https://code.claude.com/docs/en/errors#path-escapes-plugin-directory)
 - If the Search tool, `@file` mentions, custom agents, or custom skills aren't finding files, the bundled `ripgrep`
   binary may not run on your system: install your platform's `ripgrep` package and set `USE_BUILTIN_RIPGREP` to `0`,
   either in your shell environment or in the `env` block of your `settings.json`. To confirm the switch took effect,
   run `claude doctor` in your terminal and check that the Search line shows the path of your system ripgrep
   instead of `OK (bundled)`.
   [troubleshooting › Search and discovery issues](https://code.claude.com/docs/en/troubleshooting#search-and-discovery-issues)
-- Set `CLAUDE_CODE_USE_NATIVE_FILE_SEARCH` to `1` to discover custom commands, subagents, and output styles using
-  Node.js file APIs instead of ripgrep, if the bundled ripgrep binary is unavailable or blocked in your environment. It
-  doesn't affect the Grep or file search tools.
-  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
 ## Validate skill files
 
@@ -92,8 +121,12 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   - **The `skills`, `agents`, or `commands` directory you name is itself a symlink, or its parent `.claude` directory
     is**: Claude Code reports an error and checks nothing in it. Name the real directory instead.
 - When you run `claude plugin validate` against a plugin directory, Claude Code doesn't check a `SKILL.md` at the
-  plugin root. From a marketplace directory, it doesn't open the plugins' skill, agent, command, or hook files, or the
-  MCP server files they bundle; to find errors in those files, validate each plugin directory.
+  plugin root. From a marketplace directory, Claude Code doesn't open the skill, agent, command, or hook files of
+  plugins the marketplace lists in other directories, or the MCP server files they bundle; to find errors in those
+  files, validate each plugin directory.
+  [plugins/cli-reference › Validate a directory](https://code.claude.com/docs/en/plugins/cli-reference#validate-a-directory)
+- When the directory holds both a `.claude-plugin/marketplace.json` and a `.claude-plugin/plugin.json`, Claude Code
+  validates the marketplace and also the plugin's manifest and component files.
   [plugins/cli-reference › Validate a directory](https://code.claude.com/docs/en/plugins/cli-reference#validate-a-directory)
 - When `claude plugin validate <path>`, or `/plugin validate <path>` in a session, finds errors, it prints
   `Found N errors` and `Validation failed`, then exits with code 1. The table covers the messages that stop validation
@@ -116,7 +149,7 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   | Exit code | Verdict line | Meaning |
   | :- | :- | :- |
   | `0` | `Validation passed` or `Validation passed with warnings` | The manifest loads. With `--strict`, no warnings either |
-  | `1` | `Validation failed` or `Validation failed (--strict treats warnings as errors)` | An error, or a warning under `--strict` |
+  | `1` | `Validation failed` or `Validation failed (--strict treats warnings as errors)` | An error, or a warning under `--strict`. [Advice](https://code.claude.com/docs/en/plugins/cli-reference#advice-on-the-readme) doesn't count, with or without `--strict` |
   | `2` | `Unexpected error during validation: <reason>` | The validator itself failed, such as on an unreadable path |
 
 ## Skill not triggering
@@ -127,6 +160,12 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   2. Verify the skill appears in `What skills are available?`
   3. Try rephrasing your request to match the description more closely
   4. Invoke it directly with `/skill-name` if the skill is user-invocable
+  5. If `/skill-name` isn't recognized either, check whether Claude Code
+     [refused the skill's name](https://code.claude.com/docs/en/skills#characters-a-skill-name-cant-hold)
+  6. If the skill sets `paths`, check that the files Claude reads, edits, or writes are inside Claude's current
+     working directory. The skill doesn't activate for files outside it, such as those in a sibling git worktree,
+     even one you added with `/add-dir`. To have the skill activate for those files, start Claude Code in that
+     worktree or [move the session there with `/cd`](https://code.claude.com/docs/en/permissions#move-the-session-to-another-directory)
 - Claude matches your task against skill descriptions to decide which are relevant. If descriptions are vague or
   overlap, Claude may load the wrong skill or miss one that would help.
   [features-overview › Understand how features load](https://code.claude.com/docs/en/features-overview#understand-how-features-load)
@@ -251,8 +290,11 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   [skills › Run evals with skill-creator](https://code.claude.com/docs/en/skills#run-evals-with-skill-creator)
   - `Marketplace "claude-plugins-official" not found`: add the marketplace with
     `/plugin marketplace add anthropics/claude-plugins-official`, then retry the install.
-  - The plugin is not found in the marketplace: check the plugin name.
-- If the install summary reports `Run /reload-plugins to activate.`, Claude Code then runs that reload for you. If the
+  - `Plugin "<name>" not found in marketplace "claude-plugins-official"`: your local copy of the marketplace catalog
+    may be out of date. Refresh it with `/plugin marketplace update claude-plugins-official`, then retry the
+    install. If the retry prints the same message, see
+    [Plugin not found in marketplace](https://code.claude.com/docs/en/plugins/troubleshooting#plugin-not-found-in-marketplace).
+- If the install summary reports `Run /reload-plugins to apply.`, Claude Code then runs that reload for you. If the
   reload warns that your next message would re-read the conversation, run `/reload-plugins --force` to make the
   plugin's skills available in the current session.
   [skills › Run evals with skill-creator](https://code.claude.com/docs/en/skills#run-evals-with-skill-creator)
@@ -289,9 +331,10 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   instead; run it in the terminal on the machine where the session is running.
   [skills › Find unused skills](https://code.claude.com/docs/en/skills#find-unused-skills)
   [env-vars › Features that need feature-flag fetching](https://code.claude.com/docs/en/env-vars#features-that-need-feature-flag-fetching)
-- The `/doctor` setup checkup also finds unused skills, MCP servers, and plugins versus their context cost.
-  [commands › All commands](https://code.claude.com/docs/en/commands#all-commands)
-- On a Pro, Max, Team, or Enterprise plan, `/usage` shows **Attribution**: recent usage attributed to skills,
+- The `/doctor` setup checkup's Extensions area covers unused skills, MCP servers, and plugins compared with their
+  context cost.
+  [skills › Check your setup with `/doctor`](https://code.claude.com/docs/en/skills#check-your-setup-with-/doctor)
+- On a Pro, Max, Ultra, Team, or Enterprise plan, `/usage` shows **Attribution**: recent usage attributed to skills,
   subagents, plugins, and individual MCP servers, each shown as a percentage of the total. The figures are
   approximate and computed from local session history on this machine, so usage from other devices or claude.ai is
   not included.
@@ -369,12 +412,9 @@ For checking whether a skill loads, triggers and works, and finding out why not.
 ## Not stated by the documentation
 
 - The validate errors table says `No frontmatter block found` and `YAML frontmatter failed to parse` are reported when
-  validating a plugin directory; the documentation does not say which of its messages a run on a directory with no
+  validating a plugin directory; the documentation does not say which message text a run on a directory with no
   `.claude-plugin/` manifest, such as `.claude/skills`, prints.
   [plugins/troubleshooting › `claude plugin validate` reports errors](https://code.claude.com/docs/en/plugins/troubleshooting#claude-plugin-validate-reports-errors)
-- The `CLAUDE_CODE_USE_NATIVE_FILE_SEARCH` description names custom commands, subagents, and output styles; the
-  documentation does not say whether it also covers custom skills, which the ripgrep fix above names.
-  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 - The documentation does not say how skill-creator's without-skill runs keep the skill out, or whether you must turn
   it off in `skillOverrides` first.
   [skills › Run evals with skill-creator](https://code.claude.com/docs/en/skills#run-evals-with-skill-creator)

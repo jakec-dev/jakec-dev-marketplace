@@ -10,6 +10,7 @@ a session, invoked content, compaction, changes on disk and teammates.
 - [Skills found during a session](#skills-found-during-a-session)
 - [Invoked skill content](#invoked-skill-content)
 - [After compaction](#after-compaction)
+- [Resumed sessions](#resumed-sessions)
 - [Changes on disk](#changes-on-disk)
 - [In subagents and agent teams](#in-subagents-and-agent-teams)
 - [Not stated by the documentation](#not-stated-by-the-documentation)
@@ -80,6 +81,8 @@ a session, invoked content, compaction, changes on disk and teammates.
   [settings-reference › `skillListingMaxDescChars`](https://code.claude.com/docs/en/settings-reference#skilllistingmaxdescchars)
 - When the listing exceeds its budget, Claude Code writes a warning to the debug log, visible with `--debug`.
   [skills › Skill descriptions are cut short](https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short)
+- Run `/doctor` for an estimate of the listing's context cost and its biggest contributors.
+  [skills › Skill descriptions are cut short](https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short)
 - The Skills row in `/context` reports the size of the listing after the budget is applied, so it matches what the
   model receives.
   [skills › Skill descriptions are cut short](https://code.claude.com/docs/en/skills#skill-descriptions-are-cut-short)
@@ -119,6 +122,21 @@ a session, invoked content, compaction, changes on disk and teammates.
   requests invalidates the prompt cache.
   [mods reference › Prompts and what Claude reads](https://code.claude.com/docs/en/plugins/mods/reference#prompts-and-what-claude-reads),
   [mods events › Rewrite or add to a prompt](https://code.claude.com/docs/en/plugins/mods/events#rewrite-or-add-to-a-prompt)
+- In a `skill.prompt` hook, you can read these fields along with the skill's name in `e.skill` and the text Claude
+  reads in `e.text`:
+
+  | Field | Type | What it holds |
+  | :- | :- | :- |
+  | `e.source` | string | Who provides the skill: `policySettings`, `userSettings`, or `projectSettings` for a skill in the enterprise, personal, or project [location](https://code.claude.com/docs/en/skills#where-skills-live), respectively. Other sources give a word such as `plugin`, `mcp`, `syncedSkills`, or `built-in`. |
+  | `e.pluginName` | string | The plugin's name, for a skill whose `e.source` is `plugin` |
+  | `e.path` | string | The absolute path of the skill's `SKILL.md` file, or of its `.md` file for a skill written as a [command file](https://code.claude.com/docs/en/skills#where-skills-live). Absent when the skill has no file on this machine, as with a built-in skill. |
+  | `e.frontmatter` | object | The frontmatter of the skill's file, as plain data |
+  | `e.frontmatterProblem` | string | The reason `e.frontmatter` is missing the file's frontmatter or one of its keys, as in `is a list or a single value, not a table`. Absent when `e.frontmatter` holds the whole frontmatter or the skill has none. |
+
+  [mods reference › Source and frontmatter fields on `skill.prompt`](https://code.claude.com/docs/en/plugins/mods/reference#skill-prompt-fields)
+- A `skill.prompt` hook can pass a changed `text` or `frontmatter` to `next`: the hooks after it read both, and Claude
+  reads the final `text`. A hook that changes any other field [fails](https://code.claude.com/docs/en/plugins/mods/events#handle-a-hook-that-fails).
+  [mods reference › Source and frontmatter fields on `skill.prompt`](https://code.claude.com/docs/en/plugins/mods/reference#skill-prompt-fields)
 
 ## After compaction
 
@@ -128,9 +146,18 @@ a session, invoked content, compaction, changes on disk and teammates.
   recently invoked skill, so older skills can be dropped entirely after compaction if you have invoked many in one
   session.
   [skills › Skill content lifecycle](https://code.claude.com/docs/en/skills#skill-content-lifecycle)
+- After compaction, skill descriptions are rebuilt from your current skills and re-injected.
+  [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
 - Large skills are truncated to fit the per-skill cap, and truncation keeps the start of the file, so put the most
   important instructions near the top of `SKILL.md`.
   [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
+
+## Resumed sessions
+
+- When `CLAUDE_CODE_RESUME_SHOWS_CUT_OFF_CALLS` is `1`, a resumed session keeps interrupted tool calls, marked as cut
+  off, in a turn that `CLAUDE_CODE_RESUME_INTERRUPTED_TURN` continues. Some calls stay dropped even then, such as calls
+  to skills.
+  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
 ## Changes on disk
 
@@ -151,11 +178,11 @@ a session, invoked content, compaction, changes on disk and teammates.
 - Live change detection covers `SKILL.md` text only. For a skill folder that is also a plugin, changes to `hooks/`,
   `.mcp.json`, `agents/`, and `output-styles/` need `/reload-plugins` to take effect.
   [skills › Edit a skill during a session](https://code.claude.com/docs/en/skills#live-change-detection)
-- Skill discovery normally runs before SessionStart hooks finish, so files a SessionStart hook writes into
-  `~/.claude/skills/` or `.claude/skills/` would otherwise only appear in the next session. When the hook returns
-  `reloadSkills: true` (a boolean), Claude Code re-scans the skill and command directories after the SessionStart
-  hooks complete, so skills the hook installed are available in the same session, starting with the first prompt.
-  This example syncs a shared skills repository, whose URL is a placeholder, and requests the re-scan:
+- The `reloadSkills` field of a SessionStart hook is a boolean. When `true`, Claude Code re-scans the skill and
+  command directories after the SessionStart hooks complete, so skills the hook installed are available in the same
+  session. Skill discovery normally runs before SessionStart hooks finish, so without `reloadSkills`, files a hook
+  writes into `~/.claude/skills/` or `.claude/skills/` can be missing when the first prompt runs. This example syncs a
+  shared skills repository and requests the re-scan:
 
   ```bash
   #!/bin/bash
@@ -166,8 +193,8 @@ a session, invoked content, compaction, changes on disk and teammates.
   echo '{"hookSpecificOutput": {"hookEventName": "SessionStart", "reloadSkills": true}}'
   ```
 
-  Stderr from a SessionStart hook that exits 0 is informational only, so with the placeholder URL the clone fails
-  with a `fatal:` message and the `reloadSkills` request still applies.
+  The repository URL is a placeholder. Replace it with your own skills repository.
+  [hooks › Reload skills that a hook installs](https://code.claude.com/docs/en/hooks#reload-skills-that-a-hook-installs),
   [hooks › SessionStart decision control](https://code.claude.com/docs/en/hooks#sessionstart-decision-control)
 - Claude Code runs ConfigChange hooks when a skill file changes. The `skills` matcher fires when a skill file in
   `.claude/skills/` changes. When a ConfigChange hook blocks a change, the new settings are not applied to the running
@@ -180,8 +207,10 @@ a session, invoked content, compaction, changes on disk and teammates.
 - A non-fork subagent starts with a fresh, isolated context window and doesn't see the skills you've already invoked.
   Built-in agents don't preload skills.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
-- Subagents with preloaded skills get the full skill content injected at startup.
-  [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+- Subagents with preloaded skills get the full content of each listed skill injected at startup, up to the first 32
+  distinct names in the `skills` list.
+  [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill),
+  [sub-agents › Preload skills into subagents](https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents)
 - A subagent's `skills` field controls which skills are preloaded, not which skills it can access: without it, the
   subagent can still discover and invoke project, user, and plugin skills through the Skill tool during execution. To
   prevent a subagent from invoking skills entirely, omit `Skill` from its `tools` list or add it to `disallowedTools`.

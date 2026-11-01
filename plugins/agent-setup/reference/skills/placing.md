@@ -10,7 +10,9 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
 - Command files
 - Monorepos, nested directories and worktrees
 - Reserved names
+- Refused characters in names
 - Skills that share a name
+- Run a same-named skill from an added directory
 - Synced skills that share a name
 - Command names
 - Plugin skill layout
@@ -30,8 +32,8 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   | :- | :- | :- |
   | Enterprise | `.claude/skills/<skill-name>/SKILL.md` in the [managed settings directory](https://code.claude.com/docs/en/managed-settings#delivery-mechanisms) | All users on machines where your organization deploys it |
   | Personal | `~/.claude/skills/<skill-name>/SKILL.md` | All your projects on this machine, but not [Cowork or cloud sessions](https://code.claude.com/docs/en/skills#skills-in-cowork-and-cloud-sessions) |
-  | Project | `.claude/skills/<skill-name>/SKILL.md` | Sessions in this repository. Commit it so your team gets it too |
-  | Nested | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | Sessions started in or below `<subdir>`. A session started above it loads the skill once Claude works on files there. See [monorepos and subdirectories](https://code.claude.com/docs/en/skills#discovery-from-parent-and-nested-directories) |
+  | Project | `.claude/skills/<skill-name>/SKILL.md` | Sessions in this repository, but not [cloud threads in a project](https://code.claude.com/docs/en/claude-projects#what-threads-pick-up-from-your-repositories). Commit it so your team gets it too |
+  | Nested | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | Sessions started in or below `<subdir>`, but not cloud threads in a project. Outside those threads, a session started above it loads the skill once Claude works on files there. See [monorepos and subdirectories](https://code.claude.com/docs/en/skills#discovery-from-parent-and-nested-directories) |
   | Additional directory | `.claude/skills/<skill-name>/SKILL.md` in a directory you pass with `--add-dir` | That session. See [directories outside the project](https://code.claude.com/docs/en/skills#skills-from-additional-directories) |
   | Plugin | `<plugin>/skills/<skill-name>/SKILL.md` | Wherever the [plugin](https://code.claude.com/docs/en/plugins/overview) is enabled, as `/plugin-name:skill-name` |
   | claude.ai account | Skills enabled for your claude.ai account | Cowork sessions, cloud sessions, and terminal sessions where you sign in with that account. See [Skills synced from claude.ai](https://code.claude.com/docs/en/skills#how-synced-skills-behave) |
@@ -44,15 +46,16 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   locations point at the same target. Plugin skills
   [handle symlinks differently](https://code.claude.com/docs/en/plugins/host-marketplace#share-files-within-a-marketplace-with-symlinks).
   [skills › Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)
-- Skill folder as a plugin: add a `.claude-plugin/plugin.json` to a skill folder and it loads as a plugin named
-  `<name>@skills-dir`, so it can bundle agents, hooks, and MCP servers.
+- Skill folder as a plugin: add a `.claude-plugin/plugin.json` to a personal or project skill folder and it loads as
+  a plugin named `<name>@skills-dir`, so it can bundle agents, hooks, and MCP servers. In a project's
+  `.claude/skills/`, this requires accepting the workspace trust dialog first, and in either location it requires
+  that your administrator hasn't [blocked skills-directory plugins](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings).
   [skills › Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)
-- A project-scope skills-directory plugin loads only from the `.claude/skills/` of the session's primary working
-  directory, and only after you accept the workspace trust dialog for that folder. It doesn't search parent
-  directories up to the repository root the way plain skills and commands do: if you launch from a subdirectory, a
-  plugin at the repository root doesn't load. Launch from the repository root instead, or move the session there
-  with `/cd`.
-  [plugins/loading › Plugins shared through a repository](https://code.claude.com/docs/en/plugins/loading#plugins-shared-through-a-repository)
+- A plugin in your repository's `.claude/skills/` at the repository root doesn't load when you launch from a
+  subdirectory. Claude Code reads the `.claude/skills/` of the session's primary working directory and, unlike plain
+  skills and commands, doesn't search parent directories for plugins. Launch from the repository root instead, or
+  move the session there with `/cd`.
+  [plugins/loading › Check why a repository plugin didn't load](https://code.claude.com/docs/en/plugins/loading#check-why-a-repository-plugin-didnt-load)
 - When a skills-directory plugin shares a manifest name with another enabled plugin, the result between these
   origins is as follows; each dropped copy gets a row in the `/plugin` **Errors** tab.
   [plugins/loading › Name conflicts](https://code.claude.com/docs/en/plugins/loading#name-conflicts)
@@ -68,15 +71,22 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   `false` in any settings file; for a plugin whose manifest name is `hello-plugin`, the entry is
   `"enabledPlugins": {"hello-plugin@inline": false}`.
   [plugins/loading › Keep a session-only plugin from loading](https://code.claude.com/docs/en/plugins/loading#keep-a-session-only-plugin-from-loading)
-- A project-scope skills-directory plugin is not used when you trusted only a parent folder (no trust dialog is
-  offered), or when you ran `claude -p` or the SDK in a folder you never trusted. The parent-folder case doesn't
-  apply inside a nested repository: an interactive session shows the trust dialog for it, and a `claude -p` or SDK
-  run there follows the `claude -p` case. Personal-scope plugins have none of these restrictions.
+- A project-scope plugin, including a skills-directory plugin in `.claude/skills/`, loads only after the same trust
+  check that applies to project allow rules in `.claude/settings.json`: in a folder you haven't trusted, it loads
+  only after you accept the workspace trust dialog for that folder. Trusting only a parent folder (no trust dialog is
+  offered) or running `claude -p` or the SDK in a folder you never trusted isn't enough. The parent-folder case
+  doesn't apply inside a nested repository: an interactive session shows the trust dialog for it, and a `claude -p`
+  or SDK run there follows the `claude -p` case. The trust check doesn't apply to a plugin under your own
+  `~/.claude/skills/`.
+  [plugins/loading › Trust check and component limits for repository plugins](https://code.claude.com/docs/en/plugins/loading#trust-check-and-component-limits-for-repository-plugins)
+  [plugins/loading › Check why a repository plugin didn't load](https://code.claude.com/docs/en/plugins/loading#check-why-a-repository-plugin-didnt-load)
   [permissions › What runs before you trust a folder](https://code.claude.com/docs/en/permissions#what-runs-before-you-trust-a-folder)
-  [plugins/loading › Plugins shared through a repository](https://code.claude.com/docs/en/plugins/loading#plugins-shared-through-a-repository)
 - The sandbox denies sandboxed commands writes to the `.claude/skills` and `.claude/commands` directories in your
-  working directory and the directories above it, even inside directories they can write to. No `allowWrite` entry
-  or `Edit` allow rule that covers the path lifts the protection.
+  working directory and the directories above it, even inside directories they can write to. An `allowWrite` entry
+  or `Edit` allow rule covering one of these paths doesn't lift the protection. To turn the protection off, set
+  `filesystem.disabled`, which also turns off the rest of filesystem isolation. If you set
+  `allowNestedUserNamespaces` to `true` on Linux or WSL2, don't rely on protected paths: code from a sandboxed command
+  can end up running outside the sandbox.
   [sandboxing › Protected paths](https://code.claude.com/docs/en/sandboxing#protected-paths)
 
 ## Command files
@@ -102,9 +112,9 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   directory up to the repository root, so starting in `packages/frontend/` still picks up skills defined at the
   root.
   [skills › Load skills in monorepos and subdirectories](https://code.claude.com/docs/en/skills#discovery-from-parent-and-nested-directories)
-- In a session running in a linked git worktree, Claude Code searches parent directories only up to the worktree
-  root. When the worktree checkout has no `.claude/skills` directory at its root, Claude Code loads the main
-  checkout's project skills instead.
+- In a session running in a linked git worktree that you created with `--worktree` or `git worktree add`, Claude Code
+  searches parent directories only up to the worktree root. When the worktree checkout has no `.claude/skills`
+  directory at its root, Claude Code loads the main checkout's project skills instead.
   [skills › Load skills in monorepos and subdirectories](https://code.claude.com/docs/en/skills#discovery-from-parent-and-nested-directories)
 - In a worktree with its own `.claude/skills` directory, only that copy loads. The same read-through of the main
   checkout covers `.claude/commands`.
@@ -141,11 +151,53 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   - An MCP server named `anthropic-skills` connects and its tools work, but its prompts don't appear as commands.
     Rename the server in your MCP configuration to list them.
 
+## Refused characters in names
+
+- Claude Code refuses a command name or a frontmatter `name` that contains characters such as these:
+  [skills › Characters a skill name can't hold](https://code.claude.com/docs/en/skills#characters-a-skill-name-cant-hold)
+  - A zero-width space or a control character
+  - A private-use or unassigned character, such as a glyph from an icon font
+  - A character that changes the direction of the text around it
+  - A blank other than one plain space between words, such as a no-break space, two spaces in a row, or a space at
+    the start or end
+  - `<` or `>`
+
+  A name over 256 characters is refused too.
+  [errors › Skill or command name refused](https://code.claude.com/docs/en/errors#skill-or-command-name-refused)
+- A custom command or skill doesn't load when Claude Code refuses its directory or file name; outside a plugin, this
+  includes a skill folder whose name has such a character. It's missing from the `/` menu and Claude can't invoke it.
+  Rename that folder or file to remove the characters.
+  [skills › Characters a skill name can't hold](https://code.claude.com/docs/en/skills#characters-a-skill-name-cant-hold)
+  [errors › Skill or command name refused](https://code.claude.com/docs/en/errors#skill-or-command-name-refused)
+  [skills › Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)
+- A skill still loads when these characters are only in a plugin skill folder's name or in its frontmatter `name`:
+  [skills › Characters a skill name can't hold](https://code.claude.com/docs/en/skills#characters-a-skill-name-cant-hold)
+  - A folder in a plugin's `skills/` directory or its manifest's
+    [`skills` paths](https://code.claude.com/docs/en/plugins/components#skills): you don't need to rename the folder.
+    The characters become hyphens in the skill's command name, so type the command with the hyphens.
+  - A frontmatter `name`: the `/` menu doesn't show the `name` value and typing it doesn't invoke the skill. Edit the
+    `name:` line to remove the characters.
+- An interactive session shows a startup notice when Claude Code refused the name of at least one skill or command:
+  [errors › Skill or command name refused](https://code.claude.com/docs/en/errors#skill-or-command-name-refused)
+
+  ```text
+  1 skill or command name refused: run with --debug to see which ([names]), rename, then restart — a name may not hold hidden, direction-changing or blank-like characters, < or >, or be over 256 characters
+  ```
+
+  - For a skill or command that isn't loaded, its line in the debug log reads `<name> is not offered`.
+  - For a skill whose frontmatter `name` is ignored, its line in the debug log reads
+    `<name value> is not shown for <skill>`.
+- To find which name was refused, start Claude Code with `claude --debug` from your shell and search the debug log
+  for `[names]`. Each name the notice counts has one line there, and the line spells out some hidden characters as
+  codes, such as `\u{200B}` for a zero-width space. After a rename or a `name:` edit, restart the session, unless
+  the file is in a directory Claude Code watches for changes. For a skill from a plugin you didn't write, ask the
+  plugin's author to rename it.
+  [errors › Skill or command name refused](https://code.claude.com/docs/en/errors#skill-or-command-name-refused)
+  [skills › Characters a skill name can't hold](https://code.claude.com/docs/en/skills#characters-a-skill-name-cant-hold)
+
 ## Skills that share a name
 
-- When two skills share a directory or file name, where each one came from decides which one `/name` runs. The
-  table covers the enterprise, personal, project, nested, plugin, and claude.ai locations, bundled skills, built-in
-  commands, and command files.
+- When two skills share a directory or file name, where each one came from decides which one `/name` runs.
   [skills › Resolve skills that share a name](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name)
 
   | Same name in | Which one runs |
@@ -155,8 +207,20 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   | Any of those locations and a [built-in command](https://code.claude.com/docs/en/commands) | In a local terminal session, your skill replaces the built-in command, but not its aliases. A project `usage` skill replaces `/usage`, and the built-in alias `/cost` still runs the built-in command |
   | A skill and a file in `.claude/commands/` | The skill |
   | A project-root skill and a nested skill | Both load. See Monorepos, nested directories and worktrees |
+  | An enterprise, personal, or project skill and a skill in an [added directory outside the project](https://code.claude.com/docs/en/skills#skills-from-additional-directories) | The enterprise, personal, or project skill, while the added directory's skill runs under a prefixed name. See Run a same-named skill from an added directory |
+  | Two [added directories](https://code.claude.com/docs/en/skills#skills-from-additional-directories) outside the project | The skill from the directory added first, in `--add-dir` or `/add-dir` order. The other runs under a prefixed name. See Run a same-named skill from an added directory |
   | A plugin skill and a skill at any of the locations above | Both load, because plugin skills are namespaced as `/plugin-name:skill-name` |
   | Any of the above and the short name of a skill synced from your claude.ai account | The other skill or command. The synced skill is then listed and runs only under its full name. See Synced skills that share a name |
+
+## Run a same-named skill from an added directory
+
+- An added directory's skill gets a prefix when its folder name clashes with an enterprise, personal, or project
+  skill, or one in a directory added earlier. To run it, type `/<prefix>:<skill-name>` at the Claude Code prompt. The
+  `/` menu lists the skill under its prefixed name. Where the prefix comes from is in the Command names table.
+  [skills › Run a same-named skill from an added directory](https://code.claude.com/docs/en/skills#run-a-same-named-skill-from-an-added-directory)
+- With `--add-dir ../cli` and a `verify` skill in both your project and `../cli`, `/verify` runs your project's
+  skill and `/cli:verify` runs the skill from `../cli`.
+  [skills › Run a same-named skill from an added directory](https://code.claude.com/docs/en/skills#run-a-same-named-skill-from-an-added-directory)
 
 ## Synced skills that share a name
 
@@ -195,6 +259,7 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   | :- | :- | :- |
   | Skill directory under `~/.claude/skills/` or `.claude/skills/` | Frontmatter `name` or the directory name | `.claude/skills/deploy-staging/SKILL.md` → `/deploy-staging`, or `/deploy` with `name: deploy` |
   | Nested `.claude/skills/` directory, when the directory name clashes with another skill | Subdirectory path relative to the working directory, then the skill directory name | `apps/web/.claude/skills/deploy/SKILL.md` → `/apps/web:deploy` |
+  | `.claude/skills/` in an [added directory outside the project](https://code.claude.com/docs/en/skills#skills-from-additional-directories), when the skill directory name clashes with an enterprise, personal, or project skill, or one in a directory added earlier | The added directory's folder name, then the skill directory name. When two added directories share a folder name, the prefix starts with the parent folder's name | `../cli/.claude/skills/verify/SKILL.md` with `--add-dir ../cli` → `/cli:verify`. With `--add-dir ../a/cli --add-dir ../b/cli`, a `verify` skill in each, and none elsewhere, the one in `../a/cli` → `/verify` and the other → `/b/cli:verify` |
   | File under `.claude/commands/` | File name without extension | `.claude/commands/deploy.md` → `/deploy` |
   | File in a subdirectory of `.claude/commands/` | Subdirectory path relative to `commands/` with each `/` replaced by `:`, then the file name without extension | `.claude/commands/frontend/component.md` → `/frontend:component` |
   | Plugin `skills/` subdirectory | Frontmatter `name` or the directory name, namespaced by plugin | `my-plugin/skills/review/SKILL.md` → `/my-plugin:review`, or `/my-plugin:fancy` with `name: fancy` |
@@ -306,11 +371,6 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
 - The `synced` folder name is said to be skipped in the enterprise, personal, and project locations; the
   documentation does not say whether it is skipped in a nested or `--add-dir` `.claude/skills/`.
   [skills › Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)
-- The documentation does not say which skill `/name` runs when a skill in a directory added with `--add-dir` shares
-  a name with a project or personal skill. For a command file in an added directory that shares a name with one in
-  your project, it does: your project's command runs.
-  [skills › Resolve skills that share a name](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name),
-  [permissions › Additional directories grant file access, not configuration](https://code.claude.com/docs/en/permissions#additional-directories-grant-file-access-not-configuration)
 - Symlinked folders are stated for the enterprise, personal, and project locations; the documentation does not say
   whether a symlinked folder works in a nested or additional-directory `.claude/skills/`.
   [skills › Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)
