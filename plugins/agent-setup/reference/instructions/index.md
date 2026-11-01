@@ -12,8 +12,8 @@ key facts first; they are what models most often get wrong. Then read only the s
 ## Key facts
 
 - By default a `CLAUDE.md`, `.claude/CLAUDE.md` or `CLAUDE.local.md` in the working directory or above it stops Claude
-  reading `AGENTS.md`, unless that `CLAUDE.md` imports `@AGENTS.md`; `~/.claude/CLAUDE.md`, the managed CLAUDE.md
-  and `.claude/rules/` don't count.
+  reading `AGENTS.md` directly; a `CLAUDE.md` that imports `@AGENTS.md` still brings it in. `~/.claude/CLAUDE.md`, the
+  managed CLAUDE.md and `.claude/rules/` don't count.
   See [agents-md.md › When Claude reads AGENTS.md](agents-md.md).
 - **Project instructions** set under `pluginConfigs` in project or local settings files is ignored; it belongs in
   `~/.claude/settings.json`, a `--settings` file or managed settings.
@@ -29,9 +29,8 @@ key facts first; they are what models most often get wrong. Then read only the s
 - A personal rule for every project goes in `~/.claude/rules/`, not the project's `.claude/rules/`.
   See [placing.md › User-level rules](placing.md).
 - A `.claude/rules/` symlink whose target is outside the working directory is treated like an external import: its
-  rules don't load until external imports are approved, and then only the ones without `paths` load; the approval
-  prompt appears only when a project memory file imports a file outside the working directory with `@path`, never
-  for symlinks alone.
+  rules don't load until external imports are approved, and then only the ones without `paths` load. Claude Code
+  asks once per project, in a dialog at the start of an interactive session.
   See [sharing.md › Symlinks](sharing.md).
 - A literal `[` in a `paths` pattern must be escaped, as in `photos \[2024/**`; a `[` that can't be read as a
   bracket expression makes the pattern invalid, so it matches nothing.
@@ -40,9 +39,13 @@ key facts first; they are what models most often get wrong. Then read only the s
   `---` must be the file's first line; if the YAML doesn't parse, the rule loads as if it had no `paths`.
   See [scoping.md › The frontmatter](scoping.md).
 - A rule without `paths` in the project's `.claude/rules/` loads at launch, with the same priority as
-  `.claude/CLAUDE.md`; a path-scoped rule loads when Claude uses the Read, Write or Edit tool on a matching file, not
-  on every tool use.
+  `.claude/CLAUDE.md`; a path-scoped rule loads when Claude uses the Read, Write or Edit tool on a matching file, or
+  views it with a Bash command that counts as a read, such as `cat` or `head` on a single file.
   See [loading.md › At launch and on file access](loading.md).
+- A subdirectory CLAUDE.md or a rule that loads on demand, over its per-file limit (40,000 characters on a 200K
+  context window), reaches Claude only as its start, with a note to read the rest; until Claude does, the later
+  instructions aren't in its context.
+  See [writing.md › Size](writing.md).
 - If you or anyone who clones the repository works on Windows, a `CLAUDE.md` symlinked to `AGENTS.md` can check out
   as a one-line text file unless `core.symlinks` is enabled, leaving no instructions; use the `@AGENTS.md` import.
   See [agents-md.md › Import or symlink](agents-md.md).
@@ -59,14 +62,29 @@ key facts first; they are what models most often get wrong. Then read only the s
   built-in Explore and Plan agents skip them, and a subagent with `omitClaudeMd` loads only managed policy files, or
   none when its definition comes from managed settings.
   See [loading.md › In subagents](loading.md).
+- A subagent that runs in its own worktree (when asked to "use worktrees for your agents" or its frontmatter sets
+  `isolation: worktree`) in the default location under `.claude/worktrees/` doesn't load the `CLAUDE.md` file or
+  `.claude/rules/` directory at the worktree's root as it reads files there, even if those differ on the worktree's
+  branch.
+  See [loading.md › In subagents](loading.md).
 - CLAUDE.md files and rules in a directory added with `--add-dir` load only with
   `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` set; the `additionalDirectories` setting never loads them.
   See [sharing.md › Additional directories](sharing.md).
+- Root-level directories are not checked out in a sparse worktree, so include `.claude` in `worktree.sparsePaths` if
+  you want the repository root's `.claude/settings.json` or `.claude/rules/` available inside the worktree.
+  See [sharing.md › Sparse worktree checkouts](sharing.md).
 - `claudeMdExcludes` patterns match absolute paths, so start a relative-style pattern with `**/`; they can exclude
   rules files as well as CLAUDE.md files, but not a managed policy CLAUDE.md.
   See [excluding.md › `claudeMdExcludes`](excluding.md).
-- Project rules are skipped if `project` is excluded from `--setting-sources`.
+- Project rules are skipped if `project` is excluded from `--setting-sources`, including rules that load on demand,
+  such as path-scoped rules and rules in nested `.claude/rules/` directories.
   See [excluding.md › `--setting-sources`](excluding.md).
+- With **Project instructions** set to `managed-only`, a subdirectory's `CLAUDE.md` and `.claude/rules/` files, and
+  path-scoped rules, still load on demand.
+  See [excluding.md › `managed-only`](excluding.md).
+- In a `claude plugin eval` run your user settings and `CLAUDE.md` files are absent, and no `.claude/` directory or
+  `CLAUDE.md` loads from above the workspace or inside it, even one a `scaffold_script` wrote.
+  See [loading.md › In plugin eval runs](loading.md).
 
 ## Topics
 
@@ -85,18 +103,19 @@ key facts first; they are what models most often get wrong. Then read only the s
 
 - [writing.md](writing.md): writing the body of a CLAUDE.md, `AGENTS.md` or rule file (`@path` imports, HTML comments,
   size and the 4 MiB limit, contradicting instructions, compaction instructions)
-  - Format
   - Imports
   - HTML comments
   - Size
   - Contradicting instructions
   - Compaction instructions
+  - Reasoning instructions
   - Not stated by the documentation
 
 - [scoping.md](scoping.md): limiting a rule to matching files with frontmatter: `paths`, glob patterns, brace expansion
   and its budget, invalid patterns
   - The frontmatter
   - Scoping with `paths`
+  - Base directory
   - Glob patterns
   - Brace expansion budget
   - Invalid patterns
@@ -111,6 +130,7 @@ key facts first; they are what models most often get wrong. Then read only the s
   - In subagents
   - In agent teams
   - In the auto mode classifier
+  - In plugin eval runs
   - Not stated by the documentation
 
 - [agents-md.md](agents-md.md): having Claude read `AGENTS.md`: which files stop it, the **Project instructions**
@@ -148,16 +168,22 @@ key facts first; they are what models most often get wrong. Then read only the s
   - The interactive flow: `CLAUDE_CODE_NEW_INIT`
   - Migrate from other tools
   - View and edit with `/memory`
+  - When `/import` or `claude import` is unavailable
   - Edit in VS Code
   - Not stated by the documentation
 
-- [troubleshooting.md](troubleshooting.md): checking an instruction file that isn't taking effect: whether it loaded
-  (`/context`, `InstructionsLoaded`), why it is ignored, and whether its content is sound (`/doctor`, `prompt-audit`,
-  length warnings)
+- [troubleshooting.md](troubleshooting.md): checking an instruction file that isn't taking effect, or whose content
+  makes a request fail (a refusal for Claude's reasoning, a model fallback): whether it loaded (`/context`,
+  `InstructionsLoaded`), why it is ignored, and whether its content is sound (`/doctor`, `prompt-audit`, length
+  warnings)
   - Check whether it loaded
+  - Check an `Instruction file not loaded` notice
   - Check why `AGENTS.md` isn't read
   - Log loads with the `InstructionsLoaded` hook
   - Why a loaded instruction is ignored
+  - Check a refused request for Claude's reasoning
+  - Check a fallback triggered by workspace context
+  - Check a file over its per-file limit
   - Test against a clean configuration
   - Audit and length warnings
   - Not stated by the documentation

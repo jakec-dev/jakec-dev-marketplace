@@ -11,16 +11,18 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - [In subagents](#in-subagents)
 - [In agent teams](#in-agent-teams)
 - [In the auto mode classifier](#in-the-auto-mode-classifier)
+- [In plugin eval runs](#in-plugin-eval-runs)
 - [Not stated by the documentation](#not-stated-by-the-documentation)
 
 ## At launch and on file access
 
 - Claude Code loads `CLAUDE.md` and `CLAUDE.local.md` from your current working directory and every directory above
   it. Run Claude Code in `foo/bar/` and it loads instructions from `foo/bar/CLAUDE.md`, `foo/CLAUDE.md`, and any
-  `CLAUDE.local.md` files alongside them.
-  [memory › How CLAUDE.md files load](https://code.claude.com/docs/en/memory#how-claude-md-files-load)
-- CLAUDE.md and CLAUDE.local.md files in the directory hierarchy above the working directory are loaded at launch.
-  [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
+  `CLAUDE.local.md` files alongside them. Those files in the directory hierarchy above the working directory are
+  loaded at launch.
+  [memory › How CLAUDE.md files load](https://code.claude.com/docs/en/memory#how-claude-md-files-load),
+  [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files),
+  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
 - CLAUDE.md scopes load from broadest scope to most specific (managed policy, user, project, local), so a project
   instruction appears in context after a user instruction.
   [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
@@ -30,12 +32,19 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   `CLAUDE.local.md` is appended after `CLAUDE.md`, so it is the last thing Claude reads at that level.
   [memory › How CLAUDE.md files load](https://code.claude.com/docs/en/memory#how-claude-md-files-load)
 - Claude also discovers `CLAUDE.md` and `CLAUDE.local.md` files in subdirectories under your current working
-  directory. Instead of loading them at launch, Claude Code loads them on demand when Claude reads files in those
-  subdirectories: subdirectory `CLAUDE.md` files load after Claude uses the Read, Write, or Edit tool on a file in
-  that directory, not at session start. `claudeMdExcludes` can skip other teams' files in a large monorepo.
+  directory. Instead of loading them at launch, Claude Code loads each one once Claude reads, writes, or edits another
+  file in that subdirectory. Reading includes viewing the file with a Bash command that counts as a read.
+  `claudeMdExcludes` can skip other teams' files in a large monorepo.
   [memory › How CLAUDE.md files load](https://code.claude.com/docs/en/memory#how-claude-md-files-load),
   [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files),
-  [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)
+  [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
+- The Bash commands that count as a read are `cat`, `nl`, `bat`, `batcat`, `head`, `tail`, `sed -n 'X,Yp'`, `grep`,
+  `egrep`, `fgrep`, and `rg`, each run on one file with no pipes or redirects. When Claude views a file this way,
+  Claude Code also loads any subdirectory `CLAUDE.md` and path-scoped rules that apply to that file.
+  [tools-reference › Edit tool behavior](https://code.claude.com/docs/en/tools-reference#edit-tool-behavior)
+- When Claude enters a path outside the repository's `.claude/worktrees/` directory, the move takes project
+  configuration such as `CLAUDE.md` to that location.
+  [worktrees › Ask Claude to create a worktree](https://code.claude.com/docs/en/worktrees#ask-claude-to-create-a-worktree)
 - In a prompt, @ file references add `CLAUDE.md` in the file's directory and parent directories to context.
   [common-workflows › Reference files and directories](https://code.claude.com/docs/en/common-workflows#reference-files-and-directories)
 - When you run `/cd <path>` to move the session to a different primary working directory, Claude Code keeps the
@@ -44,11 +53,11 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - Rules without `paths` frontmatter in the project's `.claude/rules/` are loaded at launch with the same priority as
   `.claude/CLAUDE.md`.
   [memory › Set up rules](https://code.claude.com/docs/en/memory#set-up-rules)
-- Rules in nested `.claude/rules/` directories load on demand, as path-scoped rules do.
-  [memory › Set up rules](https://code.claude.com/docs/en/memory#set-up-rules)
-- Path-scoped rules trigger when Claude uses the Read, Write, or Edit tool on a file matching the pattern, not on
-  every tool use. Matching also works when Claude reaches a file through a symlinked path to the project directory,
-  for example in a symlinked checkout.
+- Rules files in a subdirectory's `.claude/rules/` load on demand.
+  [memory › Claude ignores the end of my subdirectory CLAUDE.md](https://code.claude.com/docs/en/memory#claude-ignores-the-end-of-my-subdirectory-claude-md)
+- A path-scoped rule loads when Claude uses the Read, Write, or Edit tool on a matching file. It also loads when
+  Claude views a matching file with a Bash command that counts as a read. Matching also works when Claude reaches a
+  file through a symlinked path to the project directory, for example in a symlinked checkout.
   [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
 - Claude Code loads user-level rules (`~/.claude/rules/`) before project rules, so a project rule appears later in
   Claude's context than a user rule. Neither set overrides the other: if a user rule and a project rule conflict,
@@ -72,11 +81,12 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   | Mechanism | After compaction |
   | :- | :- |
   | Project-root CLAUDE.md and unscoped rules | Re-injected from disk |
-  | Rules with `paths:` frontmatter | Claude Code reloads them as Claude reads files they match |
-  | Nested CLAUDE.md in subdirectories | Claude Code reloads them as Claude reads files in that subdirectory |
+  | Rules with `paths:` frontmatter | Claude Code reloads them on demand |
+  | Nested CLAUDE.md in subdirectories | Claude Code reloads them on demand |
 
-- Path-scoped rules and nested CLAUDE.md files load into message history when their trigger file is read, so
-  compaction summarizes them away with everything else. If a rule must persist across compaction, drop the `paths:`
+- Path-scoped rules and nested CLAUDE.md files load into message history when Claude reads, writes, or edits
+  their trigger file, so compaction summarizes them away with everything else. If a rule must persist across
+  compaction, drop the `paths:`
   frontmatter or move it to the project-root CLAUDE.md.
   [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
 
@@ -86,9 +96,9 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   mid-session does not invalidate the cache, but the edit also doesn't apply: Claude keeps working with the version
   loaded at session start, and the new content loads on the next `/clear`, `/compact`, or restart.
   [prompt-caching › Editing CLAUDE.md mid-session](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session)
-- Nested CLAUDE.md files in subdirectories and rules with `paths:` frontmatter load later, when Claude first reads a
-  matching file. Editing one before it loads does take effect. After it loads, the content is part of the
-  conversation history, so a mid-session edit doesn't retroactively change it.
+- Nested CLAUDE.md files in subdirectories and rules with `paths:` frontmatter load later, on demand. Editing one
+  before it loads does take effect. After it loads, the content is part of the conversation history, so a mid-session
+  edit doesn't retroactively change it.
   [prompt-caching › Editing CLAUDE.md mid-session](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session)
 
 ## In subagents
@@ -101,8 +111,10 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   loaded as project instructions. The built-in Explore and Plan agents skip this.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
 - A subagent whose definition sets `omitClaudeMd` loads only the managed policy files, or none at all when the
-  definition comes from managed settings. To launch one of your own subagents without the user, project, and local
-  CLAUDE.md files, set `omitClaudeMd: true` in its frontmatter or `--agents` JSON. `omitClaudeMd` is ignored when
+  definition comes from managed settings. For Explore, Plan, and subagents with `omitClaudeMd`, a subdirectory's
+  `CLAUDE.md` and matching path-scoped rules still load when the subagent works with files there. To launch one of
+  your own subagents without the user, project, and local CLAUDE.md files, set `omitClaudeMd: true` in its
+  frontmatter or `--agents` JSON. `omitClaudeMd` is ignored when
   the agent runs as the main session agent via `--agent` or the `agent` setting.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup),
   [sub-agents › Frontmatter reference](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields)
@@ -122,8 +134,7 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - Each teammate has its own context window. When spawned, a teammate loads the same project context as a regular
   session, including CLAUDE.md.
   [agent-teams › Context and communication](https://code.claude.com/docs/en/agent-teams#context-and-communication)
-- If you start the lead with `--setting-sources`, teammates load from the same restricted list of sources, and
-  split-pane teammates do too.
+- If you start the lead with `--setting-sources`, teammates load from the same restricted list of sources.
   [agent-teams › Context and communication](https://code.claude.com/docs/en/agent-teams#context-and-communication)
 
 ## In the auto mode classifier
@@ -131,6 +142,13 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - The classifier reads the same CLAUDE.md content Claude itself loads, so an instruction like "never force push" in
   your project's CLAUDE.md steers both Claude and the classifier at the same time.
   [auto-mode-config › Where the classifier reads configuration](https://code.claude.com/docs/en/auto-mode-config#where-the-classifier-reads-configuration)
+
+## In plugin eval runs
+
+- In a `claude plugin eval` run, the agent under test runs as a `claude -p` child process with only the plugin loaded.
+  Your user settings and `CLAUDE.md` files are absent, and no `.claude/` directory or `CLAUDE.md` loads from above the
+  workspace or inside it, even one a `scaffold_script` wrote.
+  [plugin-evals › How runs are isolated](https://code.claude.com/docs/en/plugin-evals#how-runs-are-isolated)
 
 ## Not stated by the documentation
 
@@ -141,6 +159,10 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   directory's `CLAUDE.local.md`, rules or parent directories' files, or whether the previous directory's CLAUDE.md
   stays in context.
   [permissions › Move the session to another directory](https://code.claude.com/docs/en/permissions#move-the-session-to-another-directory)
+- The scope order (managed, user, project, local) puts local last, while within each directory `CLAUDE.local.md`
+  follows that directory's `CLAUDE.md` with the tree ordered root down. The documentation does not reconcile the two
+  orders or say where `~/.claude/CLAUDE.md` falls relative to the directory tree.
+  [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
 - The documentation does not say where `.claude/CLAUDE.md` comes in a directory's order relative to `CLAUDE.md` and
   `CLAUDE.local.md`, or what happens when a directory has both `CLAUDE.md` and `.claude/CLAUDE.md`.
   [memory › How CLAUDE.md files load](https://code.claude.com/docs/en/memory#how-claude-md-files-load)
@@ -149,8 +171,8 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
   outright that an edit to an unscoped rule waits for one of them. It also does not say whether an edit to a
   `CLAUDE.local.md` above the working directory waits the same way.
   [prompt-caching › Editing CLAUDE.md mid-session](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session)
-- The documentation does not say whether a path-scoped rule or a subdirectory's CLAUDE.md loads when a subagent reads
-  a matching file, outside a worktree or in a worktree outside the default location.
+- The documentation does not say whether a path-scoped rule or a subdirectory's CLAUDE.md loads when a subagent in a
+  worktree outside the default location reads a matching file.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup),
   [worktrees › Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees)
 - The documentation does not say whether, or when, `.claude/rules/` directories above the working directory load.
@@ -163,14 +185,10 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - After compaction Claude Code re-reads up to five recently modified files Claude read or edited; the documentation
   does not say whether that re-read reloads path-scoped rules or nested CLAUDE.md files that match those files.
   [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
-- Rules in nested `.claude/rules/` directories are stated to load on demand when Claude reads a file in that
-  subdirectory only in the `managed-only` value's description; the documentation does not say so for the default.
-  [memory › Choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load)
-- The documentation does not say how deep below the working directory nested `.claude/rules/` directories are found.
-  [memory › Set up rules](https://code.claude.com/docs/en/memory#set-up-rules)
-- The documentation does not say whether a `paths` field in a rule in a nested `.claude/rules/` directory must also
-  match.
-  [memory › Set up rules](https://code.claude.com/docs/en/memory#set-up-rules)
-- What survives compaction and mid-session edits are stated for path-scoped rules and nested CLAUDE.md files; the
-  documentation does not say what happens to rules in nested `.claude/rules/` directories.
-  [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
+- The documentation does not say what triggers a rules file in a subdirectory's `.claude/rules/` to load, how deep below
+  the working directory such directories are found, whether a `paths` field in such a rule must also match, or what
+  happens to it after compaction or a mid-session edit, which it states for path-scoped rules and nested CLAUDE.md
+  files.
+  [memory › Claude ignores the end of my subdirectory CLAUDE.md](https://code.claude.com/docs/en/memory#claude-ignores-the-end-of-my-subdirectory-claude-md),
+  [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction),
+  [prompt-caching › Editing CLAUDE.md mid-session](https://code.claude.com/docs/en/prompt-caching#editing-claude-md-mid-session)

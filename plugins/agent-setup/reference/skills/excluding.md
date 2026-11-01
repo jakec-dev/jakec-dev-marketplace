@@ -103,6 +103,9 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 - Claude Code's bundled skills include `/doctor`, `/code-review`, `/batch`, `/debug`, `/loop`, and `/claude-api`. The
   commands reference lists bundled skills alongside built-in commands, marked **Skill** in the Purpose column.
   [skills › Bundled skills](https://code.claude.com/docs/en/skills#bundled-skills)
+- A bundled skill such as `/code-review` has its instructions built into Claude Code, so there is no `SKILL.md` file
+  on disk to open or edit.
+  [code-review-local › Change or build on the review](https://code.claude.com/docs/en/code-review-local#change-or-build-on-the-review)
 - Bundled skills are prompt-based: they give Claude detailed instructions and let it orchestrate the work using its
   tools. Most built-in commands instead execute fixed logic directly.
   [skills › Bundled skills](https://code.claude.com/docs/en/skills#bundled-skills)
@@ -113,7 +116,7 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 - `CLAUDE_CODE_DISABLE_CFC_PROMPT` set to `1` keeps the Claude in Chrome browser tools available while omitting the
   Chrome section of the system prompt and the `/claude-in-chrome` bundled skill.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- `CLAUDE_CODE_DISABLE_CRON` set to `1` disables scheduled tasks: the `/loop` skill and cron tools become
+- `CLAUDE_CODE_DISABLE_CRON` set to `1` disables session-scoped scheduled tasks: the `/loop` skill and cron tools become
   unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
@@ -132,8 +135,8 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
   [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization)
 - Locking the `skills` surface stops Claude Code loading skills from `~/.claude/skills/` and `.claude/skills/`, custom
   commands from `~/.claude/commands/` and `.claude/commands/`, skills and commands under `--add-dir` directories, and
-  skills synced from your claude.ai account. It keeps loading plugin skills, bundled skills, and skills in the managed
-  policy directory.
+  skills synced from your claude.ai account. It keeps loading bundled skills, skills in the managed policy directory,
+  and skills from plugins other than skills-directory plugins.
   [settings-reference › `strictPluginOnlyCustomization.skills`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-skills)
 
   ```json
@@ -178,7 +181,7 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
   leaving Skills on, set `syncClaudeAiSkills` in managed settings.
   [skills › Where synced skills load](https://code.claude.com/docs/en/skills#where-synced-skills-load)
 - If your organization turns Skills off on claude.ai, Claude Code removes the downloaded skills and they stop loading.
-  They move to `~/.claude/skills/.trash/`, where you can recover the files until the retention sweep deletes them.
+  They move to `~/.claude/skills/.trash/`.
   Once your organization turns Skills back on, Claude Code downloads the skills you enabled at the next sync.
   [skills › Where synced skills load](https://code.claude.com/docs/en/skills#where-synced-skills-load)
 
@@ -209,21 +212,46 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 ## Skills-directory plugins
 
 - Skills-directory plugins are folders under `~/.claude/skills/` or a project's `.claude/skills/` that carry a
-  `.claude-plugin/plugin.json`. If you set any `strictKnownMarketplaces` allowlist, including an empty one, without a
-  `{ "source": "skills-dir" }` entry, they stop loading. Plain skills, meaning a `SKILL.md` without that manifest, keep
-  loading.
-  [plugins/org › Keep skills-directory plugins loading](https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading)
-- The settings reference says any allowlist, even an empty one, stops `@skills-dir` plugins loading from
-  `~/.claude/skills/`, and that the `{ "source": "skills-dir" }` entry keeps loading them.
-  [settings-reference › Allowed source types](https://code.claude.com/docs/en/settings-reference#allowed-source-types)
-- A `{ "source": "skills-dir" }` entry in `strictKnownMarketplaces` keeps skills-directory plugins loading while an
-  allowlist is set, and matches no marketplace.
-  [plugins/org › Allowlist with `strictKnownMarketplaces`](https://code.claude.com/docs/en/plugins/org#allowlist-with-strictknownmarketplaces)
-- A `{ "source": "skills-dir" }` entry in `blockedMarketplaces` stops skills-directory plugins loading, from both
-  `~/.claude/skills/` and a project's `.claude/skills/`. The settings reference says the entry stops `@skills-dir`
-  plugins loading from `~/.claude/skills/` without restricting any marketplace.
+  `.claude-plugin/plugin.json`. They come from you or your repository rather than from a marketplace. Claude Code skips
+  them when your administrator sets one of these restrictions in managed settings:
+  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings),
+  [plugins/org › Keep skills-directory plugins loading](https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading),
+  [settings-reference › Allowed source types](https://code.claude.com/docs/en/settings-reference#allowed-source-types),
   [plugins/org › Blocklist with `blockedMarketplaces`](https://code.claude.com/docs/en/plugins/org#blocklist-with-blockedmarketplaces),
   [settings-reference › `blockedMarketplaces`](https://code.claude.com/docs/en/settings-reference#blockedmarketplaces)
+  - **Customization locked to plugins**: `strictPluginOnlyCustomization` set to `true` or to an array naming one or
+    more kinds of customization to lock. Claude Code treats skills-directory plugins as user customization, since
+    users place the folders themselves. It skips the whole plugin when any one kind is locked, such as `mcp`,
+    whichever components it has, and whether or not the `{ "source": "skills-dir" }` entry is present.
+    [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization),
+    [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings),
+    [plugins/org › Keep skills-directory plugins loading](https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading)
+  - **Marketplace sources restricted**: a `strictKnownMarketplaces` allowlist without a `{ "source": "skills-dir" }`
+    entry, where any allowlist counts, even an empty one. It stops them loading from both `~/.claude/skills/` and
+    a project's `.claude/skills/`.
+  - **Skills-directory plugins blocklisted**: a `blockedMarketplaces` list with a `{ "source": "skills-dir" }` entry.
+    It stops them loading from both locations without restricting any marketplace.
+- A skipped folder produces no error: `/plugin` and `claude plugin list` show no plugin and no error. Its
+  `/<name>:<skill>` commands and agents are missing, as are its hooks and MCP servers.
+  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings)
+- Unless skills are among the locked kinds, a `SKILL.md` at the skipped folder's root still loads as a plain skill. In
+  that case `/<name>` keeps working, and the `/plugin` **Installed** tab lists that skill under **Skills**.
+  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings)
+- To confirm the cause, run `/status` in a Claude Code session. If the `Setting sources` line lists
+  `Enterprise managed settings`, ask your administrator whether one of these settings applies to you.
+  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings)
+- To load the whole plugin, add it to a marketplace your organization allows and install it from there. To load it for
+  one session instead, start `claude` from your shell with `--plugin-dir` and the folder's path, which works unless
+  your administrator has also turned off that flag.
+  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings)
+- To keep skills-directory plugins loading, add the `{ "source": "skills-dir" }` entry to the `strictKnownMarketplaces`
+  allowlist and leave `strictPluginOnlyCustomization` unset. The entry has no meaning outside
+  `strictKnownMarketplaces` and `blockedMarketplaces`, and the allowlist doesn't apply to plain skills, meaning a
+  `SKILL.md` without that manifest.
+  [settings-reference › Allowed source types](https://code.claude.com/docs/en/settings-reference#allowed-source-types),
+  [plugins/org › Keep skills-directory plugins loading](https://code.claude.com/docs/en/plugins/org#keep-skills-directory-plugins-loading)
+- A `{ "source": "skills-dir" }` entry in `strictKnownMarketplaces` matches no marketplace.
+  [plugins/org › Allowlist with `strictKnownMarketplaces`](https://code.claude.com/docs/en/plugins/org#allowlist-with-strictknownmarketplaces)
 - `claude plugin init` or `claude plugin enable` stops with
   `Plugins from ~/.claude/skills/ are blocked by your organization's managed settings` when managed settings block the
   `skills-dir` source. The message names `strictKnownMarketplaces or blockedMarketplaces` and asks your administrator

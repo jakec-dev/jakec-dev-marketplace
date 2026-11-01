@@ -9,6 +9,7 @@ can invoke.
 - Removing tools with `disallowed-tools`
 - Workspace trust
 - When only managed permission rules apply
+- When managed settings lock hooks to plugins
 - Allowing and denying skills with `Skill(...)` rules
 - Hooks on skill invocation
 - Not stated by the documentation
@@ -96,12 +97,28 @@ can invoke.
   - Your `~/.claude/skills/` and `~/.claude/commands/` directories, including skills synced from claude.ai
   - An `--add-dir` directory
   - Plugins declared with a `.claude-plugin` manifest inside `~/.claude/skills/` or the project's `.claude/skills/`
-- Skills from managed settings and bundled skills keep their `allowed-tools`. A skill's `disallowed-tools` still
-  applies.
+  - Plugins loaded for one session only, whose ids end in `@inline`, when all of these hold:
+    - The session is a Code session or Cowork session, other than a cloud session, for which the Claude Desktop app
+      itself starts Claude Code
+    - Your managed settings set the key, not only an embedding host's parent settings
+- Skills from managed settings and bundled skills keep their `allowed-tools`. `@inline` plugins outside those Desktop
+  sessions keep theirs too, except one named `anthropic-skills`. A skill's `disallowed-tools` still applies.
   [settings-reference › `allowManagedPermissionRulesOnly`](https://code.claude.com/docs/en/settings-reference#allowmanagedpermissionrulesonly)
 - The tools an affected skill lists go through your organization's managed rules and the normal permission prompt
   instead. Run `/status` to list each skill whose `allowed-tools` Claude Code has ignored so far in the session.
   [skills › When only managed permission rules apply](https://code.claude.com/docs/en/skills#when-only-managed-permission-rules-apply)
+
+## When managed settings lock hooks to plugins
+
+- When your organization's managed settings list `hooks` in `strictPluginOnlyCustomization`, a personal or project
+  skill whose frontmatter declares `hooks` loses its `allowed-tools` pre-approval, so your users get permission
+  prompts for the tools that field lists. When such a skill runs in a subagent through `context: fork`, it keeps the
+  pre-approval. A skill that declares no `hooks` keeps its pre-approval too.
+  [skills › When managed settings lock hooks to plugins](https://code.claude.com/docs/en/skills#when-managed-settings-lock-hooks-to-plugins)
+  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
+- To restore the pre-approval for a personal or project skill under that setting, remove `hooks` from the skill's
+  frontmatter, because its hooks don't run under that setting.
+  [skills › When managed settings lock hooks to plugins](https://code.claude.com/docs/en/skills#when-managed-settings-lock-hooks-to-plugins)
 
 ## Allowing and denying skills with `Skill(...)` rules
 
@@ -155,6 +172,11 @@ can invoke.
   `/deploy` unless an approval file is present, or a hook matching a review skill can append the team's review
   checklist as `additionalContext`. It can also inject context for a particular skill.
   [hooks › UserPromptExpansion](https://code.claude.com/docs/en/hooks#userpromptexpansion)
+- When the prompt is a skill or custom command you typed, such as `/deploy staging`, a `UserPromptSubmit` hook
+  receives that line as you typed it rather than the expanded skill content. If the hook blocks the prompt, the
+  command doesn't run, so shell commands the skill injects with `` !`<command>` `` don't run either. To match on the
+  command's name or arguments instead, use `UserPromptExpansion`.
+  [hooks › UserPromptSubmit input](https://code.claude.com/docs/en/hooks#userpromptsubmit-input)
 - `UserPromptExpansion` hooks receive `expansion_type` and `command_name` in addition to the common input fields.
   `expansion_type` is `slash_command` for skill and custom commands.
   [hooks › UserPromptExpansion input](https://code.claude.com/docs/en/hooks#userpromptexpansion-input)

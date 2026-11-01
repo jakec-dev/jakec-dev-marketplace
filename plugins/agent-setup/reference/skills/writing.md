@@ -60,7 +60,7 @@ scripts and `ultrathink`.
 
 - Keep the body concise. Once a skill loads, its content stays in context across turns, so every line is a
   recurring token cost. State what to do rather than narrating how or why, and apply the same conciseness test as
-  for [CLAUDE.md content](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md).
+  for [CLAUDE.md content](https://code.claude.com/docs/en/best-practices#keep-claude-md-short).
   [skills › Types of skill content](https://code.claude.com/docs/en/skills#types-of-skill-content)
 - Keep `SKILL.md` under 500 lines. Move detailed reference material to separate files.
   [skills › Add supporting files](https://code.claude.com/docs/en/skills#add-supporting-files)
@@ -101,7 +101,7 @@ scripts and `ultrathink`.
 
 | Variable | Description |
 | :- | :- |
-| `$ARGUMENTS` | All arguments passed when invoking the skill. When no placeholder receives an argument, Claude Code appends them as `ARGUMENTS: <value>` |
+| `$ARGUMENTS` | All arguments passed when invoking the skill. When no placeholder receives an argument, Claude Code appends them as `ARGUMENTS: <value>`. See [Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills). |
 | `$ARGUMENTS[N]` | Access a specific argument by 0-based index, such as `$ARGUMENTS[0]` for the first argument. |
 | `$N` | Shorthand for `$ARGUMENTS[N]`, such as `$0` for the first argument or `$1` for the second. |
 | `$name` | Named argument declared in the `arguments` frontmatter list. Names map to positions in order, so with `arguments: [issue, branch]` the placeholder `$issue` expands to the first argument and `$branch` to the second. |
@@ -109,7 +109,7 @@ scripts and `ultrathink`.
 | `${CLAUDE_EFFORT}` | The current effort level: `low`, `medium`, `high`, `xhigh`, or `max`. Use this to adapt skill instructions to the active effort setting. |
 | `${CLAUDE_SKILL_DIR}` | The directory containing the skill's `SKILL.md` file. For plugin skills, this is the skill's subdirectory within the plugin, not the plugin root. Use this in bash injection commands to reference scripts or files bundled with the skill, regardless of the current working directory. |
 | `${CLAUDE_PROJECT_DIR}` | The project root directory. This is the same path [hooks](https://code.claude.com/docs/en/hooks#reference-scripts-by-path) and MCP servers receive as `CLAUDE_PROJECT_DIR`. Use this to reference project-local scripts or files, such as `${CLAUDE_PROJECT_DIR}/.claude/hooks/helper.sh`, independent of where the skill is installed. |
-| `${CLAUDE_PLUGIN_ROOT}` | The plugin's installation directory. Substituted only in plugin skills. Use this to reference scripts or files bundled anywhere in the plugin, including resources shared between the plugin's skills. |
+| `${CLAUDE_PLUGIN_ROOT}` | The plugin's installation directory. Substituted only in plugin skills. Use this to reference scripts or files bundled anywhere in the plugin, including resources shared between the plugin's skills. See [plugin environment variables](https://code.claude.com/docs/en/plugins/manifest-reference#environment-variables). |
 | `${CLAUDE_PLUGIN_DATA}` | The plugin's [persistent data directory](https://code.claude.com/docs/en/plugins/components#path-variables-and-persistent-data), which survives plugin updates. Substituted only in plugin skills. Use this to reference installed dependencies, generated files, or caches that must outlive an update. |
 
 - Claude Code substitutes `${CLAUDE_SKILL_DIR}` and `${CLAUDE_PROJECT_DIR}` in two places: the skill's markdown
@@ -136,10 +136,22 @@ scripts and `ultrathink`.
   whatever follows the skill name: with `Fix GitHub issue $ARGUMENTS following our coding standards.` in the body,
   `/fix-issue 123` gives Claude "Fix GitHub issue 123 following our coding standards...".
   [skills › Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills)
-- `$0`, `$1` and `$2` are shorthand for `$ARGUMENTS[0]`, `$ARGUMENTS[1]` and `$ARGUMENTS[2]`. Running
-  `/migrate-component SearchBar JavaScript TypeScript` against this body replaces `$0` with `SearchBar`, `$1` with
-  `JavaScript`, and `$2` with `TypeScript`:
+- To access individual arguments by position, use `$ARGUMENTS[N]` or the shorter `$N`. Running
+  `/migrate-component SearchBar JavaScript TypeScript` against this body replaces `$ARGUMENTS[0]` with `SearchBar`,
+  `$ARGUMENTS[1]` with `JavaScript`, and `$ARGUMENTS[2]` with `TypeScript`:
   [skills › Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills)
+
+  ```yaml
+  ---
+  name: migrate-component
+  description: Migrate a component from one language to another
+  ---
+
+  Migrate the $ARGUMENTS[0] component from $ARGUMENTS[1] to $ARGUMENTS[2].
+  Preserve all existing behavior and tests.
+  ```
+
+  The same skill using the `$N` shorthand, where `$0`, `$1` and `$2` stand for those three:
 
   ```yaml
   ---
@@ -264,8 +276,9 @@ scripts and `ultrathink`.
 - Whether `${CLAUDE_SKILL_DIR}` is present in the environment of commands Claude runs through the Bash tool: the
   plugin page's statement covers the plugin variables.
   [plugins/manifest-reference › Where each variable resolves](https://code.claude.com/docs/en/plugins/manifest-reference#where-each-variable-resolves)
-- Whether an `@path` in `SKILL.md` expands at invocation: the substitutions section names `${CLAUDE_*}` variables
-  and argument placeholders, not `@` references.
+- When an `@path` in `SKILL.md` expands and how: the documentation says only that a skill can include files with
+  `@path` imports, and the substitutions section names `${CLAUDE_*}` variables and argument placeholders, not `@`
+  references.
   [skills › Available string substitutions](https://code.claude.com/docs/en/skills#available-string-substitutions)
 - What placeholder replaces a sensitive `${user_config.KEY}` value in skill content.
   [plugins/manifest-reference › Reference a saved value](https://code.claude.com/docs/en/plugins/manifest-reference#reference-a-saved-value)

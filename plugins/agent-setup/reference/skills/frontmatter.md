@@ -54,25 +54,31 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
 | Field | Required | Description |
 | :- | :- | :- |
 | `name` | No | Command name shown in the `/` menu. Defaults to the directory name. See [How a skill gets its command name](https://code.claude.com/docs/en/skills#how-a-skill-gets-its-command-name) for how the field interacts with the name you type to invoke the skill. |
-| `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to apply the skill. If omitted, uses the first non-empty line of the markdown content. Put the key use case first: the combined `description` and `when_to_use` text is truncated at 1,536 characters in the skill listing to reduce context usage. |
+| `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to apply the skill. If omitted, uses the first non-empty line of the markdown content. Put the key use case first: the combined `description` and `when_to_use` text is truncated at 1,536 characters in the skill listing to reduce context usage. Angle brackets in the text [show as `&lt;` and `&gt;`](https://code.claude.com/docs/en/skills#angle-brackets-in-a-skill-description). |
 | `when_to_use` | No | Additional context for when Claude should invoke the skill, such as trigger phrases or example requests. Appended to `description` in the skill listing and counts toward the 1,536-character cap. |
 | `argument-hint` | No | Hint shown during autocomplete to indicate expected arguments. Example: `[issue-number]` or `[filename] [format]`. |
 | `arguments` | No | Named positional arguments for [`$name` substitution](https://code.claude.com/docs/en/skills#available-string-substitutions) in the skill content. Accepts a space-separated string or a YAML list. Names map to argument positions in order. |
-| `disable-model-invocation` | No | Set to `true` to prevent Claude from automatically loading this skill. Use for workflows you want to trigger manually with `/name`. Also prevents the skill from being [preloaded into subagents](https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents). Also prevents the skill from running when a [scheduled task](https://code.claude.com/docs/en/scheduled-tasks) fires with the skill as its prompt. Default: `false`. |
+| `disable-model-invocation` | No | Set to `true` to prevent Claude from automatically loading this skill. Use for workflows you want to trigger manually with `/name`. Also prevents the skill from being [preloaded into subagents](https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents) and from running when a [session-scoped scheduled task](https://code.claude.com/docs/en/scheduled-tasks) fires with the skill as its prompt. Default: `false`. |
 | `user-invocable` | No | Set to `false` when only Claude should invoke the skill: Claude Code hides it from the `/` menu and doesn't run it when you type `/name`. Use for background knowledge users shouldn't invoke directly. Default: `true`. |
 | `allowed-tools` | No | Tools Claude can use without asking permission during the turn that invokes this skill. The grant clears when you send your next message. Accepts a space- or comma-separated string, or a YAML list. See [Pre-approve tools for a skill](https://code.claude.com/docs/en/skills#pre-approve-tools-for-a-skill). |
 | `disallowed-tools` | No | Tools removed from Claude's available pool while this skill is active. Use for autonomous skills that should never call certain tools, such as `AskUserQuestion` for a background loop. Accepts a space- or comma-separated string, or a YAML list. The restriction clears when you send your next message. Like deny rules, the field can't remove [`EndConversation`](https://code.claude.com/docs/en/tools-reference#endconversation-tool-behavior) while any other tool remains. |
 | `model` | No | Model to use when this skill is active. The override applies for the rest of the current turn and isn't saved to settings. The session model resumes when you send your next prompt. Accepts the same values as [`/model`](https://code.claude.com/docs/en/model-config), or `inherit` to keep the active model. A value excluded by your organization's [`availableModels`](https://code.claude.com/docs/en/model-config#restrict-model-selection) allowlist isn't used, and the session keeps its current model. In [auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode), and in [plan mode while the classifier reviews commands](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode), a model that auto mode doesn't support also isn't used, and the session keeps its current model. With `context: fork`, the value sets the [forked subagent's model](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent) instead, and an excluded value follows the [same rules as a subagent model override](https://code.claude.com/docs/en/model-config#restrict-model-selection). |
-| `effort` | No | [Effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level) when this skill is active. Overrides the session effort level. When you omit it, the level comes from the [effort resolution order](https://code.claude.com/docs/en/model-config#adjust-effort-level). Options: `low`, `medium`, `high`, `xhigh`, `max`; available levels depend on the model. |
+| `effort` | No | [Effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level) for the rest of the current turn. Overrides the session effort level, but not the [`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/en/env-vars#variables) environment variable. With `context: fork`, the value sets the forked subagent's effort level instead. When you omit it, the level comes from the [effort resolution order](https://code.claude.com/docs/en/model-config#adjust-effort-level). Options: `low`, `medium`, `high`, `xhigh`, `max`; available levels depend on the model. |
 | `context` | No | Set to `fork` to run in a forked subagent context. See [Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent). |
 | `agent` | No | Which subagent type to use when `context: fork` is set. |
 | `background` | No | Only applies with `context: fork`. Set to `false` to wait for the forked subagent's result in the turn that invoked the skill, instead of [running it in the background](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent). Default: `true`. |
-| `hooks` | No | Hooks that Claude Code registers when the skill is invoked and keeps running for the rest of the session. See [Hooks in skills and agents](https://code.claude.com/docs/en/hooks#hooks-in-skills-and-agents) for the configuration format and the `once` option. |
-| `paths` | No | Glob patterns that limit when this skill is activated. Accepts a comma-separated string or a YAML list. When set, Claude loads the skill automatically only when working with files matching the patterns. Uses the same format as [path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules). |
+| `hooks` | No | Hooks that Claude Code registers when the skill is invoked and keeps running for the rest of the session. See [Hooks in skills and agents](https://code.claude.com/docs/en/hooks#hooks-in-skills-and-agents) for the configuration format, the `once` option, and the [limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks). |
+| `paths` | No | Glob patterns that limit when this skill is activated. Accepts a comma-separated string or a YAML list. When set, Claude loads the skill automatically only when working with files matching the patterns. Patterns are relative to Claude's current working directory, and files outside that directory don't match. Uses the same glob format as [path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules). |
 | `shell` | No | Shell to use for `` !`command` `` and ` ```! ` blocks in this skill. Accepts `bash` (default) or `powershell`. Setting `powershell` runs inline shell commands via PowerShell when the [PowerShell tool](https://code.claude.com/docs/en/tools-reference#powershell-tool) is enabled: it's on by default on Windows without Git Bash, on by default with Git Bash for claude.ai and Console accounts, and needs `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` in Amazon Bedrock, Google Cloud's Agent Platform, and Microsoft Foundry sessions and on macOS, Linux, and WSL. Set it to `0` to turn the tool off. |
 | `metadata` | No | Free-form YAML map for your own key-value data, such as entitlement or catalog fields, read by your own tooling from `SKILL.md`. Claude Code doesn't act on its contents, and drops a value that isn't a map. Don't reuse frontmatter field names such as `paths` as keys. |
 | `license` | No | License covering the skill. Part of the [Agent Skills](https://agentskills.io/home) spec; see [Using skill frontmatter outside Claude Code](https://code.claude.com/docs/en/skills#using-skill-frontmatter-outside-claude-code). Claude Code accepts the field but doesn't act on it. |
 | `compatibility` | No | Environment requirements for the skill, such as intended products or system prerequisites, as defined by the [Agent Skills](https://agentskills.io/home) spec; see [Using skill frontmatter outside Claude Code](https://code.claude.com/docs/en/skills#using-skill-frontmatter-outside-claude-code). Accepts a string of up to 500 characters. Claude Code accepts the field but doesn't act on it. |
+
+- Claude Code displays `<` and `>` in the `description` and `when_to_use` fields as `&lt;` and `&gt;`. To show a
+  placeholder such as `<branch>`, use square brackets, which display as typed (`[branch]`), or move it to an
+  `argument-hint: <branch>` line, which shows after the command name. If you also upload the skill to claude.ai or the
+  Skills API, check whether `argument-hint` is accepted there first.
+  [skills › Angle brackets in a skill description show as `&lt;` and `&gt;`](https://code.claude.com/docs/en/skills#angle-brackets-in-a-skill-description)
 
 ## Model
 
@@ -103,11 +109,20 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
 
 ## Effort
 
-- Frontmatter effort in a skill or subagent doesn't override the `CLAUDE_CODE_EFFORT_LEVEL` environment variable. A
-  `maxEffortLevel` or organization effort cap still limits the level the skill or subagent runs at.
+- While a skill's `effort` applies, the skill runs at its level, whatever level you launch with, save or pick. If
+  `CLAUDE_CODE_EFFORT_LEVEL` is set, that level applies instead. A
+  [`maxEffortLevel`](https://code.claude.com/docs/en/settings-reference#maxeffortlevel) or
+  [organization effort cap](https://code.claude.com/docs/en/model-config#organization-effort-limits) still limits the
+  level the skill runs at.
   [model-config › Set the effort level](https://code.claude.com/docs/en/model-config#set-the-effort-level)
-- After an automatic model fallback, a level that a skill's `effort` frontmatter set for the flagged request applies
-  to that turn, and later turns run at the level the effort resolution order gives the fallback model.
+- The `effort.level` status line field shows the session's level, not one that a skill set.
+  [statusline › Available data](https://code.claude.com/docs/en/statusline#available-data)
+- Hooks receive the effort level in `effort.level`, including a level that a skill set, and `$CLAUDE_EFFORT` holds
+  the same level. `effort` is present for `PreToolUse`, `PostToolUse`, `Stop`, `SubagentStop` and other events with a
+  tool-use context, on models with effort. If the model doesn't support the level, `level` is the level that ran.
+  [hooks › Common input fields](https://code.claude.com/docs/en/hooks#common-input-fields)
+- After an automatic model fallback, a level that a skill's `effort` frontmatter set for the flagged turn applies to
+  that turn. Later turns run at the level the effort resolution order gives the fallback model.
   [model-config › Effort level after a fallback](https://code.claude.com/docs/en/model-config#effort-level-after-a-fallback)
 
 ## Hooks
@@ -149,6 +164,40 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
   [hooks › Hook handler fields](https://code.claude.com/docs/en/hooks#hook-handler-fields)
 - When a `PreToolUse` hook returns `"ask"`, the permission prompt labels a hook from skill frontmatter `[skill]`.
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
+- When a skill's frontmatter hooks don't fire after you or Claude invoke the skill, run `/hooks` in that session. If
+  it lists them, see [Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing). If it lists none
+  of them, the skill may be under a plugin-only lock or past a hook limit, and runs without any of its frontmatter
+  hooks. If neither case is yours, check for
+  [frontmatter that didn't parse](https://code.claude.com/docs/en/skills#skill-not-triggering).
+  [hooks › Limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks)
+- A skill keeps its frontmatter hooks under the
+  [`strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
+  managed setting's `hooks` lock only if it's a plugin skill (a skills-directory plugin doesn't load at all under any
+  lock), a
+  [bundled skill](https://code.claude.com/docs/en/skills#bundled-skills) or a skill in the
+  [managed settings directory](https://code.claude.com/docs/en/managed-settings#delivery-mechanisms); the hooks in
+  your own settings files don't run either.
+  [hooks › Limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks)
+- The `hooks` lock stops frontmatter hooks in skills and custom commands from the sources that a `skills` lock would
+  block, and those skills and commands still load while their own surface isn't locked. It keeps running hooks in
+  managed settings, and hooks from plugins other than skills-directory plugins.
+  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
+- To check for the lock, type `/status`: if the `Setting sources` line includes `Enterprise managed settings`, ask your
+  administrator whether `strictPluginOnlyCustomization` locks hooks. To fix it, move the skill into a
+  [plugin](https://code.claude.com/docs/en/plugins/create#convert-an-existing-claude-setup), list the plugin in a
+  [marketplace](https://code.claude.com/docs/en/plugins/create-marketplace#create-a-marketplace) and install it from
+  there. If Claude Code refuses the marketplace with `is blocked by enterprise policy`, ask your administrator to
+  allow that marketplace.
+  [hooks › Limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks)
+- Each source of skills has its own hook limit per session: your project, your personal skills folder and each plugin
+  count as separate sources. The skills from one source can register at most 1,024 hooks, and those hooks' matchers
+  can total at most 16,384 characters; a matcher with several hooks under it counts once for each hook. Past a limit,
+  the skill runs without any of its frontmatter hooks, and the debug log has a line containing `registers none of its
+  hooks` naming the skill. To check, start a new session with `claude --debug` (or type `/debug` first in it) and
+  invoke the same skills in the same order, including the ones Claude invoked, since both totals build up skill by
+  skill. To fix it, declare fewer hooks or shorter matchers in that skill or the other skills from its source, then
+  start a new session; until then, invoke the skill you need before any other skill from its source.
+  [hooks › Limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks)
 
 ## Outside Claude Code
 
@@ -162,7 +211,7 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
 | claude.ai skill uploads, the Skills API, and packaging with `package_skill.py` from [anthropics/skills](https://github.com/anthropics/skills) | `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools` |
 
 - When you enable a personal skill for your claude.ai account, for example to use it in Cowork and cloud sessions
-  and routines, you upload it to claude.ai, so the same rules apply.
+  and scheduled tasks, you upload it to claude.ai. The same rules apply to that upload.
   [skills › Using skill frontmatter outside Claude Code](https://code.claude.com/docs/en/skills#using-skill-frontmatter-outside-claude-code)
 - If you include any field the spec doesn't allow, packaging or upload fails with a hard error instead of ignoring
   the field:
@@ -190,9 +239,6 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
   whether `name` or `paths` in a command file has any other effect, such as on matching files or on an error.
   [skills › Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference),
   [skills › How a skill gets its command name](https://code.claude.com/docs/en/skills#how-a-skill-gets-its-command-name)
-- The documentation does not say whether a `context: fork` skill's `effort` applies to the forked subagent, as
-  `model` does.
-  [skills › Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference)
 - The documentation does not say what a `Stop` hook in skill frontmatter does.
   [hooks › Hooks in skills and agents](https://code.claude.com/docs/en/hooks#hooks-in-skills-and-agents)
 - The documentation does not say whether `allowManagedHooksOnly` or `disableAllHooks` stops hooks in skill

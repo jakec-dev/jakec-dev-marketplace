@@ -75,16 +75,16 @@ OpenTelemetry hook events.
   unless the hook's JSON surfaces something, such as `systemMessage` or Stop hook feedback. To confirm a hook ran,
   check for its effect, like a reformatted file, or turn on debug logging and trigger the hook again. This holds for
   a plugin's `PostToolUse` hook that exits 0 too.
-  [hooks-guide › Debug techniques](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did),
+  [hooks-guide › Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did),
   [plugins/components › Hooks](https://code.claude.com/docs/en/plugins/components#hooks)
-- A blocking error shows the hook's feedback on most events. When the hook's JSON made a blocking decision, the
-  feedback is the reason from that decision; otherwise it is the hook's stderr. On a few events, such as
-  `ConfigChange` and `Elicitation`, a block surfaces no message.
-  [hooks-guide › Debug techniques](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
+- A blocking error shows the message that came with the block on most events, for example
+  `Blocked: rm commands are not allowed`. On a few events, such as `ConfigChange` and `Elicitation`, you see no
+  message.
+  [hooks-guide › Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
 - A non-blocking error means the action proceeded, and you see a `<hook name> hook error` notice with a short
   explanation, such as the first line of stderr prefixed with `Failed with non-blocking status code:`, or a JSON
   validation or parse message.
-  [hooks-guide › Debug techniques](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
+  [hooks-guide › Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
 - Hook execution details, including which hooks matched, their exit codes, stdout and stderr, are written to the debug
   log file. Start Claude Code with `claude --debug-file <path>` to write the log to a known location, or run
   `claude --debug` and read the log at `~/.claude/debug/<session-id>.txt`. The `--debug` flag doesn't print to the
@@ -95,7 +95,7 @@ OpenTelemetry hook events.
   [plugins/troubleshooting › Hook loads but never fires](https://code.claude.com/docs/en/plugins/troubleshooting#hook-loads-but-never-fires)
 - To watch the log live, start with `claude --debug-file /tmp/claude.log`, then run `tail -f /tmp/claude.log` in another
   terminal. If you started without that flag, run `/debug` mid-session to enable logging and find the log path.
-  [hooks-guide › Debug techniques](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
+  [hooks-guide › Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
 - For example, a `PostToolUse` hook on `Write` whose command prints `hook-ran` produces entries like these:
   ```text
   2026-07-19T02:03:24.382Z [DEBUG] Hook output does not start with {, treating as plain text
@@ -119,7 +119,7 @@ OpenTelemetry hook events.
   `SessionStart` or `Setup` hook runs, ahead of `system/init`. These stream as the hook produces them.
   [headless › Read session metadata](https://code.claude.com/docs/en/headless#read-session-metadata)
 - The reference's Exit code output section defines which exit-code and JSON combinations produce each outcome.
-  [hooks-guide › Debug techniques](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
+  [hooks-guide › Check what a hook did](https://code.claude.com/docs/en/hooks-guide#check-what-a-hook-did)
 
 ## A hook never fires
 

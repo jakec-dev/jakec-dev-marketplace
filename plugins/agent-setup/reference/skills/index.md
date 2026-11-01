@@ -23,7 +23,8 @@ and how to turn them off or find out why one isn't working.
   keep only their names, so Claude is less likely to choose them.
   See [loading.md › The listing's budget](loading.md).
 - `disable-model-invocation: true` keeps the description out of context and stops Claude invoking the skill; it also
-  stops the skill being preloaded into a subagent or run when a scheduled task fires with it as the prompt.
+  stops the skill being preloaded into a subagent or run when a session-scoped scheduled task fires with it as the
+  prompt.
   See [invoking.md › Who can invoke](invoking.md) and [frontmatter.md › Fields](frontmatter.md).
 - With `user-invocable: false` you can't run the skill with `/name`, but Claude can still invoke it.
   See [invoking.md › Who can invoke](invoking.md).
@@ -57,9 +58,9 @@ and how to turn them off or find out why one isn't working.
 - Inline `` !`command` `` runs only at the start of a line or after whitespace; after any other character, as in
   `` KEY=!`cmd` ``, it stays literal text and the command doesn't run.
   See [dynamic-context.md › Syntax](dynamic-context.md).
-- A failed `` !`command` `` aborts the whole invocation. With `bash`, any non-zero exit fails, except exit 1 from
-  `grep`, `rg`, `egrep`, `fgrep`, `find`, `diff`, `test`, `[`, `git diff` and `git grep`; exit 2 or higher always
-  fails. Append `|| true` to any other command you expect to exit non-zero.
+- A failed `` !`command` `` aborts the whole invocation. With the default `bash` shell, any non-zero exit fails,
+  except exit 1 from `grep`, `rg`, `egrep`, `fgrep`, `find`, `diff`, `test`, `[`, `git diff` and `git grep`; exit 2
+  or higher always fails. Append `|| true` to any other command you expect to exit non-zero.
   See [dynamic-context.md › Failures](dynamic-context.md).
 - Injected commands never prompt: outside auto mode, any check result other than allow aborts the invocation, so
   pre-approve an unmatched command with `allowed-tools`.
@@ -67,22 +68,34 @@ and how to turn them off or find out why one isn't working.
 - A `context: fork` skill's subagent doesn't see the conversation, so its content must be a task that stands alone.
   See [forking.md › What `context: fork` does](forking.md).
 - A `context: fork` skill runs in the background unless it sets `background: false`, or runs with `-p` or the SDK,
-  with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, while an earlier run of it is going, or when a scheduled task fires
-  with it as the prompt.
+  with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, while an earlier run of it is going, or when a session-scoped
+  scheduled task fires with it as the prompt. An agent in a dynamic workflow that invokes one waits for its result.
   See [forking.md › Background or foreground](forking.md).
+- A backgrounded fork loses every built-in tool outside a fixed set, other than `Agent` and `ExitPlanMode`, even one
+  listed in its `tools` field, with no error unless the list resolves to nothing; `background: false` avoids that
+  cut.
+  See [forking.md › Tools in a background fork](forking.md).
+- `paths` patterns are relative to Claude's current working directory; a skill with `paths` doesn't activate for
+  files outside it, such as a sibling worktree, even one added with `/add-dir`.
+  See [frontmatter.md › Fields](frontmatter.md) and [troubleshooting.md › Skill not triggering](troubleshooting.md).
+- Stacked skills at the start of a message all load only at the terminal prompt; through `claude -p` or the Agent SDK,
+  only the first loads and the rest of the line becomes its arguments.
+  See [invoking.md › Where the name goes](invoking.md).
 - Same name: enterprise beats personal beats project; your skill replaces a bundled command, but not its aliases.
   See [placing.md › Skills that share a name](placing.md).
 
 ## Topics
 
 - [placing.md](placing.md): deciding where a skill or command file goes and what it is called (locations, nested and
-  monorepo directories, worktrees, symlinks, reserved names, name clashes, command names, plugin skill layout, recorded
-  `/run` and `/verify` recipes)
+  monorepo directories, worktrees, symlinks, reserved names, refused characters in names, name clashes, the
+  added-directory prefix, command names, plugin skill layout, recorded `/run` and `/verify` recipes)
   - Locations
   - Command files
   - Monorepos, nested directories and worktrees
   - Reserved names
+  - Refused characters in names
   - Skills that share a name
+  - Run a same-named skill from an added directory
   - Synced skills that share a name
   - Command names
   - Plugin skill layout
@@ -137,12 +150,13 @@ and how to turn them off or find out why one isn't working.
   - Not stated by the documentation
 
 - [permissions.md](permissions.md): tools during a skill and permission rules on skills (`allowed-tools`,
-  `disallowed-tools`, workspace trust, `allowManagedPermissionRulesOnly`, `Skill(...)` rules, `UserPromptExpansion` and
-  `PreToolUse`)
+  `disallowed-tools`, workspace trust, `allowManagedPermissionRulesOnly`, pre-approval lost under the
+  `strictPluginOnlyCustomization` hooks lock, `Skill(...)` rules, `UserPromptExpansion` and `PreToolUse`)
   - Pre-approving tools with `allowed-tools`
   - Removing tools with `disallowed-tools`
   - Workspace trust
   - When only managed permission rules apply
+  - When managed settings lock hooks to plugins
   - Allowing and denying skills with `Skill(...)` rules
   - Hooks on skill invocation
   - Not stated by the documentation
@@ -163,6 +177,7 @@ and how to turn them off or find out why one isn't working.
   - Skills found during a session
   - Invoked skill content
   - After compaction
+  - Resumed sessions
   - Changes on disk
   - In subagents and agent teams
   - Not stated by the documentation
@@ -176,8 +191,8 @@ and how to turn them off or find out why one isn't working.
   - Not stated by the documentation
 
 - [excluding.md](excluding.md): stopping skills from loading or being seen (`skillOverrides`, `disableBundledSkills`,
-  `CLAUDE_CODE_DISABLE_POLICY_SKILLS`, `strictPluginOnlyCustomization`, `syncClaudeAiSkills`, removal, `--bare`,
-  `--safe-mode`, `--disable-slash-commands`)
+  `CLAUDE_CODE_DISABLE_POLICY_SKILLS`, `strictPluginOnlyCustomization`, skills-directory plugins blocked by managed
+  settings, `syncClaudeAiSkills`, removal, `--bare`, `--safe-mode`, `--disable-slash-commands`)
   - `skillOverrides`
   - Bundled skills
   - Managed policy skills

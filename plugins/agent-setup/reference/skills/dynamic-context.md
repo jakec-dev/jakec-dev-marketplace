@@ -104,36 +104,27 @@ and ```` ```! ```` forms, the `shell` field, how the commands run, failures, per
     [tools-reference › Output limits](https://code.claude.com/docs/en/tools-reference#output-limits)
 - The PowerShell tool applies the same timeout, backgrounding, and output-ceiling behavior to the commands it runs.
   [skills › How injected commands run](https://code.claude.com/docs/en/skills#how-injected-commands-run)
-- `shell: powershell` needs the PowerShell tool enabled. Set `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` in your environment
-  or in `settings.json`. Without the tool, `shell: powershell` commands run through the Bash tool when bash is
-  available, and through the PowerShell tool when it isn't.
-  [tools-reference › Enable the PowerShell tool](https://code.claude.com/docs/en/tools-reference#enable-the-powershell-tool)
-  [skills › How injected commands run](https://code.claude.com/docs/en/skills#how-injected-commands-run)
-
-  ```json
-  {
-    "env": {
-      "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1"
-    }
-  }
-  ```
-
-  The PowerShell tool is enabled as follows:
-  [tools-reference › PowerShell tool](https://code.claude.com/docs/en/tools-reference#powershell-tool)
-  - On Windows without Git Bash, automatically.
-  - On Windows with Git Bash installed, by default for claude.ai and Console accounts. In Amazon Bedrock, Google
-    Cloud's Agent Platform, and Microsoft Foundry sessions, set the variable to `1`.
-  - On Windows, set the variable to `0` to turn the tool off.
+- `shell: powershell` requires the PowerShell tool to be enabled.
+  [tools-reference › Shell selection in settings, hooks, and skills](https://code.claude.com/docs/en/tools-reference#shell-selection-in-settings-hooks-and-skills)
+  - Set `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` in your environment or in `settings.json`.
     [tools-reference › Enable the PowerShell tool](https://code.claude.com/docs/en/tools-reference#enable-the-powershell-tool)
-  - On Linux, macOS, and WSL, it is opt-in and needs PowerShell 7 or later: install `pwsh` and ensure it is on your
-    `PATH`.
+
+    ```json
+    {
+      "env": {
+        "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1"
+      }
+    }
+    ```
+
+  - On Linux, macOS, and WSL the tool needs PowerShell 7 or later: install `pwsh` and ensure it is on your `PATH`.
     [tools-reference › Enable the PowerShell tool](https://code.claude.com/docs/en/tools-reference#enable-the-powershell-tool)
 
 ## Failures
 
 - A failed command aborts the entire skill invocation, not just its own placeholder. Claude never sees the skill
   content for that invocation. The abort shows `Shell command failed for pattern "..."`. The error message includes
-  the command's output under `[stderr]`.
+  the command's output.
   [skills › When an injected command fails](https://code.claude.com/docs/en/skills#when-an-injected-command-fails)
 - With the default `bash` shell, any non-zero exit code counts as a failure. One carveout applies: Claude Code treats
   exit code 1 from search and comparison commands as a normal result and injects their output. Exit codes of 2 or
@@ -148,20 +139,39 @@ and ```` ```! ```` forms, the `shell` field, how the commands run, failures, per
     Every other command that exits 1 counts as a failure, even when exit 1 is a benign informational outcome: no
     matches for `pgrep` and `jq -e`, files that differ for `cmp`.
     [tools-reference › Output limits](https://code.claude.com/docs/en/tools-reference#output-limits)
-  - For PowerShell, exit code 1 from `grep`, `rg`, `egrep`, `fgrep`, `findstr`, and `git grep` means no matches, and
-    exit code 1 from `git diff` means differences exist; neither is reported to Claude as a command failure. For
-    `robocopy`, exit codes 0 through 7 are informational results, such as files copied or extra files detected, and
-    exit codes of 8 or higher count as failures.
-    [tools-reference › Shell selection in settings, hooks, and skills](https://code.claude.com/docs/en/tools-reference#shell-selection-in-settings-hooks-and-skills)
-  - With the PowerShell tool on Windows (a set separate from the `diff` in the Bash list above), exit code 1 from
-    `where.exe` means no match, and from `fc.exe` and `diff.exe` it means the files
-    differ. When the command produces output, Claude Code treats that exit code as a valid negative answer rather
-    than a command error; a silenced form, such as `where.exe /Q` or a redirect to `$null`, is still reported as a
-    failure on exit code 1.
+  - In the PowerShell tool, a `grep` or `rg` search that matches nothing can show `Error: Exit code 1` though the
+    search didn't fail. The error can appear when the search is part of a longer command: when `rg` exits with
+    code 1, `rg foo | Out-Null` shows the error and `rg foo` doesn't. The PowerShell tool can count exit code 1 as a
+    normal result from `grep`, `rg`, `egrep`, `fgrep`, `findstr`, `git grep`, and `git diff`. The searches use exit
+    code 1 to report no matches. From `git diff`, exit code 1 means the files differ. A command that shows the error
+    when Claude runs it counts as failed in a skill with `shell: powershell`.
+    [tools-reference › Exit code 1 from searches and `git diff` in PowerShell](https://code.claude.com/docs/en/tools-reference#exit-code-1-from-searches-and-git-diff-in-powershell)
+  - In the PowerShell tool, if `where.exe` finds no match, or `fc.exe` or `diff.exe` finds that the files differ, the
+    result can show `Error: Exit code 1` though the command didn't fail. You don't need to do anything in the tool
+    itself, but a command that shows the error when Claude runs it counts as failed in a skill with
+    `shell: powershell`.
     [tools-reference › Windows encoding and exit codes](https://code.claude.com/docs/en/tools-reference#windows-encoding-and-exit-codes)
+    [tools-reference › Exit code 1 from searches and `git diff` in PowerShell](https://code.claude.com/docs/en/tools-reference#exit-code-1-from-searches-and-git-diff-in-powershell)
+  - In the PowerShell tool, if a `robocopy` exit code from 1 through 7 shows as an error, the copy didn't fail and you
+    don't need to do anything in the tool itself; a command that shows the error when Claude runs it counts as failed
+    in a skill with `shell: powershell`. `robocopy` exits with code 0 through 7 to report a result, such as files
+    copied, and with 8 or higher when it fails.
+    [tools-reference › Windows encoding and exit codes](https://code.claude.com/docs/en/tools-reference#windows-encoding-and-exit-codes)
+    [tools-reference › Exit code 1 from searches and `git diff` in PowerShell](https://code.claude.com/docs/en/tools-reference#exit-code-1-from-searches-and-git-diff-in-powershell)
 - With the default `bash` shell, append `|| true` to any other command you expect to exit non-zero, such as a check
   script that exits 1 when it finds problems.
   [skills › When an injected command fails](https://code.claude.com/docs/en/skills#when-an-injected-command-fails)
+- `No shell command in <name> was run` means a `` !`<command>` `` command in that skill or command file contains a
+  character that the Bash or PowerShell tool refuses: for either tool, a raw control character other than a tab or
+  newline; for the PowerShell tool, also U+FEFF or U+180E. The message ends with the refused command, showing each
+  refused character as `�`. To fix it, remove the character each `�` stands for from the skill or command file, or
+  from the arguments or options substituted into it.
+  [errors › No shell command in a skill or command was run](https://code.claude.com/docs/en/errors#no-shell-command-was-run)
+
+  ```text
+  No shell command in /my-skill was run, because the Bash tool does not accept one of them: command contains control characters that would be hidden in the approval dialog. Unprintable characters are shown as � below: remove them from the skill or command file, or from the arguments or options substituted into it.
+  build.sh --target�dist
+  ```
 
 ## Permission checks
 
@@ -207,10 +217,18 @@ and ```` ```! ```` forms, the `shell` field, how the commands run, failures, per
 
 ## Not stated by the documentation
 
+- What `shell: powershell` does when the PowerShell tool isn't enabled: the tools reference says the setting requires
+  the tool, and the skills page's list of combinations names no such case, so whether it falls under "Any other
+  combination" (the Bash tool when bash is available) or fails is not stated.
+  [tools-reference › Shell selection in settings, hooks, and skills](https://code.claude.com/docs/en/tools-reference#shell-selection-in-settings-hooks-and-skills),
+  [skills › How injected commands run](https://code.claude.com/docs/en/skills#how-injected-commands-run)
 - Whether stderr is merged into the injected text when a skill sets `shell: powershell`: the merge is stated for the
   default `bash` shell only.
   [skills › How injected commands run](https://code.claude.com/docs/en/skills#how-injected-commands-run)
 - Whether every other non-zero exit code fails with `shell: powershell`, and what plays the part of `|| true`
-  there: both are stated for the default `bash` shell only. The documentation does state that `robocopy` exit codes
-  of 8 or higher count as failures.
+  there: both are stated for the default `bash` shell only.
   [skills › When an injected command fails](https://code.claude.com/docs/en/skills#when-an-injected-command-fails)
+- Whether `where.exe`, `fc.exe`, `diff.exe` or `robocopy` show the error when a skill injects them: the
+  documentation says a command that shows the error counts as failed in a skill with `shell: powershell`, but
+  states the error only for Claude's own runs.
+  [tools-reference › Windows encoding and exit codes](https://code.claude.com/docs/en/tools-reference#windows-encoding-and-exit-codes)

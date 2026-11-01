@@ -18,6 +18,7 @@
   `managed-only` value, `--bare`, `CLAUDE_CODE_SIMPLE`, `CLAUDE_CODE_DISABLE_CLAUDE_MDS`)
 - `creating.md`: starting or editing instruction files with Claude Code's commands (`/init`, `CLAUDE_CODE_NEW_INIT`,
   migrating from other tools, `/import`, `/memory`, the VS Code Customize menu)
-- `troubleshooting.md`: checking an instruction file that isn't taking effect: whether it loaded (`/context`,
+- `troubleshooting.md`: checking an instruction file that isn't taking effect, or whose content makes a request fail
+  (a refusal for Claude's reasoning, a model fallback): whether it loaded (`/context`,
   `InstructionsLoaded`), why it is ignored, and whether its content is sound (`/doctor`, `prompt-audit`, length
   warnings)

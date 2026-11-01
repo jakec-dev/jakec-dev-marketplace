@@ -44,6 +44,9 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
 - For that `deploy` skill, if Claude tries to run it anyway, Claude Code blocks the call and instructs it not to
   reproduce the deploy steps another way, so expect Claude to suggest running `/deploy` yourself.
   [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
+- When you ask Claude in plain language to review your changes, it can run the `/code-review` skill without you typing
+  the command.
+  [code-review-local › Let Claude start the review](https://code.claude.com/docs/en/code-review-local#let-claude-start-the-review)
 - A skill runs through the existing `Skill` tool rather than adding a new tool entry. In the tools reference's tools
   table, the `Permission required` column shows whether the tool prompts in Manual mode for paths inside the working
   directory. [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference)
@@ -67,14 +70,16 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
 - In mid-prompt command completion, a plugin skill matches on its bare name too, so `/deploy` finds a skill named
   `myplugin:deploy-app`. When you insert the match, Claude Code writes the full `/myplugin:deploy-app`.
   [interactive-mode › Complete a command mid-prompt](https://code.claude.com/docs/en/interactive-mode#complete-a-command-mid-prompt)
-- You can stack several skills at the start of one message. Typing `/write-tests /fix-issue 123` loads both skills
-  and passes the trailing text `123` as `$ARGUMENTS` to each of them.
-  [skills › Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills)
+- When you type at the Claude Code prompt in your terminal, you can stack several skills at the start of one message.
+  Typing `/write-tests /fix-issue 123` loads both skills and passes the trailing text `123` as `$ARGUMENTS` to each of
+  them. Through the Agent SDK or `claude -p`, Claude Code loads only the first skill, with the rest of the line as its
+  arguments.
+  [skills › Stack several skills in one message](https://code.claude.com/docs/en/skills#stack-several-skills-in-one-message)
 - Claude Code expands the first skill plus up to five more stacked after it. Expansion stops at the first token
-  that isn't an inline user-invocable skill, so a skill that runs as a forked subagent, such as `/code-review`, or
-  one whose arguments may themselves start with a slash command, such as `/loop`, also ends the run there. That
+  that isn't an inline user-invocable skill. If you stack a skill that runs as a forked subagent, such as
+  `/code-review`, or one whose arguments may start with another command, such as `/loop`, expansion ends there. That
   token and everything after it become the argument text for every expanded skill.
-  [skills › Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills)
+  [skills › Stack several skills in one message](https://code.claude.com/docs/en/skills#stack-several-skills-in-one-message)
 - Some features are only available in the CLI. For commands and skills, the CLI supports all of them and the VS Code
   extension a subset (type `/` to see what is available). [vs-code › VS Code extension vs. Claude Code CLI](https://code.claude.com/docs/en/vs-code#vs-code-extension-vs-claude-code-cli)
 - In a subagent's `initialPrompt`, which is auto-submitted as the first user turn when that agent runs as the main
@@ -92,7 +97,7 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
   [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks)
 - In agent view, skills, your own commands, and prompt-expanding built-ins such as `/init` are sent to a new
   background session as their first prompt.
-  [agent-view › From agent view](https://code.claude.com/docs/en/agent-view#from-agent-view)
+  [agent-view › Dispatch an agent from agent view](https://code.claude.com/docs/en/agent-view#dispatch-an-agent-from-agent-view)
 
 ## Scheduled runs with /loop
 
@@ -104,9 +109,9 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
   - Skills marked `disable-model-invocation: true`, including the bundled `/verify` skill
   - Skills withheld from Claude by a `skillOverrides` setting or a `Skill` deny rule
   - MCP prompts such as `/mcp__github__list_prs`
-- A scheduled task with `/code-review` as its prompt runs the review, but a scheduled task never launches the cloud
-  review, so schedule `/code-review` without the `ultra` argument.
-  [code-review › Let Claude start the review](https://code.claude.com/docs/en/code-review-local#let-claude-start-the-review)
+- A session-scoped scheduled task with `/code-review` as its prompt runs the review, but a session-scoped scheduled
+  task never launches the cloud review, so schedule `/code-review` without the `ultra` argument.
+  [code-review-local › Let Claude start the review](https://code.claude.com/docs/en/code-review-local#let-claude-start-the-review)
 
 ## Monitors started by a skill
 
@@ -147,8 +152,12 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
   | Subcommand | What it does |
   | :- | :- |
   | `migrate` | Update your existing Claude API code to a newer model |
-  | `upgrade` | Move your project's Anthropic SDK dependency across a major version, currently the Python `anthropic` package from 0.x to 1.x |
+  | `upgrade` | Upgrade your project's Anthropic SDK to a new major version and update your code for its breaking changes |
+  | `api-version` | Update your Claude API code for a newer [API version](https://platform.claude.com/docs/en/api/versioning), then switch your requests to that version |
   | `managed-agents-onboard` | Walk through creating a new Managed Agent |
+  | `managed-agents-onboard <url>` | Build the Managed Agent that the page at the URL describes, such as a page in the [Managed Agents docs](https://platform.claude.com/docs/en/managed-agents/overview) |
+  | `managed-agents-onboard <quickstart-name>` | Build one of the Console's quickstart templates, such as `deep-researcher`. If you give one word that isn't a template name, Claude lists the valid names |
+  | `managed-agents-secure [<agent-id>]` | Read the settings of one Managed Agent and report where they match the [Secure your Managed Agents deployment](https://platform.claude.com/docs/en/managed-agents/secure-deployment) guide or differ from it. Requires the [`ant` CLI](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart) |
   | `prompt-audit` | Flag instructions written for older models in your prompts, skills, and tool descriptions and propose fixes as a diff |
   | `cost-optimize` | Profile where your project's Claude API spend goes and propose savings from options such as prompt caching, trimming unneeded input and output tokens, batch processing, effort, and model choice, one change at a time |
   | `build-eval` | Build an eval set for your Claude-powered app |
@@ -192,8 +201,8 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
         - uses: anthropics/claude-code-action@v1
           with:
             anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-            plugin_marketplaces: "https://github.com/anthropics/claude-code.git"
-            plugins: "code-review@claude-code-plugins"
+            plugin_marketplaces: "https://github.com/anthropics/claude-plugins-official.git"
+            plugins: "code-review@claude-plugins-official"
             prompt: "/code-review:code-review --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
             claude_args: '--allowedTools "mcp__github_inline_comment__create_inline_comment"'
   ```

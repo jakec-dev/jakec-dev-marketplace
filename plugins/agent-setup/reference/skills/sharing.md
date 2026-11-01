@@ -73,8 +73,12 @@ synced from claude.ai.
   [skills › Skills synced from claude.ai](https://code.claude.com/docs/en/skills#how-synced-skills-behave)
 - In your terminal, Claude Code syncs those skills in sessions where you sign in with your claude.ai account. When the
   session starts, it downloads your account's skills into `~/.claude/skills/synced/` in the background, then checks
-  claude.ai for changes about every 10 minutes. When a check finds a skill was added, edited, or turned off on
+  claude.ai for changes while the session runs. When a check finds a skill was added, edited, or turned off on
   claude.ai, Claude Code adds, updates, or removes it in the running session without a restart.
+  [skills › Where synced skills load](https://code.claude.com/docs/en/skills#where-synced-skills-load)
+- The checks run less often while the session is idle. While you or Claude work in the session, a check runs about
+  every 10 minutes. While the session is idle, a check runs about every 40 minutes; when you type in the session
+  again, Claude Code checks within a few minutes if the last check was more than 10 minutes ago.
   [skills › Where synced skills load](https://code.claude.com/docs/en/skills#where-synced-skills-load)
 - The sync never delays startup, because Claude waits for a skill's download only when it invokes that skill. A short
   non-interactive run can therefore finish before a newly added skill downloads, in which case a later session
@@ -104,9 +108,11 @@ synced from claude.ai.
       `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`. What each variable's row says about fetching:
       [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
       - `DISABLE_GROWTHBOOK`: `1` or `true` disables fetching; `0` or `false` leaves fetching on.
-      - `DISABLE_TELEMETRY`: also disables feature-flag fetching.
-      - `DO_NOT_TRACK`: set to `1`, it has the same effect as `DISABLE_TELEMETRY`, including on fetching.
-      - `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`: also disables feature-flag fetching.
+      - `DISABLE_TELEMETRY`: setting it to `0` or `false` still opts out; it also disables feature-flag fetching.
+      - `DO_NOT_TRACK`: set to `1`, it has the same effect as `DISABLE_TELEMETRY`, including on fetching. Claude Code
+        reads it as a standard boolean, so `0` leaves telemetry on.
+      - `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`: setting it to `0` or `false` still disables this traffic; it also
+        disables feature-flag fetching.
     - A session on a third-party provider, such as Amazon Bedrock, Claude Platform on AWS, Google Cloud's Agent
       Platform, or Microsoft Foundry, unless a host platform that embeds Claude Code sets
       `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`
@@ -148,18 +154,14 @@ synced from claude.ai.
     replaces every `!` command line with the `disableSkillShellExecution` placeholder, as it does for every skill you
     supply there.
   - In any other session on your machine, Claude Code doesn't run `!` commands, doesn't attach the files that `@`
-    references name, and doesn't substitute `${CLAUDE_PROJECT_DIR}` and `${CLAUDE_SESSION_ID}`, so the `@`
-    references and both placeholders reach Claude as literal text. A `!` command line reaches Claude as literal text
-    too, or as the `disableSkillShellExecution` placeholder when `disableSkillShellExecution` is on.
+    references name the way it does for a local skill, and doesn't substitute `${CLAUDE_PROJECT_DIR}` and
+    `${CLAUDE_SESSION_ID}`, so the `@` references and both placeholders reach Claude as literal text.
+    A `!` command line reaches Claude as literal text too, or as the `disableSkillShellExecution`
+    placeholder when `disableSkillShellExecution` is on.
 
 ## Not stated by the documentation
 
 - `CLAUDE_CODE_SYNC_SKILLS` is described for non-interactive runs with `-p`, and interactive terminal sessions sync
   without it; the documentation does not say whether setting it makes an interactive session's first query wait for
   the skill list.
-  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- The documentation does not say plainly whether setting `DISABLE_TELEMETRY` or
-  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` to `0` or `false` turns feature-flag fetching off. Each row says `0` or
-  `false` still opts out of telemetry or still disables the nonessential traffic, then "Also disables feature-flag
-  fetching", without saying whether that covers `0` and `false`.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)

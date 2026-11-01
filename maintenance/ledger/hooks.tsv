@@ -131,11 +131,7 @@ agent-view	What deleting a session removes	excluded		the rest is not about hooks
 auto-mode-config	Add a human checkpoint	excluded		compares or recommends tool types (guidance)
 auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	included	tool-events.md	the PermissionDenied sentence
 auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	excluded		the rest is not about hooks
-best-practices	Avoid common failure patterns	excluded		compares or recommends tool types (guidance)
-best-practices	Give Claude a way to verify its work	excluded		compares or recommends tool types (guidance)
-best-practices	Install plugins	excluded		names hooks only in passing
 best-practices	Related resources	excluded		only introduces or links
-best-practices	Set up hooks	excluded		compares or recommends tool types (guidance)
 champion-kit	Quick-reference sheet	excluded		compares or recommends tool types (guidance)
 changelog	Claude Code changelog	excluded		release notes
 claude-apps-gateway	Deliver policy to Claude Desktop sessions	excluded		web and desktop
@@ -433,7 +429,7 @@ hooks-guide	Automate actions with hooks	excluded		only introduces and links
 hooks-guide	Block edits to protected files	included	tool-events.md	
 hooks-guide	Combine results from multiple hooks	included	input-output.md	
 hooks-guide	Configure hook location	excluded		repeats Hook locations, The /hooks menu and Disable or remove hooks
-hooks-guide	Debug techniques	included	troubleshooting.md	
+hooks-guide	Check what a hook did	included	troubleshooting.md	
 hooks-guide	Filter by tool name and arguments with the `if` field	included	configuring.md	
 hooks-guide	Filter hooks with matchers	included	configuring.md	
 hooks-guide	Get notified when Claude needs input	included	events.md	
@@ -688,7 +684,6 @@ plugins/troubleshooting	`--plugin-dir` at a marketplace root doesn't load the pl
 plugins/troubleshooting	`Command-sourced plugins are disabled by your organization's managed settings`	excluded		its hooks clause repeats the `allowManagedHooksOnly` bullets of Hook locations; the rest belongs to another tool type (plugins)
 plugins/troubleshooting	`Failed to load hooks from <path>` and hooks that don't fire	included	troubleshooting.md	
 plugins/troubleshooting	`Plugin <name> has conflicting manifests`	excluded		repeats Hooks in an entry and How entry fields combine with `plugin.json`
-plugins/troubleshooting	`Run /reload-plugins to activate.`	excluded		repeats Reload summary
 plugins/troubleshooting	`claude plugin validate` reports errors	included	troubleshooting.md	the `Invalid JSON syntax: <parse error>` row, with the sentences on how to read the table
 plugins/troubleshooting	`claude plugin validate` reports errors	excluded		the rest is not about hooks
 plugins/troubleshooting	`commands path not found: <path>`	excluded		repeats Hooks fail to load
