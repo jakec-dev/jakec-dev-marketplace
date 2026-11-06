@@ -137,7 +137,7 @@ agent-view	How file edits are isolated	excluded		the rest is not about hooks
 agent-view	Manage sessions from the shell	excluded		repeats WorktreeCreate and WorktreeRemove
 agent-view	Peek and reply	included	troubleshooting.md	the `hook output invalid:` sentence and the two sentences after it
 agent-view	Peek and reply	excluded		the rest is not about hooks
-agent-view	Prompts sent as the session moves to the background	included	events.md	the bullet on prompts still waiting on hooks
+agent-view	Prompts sent as the session moves to the background	included	events.md	the bullet on prompts still waiting on hooks, and the sentence that the text is kept in prompt history with how to send it again
 agent-view	Prompts sent as the session moves to the background	excluded		the rest is not about hooks
 agent-view	Read session state	included	events.md	the sentence that a local background session notifies when it needs input, finishes or fails, the sentence on scheduled sessions, and the clause on the `Notification` hook types
 agent-view	Read session state	excluded		the rest is not about hooks
@@ -550,8 +550,8 @@ managed-settings	Compose every managed source	included	excluding.md	the `allowMa
 managed-settings	Compose every managed source	included	placing.md	the clause on `hooks` under merge and the Lists row with the table's header
 managed-settings	Compose every managed source	excluded		the rest is not about hooks
 managed-settings	Keys only a managed source can set	excluded		repeats the settings-reference sections on the hook settings
-managed-settings	Keys that fail closed	included	excluding.md	the `disableAllHooks`, `allowedHttpHookUrls` and `httpHookAllowedEnvVars` rows, the clause of the `strictPluginOnlyCustomization` row that a malformed value locks hooks too, and the sentence that the two HTTP keys merge across settings files
-managed-settings	Keys that fail closed	excluded		the rest is not about hooks
+managed-settings	Keys that fail closed	included	excluding.md	the `disableAllHooks`, `allowedHttpHookUrls` and `httpHookAllowedEnvVars` rows and the sentence that the two HTTP keys merge across settings files
+managed-settings	Keys that fail closed	excluded		skills owns the `strictPluginOnlyCustomization` row; the rest is not about hooks
 managed-settings	Where and when a policy applies	included	placing.md	the clause on server-managed hook changes
 managed-settings	Where and when a policy applies	excluded		the rest is not about hooks
 mcp	Answer a question from an MCP task	included	events.md	the sentence that a non-interactive session cancels a task that requests input without running `Elicitation` hooks
@@ -616,14 +616,14 @@ permission-modes	Critical-path removals in each permission mode	excluded		the re
 permission-modes	How auto mode evaluates actions	excluded		its hook sentence repeats Annotate a result for the auto mode classifier; the rest is not about hooks
 permission-modes	See also	excluded		only introduces or links
 permission-modes	Startup notices about the critical-path removal prompt	excluded		names hooks only in passing
-permission-modes	Switch permission modes	included	tool-events.md	the sentence on prompts forced by a hook
+permission-modes	Switch permission modes	included	tool-events.md	the sentence on where **Yes, and switch to auto mode** appears, the PowerShell clause, and the sentence on prompts forced by a hook
 permission-modes	Switch permission modes	excluded		the rest is not about hooks
 permission-modes	The `Dangerous rm operation not ruled out` prompt	included	tool-events.md	the sentence that a `PreToolUse` hook returning `"allow"` can't approve the command
 permission-modes	The `Dangerous rm operation not ruled out` prompt	excluded		the rest is not about hooks
 permission-modes	Time limits and denials in auto and bypassPermissions modes	included	tool-events.md	the away-from-terminal table
 permission-modes	Time limits and denials in auto and bypassPermissions modes	excluded		the rest is not about hooks
 permission-modes	Tool calls denied in `claude -p` and Agent SDK runs	excluded		names hooks only in passing
-permission-modes	Why the critical-path removal prompt stays on	included	tool-events.md	the bullets on a `PermissionRequest` hook with any matcher, a `claude` started from a hook, and a `PreToolUse` hook answering `ask`
+permission-modes	Why the critical-path removal prompt stays on	included	tool-events.md	the bullets on a `PermissionRequest` hook with any matcher or a mod that handles that event, a `claude` started from a hook, and a `PreToolUse` hook answering `ask`
 permission-modes	Why the critical-path removal prompt stays on	excluded		the rest is not about hooks
 permissions	Additional directories grant file access, not configuration	included	placing.md	the Settings row for `--add-dir` and the sentence that `permissions.additionalDirectories` load no configuration
 permissions	Additional directories grant file access, not configuration	excluded		the rest is not about hooks
@@ -695,7 +695,7 @@ plugins/create	Plugin layout (2)	excluded		repeats the first copy of the section
 plugins/create	Test and debug	included	troubleshooting.md	the sentence on checking a hook by triggering its event and reading the debug log
 plugins/create	Test and debug	excluded		the rest is not about hooks
 plugins/create	Test and debug (2)	excluded		repeats the first copy of the section, which appears twice in the export
-plugins/create-marketplace	Keep unused submodules out of the clone	included	placing.md	the paragraph that a root plugin running a file from a submodule writes the path out in its hook configuration
+plugins/create-marketplace	Keep unused submodules out of the clone	included	placing.md	the sentence that Claude Code clones the repository and fetches only the submodules that hold plugin files, and the paragraph that a plugin at the marketplace root running a file from a submodule writes the path out
 plugins/create-marketplace	Keep unused submodules out of the clone	excluded		the rest belongs to another tool type (plugins)
 plugins/host-marketplace	Distribute through organization settings	excluded		repeats Hooks (plugins/components)
 plugins/host-marketplace	When Claude Code skips a headersHelper command or drops its output	excluded		its hooks clause repeats the `allowManagedHooksOnly` bullets of Hook locations; the rest belongs to another tool type (plugins)
@@ -710,8 +710,7 @@ plugins/loading	In-place and copied plugins	excluded		the rest is not about hook
 plugins/loading	Node.js package dependencies	excluded		belongs to another tool type (plugins)
 plugins/loading	Plugins synced from claude.ai	included	placing.md	the hooks clause
 plugins/loading	Plugins synced from claude.ai	excluded		the rest is not about hooks
-plugins/loading	Skills-directory plugins blocked by managed settings	included	excluding.md	the restrictions that skip a skills-directory plugin, the sentence that its hooks are missing with no error, and the `/status` check
-plugins/loading	Skills-directory plugins blocked by managed settings	excluded		the rest belongs to another tool type (plugins)
+plugins/loading	Skills-directory plugins blocked by managed settings	excluded		skills owns it whole
 plugins/loading	When the dependency install fails or is skipped	excluded		belongs to another tool type (plugins)
 plugins/loading	When the dependency install runs	excluded		belongs to another tool type (plugins)
 plugins/loading	Which marketplaces and plugins auto-update	included	placing.md	the hooks clause
@@ -981,10 +980,9 @@ settings-reference	`httpHookAllowedEnvVars`	included	excluding.md
 settings-reference	`permissions.defaultMode`	excluded		belongs to another tool type (settings)
 settings-reference	`pluginConfigs`	excluded		belongs to another tool type (settings and plugins); mentions hooks in passing
 settings-reference	`statusLine`	excluded		belongs to another tool type (status line)
-settings-reference	`strictPluginOnlyCustomization.hooks`	included	excluding.md	all but the parts the skills ledger takes: the Stops running bullet's clause on frontmatter hooks in skills and custom commands, the sentence that those skills and commands still load, and the `allowed-tools` paragraph
+settings-reference	`strictPluginOnlyCustomization.hooks`	included	excluding.md	all but the parts the skills ledger takes: the Stops running bullet's clause on frontmatter hooks in skills and custom commands, the skills and custom commands clause of the still-load sentence, and the `allowed-tools` paragraph
 settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		skills owns the Stops running bullet and sentence on frontmatter hooks in skills and custom commands, and the `allowed-tools` paragraph
-settings-reference	`strictPluginOnlyCustomization`	included	excluding.md	the clause that `true` locks hooks too
-settings-reference	`strictPluginOnlyCustomization`	excluded		the rest repeats `strictPluginOnlyCustomization.hooks` or is about other kinds
+settings-reference	`strictPluginOnlyCustomization`	excluded		skills owns the Scope, Type and Default lines and the unrecognised-names sentence
 settings-reference	`subagentStatusLine`	excluded		belongs to another tool type (status line)
 settings-reference	`verbose`	excluded		belongs to another tool type (settings and plugins); mentions hooks in passing
 settings-reference	`worktree.bgIsolation`	excluded		its hook sentence repeats agent-view › How file edits are isolated; the rest is not about hooks

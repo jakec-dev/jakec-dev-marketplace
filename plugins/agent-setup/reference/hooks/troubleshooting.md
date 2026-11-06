@@ -159,10 +159,8 @@ OpenTelemetry hook events.
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - Cleanup logic that never runs at session end means no `SessionEnd` hook is configured: add one in `settings.json`.
   [debug-your-config › Check common causes](https://code.claude.com/docs/en/debug-your-config#check-common-causes)
-- A `PermissionRequest` hook fires when Claude Code is about to ask you for permission, or when it would otherwise
-  auto-deny a call that can't prompt; in a `-p` run it still runs outside `dontAsk` mode.
-  [hooks-guide › Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing),
-  [hooks-guide › Limitations](https://code.claude.com/docs/en/hooks-guide#limitations)
+- A `PermissionRequest` hook fires when Claude Code is about to ask you for permission.
+  [hooks-guide › Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing)
 
 ## Hook error notices
 
@@ -488,8 +486,8 @@ OpenTelemetry hook events.
   that only a hook required, among other cases, with the detail attribute `decision_source`.
   [monitoring-usage › Safety event categories](https://code.claude.com/docs/en/monitoring-usage#safety-event-categories)
 - A call that a `canUseTool` callback or `--permission-prompt-tool` tool approved at a prompt only a `PreToolUse` hook
-  required has no safety event apart from `"hook_review"` events, which are sent after the call runs, so check it for
-  a `tool_decision` event.
+  required has no safety event apart from `"hook_review"`, `"sandbox_network"` and `"sandbox_other"` events, which
+  are sent after the call runs, so check it for a `tool_decision` event.
   [monitoring-usage › Calls without a safety event](https://code.claude.com/docs/en/monitoring-usage#calls-without-a-safety-event)
 - Each user prompt starts a `claude_code.interaction` root span, and hook executions are recorded as its children.
   The `claude_code.hook` span sits beside `claude_code.llm_request` and `claude_code.tool`.

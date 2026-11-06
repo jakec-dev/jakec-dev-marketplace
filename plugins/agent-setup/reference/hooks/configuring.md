@@ -73,8 +73,8 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
 - In the `PreToolUse` example, exit code 0 with no output means the hook has no decision to report, so the tool call
   continues through the normal permission flow. The hook can deny the call, but staying silent doesn't approve it.
   [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
-- On macOS and Linux, a script that Claude Code runs directly as the hook command must be executable, for example
-  `chmod +x .claude/hooks/block-rm.sh`. A Bash script that parses the JSON input with `jq` needs `jq` installed and on
+- On macOS and Linux, make a hook script executable with `chmod +x .claude/hooks/block-rm.sh` so Claude Code can run
+  it. A Bash script that parses the JSON input with `jq` needs `jq` installed and on
   your `PATH`.
   [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
 - This `PreToolUse` hook spawns `block-rm.sh` only when the matcher matches a Bash call and the `if` condition matches

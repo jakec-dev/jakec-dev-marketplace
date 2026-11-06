@@ -172,7 +172,8 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   input without sending it. The hooks keep running.
   [hooks › SessionStart](https://code.claude.com/docs/en/hooks#sessionstart)
 - A prompt still waiting on hooks at the moment the session moves to the background isn't sent, and nothing on screen
-  says so. This includes a prompt you typed while SessionStart hooks were still running.
+  says so. This includes a prompt you typed while SessionStart hooks were still running. The text you typed is kept in
+  prompt history: to send it again, open the backgrounded session and press `↑` at its prompt.
   [agent-view › Prompts sent as the session moves to the background](https://code.claude.com/docs/en/agent-view#switch-sessions-without-leaving-the-terminal)
 
 ### Input

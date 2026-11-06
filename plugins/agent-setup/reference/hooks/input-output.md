@@ -397,7 +397,7 @@ already happened or can't be prevented.
 - Over the limit, Claude Code saves the output to a file in the session directory and replaces it with the file path
   and a preview of up to the first 2,000 characters. This cap has no setting or environment variable to raise it.
   Claude Code doesn't ask Claude to read the file, so keep anything Claude must always see within the cap. For
-  `additionalContext`, the documentation adds that Claude can read the file.
+  `additionalContext`, Claude can read the file; Claude Code doesn't ask it to.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output), [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
 - The JSON object supports three kinds of fields. Universal fields like `continue` are accepted by every event, but
   some events discard them or deliver `systemMessage` somewhere other than the transcript; each event's section says

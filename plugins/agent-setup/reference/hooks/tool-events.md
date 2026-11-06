@@ -325,18 +325,16 @@ The `tool_input` fields depend on the tool.
   [hooks-guide › Structured JSON output](https://code.claude.com/docs/en/hooks-guide#structured-json-output) and
   [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
   - Reads from [network paths](https://code.claude.com/docs/en/permissions#network-paths).
-  - MCP tools marked [`requiresUserInteraction`](https://code.claude.com/docs/en/mcp#require-approval-for-a-specific-tool).
   - Calls to [tools an Agent SDK app marks `always_ask`](https://code.claude.com/docs/en/agent-sdk/custom-tools#require-approval-for-specific-tools),
     unless the [permission mode approves the call](https://code.claude.com/docs/en/agent-sdk/typescript#permission-modes-that-can-approve-an-always_ask-call).
-  - Connector tools [your organization set to `ask`](https://code.claude.com/docs/en/mcp#organization-controls-on-connector-tools)
-    in sessions where that setting reaches Claude Code.
 - The actions no mode auto-approves, which a `PreToolUse` `"allow"` doesn't approve either, are: tools matched by an
   explicit ask rule; connector tools your organization set to `ask`, where that setting reaches Claude Code; the
   built-in `AskUserQuestion` tool and MCP tools marked `requiresUserInteraction`; recognised `rm` and `rmdir`
   critical-path removals and Bash commands flagged `Dangerous rm operation not ruled out`; the cross-session messaging
   safeguards; and reads outside the working directories while `permissions.blockReadsOutsideWorkingDirectories` is
   on, where recognised file-reading Bash commands, an unsandboxed retry that needs approval, and a command the shell
-  parser can't trace prompt even in auto mode and `bypassPermissions` mode.
+  parser can't trace prompt even in auto mode and `bypassPermissions` mode. The prompt for a command the parser can't
+  trace doesn't apply when the command runs in the sandbox and the sandbox enforces the block.
   [permission-modes › Actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves)
 - A hook that blocks by exiting 2 routes the same way as `"deny"`: Claude sees the stderr message as the denial reason.
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
@@ -517,8 +515,7 @@ The `tool_input` fields depend on the tool.
   exit 0
   ```
 
-- Hook scripts must be executable for Claude Code to run them. On macOS and Linux, run
-  `chmod +x .claude/hooks/protect-files.sh`.
+- On macOS and Linux, make the script executable with `chmod +x .claude/hooks/protect-files.sh`.
   [hooks-guide › Block edits to protected files](https://code.claude.com/docs/en/hooks-guide#block-edits-to-protected-files)
 - Register the script as a `PreToolUse` hook in `.claude/settings.json` that runs before any `Edit` or `Write` tool
   call. Claude Code blocks the edit before it runs and passes the script's `Blocked:` message to Claude as feedback.
@@ -1173,9 +1170,6 @@ The `tool_input` fields depend on the tool.
   you want blocked, add `"Bash"` to your allow list and register a `PreToolUse` hook that rejects those specific
   commands.
   [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
-- With a hook in a settings file or a plugin's `hooks/hooks.json`, you can't loosen restrictions past what permission
-  rules allow.
-  [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
 
 ## Hook decisions and permission modes
 
@@ -1209,7 +1203,7 @@ The `tool_input` fields depend on the tool.
   or switch to another permission mode.
   [permissions › Hook approvals in plan mode](https://code.claude.com/docs/en/permissions#hook-approvals-in-plan-mode)
 - If `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS` has no effect and critical-path removals keep their usual
-  prompt or denial, three hook-related causes are a `PermissionRequest` hook with any matcher, or a
+  prompt or denial, causes that involve hooks include a `PermissionRequest` hook with any matcher, or a
   [mod](https://code.claude.com/docs/en/plugins/mods/events#hook-the-settings-hook-events) that handles that event
   (remove the hook or mod and restart `claude`), a `claude` started from a session's Bash tool or a hook, even with
   the variable on its command line (start `claude` from your own shell, and don't rely on this nested-session limit
@@ -1218,7 +1212,9 @@ The `tool_input` fields depend on the tool.
 
 ## Auto mode and hooks
 
-- Claude Code doesn't add the **Yes, and switch to auto mode** option to prompts forced by one of your
+- In the Manual and `acceptEdits` modes, when auto mode is available, Claude Code adds **Yes, and switch to auto
+  mode** to a Bash command's permission prompt; PowerShell prompts don't offer it. Claude Code doesn't add the option
+  to prompts forced by one of your
   [`ask` rules](https://code.claude.com/docs/en/permissions#manage-permissions) or by a
   [hook](https://code.claude.com/docs/en/hooks#pretooluse-decision-control), because auto mode still shows you those
   prompts, so switching wouldn't remove them.

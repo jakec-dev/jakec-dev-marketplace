@@ -516,7 +516,7 @@ errors	Skill or command name refused	included	placing.md
 skills	Run a same-named skill from an added directory	included	placing.md	
 skills	Angle brackets in a skill description show as `&lt;` and `&gt;`	included	frontmatter.md	
 hooks	Limits on skill hooks	included	frontmatter.md	
-settings-reference	`strictPluginOnlyCustomization.hooks`	included	frontmatter.md	the Stops running bullet on frontmatter hooks in skills and custom commands, and the sentence that skills and custom commands whose frontmatter hooks stop running still load while their own surface isn't locked
+settings-reference	`strictPluginOnlyCustomization.hooks`	included	frontmatter.md	the Stops running bullet on frontmatter hooks in skills and custom commands, and the clause of the still-load sentence on skills and custom commands
 settings-reference	`strictPluginOnlyCustomization.hooks`	included	permissions.md	the paragraph that a personal or project skill declaring `hooks` loses its `allowed-tools` pre-approval, and that one running through `context: fork` or declaring no `hooks` keeps it
 settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		the rest belongs to another tool type (hooks)
 statusline	Available data	included	frontmatter.md	the clause of the `effort.level` row that it doesn't show a level a skill set

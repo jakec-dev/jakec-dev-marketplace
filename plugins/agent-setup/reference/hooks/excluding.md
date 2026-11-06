@@ -115,23 +115,15 @@ boundary, and reviewing a plugin's hooks before installing.
 - `strictPluginOnlyCustomization` with `"hooks"` in its array locks the `hooks` surface: Claude Code stops running
   hooks from user, project and local `settings.json`, and keeps running hooks in managed settings and hooks from
   plugins other than skills-directory plugins. It also stops frontmatter hooks in agents from the sources that an
-  `agents` lock would block. Scope: managed; default: not locked. Setting the key to `true`, or in a managed source to
-  a value that is neither a boolean nor an array, locks hooks too.
-  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks),
-  [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization),
-  [managed-settings › Keys that fail closed](https://code.claude.com/docs/en/managed-settings#keys-that-fail-closed)
+  `agents` lock would block, and those agents still load while their own surface isn't locked. Scope: managed;
+  default: not locked.
+  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
 
   ```json
   {
     "strictPluginOnlyCustomization": ["hooks"]
   }
   ```
-- A plugin folder in `~/.claude/skills/` or a project's `.claude/skills/` is skipped whole, hooks included, when
-  managed settings set `strictPluginOnlyCustomization` to `true` or to an array locking any one kind, or when a
-  `strictKnownMarketplaces` allowlist lacks a `{ "source": "skills-dir" }` entry or a `blockedMarketplaces` list has
-  one. `/plugin` and `claude plugin list` show no plugin and no error for a skipped folder; run `/status` and check
-  whether `Setting sources` lists `Enterprise managed settings`.
-  [plugins/loading › Skills-directory plugins blocked by managed settings](https://code.claude.com/docs/en/plugins/loading#skills-directory-plugins-blocked-by-managed-settings)
 
 ## HTTP hook allowlists
 
