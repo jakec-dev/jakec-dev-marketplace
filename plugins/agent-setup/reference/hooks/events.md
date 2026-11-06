@@ -88,7 +88,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `DirectoryAdded` | When a working directory is added mid-session via `/add-dir` or the SDK `register_repo_root` control request |
   | `FileChanged` | When a watched file changes on disk. The `matcher` field specifies which filenames to watch |
   | `WorktreeCreate` | When a worktree is being created via `--worktree`, `isolation: "worktree"`, or for a background session. Replaces default git behavior |
-  | `WorktreeRemove` | When a worktree is being removed at session exit, when a subagent finishes, or when you delete a background session |
+  | `WorktreeRemove` | When a worktree that a `WorktreeCreate` hook created is being removed |
   | `PreCompact` | Before context compaction |
   | `PostCompact` | After context compaction completes |
   | `PreModelSwitch` | Before Claude Code applies a model switch that you or a client requested. Can block the switch |
@@ -98,7 +98,8 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `SessionEnd` | When a session terminates |
 
 - In a plugin mod, each settings hook event, such as `Stop`, `SessionEnd`, or `PostToolUse`, is also an event named
-  `classic.` followed by the settings hook event's name, such as `classic.Stop`.
+  `classic.` followed by the settings hook event's name, such as `classic.Stop`. Where the built-in guard loads, a hook
+  on these events in a mod you install doesn't run.
   [plugins/mods/events › Handle the settings hook events](https://code.claude.com/docs/en/plugins/mods/events#hook-the-settings-hook-events)
 
 ## SessionStart
@@ -170,6 +171,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   running doesn't reach Claude until they finish. During either wait, press `Esc` to take the prompt back into the
   input without sending it. The hooks keep running.
   [hooks › SessionStart](https://code.claude.com/docs/en/hooks#sessionstart)
+- A prompt still waiting on hooks at the moment the session moves to the background isn't sent, and nothing on screen
+  says so. This includes a prompt you typed while SessionStart hooks were still running.
+  [agent-view › Prompts sent as the session moves to the background](https://code.claude.com/docs/en/agent-view#switch-sessions-without-leaving-the-terminal)
 
 ### Input
 
@@ -202,15 +206,15 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 
 ### Output
 
-- Claude Code adds stdout it treats as plain text to Claude's context. In addition to the JSON output fields available
-  to all hooks, you can return these event-specific fields:
+- A SessionStart hook can add context for Claude, supply the first user message, set the session title, and watch
+  files. Return the field for each one, in addition to the JSON output fields available to all hooks:
   [hooks › SessionStart decision control](https://code.claude.com/docs/en/hooks#sessionstart-decision-control)
 
   | Field | Description |
   | :- | :- |
   | `additionalContext` | String added to Claude's context at the start of the conversation, before the first prompt. See [Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude) for how the text is delivered and what to put in it |
-  | `initialUserMessage` | String used as the first user message of the session. Applies in [non-interactive mode](https://code.claude.com/docs/en/headless) with the `-p` flag, where it becomes the first turn even if no prompt is provided. If a prompt is provided, it follows as the next turn. Unlike `additionalContext`, which attaches to an existing turn, this creates the turn |
-  | `sessionTitle` | Sets the session title, with the same effect as `/rename`. Use to name sessions automatically from the launch folder, git branch, or worktree name. Applies when `source` is `"startup"`, `"resume"`, or `"fork"`; ignored on `"clear"` and `"compact"` |
+  | `initialUserMessage` | String used as the first user message of the session, in [non-interactive mode](https://code.claude.com/docs/en/headless) with the `-p` flag. It becomes the first turn even if you pass no prompt. A prompt you do pass follows as the next turn |
+  | `sessionTitle` | Sets the session title, with the same effect as `/rename`. Applies when `source` is `"startup"`, `"resume"`, or `"fork"` |
   | `watchPaths` | Array of absolute paths to watch for [FileChanged](https://code.claude.com/docs/en/hooks#filechanged) events during this session |
 
   ```json
@@ -223,16 +227,20 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   }
   ```
 
-- Since plain stdout already reaches Claude for this event, a hook that only loads context can print to stdout
-  directly without building JSON. Use the JSON form when you need to combine context with other fields such as
-  `sessionTitle`.
+- A hook that only adds context can print it without building JSON, because Claude Code adds a SessionStart hook's
+  [plain-text stdout](https://code.claude.com/docs/en/hooks#exit-code-0) to Claude's context.
+  [hooks › SessionStart decision control](https://code.claude.com/docs/en/hooks#sessionstart-decision-control)
+- If your plugin's SessionStart hook supplies `initialUserMessage` or `sessionTitle`, install the plugin before the
+  session starts. Claude Code ignores both fields from a plugin that finishes installing after the SessionStart hooks
+  have run.
   [hooks › SessionStart decision control](https://code.claude.com/docs/en/hooks#sessionstart-decision-control)
 
 ### Persist environment variables
 
 - SessionStart hooks have access to the `CLAUDE_ENV_FILE` environment variable, which provides a file path where you
-  can persist environment variables for subsequent Bash commands. To set individual environment variables, write
-  `export` statements to `CLAUDE_ENV_FILE`. Use append (`>>`) to preserve variables set by other hooks:
+  can persist environment variables for the shell commands Claude runs later in the session. To set individual
+  environment variables, write `export` statements to `CLAUDE_ENV_FILE`. Use append (`>>`) to preserve variables set
+  by other hooks:
   [hooks › Persist environment variables](https://code.claude.com/docs/en/hooks#persist-environment-variables)
 
   ```bash
@@ -267,12 +275,38 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   exit 0
   ```
 
+- Each Bash command runs the file's contents as shell code before the command itself, so a line there can use anything
+  Bash evaluates, such as the `$PATH` reference in `export PATH="$PATH:./node_modules/.bin"`.
+  [hooks › Persist environment variables](https://code.claude.com/docs/en/hooks#persist-environment-variables)
 - `CLAUDE_ENV_FILE` is the path to a shell script whose contents Claude Code runs before each Bash command in the same
   shell process, so exports in the file are visible to the command. Use it to persist virtualenv or conda activation
-  across commands. It is available for SessionStart, Setup, CwdChanged, and FileChanged hooks; other hook types don't
-  have access to this variable.
-  [hooks › Persist environment variables](https://code.claude.com/docs/en/hooks#persist-environment-variables)
+  across commands.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- `CLAUDE_ENV_FILE` is available for SessionStart, Setup, CwdChanged, and FileChanged hooks. Other hook events don't
+  have access to this variable, and neither does a hook that runs in PowerShell, whether through
+  [`"shell": "powershell"`](https://code.claude.com/docs/en/hooks#command-hook-fields) or by default on Windows
+  without Git Bash.
+  [hooks › Persisted variables in PowerShell commands](https://code.claude.com/docs/en/hooks#persisted-variables-in-powershell-commands)
+- [PowerShell](https://code.claude.com/docs/en/tools-reference#powershell-tool) commands receive the variables from
+  `CLAUDE_ENV_FILE` too, but PowerShell never runs the file. Claude Code reads the assignments out of it and copies
+  them into the PowerShell command's environment instead. It does so only when every line is one of the following,
+  across what every hook in this session wrote and any script you
+  [set `CLAUDE_ENV_FILE` to](https://code.claude.com/docs/en/env-vars) before launch:
+  [hooks › Persisted variables in PowerShell commands](https://code.claude.com/docs/en/hooks#persisted-variables-in-powershell-commands)
+  - A blank line or a `#` comment
+  - One assignment at the start of the line, written `export NAME=value`, `declare -x NAME=value`, or `NAME=value`,
+    with a value Bash would use exactly as written, made of any mix of these parts: unquoted text that uses only
+    letters, digits, and the characters `_ @ % + = : , . / -`, text in single quotes, and text in double quotes where
+    any `$`, backtick, or `"` inside is escaped with a backslash
+- If any line is of another kind, such as `export PATH="$PATH:./node_modules/.bin"` with its unescaped `$PATH`, a
+  `source` command, or the `$'...'` strings that `direnv export bash` prints, PowerShell commands receive none of the
+  variables, and `claude --debug` logs `Session environment is not all plain assignments`. Bash commands still
+  receive all of them.
+  [hooks › Persisted variables in PowerShell commands](https://code.claude.com/docs/en/hooks#persisted-variables-in-powershell-commands)
+- On Windows, PowerShell commands also don't receive a variable whose value contains `/` or `\`, because Git Bash and
+  Windows write paths differently. A [sandboxed](https://code.claude.com/docs/en/sandboxing) PowerShell command
+  receives none of the variables.
+  [hooks › Persisted variables in PowerShell commands](https://code.claude.com/docs/en/hooks#persisted-variables-in-powershell-commands)
 
 ## Setup
 
@@ -318,9 +352,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   [`hook_response` events](https://code.claude.com/docs/en/headless#read-session-metadata) when you launch with
   `--output-format stream-json --verbose`.
   [hooks › Setup decision control](https://code.claude.com/docs/en/hooks#setup-decision-control)
-- Setup hooks have access to `CLAUDE_ENV_FILE`. Variables written to that file persist into subsequent Bash commands
-  for the session, just as in SessionStart hooks. Only `type: "command"` hooks run on `Setup`; a `type: "mcp_tool"`
-  hook on `Setup` is always skipped.
+- Setup hooks have access to `CLAUDE_ENV_FILE`. If your hook writes variables to that file, they persist into
+  subsequent Bash commands for the session, as in SessionStart hooks. Only `type: "command"` hooks run on `Setup`; a
+  `type: "mcp_tool"` hook on `Setup` is always skipped.
   [hooks › Setup decision control](https://code.claude.com/docs/en/hooks#setup-decision-control)
 
 ## UserPromptSubmit
@@ -328,9 +362,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 - UserPromptSubmit runs when a prompt is submitted, before Claude processes it. This allows you to add additional
   context based on the prompt or conversation, validate prompts, or block certain types of prompts.
   [hooks › UserPromptSubmit](https://code.claude.com/docs/en/hooks#userpromptsubmit)
-- `UserPromptSubmit` hooks don't fire only on prompts you type. Claude Code also runs them on a scheduled task firing,
-  including a `/loop` iteration; a background subagent reporting back to the session that started it; and a message
-  another session sends to your main conversation.
+- `UserPromptSubmit` hooks don't fire only on prompts you type. Claude Code also runs them on a session-scoped
+  scheduled task firing, including a `/loop` iteration; a background subagent reporting back to the session that
+  started it; and a message another session sends to your main conversation.
   [hooks › UserPromptSubmit](https://code.claude.com/docs/en/hooks#userpromptsubmit)
 - `UserPromptSubmit` hooks have a default timeout of 30 seconds for `command`, `http`, and `mcp_tool` types, shorter
   than the 600-second default for those types on most other events. Because this hook runs before every prompt and
@@ -339,12 +373,26 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   [hooks › UserPromptSubmit](https://code.claude.com/docs/en/hooks#userpromptsubmit)
 - Apart from a command hook you run with `async: true`, a `UserPromptSubmit` command, HTTP, or MCP tool hook that
   reaches its timeout is canceled and its output, including any `additionalContext`, is discarded. The prompt still
-  reaches Claude without that context. The transcript shows a notice naming the hook, the timeout that fired, and that
+  reaches Claude without that context. To block the prompt instead, set
+  [`onFailure: "block"`](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails) on a command or
+  HTTP hook. The transcript shows a notice naming the hook, the timeout that fired, and that
   the output was discarded.
+  [hooks › UserPromptSubmit](https://code.claude.com/docs/en/hooks#userpromptsubmit)
+- An Agent SDK callback hook on `UserPromptSubmit` that reaches its timeout blocks the prompt with a message naming
+  the hook and the timeout, because a callback there can be acting as a policy gate that must not fail open. The
+  session continues.
   [hooks › UserPromptSubmit](https://code.claude.com/docs/en/hooks#userpromptsubmit)
 - A `UserPromptSubmit` hook that blocks the continuation prompt ends the wait for a claude.ai usage limit to reset
   without continuing the task.
   [interactive-mode › Cancel the wait](https://code.claude.com/docs/en/interactive-mode#cancel-the-wait)
+- If you press `Esc` or interrupt the session while hooks are still checking a prompt, the check stops and the prompt
+  doesn't reach Claude. Text you typed at the terminal returns to the prompt input, and the hooks check it again when
+  you resend it.
+  [hooks › `Esc` during a prompt check](https://code.claude.com/docs/en/hooks#esc-during-a-prompt-check)
+- A hook can block the prompt at the same moment you interrupt. The prompt then stays blocked: you see that hook's
+  [block message](https://code.claude.com/docs/en/hooks#what-a-blocked-prompt-leaves-behind), and the text doesn't
+  return to the input.
+  [hooks › `Esc` during a prompt check](https://code.claude.com/docs/en/hooks#esc-during-a-prompt-check)
 
 ### Input
 
@@ -402,8 +450,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   session's transcript file on disk.
   [hooks › What a blocked prompt leaves behind](https://code.claude.com/docs/en/hooks#what-a-blocked-prompt-leaves-behind)
 - To leave the text out of the message, print JSON with `"suppressOriginalPrompt": true` inside `hookSpecificOutput`.
-  This works whether the hook blocks with `decision: "block"` or by exiting 2. An exit-2 hook that prints no JSON
-  always gets the prompt text in its block message.
+  This works whether the hook blocks with `decision: "block"` or by exiting 2.
   [hooks › What a blocked prompt leaves behind](https://code.claude.com/docs/en/hooks#what-a-blocked-prompt-leaves-behind)
 - `suppressOriginalPrompt` changes only the block message. The submitted text can still appear in local files such as
   the session transcript and your prompt history, so a blocking hook isn't a way to keep a secret off disk. To limit
@@ -707,12 +754,13 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `task_description` | Detailed description of the task. May be absent |
   | `teammate_name` | Name of the teammate creating the task. May be absent |
   | `team_name` | Deprecated. Session-derived team name; will be removed in a future release |
+  | `agent_id` | On this event, the [common input field](https://code.claude.com/docs/en/hooks#common-input-fields) identifies the subagent or [in-process teammate](https://code.claude.com/docs/en/agent-teams#choose-a-display-mode) creating the task. May be absent |
 
 ### Output
 
-- A TaskCreated hook can block the creation in two ways. Either way, Claude Code deletes the task and returns your
-  message to Claude as the tool's error. Claude Code ignores `continue: false` from this event and Claude keeps
-  working. With exit code 2, Claude Code returns the stderr text as the message. With JSON
+- A TaskCreated hook can block the creation with exit code 2 or with a JSON decision. Either way, Claude Code deletes
+  the task and returns your message to Claude as the tool's error. Claude Code ignores `continue: false` from this
+  event and Claude keeps working. With exit code 2, Claude Code returns the stderr text as the message. With JSON
   `{"decision": "block", "reason": "..."}`, Claude Code returns `reason` as the message.
   [hooks › TaskCreated decision control](https://code.claude.com/docs/en/hooks#taskcreated-decision-control)
 - This example blocks tasks whose subjects don't follow the required format:
@@ -753,6 +801,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `task_description` | Detailed description of the task. May be absent |
   | `teammate_name` | Name of the teammate completing the task. May be absent |
   | `team_name` | Deprecated. Session-derived team name; will be removed in a future release |
+  | `agent_id` | On this event, the [common input field](https://code.claude.com/docs/en/hooks#common-input-fields) identifies the subagent or [in-process teammate](https://code.claude.com/docs/en/agent-teams#choose-a-display-mode) completing the task. May be absent |
 
 ### Output
 
@@ -799,7 +848,8 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   that will never resolve.
   [hooks › Stop input](https://code.claude.com/docs/en/hooks#stop-input)
 - Claude Code applies an 8-consecutive-continuation cap: after stop hooks have continued the turn eight times in a row,
-  Claude Code overrides the next block and ends the turn. `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` sets the maximum number
+  Claude Code overrides the next block and ends the turn. The count of consecutive continuations resets each time
+  Claude calls a tool. `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` sets the maximum number
   of consecutive times a Stop or SubagentStop hook may block the turn from ending before Claude Code overrides it
   (default: 8). Set it to `0` to disable the cap, and raise it if your hook legitimately needs more iterations to
   resolve.
@@ -914,6 +964,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | :- | :- |
   | `teammate_name` | Name of the teammate that is about to go idle |
   | `team_name` | Deprecated. Session-derived team name; will be removed in a future release |
+  | `agent_id` | On this event, the [common input field](https://code.claude.com/docs/en/hooks#common-input-fields) identifies the [in-process teammate](https://code.claude.com/docs/en/agent-teams#choose-a-display-mode) that is about to go idle. May be absent |
 
 ### Output
 
@@ -964,6 +1015,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `quota_auto_resume_fired` | Claude Code continues your task after a claude.ai usage limit paused it: at the reset, or sooner when something you do in Claude Code during the wait, such as adding usage credits, upgrading your plan, or switching models, makes usage available again, with the [model-setting exception](https://code.claude.com/docs/en/interactive-mode#wait-for-a-usage-limit-to-reset) |
   | `quota_auto_resume_stale` | A claude.ai usage limit reset while your computer slept for more than about 30 minutes. Claude Code waits for you to press `Enter` instead of continuing. After a shorter sleep it continues and fires `quota_auto_resume_fired` instead |
   | `quota_auto_resume_disabled` | Claude Code ends its wait for a claude.ai usage limit without continuing your task: [`autoContinueAtUsageLimit`](https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit) turned off or the reset moved more than 24 hours away during a wait Claude Code started on its own, the continued task kept hitting the limit, or the continuation was blocked before it reached the model. Doesn't fire when you press `Esc` or `Ctrl+C`, or pick **Don't continue automatically** |
+  | `plugin_notification` | A [mod](https://code.claude.com/docs/en/plugins/mods/api#show-something-without-starting-a-turn) raises a notification with `$.ui.notify`. The hook's `title` is the mod's name unless the mod set one |
 
 - The `permission_prompt`, `idle_prompt`, `elicitation_dialog`, and `elicitation_url_dialog` types share their timing
   with desktop notifications, so in terminal sessions you only see them when you appear to be away from the terminal:
@@ -994,6 +1046,12 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   or fails, and the notification fires the `Notification` hook with the `agent_needs_input` or `agent_completed` type.
   Sessions that run on a schedule, such as `/loop` sessions, notify only when they need your input.
   [agent-view › Read session state](https://code.claude.com/docs/en/agent-view#read-session-state)
+- When a mod's `$.ui.notify` call reaches a running session, the user's Notification hooks run with the type
+  `plugin_notification`. They run even when the call's answer is `disabled` (the user set `preferredNotifChannel` to
+  `notifications_disabled`), and in a session with no terminal, where the answer is `no-surface`. No hook runs for a
+  call made before the session starts or while Claude Code is exiting. The hook the mod called `$.ui.notify` from is
+  left out of that run, so a `classic.Notification` hook that notifies isn't called again for its own notification.
+  [plugins/mods/api › Show something without starting a turn](https://code.claude.com/docs/en/plugins/mods/api#show-something-without-starting-a-turn)
 
 ### Input
 
@@ -1198,8 +1256,8 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   project-specific toolchains, or run setup scripts automatically. It pairs with FileChanged for tools like direnv
   that manage per-directory environment.
   [hooks › CwdChanged](https://code.claude.com/docs/en/hooks#cwdchanged)
-- CwdChanged hooks have access to `CLAUDE_ENV_FILE`. Variables written to that file persist into subsequent Bash
-  commands until the next CwdChanged event, when Claude Code clears them.
+- CwdChanged hooks have access to `CLAUDE_ENV_FILE`. If your hook writes variables to that file, they persist into
+  subsequent Bash commands until the next CwdChanged event, when Claude Code clears them.
   [hooks › CwdChanged](https://code.claude.com/docs/en/hooks#cwdchanged)
 - CwdChanged doesn't support matchers and fires on every occurrence.
   [hooks › CwdChanged](https://code.claude.com/docs/en/hooks#cwdchanged)
@@ -1428,10 +1486,28 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 
 ## WorktreeCreate
 
-- WorktreeCreate runs when a worktree is being created, whether from `claude --worktree`, from a subagent using
-  `isolation: "worktree"`, or for a background session that Claude Code isolates in its own worktree. By default
-  Claude Code creates the isolated working copy with `git worktree`. Configuring a WorktreeCreate hook replaces that
-  default git behavior, letting you use a different version control system like SVN, Perforce, or Mercurial.
+- WorktreeCreate runs when Claude Code creates a worktree in cases such as these:
+  [hooks › WorktreeCreate](https://code.claude.com/docs/en/hooks#worktreecreate)
+  - You start a session with `claude --worktree`
+  - Claude creates a worktree during a session and switches into it with the
+    [`EnterWorktree`](https://code.claude.com/docs/en/tools-reference) tool
+  - A [subagent uses `isolation: "worktree"`](https://code.claude.com/docs/en/sub-agents#choose-the-subagent-scope)
+  - A [workflow](https://code.claude.com/docs/en/workflows#migrate-many-files-in-parallel) runs an agent in its own
+    worktree
+  - Claude Code isolates a [background session](https://code.claude.com/docs/en/agent-view#how-file-edits-are-isolated)
+    in its own worktree
+  - [`claude remote-control`](https://code.claude.com/docs/en/remote-control#start-a-remote-control-session) in
+    `worktree` mode starts a session in its own worktree
+- A WorktreeCreate hook doesn't run for a worktree Claude adds through Bash, and a plugin's hook doesn't run for the
+  one created when you launch with `--worktree` and [`--tmux`](https://code.claude.com/docs/en/cli-reference#cli-flags):
+  [hooks › WorktreeCreate](https://code.claude.com/docs/en/hooks#worktreecreate)
+  - **`git worktree add` through Bash**: to inspect or block that command, add a `PreToolUse` hook with the `Bash`
+    matcher.
+  - **`--worktree` with `--tmux`**: Claude Code creates the worktree before it loads plugins, so a WorktreeCreate hook
+    from a plugin doesn't run. To have your hook run with both flags, define it in a settings file instead.
+- By default Claude Code creates the isolated working copy with `git worktree`. Configuring a WorktreeCreate hook
+  replaces that default git behavior, letting you use a different version control system like SVN, Perforce, or
+  Mercurial.
   [hooks › WorktreeCreate](https://code.claude.com/docs/en/hooks#worktreecreate)
   [worktrees › Non-git version control](https://code.claude.com/docs/en/worktrees#non-git-version-control)
 - Because the hook replaces the default behavior entirely, `.worktreeinclude` is not processed. If you need to copy
@@ -1456,15 +1532,17 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   [agent-view › How file edits are isolated](https://code.claude.com/docs/en/agent-view#how-file-edits-are-isolated)
 - For a background session, when a `WorktreeCreate` hook fails in a directory that isn't a git repository, Claude
   skips isolation for that directory and edits the working directory in place. Inside a git repository, a session that
-  Claude moves into a worktree before editing can't edit files in the shared checkout until that move happens.
+  Claude moves into a worktree before editing can't use the `Edit`, `Write`, or `NotebookEdit`
+  tools on the shared checkout until that move happens.
   [agent-view › How file edits are isolated](https://code.claude.com/docs/en/agent-view#how-file-edits-are-isolated)
 - For the copy that `/fork` makes of a session, Claude Code instructs it to create a worktree of its own before making
   code changes, except when the copy edits in place. Outside a git repository, only a copy moved out of a
   hook-created worktree gets the instruction; with no `WorktreeCreate` hook, the copy edits in place.
-  [agent-view › Copy the session with /fork](https://code.claude.com/docs/en/agent-view#copy-the-session-with-/fork)
+  [agent-view › Where the copy runs](https://code.claude.com/docs/en/agent-view#copy-the-session-with-/fork)
 - A worktree without git metadata, such as one a `WorktreeCreate` hook created, can pass the check Claude Code runs
-  before returning a resumed session to its worktree. A worktree created by a `WorktreeCreate` hook keeps its
-  transcript at the launch directory.
+  before returning a resumed session to its worktree, but launched from inside a worktree without git metadata, a
+  resume declines to re-enter it, so launch from the main checkout. A worktree created by a `WorktreeCreate` hook
+  keeps its transcript at the launch directory.
   [worktrees › Resume a worktree session](https://code.claude.com/docs/en/worktrees#resume-a-worktree-session)
 - Claude Code writes a marker into the git metadata of every worktree it creates with git, and the periodic sweep that
   removes old subagent and background-session worktrees keeps any worktree without one, including a worktree a
@@ -1517,40 +1595,70 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   exits with code 1.
   [hooks › WorktreeCreate output](https://code.claude.com/docs/en/hooks#worktreecreate-output)
 - Claude Code refuses an absolute path that contains `.` or `..` segments, and any path that passes through a symlink
-  below the repository root, because a symlink committed to the repository could redirect the worktree outside it. The
-  error names the rejected component. Return a normalized path that doesn't pass through a symlink inside the
+  below the repository root. The error names the rejected component. A symlink committed to the repository could
+  redirect the worktree outside it. Return a normalized path that doesn't pass through a symlink inside the
   repository.
   [hooks › WorktreeCreate output](https://code.claude.com/docs/en/hooks#worktreecreate-output)
 
 ## WorktreeRemove
 
-- WorktreeRemove runs when a worktree is being removed. It is the cleanup counterpart to WorktreeCreate. The event
-  fires when you exit a `--worktree` session and choose to remove it, when a subagent with `isolation: "worktree"`
-  finishes, and when you delete a background session whose worktree the hook created.
+- WorktreeRemove runs when Claude Code cleans up a worktree that your
+  [`WorktreeCreate`](https://code.claude.com/docs/en/hooks#worktreecreate) hook created. The event fires when:
+  [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
+  - You exit an interactive [worktree session](https://code.claude.com/docs/en/worktrees#start-claude-in-a-worktree)
+    and choose to remove the worktree when Claude Code prompts you
+  - You exit an interactive worktree session you haven't
+    [named](https://code.claude.com/docs/en/sessions#name-your-sessions), Claude Code finds no changed or untracked
+    files, and it removes the worktree without prompting you
+  - You delete a [background session](https://code.claude.com/docs/en/agent-view#what-deleting-a-session-removes)
+    that runs in the worktree
+  - You ask Claude to exit and remove the worktree during a session, and Claude removes it with the
+    [`ExitWorktree`](https://code.claude.com/docs/en/tools-reference) tool
+  - A session that [`claude remote-control`](https://code.claude.com/docs/en/remote-control#start-a-remote-control-session)
+    started in `worktree` mode ends without crashing, and Claude Code finds no changed or untracked files and no new
+    commits in its worktree
+  - You stop `claude remote-control` while sessions it started in `worktree` mode are still running, and Claude Code
+    finds no changed or untracked files and no new commits in their worktrees
+- When a subagent or a workflow agent finishes, Claude Code keeps the worktree your WorktreeCreate hook made for it and
+  doesn't run your WorktreeRemove hook. Remove those worktrees yourself when the work is done.
+  [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
+- Claude Code doesn't prompt you before your hook runs for an `ExitWorktree` call or a `claude remote-control`
+  cleanup. `ExitWorktree` refuses to remove a hook-created worktree unless the call passes
+  [`discard_changes: true`](https://code.claude.com/docs/en/agent-sdk/typescript#exitworktree), which makes your hook
+  the last check on that route.
+  [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
+- Claude Code uses git to look for changed or untracked files, so it finds none in a worktree that isn't a git
+  checkout or inside one, even when the directory holds uncommitted work. Check for that work in your WorktreeRemove
+  hook before it deletes anything.
   [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
 - For git-based worktrees, Claude Code handles cleanup automatically with `git worktree remove`. If you configured a
-  WorktreeCreate hook, pair it with a WorktreeRemove hook to control cleanup of the worktrees it creates:
+  WorktreeCreate hook, pair it with a WorktreeRemove hook to control cleanup:
   [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
-  - **No WorktreeRemove hook**: when you exit a `--worktree` session and choose removal, Claude Code falls back to
-    `git worktree remove --force` on the path your WorktreeCreate hook returned, so a worktree git recognizes is
-    removed. A worktree git doesn't recognize, for example one your hook created with a non-git version control
-    system, stays on disk.
+  - **No WorktreeRemove hook**: Claude Code falls back to git for a removal at exit or through `ExitWorktree`, and
+    keeps the worktree when `claude remote-control` cleans up:
+    - **You exit a worktree session, or Claude calls `ExitWorktree`**: Claude Code removes the path your
+      WorktreeCreate hook returned as `git worktree remove --force` would, so a worktree git recognizes is removed. A
+      worktree git doesn't recognize, for example one your hook created with a non-git version control system, stays
+      on disk.
+    - **`claude remote-control` cleans up a session's worktree**: the worktree stays on disk, and the terminal running
+      `claude remote-control` shows `worktree removal failed, kept: <path>`.
+    - **You delete a background session**: see
+      [What deleting a session removes](https://code.claude.com/docs/en/agent-view#what-deleting-a-session-removes).
   - **Hook exits 0**: the worktree counts as removed. Claude Code reads nothing else from the hook, so make sure your
     hook deleted the directory.
   - **Hook exits non-zero**: the removal fails if the directory at `worktree_path` still exists afterward, and the
-    worktree stays on disk with no git fallback; the hook's command and stderr go to the debug log. A hook that
-    deleted the directory before exiting non-zero counts as removed.
-    [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
-    [hooks › WorktreeRemove input](https://code.claude.com/docs/en/hooks#worktreeremove-input)
+    worktree stays on disk with no git fallback. A hook that deleted the directory before exiting non-zero counts as
+    removed.
 - Claude Code never deletes a branch belonging to a hook-created worktree, because it only knows the path your
   WorktreeCreate hook returned. If your WorktreeCreate hook creates a branch, delete it in your WorktreeRemove hook.
   [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
 - Claude Code discards a WorktreeRemove hook's JSON output fields, such as `systemMessage` and `continue`.
   [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
-- For a background-session delete, Claude Code verifies the stored worktree path before running the hook and refuses a
-  path that is a symlink or passes through one below the repository root. The hook runs for a worktree that still
-  contains files only when you confirm the delete in agent view; for such a worktree, `claude rm` keeps the session
-  and worktree instead.
+- For a background-session delete, Claude Code verifies the stored worktree path before running the hook, refusing a
+  path that is a symlink or passes through one below the repository root. On that route, the hook runs for a worktree
+  that still contains files only when you confirm the delete in agent view. For such a worktree,
+  [`claude rm`](https://code.claude.com/docs/en/agent-view#manage-sessions-from-the-shell) keeps the session and
+  worktree instead.
   [hooks › WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove)
 - Claude Code passes the path returned by WorktreeCreate as `worktree_path` in the hook input. This example reads that
   path and removes the directory:
@@ -1583,12 +1691,17 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 - In addition to the common input fields, WorktreeRemove hooks receive the `worktree_path` field, which is the
   absolute path to the worktree being removed.
   [hooks › WorktreeRemove input](https://code.claude.com/docs/en/hooks#worktreeremove-input)
-- When git or your `WorktreeRemove` hook fails to remove a background session's worktree, Claude Code keeps the
-  worktree and the session, and the message names the cause. For a hook, the refusal message in agent view reports how
-  the hook ended, such as `exited 1`, quotes the start of its stderr, and says whether deleting the session again
-  removes the directory anyway.
+- A WorktreeRemove hook's exit code decides the outcome. When a hook exits non-zero and the directory at
+  `worktree_path` still exists afterward, the removal fails:
   [hooks › WorktreeRemove input](https://code.claude.com/docs/en/hooks#worktreeremove-input)
-  [agent-view › What deleting a session removes](https://code.claude.com/docs/en/agent-view#what-deleting-a-session-removes)
+  - The worktree stays on disk, and the hook's command and stderr go to the
+    [debug log](https://code.claude.com/docs/en/hooks#debug-hooks).
+  - If you were deleting a background session, the session stays too. The refusal message in agent view reports how
+    the hook ended, such as `exited 1`, quotes the start of its stderr, and says whether deleting the session again
+    removes the directory anyway.
+    [agent-view › What deleting a session removes](https://code.claude.com/docs/en/agent-view#what-deleting-a-session-removes)
+  - If `claude remote-control` was cleaning up a session's worktree, the terminal running it shows
+    `worktree removal failed, kept: <path>`.
 
 ## PreCompact
 
@@ -1600,7 +1713,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | Matcher | When it fires |
   | :- | :- |
   | `manual` | `/compact` |
-  | `auto` | Auto-compact when the conversation reaches the [auto-compact window](https://code.claude.com/docs/en/model-config#set-the-auto-compact-window) |
+  | `auto` | Auto-compact when the conversation reaches the [auto-compact window](https://code.claude.com/docs/en/model-config#set-the-auto-compact-window), and [idle compaction](https://code.claude.com/docs/en/settings-reference#idlecompaction) |
 
 - Exit with code 2 to block compaction. For a manual `/compact`, the stderr message is shown to the user. You can also
   block by returning JSON with `"decision": "block"`.
@@ -1629,7 +1742,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | Matcher | When it fires |
   | :- | :- |
   | `manual` | After `/compact` |
-  | `auto` | After auto-compact when the conversation reaches the [auto-compact window](https://code.claude.com/docs/en/model-config#set-the-auto-compact-window) |
+  | `auto` | After auto-compact when the conversation reaches the [auto-compact window](https://code.claude.com/docs/en/model-config#set-the-auto-compact-window), and after [idle compaction](https://code.claude.com/docs/en/settings-reference#idlecompaction) |
 
 - Input: in addition to the common input fields, PostCompact hooks receive `trigger` and `compact_summary`. The
   `compact_summary` field contains the conversation summary generated by the compact operation.
@@ -1686,6 +1799,44 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   }
   ```
 
+- On Windows, register a command hook that runs a script through PowerShell, with the same matcher. Save the script to
+  `.claude/hooks/block-opus-46.ps1` in your project:
+  [hooks › PreModelSwitch](https://code.claude.com/docs/en/hooks#premodelswitch)
+
+  ```json
+  {
+    "hooks": {
+      "PreModelSwitch": [
+        {
+          "matcher": "claude-opus-4-6",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "powershell.exe",
+              "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-opus-46.ps1"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+  ```
+
+  ```powershell
+  $hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
+  if ($hookInput.to_model -match 'opus-4-6') {
+    [Console]::Error.WriteLine('Opus 4.6 is retired for this project. Use a newer model.')
+    exit 2
+  }
+  exit 0
+  ```
+
 - To confirm the hook works, run `/model claude-opus-4-6` from a session running a different model. Claude Code keeps
   the current model and reports that a PreModelSwitch hook blocked the switch, with your message as the reason.
   [hooks › PreModelSwitch](https://code.claude.com/docs/en/hooks#premodelswitch)
@@ -1705,7 +1856,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `source` | string | Where the request came from: `"command"` for `/model <name>`, the Model setting in `/config`, or turning on fast mode; `"picker"` for a model picker; `"sdk"` for a `set_model` request, or a model change in an `apply_flag_settings` request, from an Agent SDK host or Remote Control |
   | `context_tokens` | number | Tokens the next request re-sends as its prompt: the input, cache read, cache creation, and output tokens of the last response in the main conversation, combined. `0` before the first response |
   | `prompt_cache_warm` | boolean | Whether the current model's prompt cache is likely still warm, meaning the switch forfeits it |
-  | `cache_ttl` | string | [Prompt cache lifetime](https://code.claude.com/docs/en/prompt-caching#cache-lifetime) Claude Code requests for this session: `"5m"` or `"1h"` |
+  | `cache_ttl` | string | [Prompt cache lifetime](https://code.claude.com/docs/en/prompt-caching#cache-lifetime) of the main conversation at the time of this switch: `"5m"` or `"1h"` |
   | `estimated_cache_write_usd` | number | Estimated cost in US dollars of writing `context_tokens` to the prompt cache on `to_model` at the `cache_ttl` rate, excluding the next response. The server may not need to re-cache the whole context, so treat it as an estimate |
   | `pricing` | string | How Claude Code priced `estimated_cache_write_usd`: `"configured"` at your organization's own rates when it has configured them, `"catalog"` at list price, or `"default"` when `to_model` has no known price and Claude Code assumed a default rate |
 
@@ -1746,13 +1897,13 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 - Claude Code shows the user any `systemMessage` your hook returns regardless of the decision, so a cost-report hook can
   return `{"systemMessage": "..."}` and exit 0.
   [hooks › PreModelSwitch decision control](https://code.claude.com/docs/en/hooks#premodelswitch-decision-control)
-- A PreModelSwitch hook that doesn't respond before its timeout blocks the switch. On PreToolUse, by contrast, a
-  timed-out command hook lets the tool call continue. The default timeout for this event is 30 seconds.
-  `PreModelSwitch` runs `command`, `http`, and `mcp_tool` hooks only, so the `prompt` and `agent` defaults don't apply.
-  [hooks › PreModelSwitch decision control](https://code.claude.com/docs/en/hooks#premodelswitch-decision-control)
-- A hook that exits with a code other than 0 or 2 and prints no JSON decision doesn't block: Claude Code shows its
-  stderr and applies the switch.
-  [hooks › PreModelSwitch decision control](https://code.claude.com/docs/en/hooks#premodelswitch-decision-control)
+- A PreModelSwitch hook that doesn't respond before its timeout blocks the switch. The default timeout for this event
+  is 30 seconds.
+  [hooks › PreModelSwitch timeouts and other exit codes](https://code.claude.com/docs/en/hooks#premodelswitch-timeouts-and-other-exit-codes)
+- An exit code other than 0 or 2 without valid JSON output is a
+  [non-blocking error](https://code.claude.com/docs/en/hooks#other-exit-codes), so the switch goes ahead, except for
+  hooks [whose failure blocks it](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails).
+  [hooks › PreModelSwitch timeouts and other exit codes](https://code.claude.com/docs/en/hooks#premodelswitch-timeouts-and-other-exit-codes)
 
 ### When a switch is blocked
 
@@ -1904,6 +2055,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 - With `--permission-prompts none` in a `-p` run, any MCP elicitation request that no `Elicitation` hook answers is
   cancelled.
   [headless › Turn off permission prompts in unattended runs](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs)
+- In a [non-interactive](https://code.claude.com/docs/en/headless) session, Claude Code asks the MCP server to cancel a
+  task that requests input, without running your `Elicitation` hooks.
+  [mcp › Answer a question from an MCP task](https://code.claude.com/docs/en/mcp#answer-a-question-from-an-mcp-task)
 
 ### Input
 
@@ -1915,7 +2069,20 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 
 ### Output
 
-- To respond programmatically without showing the dialog, return a JSON object with `hookSpecificOutput`:
+- An Elicitation hook can answer the request for the user, decline or cancel it, or leave it to the dialog. To answer,
+  decline, or cancel, exit 0 and print a `hookSpecificOutput` object with an `action`. The server gets your answer and
+  no dialog appears. Each row of this table shows what to return for one outcome and what the MCP server receives:
+  [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
+
+  | To | Return | The server receives |
+  | :- | :- | :- |
+  | Answer for the user | `"action": "accept"`, with the form field values in `content` | `accept` with your `content` |
+  | Decline the request | `"action": "decline"` | `decline` |
+  | Cancel the request | `"action": "cancel"` | `cancel` |
+  | Leave the request to the user | No output, with exit code 0 | The user's answer from the [dialog](https://code.claude.com/docs/en/mcp#respond-to-mcp-elicitation-requests) |
+
+- This output answers the form-mode request shown under Elicitation input. The keys in `content` are the property
+  names from that request's `requested_schema`:
   [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
 
   ```json
@@ -1930,21 +2097,139 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   }
   ```
 
-  | Field | Values | Description |
-  | :- | :- | :- |
-  | `action` | `accept`, `decline`, `cancel` | Whether to accept, decline, or cancel the request |
-  | `content` | object | Form field values to submit. Only used when `action` is `accept` |
+- This output declines a request:
+  [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
 
-- Exit code 2 denies the elicitation. Claude Code doesn't show your stderr message anywhere.
+  ```json
+  {
+    "hookSpecificOutput": {
+      "hookEventName": "Elicitation",
+      "action": "decline"
+    }
+  }
+  ```
+
+- In the dialog, selecting **Decline** sends `decline` and pressing `Esc` sends `cancel`, so return the one you want
+  the server to see.
   [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
-- Claude Code acts on `hookSpecificOutput` from an Elicitation hook's JSON output and discards `systemMessage` and
-  `continue`.
+- For a URL-mode request, a hook that returns `accept` skips the dialog, so the URL never opens.
   [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
+- Claude Code discards `reason`, `systemMessage`, and `continue` from an Elicitation hook's JSON output, whichever
+  `action` you return.
+  [hooks › Elicitation output](https://code.claude.com/docs/en/hooks#elicitation-output)
+- Your hook can also decline in these ways. The server receives the same `decline` as for `"action": "decline"`:
+  [hooks › Other ways to decline an elicitation](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation)
+  - **Exits with code 2**: Claude Code ignores a `hookSpecificOutput` printed by the same hook
+  - **Prints a top-level `"decision": "block"`**: the block overrides an `action` in the same output
+- When several hooks match the same request, a decline from one of them overrides an `accept` or `cancel` from
+  another.
+  [hooks › Other ways to decline an elicitation](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation)
+- This script declines URL-mode requests and leaves form requests to the dialog:
+  [hooks › Other ways to decline an elicitation](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation)
+
+  ```bash
+  #!/bin/bash
+  if [ "$(jq -r '.mode')" = "url" ]; then
+    exit 2
+  fi
+  ```
+
+- Neither the user nor the server sees why your hook declined, because Claude Code doesn't show your stderr or your
+  `reason`.
+  [hooks › Other ways to decline an elicitation](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation)
+- This example answers one recurring question for the user. An MCP server named `issue-tracker` asks for a project key
+  in a form, and the hook fills in `DOCS`. The script accepts when `project_key` is the form's single field. For any
+  other request it prints nothing, so the dialog appears. Register a command hook for the event in your settings file,
+  with the server name as the matcher:
+  [hooks › Answer a form request from a script](https://code.claude.com/docs/en/hooks#answer-a-form-request-from-a-script)
+
+  ```json
+  {
+    "hooks": {
+      "Elicitation": [
+        {
+          "matcher": "issue-tracker",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.sh",
+              "args": []
+            }
+          ]
+        }
+      ]
+    }
+  }
+  ```
+
+  Save this script to `.claude/hooks/answer-project-key.sh` in your project and make it executable with `chmod +x`:
+
+  ```bash
+  #!/bin/bash
+  input=$(cat)
+  fields=$(jq -c '.requested_schema.properties // {} | keys' <<<"$input")
+
+  if [ "$fields" = '["project_key"]' ]; then
+    jq -n '{hookSpecificOutput: {hookEventName: "Elicitation", action: "accept", content: {project_key: "DOCS"}}}'
+  fi
+  ```
+
+- On Windows, register a command hook that runs the script through PowerShell, with the server name as the matcher.
+  Save the script to `.claude/hooks/answer-project-key.ps1` in your project:
+  [hooks › Answer a form request from a script](https://code.claude.com/docs/en/hooks#answer-a-form-request-from-a-script)
+
+  ```json
+  {
+    "hooks": {
+      "Elicitation": [
+        {
+          "matcher": "issue-tracker",
+          "hooks": [
+            {
+              "type": "command",
+              "command": "powershell.exe",
+              "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.ps1"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+  ```
+
+  ```powershell
+  $request = [Console]::In.ReadToEnd() | ConvertFrom-Json
+  $fields = @($request.requested_schema.properties.PSObject.Properties.Name)
+
+  if ($fields.Count -eq 1 -and $fields[0] -eq 'project_key') {
+    @{
+      hookSpecificOutput = @{
+        hookEventName = "Elicitation"
+        action = "accept"
+        content = @{ project_key = "DOCS" }
+      }
+    } | ConvertTo-Json -Depth 3
+  }
+  ```
+
+- To confirm the hook works, start Claude Code with `claude --debug` and give Claude a task that makes the server ask
+  for the project key. No dialog appears, and the [debug log](https://code.claude.com/docs/en/hooks#debug-hooks) has a
+  line that ends with `Elicitation resolved by hook: {"action":"accept","content":{"project_key":"DOCS"}}`.
+  [hooks › Answer a form request from a script](https://code.claude.com/docs/en/hooks#answer-a-form-request-from-a-script)
 
 ## ElicitationResult
 
 - ElicitationResult runs after a user responds to an MCP elicitation. Hooks can observe, modify, or block the response
   before it is sent back to the MCP server. The matcher field matches against the MCP server name.
+  [hooks › ElicitationResult](https://code.claude.com/docs/en/hooks#elicitationresult)
+- When an [Elicitation](https://code.claude.com/docs/en/hooks#elicitation) hook answers a request, Claude Code sends
+  that answer to the server without running ElicitationResult hooks.
   [hooks › ElicitationResult](https://code.claude.com/docs/en/hooks#elicitationresult)
 
 ### Input
@@ -1955,29 +2240,69 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 
 ### Output
 
-- To override the user's response, return a JSON object with `hookSpecificOutput`:
+- An ElicitationResult hook can let the user's response through, change its values, or block it. To change or block
+  the response, exit 0 and print a `hookSpecificOutput` object with an `action`. Each row of this table shows what to
+  return for one outcome and what the MCP server receives:
+  [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
+
+  | To | Return | The server receives |
+  | :- | :- | :- |
+  | Let the response through | No output, with exit code 0 | The user's response, unchanged |
+  | Change the submitted values | `"action": "accept"`, with the new values in `content` | `accept` with your `content` in place of the user's values |
+  | Block the response | `"action": "decline"` | `decline`, without the user's values |
+  | Cancel the request | `"action": "cancel"` | `cancel`, along with the values the user submitted. To withhold them, return `"decline"` |
+
+- This output changes the response shown under ElicitationResult input, so the server receives `alice@example.com`
+  where the user submitted `alice`:
   [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
 
   ```json
   {
     "hookSpecificOutput": {
       "hookEventName": "ElicitationResult",
-      "action": "decline",
-      "content": {}
+      "action": "accept",
+      "content": {
+        "username": "alice@example.com"
+      }
     }
   }
   ```
 
-  | Field | Values | Description |
-  | :- | :- | :- |
-  | `action` | `accept`, `decline`, `cancel` | Overrides the user's action |
-  | `content` | object | Overrides form field values. Only meaningful when `action` is `accept` |
-
-- Exit code 2 blocks the response, changing the effective action to `decline`. Claude Code doesn't show your stderr
-  message anywhere.
+- Your `content` replaces the user's whole `content` object, so include the fields you aren't changing. Return
+  `action` along with it, because Claude Code ignores a `hookSpecificOutput` that has no `action`.
   [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
-- Claude Code acts on `hookSpecificOutput` from an ElicitationResult hook's JSON output and discards `systemMessage`
-  and `continue`.
+- ElicitationResult hooks also run when the user declines or cancels, and your `action` replaces theirs. Check that the
+  input's `action` is `accept` before you return `accept`, or your hook turns a declined request into an accepted one.
+  This script makes the same change when the user accepted, keeps the other fields, and prints nothing otherwise:
+  [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
+
+  ```bash
+  #!/bin/bash
+  input=$(cat)
+
+  if [ "$(jq -r '.action' <<<"$input")" = "accept" ]; then
+    jq '{hookSpecificOutput: {hookEventName: "ElicitationResult", action: "accept", content: (.content + {username: (.content.username + "@example.com")})}}' <<<"$input"
+  fi
+  ```
+
+- This output blocks the response:
+  [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
+
+  ```json
+  {
+    "hookSpecificOutput": {
+      "hookEventName": "ElicitationResult",
+      "action": "decline"
+    }
+  }
+  ```
+
+- Exit code 2 and a top-level `"decision": "block"` also block the response. When a hook combines them, exit 2 ignores
+  a `hookSpecificOutput` printed by the same hook, and the block overrides an `action` in the same output.
+  [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
+  [hooks › Other ways to decline an elicitation](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation)
+- Claude Code discards `reason`, `systemMessage`, and `continue` from an ElicitationResult hook's JSON output,
+  whichever `action` you return.
   [hooks › ElicitationResult output](https://code.claude.com/docs/en/hooks#elicitationresult-output)
 
 ## Not stated by the documentation

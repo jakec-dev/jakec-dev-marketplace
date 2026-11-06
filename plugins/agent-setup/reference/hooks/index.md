@@ -14,9 +14,11 @@ return, how to turn hooks off, and how to find out why one didn't run.
   A hook's `"allow"` doesn't bypass deny rules, and a matching ask rule still prompts.
   See [input-output.md › Exit codes](input-output.md) and
   [tool-events.md › Hook decisions and permission rules](tool-events.md).
-- Only exit code 2 blocks. Exit code 1 is a non-blocking error and the action proceeds, so a hook meant to enforce a
-  policy must use `exit 2`.
-  See [input-output.md › Exit codes](input-output.md).
+- Only exit code 2 blocks. Exit code 1, a timeout or a script that can't start is a non-blocking error and the action
+  proceeds, so a hook meant to enforce a policy must use `exit 2`, and set `"onFailure": "block"` on a `command` or
+  `http` hook for its failures to block too.
+  See [input-output.md › Exit codes](input-output.md) and
+  [input-output.md › Block the action when a hook fails](input-output.md).
 - `additionalContext` and `permissionDecision` belong inside `hookSpecificOutput`; at the top level Claude Code ignores
   them without reporting an error.
   See [troubleshooting.md › Hook JSON has no effect](troubleshooting.md).
@@ -94,10 +96,12 @@ return, how to turn hooks off, and how to find out why one didn't run.
   - Not stated by the documentation
 
 - [input-output.md](input-output.md): reading a hook's input and returning its result (common input fields, exit codes,
-  stdout and stderr, JSON output, `additionalContext`, `systemMessage`, terminal notifications, HTTP responses,
-  combining results)
+  failure handling (`onFailure`), stdout and stderr, JSON output, `additionalContext`, `systemMessage`, terminal
+  notifications, HTTP responses, combining results)
   - Input
   - Exit codes
+  - Hooks that start a background process
+  - Block the action when a hook fails
   - Exit code 2 behavior per event
   - Plain text and JSON on stdout
   - JSON output
@@ -169,11 +173,12 @@ return, how to turn hooks off, and how to find out why one didn't run.
   - Not stated by the documentation
 
 - [troubleshooting.md](troubleshooting.md): checking whether a hook runs and why not (`/hooks`, the debug log, error
-  notices, validation, plugin hook errors, OpenTelemetry hook events)
+  notices, validation, plugin hook errors, OpenTelemetry hook and safety events)
   - Check that a hook loaded
   - See what a hook did
   - A hook never fires
   - Hook error notices
+  - Hooks failing on Windows
   - Hook JSON has no effect
   - Stop hook hits the block cap
   - Limitations
@@ -181,3 +186,4 @@ return, how to turn hooks off, and how to find out why one didn't run.
   - Hooks and worktrees
   - Trust and skipped hooks
   - OpenTelemetry hook events and spans
+  - Not stated by the documentation

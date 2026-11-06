@@ -117,9 +117,7 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
   [model-config › Set the effort level](https://code.claude.com/docs/en/model-config#set-the-effort-level)
 - The `effort.level` status line field shows the session's level, not one that a skill set.
   [statusline › Available data](https://code.claude.com/docs/en/statusline#available-data)
-- Hooks receive the effort level in `effort.level`, including a level that a skill set, and `$CLAUDE_EFFORT` holds
-  the same level. `effort` is present for `PreToolUse`, `PostToolUse`, `Stop`, `SubagentStop` and other events with a
-  tool-use context, on models with effort. If the model doesn't support the level, `level` is the level that ran.
+- The `effort.level` that hooks receive includes a level that a skill set, and `$CLAUDE_EFFORT` holds the same level.
   [hooks › Common input fields](https://code.claude.com/docs/en/hooks#common-input-fields)
 - After an automatic model fallback, a level that a skill's `effort` frontmatter set for the flagged turn applies to
   that turn. Later turns run at the level the effort resolution order gives the fallback model.
@@ -179,8 +177,7 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
   your own settings files don't run either.
   [hooks › Limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks)
 - The `hooks` lock stops frontmatter hooks in skills and custom commands from the sources that a `skills` lock would
-  block, and those skills and commands still load while their own surface isn't locked. It keeps running hooks in
-  managed settings, and hooks from plugins other than skills-directory plugins.
+  block, and those skills and commands still load while their own surface isn't locked.
   [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
 - To check for the lock, type `/status`: if the `Setting sources` line includes `Enterprise managed settings`, ask your
   administrator whether `strictPluginOnlyCustomization` locks hooks. To fix it, move the skill into a

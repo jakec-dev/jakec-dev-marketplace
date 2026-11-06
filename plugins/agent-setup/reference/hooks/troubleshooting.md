@@ -9,6 +9,7 @@ OpenTelemetry hook events.
 - See what a hook did
 - A hook never fires
 - Hook error notices
+- Hooks failing on Windows
 - Hook JSON has no effect
 - Stop hook hits the block cap
 - Limitations
@@ -16,6 +17,7 @@ OpenTelemetry hook events.
 - Hooks and worktrees
 - Trust and skipped hooks
 - OpenTelemetry hook events and spans
+- Not stated by the documentation
 
 ## Check that a hook loaded
 
@@ -53,10 +55,8 @@ OpenTelemetry hook events.
   Hooks in your user, project, and local settings files don't run and aren't listed.
   [hooks-guide › `/hooks` shows no hooks configured](https://code.claude.com/docs/en/hooks-guide#/hooks-shows-no-hooks-configured)
 - At the start of an interactive session, a settings file with an unknown hook event name produces a Settings
-  Warning: only individual entries fail, such as a
-  malformed permission rule or an unknown hook event name, so Claude Code skips those values and keeps the rest of the
-  file in effect. After you continue, run `/status` to see the affected files and `claude doctor` for the details of
-  each error.
+  Warning: Claude Code skips only the failing entries and keeps the rest of the file in effect. After you continue,
+  run `/status` to see the affected files and `claude doctor` for the details of each error.
   [settings › Fix a broken settings file](https://code.claude.com/docs/en/settings#fix-a-broken-settings-file)
 - A `-p` run shows no settings dialog: unless a managed settings document can't be parsed, Claude Code skips the broken
   file or values and continues with the rest, so after a `-p` run that ignores a setting, run `claude doctor` to see
@@ -66,8 +66,17 @@ OpenTelemetry hook events.
   by event. You can add, edit, or remove hooks saved in your user, project, and local settings files. Hooks from other
   sources, such as managed settings or plugins, are read-only.
   [vs-code › Use the prompt box](https://code.claude.com/docs/en/vs-code#use-the-prompt-box)
-- `/doctor` flags slow hooks as part of its setup checkup.
-  [commands › All commands](https://code.claude.com/docs/en/commands#all-commands)
+- The `/doctor` setup checkup flags slow hooks, under Extensions.
+  [skills › Check your setup with `/doctor`](https://code.claude.com/docs/en/skills#check-your-setup-with-/doctor)
+- A managed settings source that holds a hook entry Claude Code can't load makes a `-p` run print a stderr block
+  headed `Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded;
+  fix or remove each entry:`, followed by one line per entry in the form `<source> (<field>): <message>`. That hook
+  doesn't run, and when a line lists the source's `hooks` field as ignored, none of that source's hooks run. Each line
+  names the source, the field when there is one, and the problem, such as an unknown hook `type` or a hook declared
+  outside the `hooks` key. If you administer the source, fix or remove each listed entry. If a line's source is
+  `parent managed settings`, report it to the developer of the application that launched Claude Code. Otherwise send
+  the block to your administrator.
+  [errors › Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded](https://code.claude.com/docs/en/errors#managed-settings-hooks-not-loaded)
 
 ## See what a hook did
 
@@ -102,6 +111,15 @@ OpenTelemetry hook events.
   2026-07-19T02:03:24.382Z [DEBUG] "Hook PostToolUse:Write (PostToolUse) success:\nhook-ran"
   ```
   [hooks › Debug hooks](https://code.claude.com/docs/en/hooks#debug-hooks)
+- To find a slow hook, search the log for `Hooks:` lines that end in a duration. Each command hook on a tool event,
+  `UserPromptSubmit`, `SessionStart`, `Stop`, and several other events leaves one when it finishes, whatever it
+  printed. The line gives the event name, joined by a colon to the tool name or other value the hook matched on, then
+  the hook's command in brackets, the plugin it came from if any, how the run ended, and how long it took, as in
+  `Hooks: PostToolUse:Write [.claude/hooks/log-write.sh] finished with status 0 (31ms)`. A run can also end as
+  `timed out after <N>ms`, `cancelled`, `moved to the background`, or `failed to start`. On some events, such as
+  `Notification`, `SessionEnd`, and `PreCompact`, a command hook leaves a `completed with status` line without a
+  duration instead.
+  [hooks › Debug hooks](https://code.claude.com/docs/en/hooks#debug-hooks)
 - For more granular hook matching details, set `CLAUDE_CODE_DEBUG_LOG_LEVEL=verbose` to see additional log lines such
   as hook matcher counts and query matching.
   [hooks › Debug hooks](https://code.claude.com/docs/en/hooks#debug-hooks)
@@ -132,7 +150,8 @@ OpenTelemetry hook events.
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - The `matcher` field is a single string that uses `|` to match multiple tool names, for example `"Edit|Write"`. A `,`
   separator is equivalent, so `"Edit,Write"` matches the same tools. A `matcher` that is a JSON array never fires.
-  [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
+  [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks),
+  [debug-your-config › Check common causes](https://code.claude.com/docs/en/debug-your-config#check-common-causes)
 - A lowercase `matcher` value such as `"bash"` never fires: matching is case-sensitive, and tool names are
   capitalized, such as `Bash`, `Edit`, `Write`, `Read`.
   [debug-your-config › Check common causes](https://code.claude.com/docs/en/debug-your-config#check-common-causes)
@@ -140,8 +159,10 @@ OpenTelemetry hook events.
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - Cleanup logic that never runs at session end means no `SessionEnd` hook is configured: add one in `settings.json`.
   [debug-your-config › Check common causes](https://code.claude.com/docs/en/debug-your-config#check-common-causes)
-- A `PermissionRequest` hook fires when Claude Code is about to ask you for permission.
-  [hooks-guide › Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing)
+- A `PermissionRequest` hook fires when Claude Code is about to ask you for permission, or when it would otherwise
+  auto-deny a call that can't prompt; in a `-p` run it still runs outside `dontAsk` mode.
+  [hooks-guide › Hook not firing](https://code.claude.com/docs/en/hooks-guide#hook-not-firing),
+  [hooks-guide › Limitations](https://code.claude.com/docs/en/hooks-guide#limitations)
 
 ## Hook error notices
 
@@ -154,6 +175,9 @@ OpenTelemetry hook events.
   [hooks-guide › Hook error in output](https://code.claude.com/docs/en/hooks-guide#hook-error-in-output)
 - If you see "command not found", use absolute paths or `${CLAUDE_PROJECT_DIR}` to reference scripts. To avoid shell
   quoting entirely, add `"args": []` to switch to exec form, which spawns the script directly without a shell.
+  [hooks-guide › Hook error in output](https://code.claude.com/docs/en/hooks-guide#hook-error-in-output)
+- If the message includes `blocking because Git Bash wasn't found`, you're on Windows, Claude Code didn't find Git
+  Bash, and the failed or timed-out hook blocked the tool call. The fixes are under Hooks failing on Windows.
   [hooks-guide › Hook error in output](https://code.claude.com/docs/en/hooks-guide#hook-error-in-output)
 - If you see "jq: command not found", install `jq` or use Python/Node.js for JSON parsing. If the script isn't running
   at all, make it executable with `chmod +x ./my-hook.sh`.
@@ -171,6 +195,13 @@ OpenTelemetry hook events.
 - For any other error, run the hook's command yourself from the plugin directory to see the full output, or capture the
   full stderr with debug logging.
   [plugins/troubleshooting › `hook error` notices in the transcript](https://code.claude.com/docs/en/plugins/troubleshooting#hook-error-notices-in-the-transcript)
+- A notification in the conversation view that starts with the hook's event name and reads
+  `Stop hook needs quotes around a path with a space (check.py)` means the script didn't run because its path has a
+  space and isn't quoted. That hook is an `asyncRewake` hook in shell form, and its `command` has an interpreter such
+  as `python3` followed by an unquoted path placeholder, and the resolved path contains a space. Wrap the path in
+  double quotes in the `command` of the hook that runs the script the notification names. In a JSON file, write it as
+  `"command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/check.py\""`.
+  [errors › Hook needs quotes around a path with a space](https://code.claude.com/docs/en/errors#hook-needs-quotes-around-a-path-with-a-space)
 - In agent view's peek panel, when a `PermissionRequest` or `PreToolUse` hook returns output Claude Code can't validate
   for the call the session is asking about, the row shows the hook event and `hook output invalid:` with the validation
   error before the pending request's text. For a hook that fails another way, the row says the hook failed. The
@@ -183,6 +214,43 @@ OpenTelemetry hook events.
   every time, so turn off the mod or hook, or leave auto mode and approve the call yourself.
   [plugins/mods/troubleshoot › `a hook changed this call's input after the model wrote it`](https://code.claude.com/docs/en/plugins/mods/troubleshoot#a-hook-changed-this-calls-input-after-the-model-wrote-it)
 
+## Hooks failing on Windows
+
+- When the error for a blocked tool call includes `blocking because Git Bash wasn't found, so only exit code 0 or 2
+  counts as this hook's verdict.`, a `PreToolUse` or `PermissionRequest` command hook failed or timed out and blocked
+  the call. Without Git Bash, any exit code other than 0 or 2 from that hook counts as a failure, even when it prints
+  JSON that doesn't deny the call. To find out why the hook failed, check the debug log, then pick the fix that
+  matches the hook.
+  [hooks › Failed hooks on Windows without Git Bash](https://code.claude.com/docs/en/hooks#failed-hooks-on-windows-without-git-bash)
+  - The call should go ahead when the hook fails: add `"onFailure": "continue"` to the hook.
+  - The hook exits 1 to warn but must block when it crashes: with `"onFailure": "continue"`, the call goes ahead on
+    exit code 1, warning or crash alike. Add `"onFailure": "block"` instead, and have the script exit 0 where it
+    warns, so those calls go ahead. To still show the warning on `PreToolUse`, print it to stdout as the
+    `systemMessage` field of one JSON object.
+  - The hook is written for Bash: without Git Bash, a shell-form hook with no `shell` set runs in PowerShell, where
+    it can fail. Install Git for Windows, or set `CLAUDE_CODE_GIT_BASH_PATH` if Git Bash is installed where Claude
+    Code doesn't find it. Then start a new session.
+  - The hook runs one `.exe`, not a `.cmd` or `.bat` file: put the program in `command` and its arguments in `args`
+    to use exec form, and add `"onFailure": "block"`. Claude Code then starts the program with no shell. Without
+    `"onFailure": "block"`, the call can go ahead when the program fails, is missing, or times out.
+  - A PowerShell guard hook that must block on failure: with `onFailure` unset, it stops doing so once Git for
+    Windows is installed and Claude Code finds Git Bash. Add `"onFailure": "block"` so a failure or a timeout blocks
+    the call with or without Git Bash. Also set `"shell": "powershell"` so the hook keeps running in PowerShell from
+    then on instead of in Git Bash.
+- If the error also says `PowerShell started no program`, start with the fixes in the next bullet, which PowerShell
+  prints instead of running.
+  [hooks › Failed hooks on Windows without Git Bash](https://code.claude.com/docs/en/hooks#failed-hooks-on-windows-without-git-bash)
+- A hook with the error `PowerShell started no program` ran in PowerShell, which prints a `command` that is only
+  quoted strings, such as `"command": "\"C:\\Tools\\guard.exe\""`, instead of running it.
+  [hooks › PowerShell started no program](https://code.claude.com/docs/en/hooks#powershell-started-no-program)
+  - To print text, such as JSON: set `"shell": "powershell"`, and the hook exits 0.
+  - To run a `.ps1`, `.cmd`, or `.bat` file, or a `.exe` whose path has a variable: set `"shell": "powershell"` and put
+    `&` before the quoted path. Leave `$HOME` as written, and spell environment variables as the `check.ps1` example
+    in the hooks reference spells `$env:CLAUDE_PROJECT_DIR`.
+  - To run one `.exe` at a path without `$`: remove the inner quotes from `command`, then apply the fix for a hook that
+    runs one `.exe`, writing `"args": []` if the program takes no arguments.
+  - To run a script written for Bash: apply the fix for a hook written for Bash.
+
 ## Hook JSON has no effect
 
 - When your hook prints valid JSON but the decision doesn't take effect and no error appears in the transcript, the
@@ -190,23 +258,18 @@ OpenTelemetry hook events.
   each field's placement against the JSON output format: for example, `permissionDecision` belongs inside
   `hookSpecificOutput`, not at the top level.
   [hooks-guide › Hook JSON has no effect](https://code.claude.com/docs/en/hooks-guide#hook-json-has-no-effect)
-- When your hook returns `permissionDecision` or `additionalContext` at the top level instead of inside
-  `hookSpecificOutput`, the JSON still parses, and Claude Code ignores the misplaced fields without reporting an
-  error. Start Claude Code with `claude --debug` and search the debug log for `Hook JSON output had unrecognized keys`
-  to see which fields it ignored.
-  [hooks-guide › Hook JSON has no effect](https://code.claude.com/docs/en/hooks-guide#hook-json-has-no-effect)
-- Extra output before the JSON: when Claude Code runs a shell-form command hook, one without `args`, it spawns `sh -c`
-  on macOS and Linux, Git Bash on Windows, or PowerShell when Git Bash isn't installed by default. This shell is
-  non-interactive, but Git Bash and some configurations, such as `BASH_ENV` pointing at `~/.bashrc`, still source your
-  profile. If that profile contains unconditional `echo` statements, the output gets prepended to your hook's JSON:
+- Extra output before the JSON: hooks run in non-interactive shells, but Git Bash and some configurations, such as
+  `BASH_ENV` pointing at `~/.bashrc`, still source your profile, and anything the profile prints reaches stdout ahead
+  of your hook's JSON:
   ```text
   Shell ready on arm64
   {"decision": "block", "reason": "Not allowed"}
   ```
-  [hooks-guide › Hook JSON has no effect](https://code.claude.com/docs/en/hooks-guide#hook-json-has-no-effect)
-- The combined output no longer starts with `{`, so Claude Code treats all of stdout as plain text and ignores the
-  JSON. On exit 0 nothing is reported in the transcript; the parse attempt is recorded only in the debug log. To fix
-  this, wrap echo statements in your shell profile so they only run in interactive shells:
+  [hooks-guide › Shell profile output before the JSON](https://code.claude.com/docs/en/hooks-guide#shell-profile-output-before-the-json)
+- Unless the hook is async, Claude Code reads output that doesn't start with `{` as plain text, so your JSON is
+  ignored, and because the hook exited 0 the transcript shows no error. To check for this cause, start Claude Code
+  with `claude --debug`, trigger the hook, and search the debug log for `Hook output does not start with {`. To fix
+  it, wrap the `echo` statements in your profile so they run only in interactive shells:
   ```bash
   # In ~/.zshrc or ~/.bashrc
   if [[ $- == *i* ]]; then
@@ -215,15 +278,19 @@ OpenTelemetry hook events.
   ```
   The `$-` variable contains shell flags, and `i` means interactive. Hooks run in non-interactive shells, so the echo
   is skipped.
-  [hooks-guide › Hook JSON has no effect](https://code.claude.com/docs/en/hooks-guide#hook-json-has-no-effect)
+  [hooks-guide › Shell profile output before the JSON](https://code.claude.com/docs/en/hooks-guide#shell-profile-output-before-the-json)
+- When your hook returns `permissionDecision` or `additionalContext` at the top level instead of inside
+  `hookSpecificOutput`, the JSON still parses, and Claude Code ignores the misplaced fields without reporting an
+  error. To see which fields it ignored, start Claude Code with `claude --debug` and search the debug log for
+  `Hook JSON output had unrecognized keys`.
+  [hooks-guide › Fields at the wrong level](https://code.claude.com/docs/en/hooks-guide#fields-at-the-wrong-level)
 
 ## Stop hook hits the block cap
 
 - When Claude keeps working instead of stopping and then ends the turn with a warning that the Stop hook blocked too
-  many consecutive times: Claude Code overrides a Stop hook after it blocks too many times in a row without progress
-  (the cap can be raised with `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`). Your hook script needs to check whether it already
-  triggered a continuation. Parse the `stop_hook_active` field from
-  the JSON input and exit early if it's `true`:
+  many consecutive times: Claude Code overrides a Stop hook after it blocks eight times in a row with no tool call
+  from Claude in between. Your hook script needs to check whether it already triggered a continuation. Parse the
+  `stop_hook_active` field from the JSON input and exit early if it's `true`:
   ```bash
   #!/bin/bash
   INPUT=$(cat)
@@ -232,6 +299,9 @@ OpenTelemetry hook events.
   fi
   # ... rest of your hook logic
   ```
+  [hooks-guide › Stop hook hits the block cap](https://code.claude.com/docs/en/hooks-guide#stop-hook-hits-the-block-cap)
+- If your hook legitimately needs more than eight iterations to converge, raise the cap with
+  `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`.
   [hooks-guide › Stop hook hits the block cap](https://code.claude.com/docs/en/hooks-guide#stop-hook-hits-the-block-cap)
 
 ## Limitations
@@ -253,6 +323,25 @@ OpenTelemetry hook events.
   the hooks schema. The reason names the parse or validation error. Fix the file. To catch a JSON syntax problem in
   `hooks/hooks.json` before you publish the plugin, run `claude plugin validate <plugin-directory>` in your shell.
   [plugins/troubleshooting › Hooks fail to load](https://code.claude.com/docs/en/plugins/troubleshooting#hooks-fail-to-load)
+- `hooks path escapes plugin directory: <path>` in the **Errors** tab means a `hooks` path the plugin declares leads
+  outside the plugin directory or couldn't be confirmed inside it, so Claude Code drops that path and loads the rest
+  of the plugin. The component name `hooks` in the message names the field that declared the path. A message that
+  gives the full path of a marketplace plugin's own `hooks/hooks.json` means Claude Code skipped that file, because it
+  can't confirm the file is inside the plugin or, for a plugin in a local marketplace, inside that marketplace. The
+  message reports that file under the component name `hooks`, as in
+  ```text
+  hooks path escapes plugin directory: /home/user/my-marketplace/my-plugin/hooks/hooks.json — it resolves to /home/user/dotfiles/hooks.json, outside the plugin directory and its marketplace directory
+  ```
+  [errors › Path escapes plugin directory](https://code.claude.com/docs/en/errors#path-escapes-plugin-directory),
+  [plugins/troubleshooting › Hooks fail to load](https://code.claude.com/docs/en/plugins/troubleshooting#hooks-fail-to-load)
+- On macOS and Linux, Claude Code also rejects a component path that contains a backslash anywhere in it, even when the
+  path stays inside the plugin, so a plugin whose paths use Windows-style separators loads on Windows only. To fix a
+  `hooks` path error: if you installed the plugin and don't maintain it, report the message to its author; move a
+  referenced file inside the plugin directory and point the path at it with a `./` relative path; replace a symlink
+  that leads outside the plugin, or a folder above the path that is one, with a copy of what it points to; write a
+  path that contains a backslash with forward slashes; and if the message ends with `EACCES`, restore your execute
+  permission on every directory leading to the file the path names, following each symlink you reach.
+  [errors › Path escapes plugin directory](https://code.claude.com/docs/en/errors#path-escapes-plugin-directory)
 - `hooks path not found: <path>` in the **Errors** tab means the manifest's `hooks` field names a file that doesn't
   exist at that path relative to the plugin root. Fix the path or add the file.
   [plugins/troubleshooting › Hooks fail to load](https://code.claude.com/docs/en/plugins/troubleshooting#hooks-fail-to-load)
@@ -261,11 +350,24 @@ OpenTelemetry hook events.
   use exec form. To find the unquoted variable, run `claude plugin validate` on the plugin's directory and look for its
   quoting warning.
   [plugins/troubleshooting › `hook error` notices in the transcript](https://code.claude.com/docs/en/plugins/troubleshooting#hook-error-notices-in-the-transcript)
+- A plugin's hook fails with `Failed to run: Plugin directory does not exist: <path> (<plugin> — run /plugin to
+  reinstall)`, and doesn't run, when the directory your session loaded the plugin's hooks from is gone from disk. Run
+  `/reload-plugins` first, even though the message says to reinstall. The failure shows once per session for each hook
+  event and command, so the hook going quiet doesn't confirm the fix. Read the reload's output instead: `Reloaded:` with
+  no errors line means the plugin's hooks no longer point at the missing directory; `N errors during load. Run /plugin
+  for details.` means open the **Errors** tab in `/plugin` and follow the plugins troubleshooting entry for the message
+  it shows; a line that ends `Run /reload-plugins --force to apply.` means nothing reloaded and the hooks keep
+  failing, so run `/reload-plugins --force`. `Plugin directory not found at path: <path>` is a different message,
+  about a marketplace entry.
+  [plugins/troubleshooting › `Plugin directory does not exist: <path>`](https://code.claude.com/docs/en/plugins/troubleshooting#plugin-directory-does-not-exist)
 - A plugin hook that exits with code 2 blocks the action it ran for. When its stderr is the blocking message, the error
   ends with `This hook comes from the <plugin> plugin.` so that you know which plugin to disable or fix. If that
   message shows the plugin's path cut off at a space, apply the unquoted `${CLAUDE_PLUGIN_ROOT}` fix above.
   [plugins/troubleshooting › A plugin hook blocks a tool call or prompt](https://code.claude.com/docs/en/plugins/troubleshooting#a-plugin-hook-blocks-a-tool-call-or-prompt)
-- For a plugin hook that loads without error but never fires, work through these checks: event names are
+- For a plugin hook that loads without error but never fires, first run `/plugin` in your session and open the
+  plugin's details. A note there that begins `Its hooks.json hooks do not run` means another enabled plugin with the
+  same name registered its hooks instead; the plugins loading page's section on two enabled plugins sharing a name says
+  which copy that is and how to switch. Otherwise work through these checks: event names are
   case-sensitive, so confirm yours matches exactly, for example `PostToolUse`; confirm the hook's `matcher` matches
   the tool name; trigger the event on purpose; then read the debug log.
   [plugins/troubleshooting › Hook loads but never fires](https://code.claude.com/docs/en/plugins/troubleshooting#hook-loads-but-never-fires)
@@ -287,6 +389,10 @@ OpenTelemetry hook events.
 
 ## Hooks and worktrees
 
+- `Can only use --worktree in a git repository` means you passed `--worktree` in a directory that isn't a git
+  checkout and no `WorktreeCreate` hook is active. In a checkout of another version control system, set up that hook;
+  in a folder with no version control, run `git init` and create a first commit; or start Claude without `--worktree`.
+  [worktrees › `Can only use --worktree in a git repository`](https://code.claude.com/docs/en/worktrees#can-only-use-worktree-in-a-git-repository)
 - When Claude Code exits at startup because it can't enter the worktree directory, a `WorktreeCreate` hook may have
   printed something other than the directory it created, or the directory was deleted after it was set up.
   [worktrees › Claude Code can't enter the worktree at startup](https://code.claude.com/docs/en/worktrees#claude-code-can’t-enter-the-worktree-at-startup)
@@ -367,7 +473,24 @@ OpenTelemetry hook events.
   [monitoring-usage › Hook plugin metrics event](https://code.claude.com/docs/en/monitoring-usage#hook-plugin-metrics-event)
   - `plugin_id`: plugin identifier in `<name>@<marketplace>` form
   - `hook_event`: hook event type that emitted the metrics
-  - Up to 20 plugin-emitted metric keys. Names match `^[a-z][a-z0-9_]{0,39}$`. Values are boolean or number.
+  - Up to 20 plugin-emitted metric keys. Names match `^[a-z][a-z0-9_]{0,39}$`. Values are Boolean or number.
+- To find which tool call a hook refused, query `safety_event` where `category` is `"hook"` and `decision` is
+  `"reject"`; for a blocked result or turn end, query `category` `"hook_review"`.
+  [monitoring-usage › Map security questions to events](https://code.claude.com/docs/en/monitoring-usage#map-security-questions-to-events)
+- `claude_code.safety_event` is also logged when a hook blocks a result. Its `decision` is `"sent_back"` when a hook
+  blocked a result or turn end, its `reason_code` can be `"hook:PreToolUse"`, its `reason_type` can be `"hook"`, and
+  its `hook_event` is `"pre_tool_use"` for a `PreToolUse` hook, or `"post_tool_use"`, `"post_tool_use_failure"`,
+  `"stop"`, or `"subagent_stop"` on `"hook_review"` events.
+  [monitoring-usage › Safety event](https://code.claude.com/docs/en/monitoring-usage#safety-event)
+- In the safety event's `category`, `"hook"` means a hook, such as `PreToolUse` or `PermissionRequest`, with the detail
+  attributes `hook_event` and `reason_code`. `"hook_review"` means a hook blocked the call's result or the end of a
+  turn, with the detail attribute `hook_event`. `"user_rejected"` covers someone declining or dismissing a prompt
+  that only a hook required, among other cases, with the detail attribute `decision_source`.
+  [monitoring-usage › Safety event categories](https://code.claude.com/docs/en/monitoring-usage#safety-event-categories)
+- A call that a `canUseTool` callback or `--permission-prompt-tool` tool approved at a prompt only a `PreToolUse` hook
+  required has no safety event apart from `"hook_review"` events, which are sent after the call runs, so check it for
+  a `tool_decision` event.
+  [monitoring-usage › Calls without a safety event](https://code.claude.com/docs/en/monitoring-usage#calls-without-a-safety-event)
 - Each user prompt starts a `claude_code.interaction` root span, and hook executions are recorded as its children.
   The `claude_code.hook` span sits beside `claude_code.llm_request` and `claude_code.tool`.
   [monitoring-usage › Span hierarchy](https://code.claude.com/docs/en/monitoring-usage#span-hierarchy)
@@ -414,3 +537,10 @@ OpenTelemetry hook events.
   fields such as `type` and `timeout` show, while each command, URL, `matcher`, and `if` condition is exported as
   `"[REDACTED]"`.
   [monitoring-usage › Managed settings resolved event](https://code.claude.com/docs/en/monitoring-usage#managed-settings-resolved-event)
+
+## Not stated by the documentation
+
+- The `hook_event` value of a safety event for a `PermissionRequest` hook: the `"hook"` category lists `hook_event`
+  as a detail attribute for hooks such as `PermissionRequest`, but the attribute's values name only `"pre_tool_use"`
+  for a hook and the four `"hook_review"` values.
+  [monitoring-usage › Safety event](https://code.claude.com/docs/en/monitoring-usage#safety-event)
