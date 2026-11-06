@@ -3,8 +3,7 @@
 Writing a skill's description, body and bundled files so that Claude finds the skill and follows it.
 
 These sections draw on Anthropic's skill authoring guidance, which writes for skills on every Claude surface, and
-Claude Code's skills page. Where they disagree, Claude Code's documentation wins. The CLAUDE.md principle that every
-line must earn its place applies to a skill's body too.
+Claude Code's skills and best practices pages. Where they disagree, Claude Code's documentation wins.
 
 ## Contents
 
@@ -25,8 +24,8 @@ line must earn its place applies to a skill's body too.
 
 ## Skill descriptions say what and when
 
-- A skill's "`description` field enables Skill discovery and should include both what the Skill does and when to use
-  it."
+- A skill's "`description` field makes Skill discovery possible and should include both what the Skill does and when
+  to use it."
   [best-practices › Writing effective descriptions](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#writing-effective-descriptions)
 - Claude Code's `description` field is "What the skill does and when to use it. Claude uses this to decide when to
   apply the skill."
@@ -61,10 +60,12 @@ line must earn its place applies to a skill's body too.
 
 - In a skill, "Keep the body itself concise. Once a skill loads, its content stays in context across turns, so every
   line is a recurring token cost. State what to do rather than narrating how or why, and apply the same conciseness
-  test you would for CLAUDE.md content."
+  test you would for CLAUDE.md content." For skills in Claude Code, "The `CLAUDE.md` rule applies to skills too: only
+  write down what Claude can't find on its own."
   [skills › Types of skill content](https://code.claude.com/docs/en/skills#types-of-skill-content)
+  [best-practices › Put team procedures in skills](https://code.claude.com/docs/en/best-practices#put-team-procedures-in-skills)
 - "Only add context Claude doesn't already have. Challenge each piece of information": does Claude really need the
-  explanation, can it be assumed that Claude knows this, and does the paragraph justify its token cost?
+  explanation, can it be assumed that Claude has this information, and does the paragraph justify its token cost?
   [best-practices › Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key)
 - Check: would removing each paragraph of the skill body cause Claude to make mistakes?
 
@@ -80,8 +81,8 @@ line must earn its place applies to a skill's body too.
 
 ## Skill files link one level deep from SKILL.md
 
-- "**Keep references one level deep from SKILL.md**. All reference files should link directly from SKILL.md to
-  ensure Claude reads complete files when needed." The reason: "Claude may partially read files when they're
+- "**Keep references one level deep from `SKILL.md`**. All reference files should link directly from `SKILL.md` to
+  ensure Claude reads complete files when needed." The reason: "Claude might partially read files when they're
   referenced from other referenced files", so it might preview one with `head -100` and get incomplete information.
   [best-practices › Avoid deeply nested references](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#avoid-deeply-nested-references)
 - Claude Code: "Reference supporting files from `SKILL.md` so Claude knows what each file contains and when to load
@@ -94,7 +95,7 @@ line must earn its place applies to a skill's body too.
 
 - "For reference files longer than 100 lines, include a table of contents at the top. This ensures Claude can see
   the full scope of available information even when previewing with partial reads."
-  [best-practices › Structure longer reference files with table of contents](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#structure-longer-reference-files-with-table-of-contents)
+  [best-practices › Structure longer reference files with a table of contents](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#structure-longer-reference-files-with-table-of-contents)
 - Check: does every supporting file over 100 lines open with a contents list?
 
 ## Skill workflows are ordered steps, with a checklist when complex
@@ -103,7 +104,7 @@ line must earn its place applies to a skill's body too.
   that Claude can copy into its response and check off as it progresses."
   [best-practices › Use workflows for complex tasks](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#use-workflows-for-complex-tasks)
 - For a conditional workflow, the page's tip: "If workflows become large or complicated with many steps, consider
-  pushing them into separate files and tell Claude to read the appropriate file based on the task at hand."
+  pushing them into separate files and tell Claude to read the appropriate file based on the current task."
   [best-practices › Conditional workflow pattern](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#conditional-workflow-pattern)
 - Check: does a complex multi-step workflow in the skill give a checklist that Claude can copy into its response and
   tick off, and does a large workflow sit in a separate file that SKILL.md tells Claude to read for the task?
@@ -131,7 +132,7 @@ line must earn its place applies to a skill's body too.
 - "When writing scripts for Skills, handle error conditions rather than deferring to Claude." The page's good example
   catches a missing file or a permission error and falls back to a default; its bad example opens the file and lets
   the failure reach Claude.
-  [best-practices › Solve, don't defer](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#solve-dont-punt)
+  [best-practices › Solve, don’t defer](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#solve-dont-punt)
 - Check: does each bundled script handle its likely failures itself instead of failing and leaving Claude to work
   out the cause?
 
@@ -145,7 +146,7 @@ line must earn its place applies to a skill's body too.
 
 ## Skill instructions say whether Claude runs a script or reads it
 
-- "**Important distinction:** Make clear in your instructions whether Claude should" "Execute the script (most
+- "**Important distinction:** Make clear in your instructions whether Claude should" "Run the script (most
   common)", as in "Run `analyze_form.py` to extract fields", or "Read it as reference (for complex logic)", as in
   "See `analyze_form.py` for the field extraction algorithm".
   [best-practices › Provide utility scripts](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#provide-utility-scripts)

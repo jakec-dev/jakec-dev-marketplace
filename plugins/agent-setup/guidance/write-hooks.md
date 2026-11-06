@@ -4,11 +4,12 @@ Writing a hook's event, handler, command and output so that it fires when it sho
 returns.
 
 These sections draw on Claude Code's hooks guide and hooks reference, with the costs and features pages for what a
-hook's output adds to context, and the goal page for what a Stop hook can run.
+hook's output adds to context, the goal page for what a Stop hook can run, and the best practices page for which
+handler enforces a rule.
 
 ## Contents
 
-- Hooks run a command for a rule, a prompt hook for judgement
+- Hooks enforce with a command or HTTP hook, judge with a prompt hook
 - Production hooks prefer command hooks to agent hooks
 - A hook that must prevent a tool call runs before it
 - Hooks on a file's change use FileChanged
@@ -25,20 +26,25 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
 - Long-running hooks run async when they needn't block
 - Hooks on every session, prompt or message stay fast
 
-## Hooks run a command for a rule, a prompt hook for judgement
+## Hooks enforce with a command or HTTP hook, judge with a prompt hook
 
 - Hooks give "deterministic control: certain actions always happen rather than relying on the LLM to choose to run
   them".
   [hooks-guide › Automate actions with hooks](https://code.claude.com/docs/en/hooks-guide#page-title)
 - "For decisions that require judgment rather than deterministic rules, use `type: "prompt"` hooks."
   [hooks-guide › Prompt-based hooks](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks)
+- "A `prompt` or `agent` hook asks *another model* to decide, so it isn't deterministic either. For real enforcement,
+  use a `command` or `http` hook, and add `onFailure: "block"` if the action should also be stopped when the hook
+  itself crashes or times out."
+  [best-practices › Enforce steps with hooks](https://code.claude.com/docs/en/best-practices#enforce-steps-with-hooks)
 - A Stop hook "can run a script for deterministic checks or a prompt for model-evaluated ones."
   [goal › Compare ways to keep a session running](https://code.claude.com/docs/en/goal#compare-ways-to-keep-a-session-running)
 - Prompt hooks run only on the events that support them; the events without them include `SessionStart`, `Setup`,
   `Notification`, `FileChanged` and `PreCompact`, where a decision needs a command hook.
   [hooks › Prompt-based hooks](https://code.claude.com/docs/en/hooks#prompt-based-hooks)
-- Check: on an event that supports prompt hooks, is each hook whose decision needs judgement a `prompt` hook, and is
-  each hook whose decision is a fixed rule a command hook?
+- Check: is each hook that enforces a fixed rule a `command` or `http` hook, with `onFailure: "block"` where the action
+  must also stop when the hook fails, and, on an event that supports prompt hooks, is each hook whose decision needs
+  judgement a `prompt` hook?
 
 ## Production hooks prefer command hooks to agent hooks
 
@@ -53,11 +59,17 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
   hook fires, so any files written, commands executed, or network requests sent have already taken effect." "To
   prevent or modify a tool call before it runs, use a PreToolUse hook instead."
   [hooks › PostToolUse decision control](https://code.claude.com/docs/en/hooks#posttooluse-decision-control)
-- Files referenced with `@` in a prompt are added without any tool call, so "no PreToolUse hook fires for them,
-  including hooks matching `Read`. To block specific paths from `@` references, use a `Read` deny rule instead."
+- "By default, files you reference with `@` in your prompt are added without any tool call. Claude Code inserts their
+  contents while building the prompt, so no PreToolUse hook fires for them, including hooks matching `Read`." To
+  block specific paths, "add a `Read` deny rule for them". To turn the insertion off, "set
+  `CLAUDE_CODE_DISABLE_FILE_MENTIONS=1` in your shell, user settings, or managed settings. Claude then gets the
+  mentioned paths with a note to read them using its file tools. If it does, your matching PreToolUse hooks run."
+  Claude Code ignores the variable in project and local settings.
   [hooks › PreToolUse](https://code.claude.com/docs/en/hooks#pretooluse)
 - Check: does each hook meant to stop or change a tool call run on `PreToolUse`, not `PostToolUse` or `FileChanged`,
-  with a `Read` deny rule for paths that must not reach Claude through an `@` reference?
+  with a `Read` deny rule for paths that must not reach Claude through an `@` reference, or, where a hook must check
+  them, `CLAUDE_CODE_DISABLE_FILE_MENTIONS=1` set outside project and local settings, so that a read Claude makes of
+  those paths reaches the hooks?
 
 ## Hooks on a file's change use FileChanged
 
@@ -73,14 +85,14 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
 - "When Claude Code can't determine which commands the Bash input runs, it runs your hook regardless of the pattern.
   Because the `if` filter is best-effort, use the permission system rather than a hook to enforce a hard allow or
   deny."
-  [hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)
+  [hooks › How `if` patterns match Bash commands](https://code.claude.com/docs/en/hooks#bash-if-matching)
 - Check: does every hard allow or deny sit in a permission rule rather than in a hook selected by `if`?
 
 ## Only one hook rewrites a tool's input
 
-- "When multiple `PreToolUse` hooks return `updatedInput` to rewrite a tool's arguments, the last one to finish takes
-  effect. Since hooks run in parallel, the order is non-deterministic. Avoid having more than one hook modify the same
-  tool's input."
+- "When multiple `PreToolUse` hooks return `updatedInput` to rewrite a tool's input, Claude Code doesn't merge the
+  rewrites or guarantee which rewrite the tool runs with. Avoid having more than one hook rewrite the same tool's
+  input."
   [hooks-guide › Limitations](https://code.claude.com/docs/en/hooks-guide#limitations)
 - Check: does at most one hook return `updatedInput` for any one tool?
 
@@ -89,7 +101,7 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
 - "Custom hooks can preprocess data before Claude sees it. Instead of Claude reading a 10,000-line log file to find
   errors, a hook can grep for `ERROR` and return only matching lines, reducing context from tens of thousands of
   tokens to hundreds." The page's example is a `PreToolUse` hook on `Bash` that rewrites a test command to show only
-  failures; it shows the filtering only, and its `~` path and `"allow"` decision are the page's own:
+  failures; it shows the filtering only, and its `~` path is the page's own:
   [costs › Offload processing to hooks and skills](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills)
 
   ```json
@@ -111,10 +123,11 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
   cmd=$(echo "$input" | jq -r '.tool_input.command')
 
   # If running tests, filter to show only failures
-  if [[ "$cmd" =~ ^(npm test|pytest|go test) ]]; then
+  pattern='^(npm test|pytest|go test)( [^;&|<>`$#\\[:cntrl:]]*)?$'
+  if [[ "$cmd" =~ $pattern ]]; then
     filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
     echo "$input" | jq --arg filtered "$filtered_cmd" \
-      '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "allow", updatedInput: (.tool_input + {command: $filtered})}}'
+      '{hookSpecificOutput: {hookEventName: "PreToolUse", updatedInput: (.tool_input + {command: $filtered})}}'
   else
     echo "{}"
   fi
@@ -153,6 +166,7 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
 - "The `stop_hook_active` field is `true` when Claude Code is already continuing as a result of a stop hook. Check
   this value or process the transcript to avoid blocking on a condition that will never resolve."
   [hooks › Stop input](https://code.claude.com/docs/en/hooks#stop-input)
+- Evidence: eval case stop-until-tests-pass
 - Check: does every command Stop hook that can block exit early when `stop_hook_active` is `true`, or process the
   transcript to tell a condition that will never resolve?
 
@@ -215,8 +229,13 @@ hook's output adds to context, and the goal page for what a Stop hook can run.
 - "This field is only available on `type: "command"` hooks."
   [hooks › Configure an async hook](https://code.claude.com/docs/en/hooks#configure-an-async-hook)
 - "After the background process exits, Claude Code delivers the `additionalContext` and `systemMessage` fields from the
-  hook's JSON response to Claude on the next conversation turn."
+  hook's JSON response to Claude on the next conversation turn, except for repeated `SessionStart` output."
   [hooks › How async hooks execute](https://code.claude.com/docs/en/hooks#how-async-hooks-execute)
+  For an async `SessionStart` hook, Claude Code "skips the hook's output when the `additionalContext` and
+  `systemMessage` text matches what Claude last received from that hook, unless a synchronous `SessionStart` hook has
+  added other text since. Claude Code delivers the text when it changes, and again the next time the hook runs after a
+  compaction or `/clear`."
+  [hooks › Limitations](https://code.claude.com/docs/en/hooks#limitations)
 - Check: does each command hook that runs a long task, such as a test suite, and needn't block or decide, set
   `"async": true`, and does no hook that must block, and no hook of another type, set it?
 

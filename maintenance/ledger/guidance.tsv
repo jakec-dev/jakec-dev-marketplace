@@ -12,30 +12,26 @@ memory	When to add to CLAUDE.md	included	choose.md	the sentence on multi-step pr
 memory	Set up a project CLAUDE.md	included	discover.md	the sentence on refining after /init
 memory	Set up a project CLAUDE.md	included	verify.md	the sentence on confirming the file loaded
 memory	Write effective instructions	included	write.md	
-memory	Audit your instruction files	included	maintain.md	
+memory	Audit your instruction files	included	maintain.md	the sentences on what `/doctor prompt-audit` checks, its default coverage and path argument, and its running through the bundled `/claude-api` skill and being unavailable when that skill is off
+memory	Audit your instruction files	excluded		the rest: the instruction to run it in a session, the sentences on the report and on nothing changing until you ask Claude to apply the edits, and the path example describe the command, with no tool advice; the version sentence is history
 memory	Set up rules	included	write.md	the sentence on one topic per file
-memory	Claude isn't following my CLAUDE.md	included	choose.md	the paragraph on writing it as a hook
+memory	Claude isn't following my CLAUDE.md	included	choose.md	the first sentence of the paragraph on writing it as a hook
 memory	Claude isn't following my CLAUDE.md	included	write.md	the bullet on competing built-in instructions
 memory	Claude isn't following my CLAUDE.md	included	verify.md	the tip on the InstructionsLoaded hook
 memory	My CLAUDE.md is too large	included	discover.md	the paragraph on /doctor trims
 memory	My CLAUDE.md is too large	included	write.md	the paragraph on length warnings
-best-practices	Write an effective CLAUDE.md	included	write.md	
-best-practices	Write an effective CLAUDE.md	included	discover.md	the include and exclude table
-best-practices	Write an effective CLAUDE.md	included	verify.md	the clause on testing changes by observing behaviour
-best-practices	Write an effective CLAUDE.md	included	maintain.md	the sentences on symptoms and treating CLAUDE.md like code
-best-practices	Avoid common failure patterns	included	write.md	the over-specified CLAUDE.md bullet
-best-practices	Give Claude a way to verify its work	included	verify.md	
 large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	included	choose.md	
 large-codebases	Layer CLAUDE.md files by directory	included	maintain.md	the bullets on keeping files current
 auto-mode-config	Add a human checkpoint	included	choose.md	the boundaries table and the sentence on a durable guarantee
-permissions	Extend permissions with hooks	included	choose.md	the paragraphs on deny rules and blocking hooks
+permissions	Precedence among rules, hooks, and mods	included	choose.md	the lead-in and the deny-rule clause of the first paragraph's second sentence; the sentence that a mod answers after the `PreToolUse` hooks; the deny-rule and `PreToolUse`-block outcomes with managed settings or a Team or Enterprise `/login`; the first sentence of the paragraph on neither, and the sentence on an API key or `CLAUDE_CODE_OAUTH_TOKEN`; and the clause that a hook exiting with code 2 stops the call before permission rules are evaluated; used in Must happen every time, with a mention in Never-rules are deny rules or hooks, not auto mode
+permissions	Precedence among rules, hooks, and mods	excluded		the rest: the ask-rule clause, the plugin-hooks sentence, the prompt outcomes for ask rules, hooks and `blockReadsOutsideWorkingDirectories` in both setups, the prompt-tool outcomes, the outcomes by permission mode, the interaction-tool paragraph, the allow-rule consequence and allow-list example are reference facts (hooks tool-events.md); the version sentence is history
 memory	AGENTS.md	included	choose.md	the opening sentence and the table
 memory	When Claude Code reads AGENTS.md	included	choose.md	the bullets on which files count, and the note on CLAUDE.local.md
 memory	When Claude Code reads AGENTS.md	included	verify.md	the session-start line
 memory	Share one file with other coding tools	included	choose.md	the import and its example
 memory	Where AGENTS.md differs from CLAUDE.md	included	verify.md	the InstructionsLoaded row
 memory	My AGENTS.md isn't loading	included	verify.md	the sentence on checking with /memory
-memory	Deploy organization-wide CLAUDE.md	included	choose.md	the sentences comparing settings rules with CLAUDE.md instructions
+memory	Deploy organization-wide CLAUDE.md	included	choose.md	the sentences comparing settings rules with CLAUDE.md instructions, and "Use the file for guidance, and enforce rules with managed settings such as `permissions.deny`"
 skills	Evaluate and iterate on a skill	included	verify.md	
 skills	Run evals with skill-creator	included	verify.md	the Description tuning bullet (should-trigger and should-not-trigger prompts)
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Observe how Claude navigates Skills	included	verify.md	the Ignored content and Missed connections bullets
@@ -55,16 +51,16 @@ platform.claude.com/agents-and-tools/agent-skills/best-practices	Concise is key	
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Set appropriate degrees of freedom	included	write-skills.md	
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Avoid deeply nested references	included	write-skills.md	
 skills	Add supporting files	included	write-skills.md	the sentence to reference supporting files from SKILL.md
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with table of contents	included	write-skills.md	
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Structure longer reference files with a table of contents	included	write-skills.md	
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Use workflows for complex tasks	included	write-skills.md	
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Examples pattern	included	write-skills.md	
-platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don't defer	included	write-skills.md	the script error-handling advice and its examples; the constants part is judged done unprompted, pending an eval case
+platform.claude.com/agents-and-tools/agent-skills/best-practices	Solve, don’t defer	included	write-skills.md	the script error-handling advice and its examples; the constants part is judged done unprompted, pending an eval case
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Provide utility scripts	included	write-skills.md	used for two guidelines: the advantages of pre-made scripts; say whether Claude runs or reads a script
 skills	Control who invokes a skill	included	maintain.md	the table row that a skill with disable-model-invocation: true has its description out of context
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Implement feedback loops	included	verify.md	the Common pattern line and the two example loops
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Develop Skills iteratively with Claude	included	verify.md	the Use the Skill in real workflows step and the Gathering team feedback list
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Checklist for effective Skills	included	verify.md	the Testing items on real usage scenarios and team feedback
-hooks	Stop input	included	verify.md	the cap on consecutive blocks and `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`
+hooks	Stop input	included	verify.md	the cap on consecutive blocks, the reset when Claude calls a tool, and `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`
 goal	How evaluation works	included	verify.md	the sentence that Claude Code stops a stalled run with the goal still set
 skills	Frontmatter reference	included	choose.md	the `disable-model-invocation` and `user-invocable` rows
 scheduled-tasks	Run a prompt repeatedly with /loop	included	choose.md	the sentence that a scheduled fire only runs skills Claude can invoke on its own, and its `disable-model-invocation: true` entry
@@ -128,9 +124,8 @@ skills	Skill triggers too often	excluded		repeats reference troubleshooting.md
 skills	Claude stops following a skill	excluded		repeats reference key facts; its hook rule is already in guidance (choose.md)
 skills	Skill descriptions are cut short	excluded		repeats reference loading.md
 skills	Personal skills disappeared	excluded		states no guideline
-agent-view	From agent view	excluded		already in guidance (discover.md); the rest is about agent view
+agent-view	Dispatch an agent from agent view	excluded		already in guidance (discover.md); the rest is about agent view
 skills	Extend Claude with skills	excluded		already in guidance (discover.md, choose.md)
-best-practices	Create skills	excluded		repeats reference facts; its `disable-model-invocation` sentence repeats the support of A skill with side effects is user-only
 claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill, rule and hook rows repeat choose.md
 costs	Move instructions from CLAUDE.md to skills	excluded		already in guidance (choose.md, write.md)
 plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md and its settings-hook column repeats choose.md
@@ -144,7 +139,7 @@ goal	Compare ways to keep a session running	included	write-hooks.md	the sentence
 hooks-guide	Agent-based hooks	included	write-hooks.md	the Warning only
 hooks	PostToolUse decision control	included	write-hooks.md	the first paragraph of the `updatedToolOutput` Warning, and the sentence on stripping error details Claude needs
 hooks	PreToolUse	included	write-hooks.md	the FileChanged paragraph and the Warning on `@` references
-hooks	Common fields	included	write-hooks.md	the sentences that a hook runs regardless when Claude Code can't determine the Bash commands, and that the `if` filter is best-effort
+hooks	How `if` patterns match Bash commands	included	write-hooks.md	the sentences that a hook runs regardless when Claude Code can't determine the Bash commands, and that the `if` filter is best-effort
 hooks-guide	Limitations	included	write-hooks.md	the `updatedInput` bullet only
 costs	Offload processing to hooks and skills	included	write-hooks.md	the hook paragraph and the PreToolUse filter-test-output example
 features-overview	Understand how features load	included	write-hooks.md	the Hooks tab's Tip on side effects; its context-cost line repeats compose.md
@@ -159,13 +154,12 @@ hooks	Run hooks in the background	included	write-hooks.md
 permissions	What a Bash rule doesn't match	included	choose.md	
 auto-mode-config	Add a human checkpoint	included	choose.md	the sentence that a push written another way doesn't match the rule, and the sentence to add a PreToolUse hook for a checkpoint on the full command text
 permissions	Read-only commands	included	choose.md	the Warning on fragile Bash argument patterns, with its options and closing note on WebFetch
-hooks	Common fields	included	choose.md	a mention of the sentence to use the permission system rather than a hook for a hard allow or deny
+hooks	How `if` patterns match Bash commands	included	choose.md	a mention of the sentence to use the permission system rather than a hook for a hard allow or deny
 hooks	Add context for Claude	included	choose.md	the sentences to prefer CLAUDE.md for instructions that never change, and to use `additionalContext` for current state
 hooks-guide	Re-inject context after compaction	included	choose.md	the sentence on re-injecting context with a `compact` matcher, the sentence on dynamic output and the sentence to consider CLAUDE.md for every session start
 costs	Offload processing to hooks and skills	included	verify.md	the final paragraph, on `/hooks`, `--debug-file` and the `modified tool input keys` line
 hooks	Disclaimer	included	verify.md	the sentence to review and test all hook commands before adding them
-hooks-guide	Filter by tool name and arguments with the `if` field	excluded		its best-effort sentence repeats hooks › Common fields (write-hooks.md); the rest is reference
-best-practices	Set up hooks	excluded		repeats choose.md › Must happen every time; its `/hooks` and settings sentences repeat reference facts
+hooks-guide	Filter by tool name and arguments with the `if` field	excluded		its best-effort sentence repeats hooks › How `if` patterns match Bash commands (write-hooks.md); the rest is reference
 champion-kit	Quick-reference sheet	excluded		its Stop-hook notification row is marketing
 communications-kit	Automate your workflows	excluded		marketing for a Stop-hook notification
 features-overview	Overview	excluded		introduces and links only
@@ -183,11 +177,76 @@ sandbox-environments	Compare sandboxing approaches	excluded		its hooks-run-on-ho
 security-guidance	Add guidance for the model-backed reviews	excluded		its hard-enforcement sentence repeats choose.md › Must happen every time
 hooks	Stop input	excluded		the rest states input fields, including what `background_tasks` and `session_crons` are for, with no advice; owned by the hooks reference
 hooks	Run tests after file changes	excluded		an example of an async hook; no advice on hook speed beyond Run hooks in the background
-commands	All commands	excluded		the /doctor clause that flags slow hooks is a fact, not advice on hook speed; owned by the hooks reference
+skills	Check your setup with `/doctor`	excluded		the clause that `/doctor` flags slow hooks is a fact, not advice on hook speed, owned by the hooks reference; the rest of its Extensions bullet and its CLAUDE.md bullet are reference facts; its Installation health and Usage bullets and the `claude doctor` paragraph are facts with no tool advice; its Permissions bullet belongs to the settings guidance, not yet built; its prompt-audit sentence repeats memory › Audit your instruction files (maintain.md)
 hooks	Prompt-based hooks	included	write-hooks.md	a mention of the events without prompt hooks
 hooks	Configure an async hook	included	write-hooks.md	the sentence that `async` is only available on command hooks
 hooks	SessionStart	included	write-hooks.md	the sentence to keep SessionStart hooks fast
 hooks	UserPromptSubmit	included	write-hooks.md	the sentence that a stuck hook stalls the session
 hooks	MessageDisplay	included	write-hooks.md	the sentence to keep the hook fast
-hooks	How async hooks execute	included	write-hooks.md	the sentence that `additionalContext` and `systemMessage` reach Claude on the next turn
+hooks	How async hooks execute	included	write-hooks.md	the sentence that `additionalContext` and `systemMessage` reach Claude on the next turn, with its exception for repeated `SessionStart` output
+hooks	Limitations	included	write-hooks.md	the sentences on when Claude Code skips an async `SessionStart` hook's output and when it delivers it again
 context-window	What survives compaction	included	choose.md	the rows on project-root CLAUDE.md and unscoped rules, and on context that hooks added earlier
+best-practices	Enforce the rules that can't have exceptions	included	choose.md	the Tip
+best-practices	Limit access with permission rules and the sandbox	included	choose.md	the sentence that `deny` rules hold in every permission mode, the auto mode Warning, and the sentences that rules match tool calls, not intent, on the `Read` rule and the sandbox
+best-practices	Change the permission mode	included	choose.md	the sentence that deny and ask rules and `PreToolUse` hooks apply before the classifier, and the Note on a boundary stated in conversation
+best-practices	Deterministic and non-deterministic instructions	included	choose.md	the paragraph "Most of the time, you want Claude to decide" and the sentence on what the deterministic kind is for
+best-practices	Deterministic and non-deterministic instructions	included	maintain.md	the Tip's sentence on deleting hooks for things that are only preferences
+best-practices	Enforce steps with hooks	included	choose.md	the sentence that a hook is for a rule with zero exceptions
+best-practices	Enforce steps with hooks	included	write-hooks.md	the sentences that a `prompt` or `agent` hook isn't deterministic and to use a `command` or `http` hook for real enforcement, with `onFailure: "block"` where a failure must stop the action
+best-practices	Enforce steps with hooks	included	verify.md	the sentences on checking the formatter hook
+best-practices	Enforce the check with a Stop hook	included	verify.md	the sentence on seeing the Stop hook work
+best-practices	Put team procedures in skills	included	choose.md	the sentences that team knowledge goes in a skill and that a long procedure in a skill doesn't weigh on unrelated work, with the condition that Claude can start the skill, and a mention of the Note that the CLAUDE.md rule applies to skills
+best-practices	Put team procedures in skills	included	write-skills.md	the Note that the CLAUDE.md rule applies to skills
+best-practices	Know what subagents cost	included	choose.md	the list of situations where subagents pay off, the sentences on their cost, and the sentences that they give no smarter answer
+best-practices	What you can stop doing	included	choose.md	the row on using subagents to protect the context window, and a mention of the row on describing architecture and file layout
+best-practices	What you can stop doing	included	discover.md	the row on describing architecture and file layout
+best-practices	What you can stop doing	included	write.md	the IMPORTANT row's old-advice cell and its sentence on current models
+best-practices	What you can stop doing	included	verify.md	the row on telling Claude to keep going
+best-practices	Connect the tools Claude needs	included	choose.md	the sentences on reaching a system through its CLI or through MCP
+best-practices	Connect the tools Claude needs	included	maintain.md	the sentence on turning off MCP servers you don't need
+best-practices	Keep CLAUDE.md short	included	discover.md	the lead-in and list of what the file holds, and the first two sentences of the `/init` bullet
+best-practices	Keep CLAUDE.md short	included	write.md	the sentence that every line takes a little of Claude's attention on every task
+best-practices	Keep CLAUDE.md short	included	maintain.md	the Note on a line Claude keeps ignoring
+best-practices	Tell Claude what it can't see	included	discover.md	the Tip and the two-question test
+best-practices	Tell Claude what it can't see	included	choose.md	a mention of the two-question test and the sentence on information that takes digging to find every session
+best-practices	Give Claude a check to run	included	verify.md	the first Tip, the sentence on the check command in CLAUDE.md, the four options and the sentence on evidence
+best-practices	Choose who a rule applies to	included	maintain.md	the paragraph on keeping the enforced set small
+best-practices	Best practices for Claude Code	excluded		introduces the page; its symptom list points to its own sections
+best-practices	Write a specific prompt	excluded		about prompting, not a tool
+best-practices	Brainstorm with Claude first	excluded		about prompting, not a tool
+best-practices	Keep CLAUDE.md short	excluded		the rest: its example; its `/context`, `/doctor` and `/doctor prompt-audit` sentences repeat the memory sources of verify.md, discover.md and maintain.md; its typecheck paragraph repeats Give Claude a check to run and choose.md › Must happen every time; its `CLAUDE.local.md` sentence repeats the instructions reference (placing.md)
+best-practices	Scope rules to one part of the codebase	excluded		repeats choose.md › One part of the codebase; its example repeats the instructions reference
+best-practices	Put team procedures in skills	excluded		the rest: its `disable-model-invocation` sentence repeats choose.md › A skill with side effects is user-only; its loading sentence and example repeat skills reference facts
+best-practices	Connect the tools Claude needs	excluded		the rest: its code intelligence sentence repeats discover.md › Add a tool when a trigger appears; adding a server and seeing it under `/mcp` are commands with no tool advice
+best-practices	Give Claude a check to run	excluded		the rest: its `/verify` tip repeats the skills reference (Run and verify your app); its list of checks is examples
+best-practices	Review against your spec	excluded		about writing a review prompt; belongs to the subagent writing guidance, not yet built
+best-practices	Enforce the check with a Stop hook	excluded		the rest repeats hooks › Stop input (verify.md) and the hooks reference
+best-practices	Enforce the rules that can't have exceptions	excluded		the rest repeats the Tip
+best-practices	Enforce steps with hooks	excluded		the rest: its handler list repeats the hooks reference; its example and "works as a prompt" line are a tutorial
+best-practices	Limit access with permission rules and the sandbox	excluded		the rest: its example and strict sandbox mode sentences belong to the settings guidance, not yet built; its `WebFetch` edge repeats permissions › Read-only commands (choose.md)
+best-practices	Choose who a rule applies to	excluded		the rest: its scope bullets restate where settings apply, with their hooks clauses in the hooks reference (placing.md, excluding.md); belongs to the settings guidance, not yet built
+best-practices	Change a default	excluded		describes Claude Code's defaults; states no tool guideline
+best-practices	Change the permission mode	excluded		the rest: permission modes, `autoMode` configuration and `/fewer-permission-prompts` belong to the settings guidance, not yet built
+best-practices	Change the model and effort	excluded		about model and effort, not a tool; its Haiku-for-subagents sentence belongs to the subagent writing guidance, not yet built
+best-practices	Know what subagents cost	excluded		the rest: its delegation bullets state defaults, with no advice; its `/usage` bullet repeats Keep cost and context down (maintain.md); its other spend-less items and reviewer example belong to the subagent writing guidance, not yet built
+best-practices	Keep cost and context down	included	maintain.md	the sentences that `/usage` is the first place to look and breaks usage down by skill, subagent, plugin and MCP server
+best-practices	Keep cost and context down	excluded		the rest: `/clear`, `/compact`, the cost of background work and the cache Note are session habits, not a tool; the 10% flagging is a `/usage` fact with no tool advice
+best-practices	Steer the session	excluded		session habits, not a tool
+best-practices	Let Claude run without you	excluded		about unattended runs; belongs to the patterns guidance, not yet built
+best-practices	Run Claude from a script	excluded		CLI flags; states no tool guideline
+best-practices	Start runs on a schedule or an event	excluded		about scheduling runs; belongs to the patterns guidance, not yet built
+best-practices	Run sessions in parallel	excluded		worktree setup, including keeping the install command in CLAUDE.md; belongs to the patterns guidance, not yet built
+best-practices	What you can stop doing	excluded		the rest: its context-window and think-hard rows are about sessions and prompting; its better-answer row repeats Know what subagents cost; the rest of the IMPORTANT row repeats Keep CLAUDE.md short (maintain.md); its intro repeats large-codebases (maintain.md)
+best-practices	Related resources	excluded		links only
+best-practices	Deterministic and non-deterministic instructions	excluded		the rest: its definitions of the two kinds, its examples and the sentence that following a line is still Claude's call restate the request-versus-enforcement point choose.md › Must happen every time makes from features-overview; its "which skills only you can start" cell repeats choose.md › A skill with side effects is user-only; its table's spend and last-word rows belong to the patterns guidance, not yet built (see Let Claude run without you), its strict-sandbox cell to the settings guidance, not yet built, and its other rows repeat choose.md › Must happen every time and verify.md › Work the tool does has a check; the first half of its Tip repeats Keep CLAUDE.md short (maintain.md)
+best-practices	Tell Claude what it can't see	excluded		the rest: its list of what Claude can't find repeats Keep CLAUDE.md short (discover.md)
+output-styles	Output styles	excluded		its note repeats choose.md › Must happen every time and About the response, not the project
+memory	Organize rules with `.claude/rules/`	excluded		its note repeats choose.md › Needed sometimes, or a procedure: a skill
+glossary	Output style	excluded		repeats choose.md › About the response, not the project
+features-overview	Extend Claude Code	excluded		its "New to Claude Code?" line repeats discover.md › Add a tool when a trigger appears
+third-party-integrations	Invest in documentation and memory	excluded		introduces and links only
+settings	Change a setting	excluded		its standing-instructions sentence repeats choose.md › Every session needs it: CLAUDE.md and the instructions reference (troubleshooting.md)
+code-review	Compare ways to get a review	excluded		compares review services; belongs to the patterns guidance, not yet built
+admin-setup	Decide what to enforce	excluded		its managed CLAUDE.md row repeats memory › Deploy organization-wide CLAUDE.md (choose.md); its table of managed-settings keys belongs to the settings guidance, not yet built; its WebFetch and `curl` sentence repeats choose.md › A rule on a command's text
+memory	Claude isn't following my CLAUDE.md	excluded		the rest: the opening paragraph, the bullet on testing a subdirectory CLAUDE.md and the `--append-system-prompt` paragraph repeat the instructions reference (troubleshooting.md); the second sentence of the hook paragraph restates choose.md › Must happen every time; the specificity and conflict bullets repeat write.md; the other debugging bullets are reference facts
+memory	My CLAUDE.md is too large	excluded		its Note on the size limit for path-scoped rules repeats the instructions reference (writing.md)

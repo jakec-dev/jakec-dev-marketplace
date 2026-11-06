@@ -4,30 +4,52 @@ Keeping existing tools useful as the codebase and models change, and finding the
 
 ## Read the symptoms
 
-- For CLAUDE.md: "If Claude keeps doing something you don't want despite having a rule against it, the file is
-  probably too long and the rule is getting lost. If Claude asks you questions that are answered in CLAUDE.md, the
-  phrasing might be ambiguous."
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
-- Check: an ignored instruction is diagnosed as length or ambiguity before more instructions are added.
+- "If Claude keeps ignoring a line that *is* in `CLAUDE.md`, adding IMPORTANT probably won't fix it. Either the file
+  has grown long enough that the line gets lost, or the line is a rule that can't have exceptions, in which case it
+  belongs in a hook."
+  [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
+- Check: is a line in CLAUDE.md that Claude keeps ignoring diagnosed as a file grown too long or as a rule that
+  belongs in a hook?
 
 ## Prune, and revisit after model releases
 
-- "Treat CLAUDE.md like code: review it when things go wrong, prune it regularly, and test changes by observing
-  whether Claude's behavior actually shifts."
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
 - "Instructions that worked around an older model's limitation may become overhead once a newer model handles the
   case on its own." Review CLAUDE.md edits in pull requests "so conventions track the code".
   [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory)
 - Check: an audit proposes deleting instructions the current model follows without them, not only adding new ones.
+
+## Cut hooks and deny rules that guard preferences
+
+- "If you have hooks for things that are only preferences, delete them and let Claude decide."
+  [best-practices › Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions)
+- "keep the enforced set small. Every hook and deny rule will occasionally fire when it shouldn't,
+  and someone has to maintain each one. If you ever find yourself at forty of them, most are probably preferences
+  that Claude could have weighed on its own."
+  [best-practices › Choose who a rule applies to](https://code.claude.com/docs/en/best-practices#choose-who-a-rule-applies-to)
+- Check: has each hook and deny rule been checked for being a preference Claude could weigh on its own, and removed if
+  it is?
+
+## Turn off MCP servers you don't use
+
+- "Connected servers add their tool names and instructions to the context even when you're not using them, so it's
+  worth turning off the ones you don't need".
+  [best-practices › Connect the tools Claude needs](https://code.claude.com/docs/en/best-practices#connect-the-tools-claude-needs)
+- Check: is each connected MCP server one the work uses, with the rest turned off?
 
 ## Use the built-in audits
 
 - `/doctor prompt-audit` checks instruction files "for outdated or conflicting content", such as "instructions
   written for older models, references to files or commands that don't exist, and files that contradict each
   other". By default it covers CLAUDE.md, CLAUDE.local.md and AGENTS.md files, plus the rules, skills, commands,
-  subagents and output styles under `.claude/` and `~/.claude/`; pass a path to audit one file or directory.
+  subagents and output styles under `.claude/` and `~/.claude/`; pass a path to audit one file or directory. "The
+  audit runs through the bundled `/claude-api` skill. It's unavailable while that skill is turned off in
+  `skillOverrides` or with `disableBundledSkills`."
   [memory › Audit your instruction files](https://code.claude.com/docs/en/memory#audit-your-instruction-files)
-- Check: an audit of instruction files names `/doctor prompt-audit` as a step the user can run.
+- For what the setup costs: "`/usage` is the first place to look. On Pro, Max, Ultra, Team, and Enterprise it breaks
+  your usage down by skill, subagent, plugin, and MCP server."
+  [best-practices › Keep cost and context down](https://code.claude.com/docs/en/best-practices#keep-cost-and-context-down)
+- Check: does an audit of instruction files name `/doctor prompt-audit` as a step the user can run, and does an audit
+  of what the setup costs name `/usage`?
 
 ## Capture a gap while it is fresh
 

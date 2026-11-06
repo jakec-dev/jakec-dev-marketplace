@@ -6,6 +6,8 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 
 - The instruction file the repository already uses
 - Must happen every time: a hook
+- Never-rules are deny rules or hooks, not auto mode
+- A preference stays an instruction, not a hook
 - A rule on a command's text: keep it, and add a PreToolUse hook
 - Every session needs it: CLAUDE.md
 - Context that never changes: CLAUDE.md, not a hook
@@ -16,7 +18,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - Background knowledge is a skill only Claude invokes
 - About the response, not the project: an output style
 - Isolated or parallel work: a subagent or a dynamic workflow
-- An external system: MCP, with a skill for using it
+- An external system: a CLI or MCP, with a skill for using it
 - The same setup in another repository: a plugin
 - Instructions shipped in a plugin are skills
 
@@ -63,23 +65,61 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - For CLAUDE.md: "If the instruction is something that must run at a specific point, such as before every commit or
   after each file edit, write it as a hook instead."
   [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)
+- "If something has to happen every time, make it a hook, a deny rule, or a managed setting. `CLAUDE.md` is for
+  guidelines, and Claude is allowed to decide a guideline doesn't apply." A deny rule holds for the form it matches;
+  a Bash command Claude writes another way is covered under "A rule on a command's text" below.
+  [best-practices › Enforce the rules that can't have exceptions](https://code.claude.com/docs/en/best-practices#enforce-the-rules-that-cant-have-exceptions)
 - For managed settings and a managed CLAUDE.md: "Settings rules are enforced by the client regardless of what
-  Claude decides to do. CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer."
+  Claude decides to do. CLAUDE.md instructions shape Claude's behavior but are not a hard enforcement layer." "Use the
+  file for guidance, and enforce rules with managed settings such as `permissions.deny`."
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
-- To stop an action, a permission deny rule also holds every time, for the form it matches; a Bash command Claude
-  writes another way is covered under "A rule on a command's text" below. For auto mode, the documentation's boundaries
-  table gives `permissions.deny` for "Never run the action", which "Blocks before the classifier is consulted.
-  Neither the classifier nor user intent can override it", and says "Use an ask or deny rule for a durable
-  guarantee."
-  [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
 - A deny rule and a `PreToolUse` hook work together: "Claude Code evaluates deny and ask rules regardless of what a
   PreToolUse hook returns: a matching deny rule blocks the call", and "A hook that exits with code 2 stops the tool
-  call before permission rules are evaluated". A mod that handles `tool.check` can approve a call either one
-  refuses, except where the documentation says deny rules or managed hooks hold over it.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
+  call before permission rules are evaluated". A mod that handles `tool.check` answers after the `PreToolUse` hooks
+  have run. With managed settings on the machine, or a Team or Enterprise `/login` as the session's credential, by
+  default "A call that a deny rule refuses stays refused, and your organization can change that", and "A call that a
+  `PreToolUse` hook blocked stays blocked, whichever settings file the hook comes from." With neither, the mod can
+  approve a call that a deny rule refuses or a `PreToolUse` hook blocked; a session that runs on an API key or a
+  long-lived `CLAUDE_CODE_OAUTH_TOKEN` isn't using that login, even when that login is stored.
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
 - Check: no instruction in CLAUDE.md, a rule or a skill is something that must hold every time or run at a fixed
   point; each such requirement is a hook, or, to stop a tool call, a permission deny rule, backed as "A rule on a
   command's text" asks where Claude could write the command another way.
+
+## Never-rules are deny rules or hooks, not auto mode
+
+- "`deny` rules hold in every permission mode, including auto and `bypassPermissions`, which is exactly why the
+  `.env` rule belongs there." "Auto mode is a classifier model judging each action rather than a hard rule. It's good
+  at that, but like any judgment call it can be wrong. You can also tune what it treats as risky, and your org can
+  turn it off entirely, so your "never" rules belong in deny rules or hooks."
+  [best-practices › Limit access with permission rules and the sandbox](https://code.claude.com/docs/en/best-practices#limit-access-with-permission-rules-and-the-sandbox)
+  Without managed settings or a Team or Enterprise `/login`, an installed mod that handles `tool.check` can still
+  approve a call that a deny rule refuses or a `PreToolUse` hook blocked
+  ([permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)).
+- "Deny and ask rules and `PreToolUse` hooks apply before the classifier sees anything, so a deny rule blocks in auto
+  mode exactly like it does everywhere else." A boundary you state in conversation, such as `don't push until I've
+  reviewed`, is one the classifier treats as a block signal, but "It's still a model reading the transcript, and the
+  sentence can get lost when the conversation compacts, so anything that matters belongs in a deny rule."
+  [best-practices › Change the permission mode](https://code.claude.com/docs/en/best-practices#change-the-permission-mode)
+- For auto mode, the documentation's boundaries table gives `permissions.deny` for "Never run the action", which
+  "Blocks before the classifier is consulted. Neither the classifier nor user intent can override it", and says "Use
+  an ask or deny rule for a durable guarantee."
+  [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
+- Check: is every action that must never happen held by a deny rule or a hook, rather than left to the auto mode
+  classifier or to a boundary stated in conversation, and, without managed settings or a Team or Enterprise `/login`,
+  does no installed mod that handles `tool.check` approve it?
+
+## A preference stays an instruction, not a hook
+
+- "Most of the time, you want Claude to decide. Almost every guideline has exceptions, and current models are good at
+  reading the code in front of them and judging whether a guideline fits the situation." "The deterministic kind is
+  for when you want to make sure certain things *always* happen (or never happen), no matter what the model decides."
+  [best-practices › Deterministic and non-deterministic instructions](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions)
+- "Don't overdo it, though: a hook is for a rule with *zero* exceptions, and `Prefer named exports` has plenty, so
+  that one stays in `CLAUDE.md`."
+  [best-practices › Enforce steps with hooks](https://code.claude.com/docs/en/best-practices#enforce-steps-with-hooks)
+- Check: is each new hook a rule with zero exceptions, with any guideline that has exceptions, such as
+  `Prefer named exports`, left as an instruction?
 
 ## A rule on a command's text: keep it, and add a PreToolUse hook
 
@@ -100,7 +140,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   enforcement that doesn't depend on the command text, use sandboxing. To inspect the full command text with your own
   logic before it runs, use a PreToolUse hook." A hook narrowed with `if` is best-effort, so "use the permission
   system rather than a hook to enforce a hard allow or deny"
-  ([hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)).
+  ([hooks › How `if` patterns match Bash commands](https://code.claude.com/docs/en/hooks#bash-if-matching)).
   [permissions › What a Bash rule doesn't match](https://code.claude.com/docs/en/permissions#bash-rule-limits)
 - For an `ask` rule such as `Bash(git push *)`, a push written as `git -C <dir> push` or `git -c <key>=<value> push`
   doesn't match the rule, so it isn't checkpointed. "For a checkpoint that inspects the full command text, add a
@@ -117,9 +157,15 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   Using WebFetch alone doesn't prevent network access: if Bash is allowed, Claude can still use `curl`, `wget` or
   other tools to reach any URL.
   [permissions › Read-only commands](https://code.claude.com/docs/en/permissions#read-only-commands)
+- "Rules match tool calls, not intent": a `Read` deny rule catches `cat .env`, "because Claude Code recognizes the
+  common file-reading commands", but "It won't catch a script that opens the file." The sandbox confines Claude's
+  shell commands and "picks up your `Read` deny rules and `WebFetch(domain:...)` rules too, so for anything
+  security-related you want both."
+  [best-practices › Limit access with permission rules and the sandbox](https://code.claude.com/docs/en/best-practices#limit-access-with-permission-rules-and-the-sandbox)
 - Check: where a deny or ask rule guards a command Claude could write another way, or constrains its arguments, is the
   rule backed by a `PreToolUse` hook that inspects the full command text, or by the sandbox for filesystem or network
-  enforcement that doesn't depend on the command text?
+  enforcement that doesn't depend on the command text, and does a deny rule that guards a secret or a domain have the
+  sandbox on alongside it?
 
 ## Every session needs it: CLAUDE.md
 
@@ -127,6 +173,9 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   "never do X" rules." Rules without `paths` frontmatter also load at launch, so they suit the same content split
   into topic files: "Use rules to keep CLAUDE.md focused."
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
+  On project structure the pages disagree: best-practices says to write down only what isn't in the repo, so
+  architecture and file layout stay out of CLAUDE.md
+  ([best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)).
 - Check: the instruction applies in every session, whatever part of the codebase Claude works in.
 
 ## Context that never changes: CLAUDE.md, not a hook
@@ -157,7 +206,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 
   | Approach | File location | Loads when | Use when |
   | :- | :- | :- | :- |
-  | Per-directory `CLAUDE.md` | Inside the directory, alongside its code | At launch when started from that directory, or on demand when Claude reads a file there | Directory owners maintain their own conventions; instructions are versioned with the code |
+  | Per-directory `CLAUDE.md` | Inside the directory, alongside its code | At launch when started from that directory, or on demand | Directory owners maintain their own conventions; instructions are versioned with the code |
   | Path-scoped rule in `.claude/rules/` | Central `.claude/` at the repo root | When Claude works with a file matching the rule's `paths:` glob | You want all conventions in one place, or the same rule applies to many scattered paths |
 
   [large-codebases › Choose between per-directory CLAUDE.md and path-scoped rules](https://code.claude.com/docs/en/large-codebases#choose-between-per-directory-claude-md-and-path-scoped-rules)
@@ -171,6 +220,11 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   trigger with `/<name>` (deploy, review, release)." Use a skill rather than a hook "when Claude should decide how to
   apply the steps, or when the content is knowledge rather than a script".
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
+- "A more capable model knows more about engineering, but not how *your* team does a release, what your incident
+  runbook says, or how you want API docs written. That kind of knowledge goes in a skill". For a skill Claude can
+  start on its own, "A long release procedure sitting in a skill doesn't weigh on your unrelated bug fix the way it
+  would in `CLAUDE.md`."
+  [best-practices › Put team procedures in skills](https://code.claude.com/docs/en/best-practices#put-team-procedures-in-skills)
 - Check: no multi-step procedure or occasional reference material sits in CLAUDE.md or a rule without `paths`.
 
 ## Context Claude would otherwise explore for: a skill
@@ -179,8 +233,14 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   describe the project's architecture, key directories and naming conventions; when Claude invokes it, "it gets this
   context immediately instead of spending tokens reading multiple files to understand the structure."
   [costs › Offload processing to hooks and skills](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills)
-- Check: is architecture, key-directory or naming-convention context that Claude would read many files to learn held
-  in a skill that loads when invoked?
+  best-practices adds a test for what to write down at all: leave it out if Claude could find it by reading the code
+  and would go and look, but write down information that "takes a few minutes of digging to find" when "Claude has to
+  redo that digging at the start of every session"
+  ([best-practices › Tell Claude what it can't see](https://code.claude.com/docs/en/best-practices#tell-claude-what-it-cant-see)),
+  and "The `CLAUDE.md` rule applies to skills too"
+  ([best-practices › Put team procedures in skills](https://code.claude.com/docs/en/best-practices#put-team-procedures-in-skills)).
+- Check: is context held in a skill only where Claude couldn't find it by reading the code, or would otherwise redo
+  the digging for it every session, and left out where Claude could find it and would go and look?
 
 ## A skill with side effects is user-only
 
@@ -188,10 +248,10 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   workflows with side effects or that you want to control timing, like `/commit`, `/deploy`, or
   `/send-slack-message`. You don't want Claude deciding to deploy because your code looks ready."
   [skills › Control who invokes a skill](https://code.claude.com/docs/en/skills#control-who-invokes-a-skill)
-- `disable-model-invocation: true` also stops the skill being preloaded into a subagent or run when a scheduled task
-  fires with it as the prompt. A `/loop` scheduled fire only runs skills Claude is allowed to invoke on its own, so a
-  `disable-model-invocation: true` skill reaches Claude as plain text instead. Claude gets the instruction to run a
-  `verify` or `simplify` skill before each commit only when Claude can invoke that skill.
+- `disable-model-invocation: true` also stops the skill being preloaded into a subagent or run when a session-scoped
+  scheduled task fires with it as the prompt. A `/loop` scheduled fire only runs skills Claude is allowed to invoke on
+  its own, so a `disable-model-invocation: true` skill reaches Claude as plain text instead. Claude gets the
+  instruction to run a `verify` or `simplify` skill before each commit only when Claude can invoke that skill.
   [skills › Frontmatter reference](https://code.claude.com/docs/en/skills#frontmatter-reference)
   [scheduled-tasks › Run a prompt repeatedly with /loop](https://code.claude.com/docs/en/scheduled-tasks#run-a-prompt-repeatedly-with-/loop)
   [skills › Run your checks before each commit](https://code.claude.com/docs/en/skills#run-your-checks-before-each-commit)
@@ -222,15 +282,31 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   workflow when a job outgrows a handful of subagents, or when you want the findings cross-checked before you see
   them, such as a codebase-wide audit, a large migration, or a plan drafted from several angles."
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
-- Check: work that reads many files but needs only a summary back runs outside the main conversation.
+- "Subagents pay off in these situations": running independent pieces of work at the same time; keeping long output,
+  "like a full test run or a wide search", out of your main conversation; "Getting a reviewer that hasn't seen how
+  the code was written"; and giving a task fewer tools than the main session has. "What they cost you is mostly
+  tokens", and sometimes time, since "a fresh subagent first has to gather context your conversation already had".
+  By default it's the same model, or a smaller one, on the same task: "You get parallelism or a fresh pair of eyes out
+  of it, but not a smarter answer."
+  [best-practices › Know what subagents cost](https://code.claude.com/docs/en/best-practices#know-what-subagents-cost)
+- On a full context window the pages disagree: features-overview says to use a subagent "when your context window is
+  getting full", while best-practices lists "Use subagents to protect your context window" as advice current models
+  have made unnecessary: "Running out of context is rarely the problem anymore."
+  [best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)
+- Check: work that reads many files but needs only a summary back runs outside the main conversation, and each
+  subagent serves one of the four situations above, not a hope of a better answer.
 
-## An external system: MCP, with a skill for using it
+## An external system: a CLI or MCP, with a skill for using it
 
+- For a system Claude can't see, such as an issue tracker: "If that system has a CLI, that's usually the easiest way
+  in." "For a CLI it hasn't seen before, pointing it at `--help` is enough. For systems without a CLI, there's MCP."
+  [best-practices › Connect the tools Claude needs](https://code.claude.com/docs/en/best-practices#connect-the-tools-claude-needs)
 - "MCP gives Claude purpose-built tools for an external system, with the connection and authentication handled by
   the server." "Skills give Claude knowledge about how to use those tools effectively, plus workflows you can
   trigger with `/<name>`."
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
-- Check: knowledge about an external system's data or conventions lives in a skill, not in the connection.
+- Check: an external system with a CLI is reached through its CLI where that's the easiest way in, one without
+  through MCP, and knowledge about how to use its tools, and workflows, lives in a skill, not in the connection.
 
 ## The same setup in another repository: a plugin
 

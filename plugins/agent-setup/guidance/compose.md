@@ -35,7 +35,7 @@ Making several tools work together, and keeping the whole setup within Claude's 
 
   | Feature | When it loads | What loads | Context cost |
   | - | - | - | - |
-  | **CLAUDE.md** | Session start | Full content | Every request |
+  | **CLAUDE.md** | Session start | Full content of each file that loads at session start | Every request |
   | **Output styles** | Session start, and again when you switch styles | The active style's full instructions; nothing for the Default style | Every request |
   | **Skills** | Session start + when used | Descriptions at start, full content when used | Low (descriptions every request)\* |
   | **MCP servers** | Session start | Tool names; full schemas on demand | Low until a tool is used |
