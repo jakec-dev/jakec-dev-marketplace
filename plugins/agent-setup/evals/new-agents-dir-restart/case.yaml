@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: new-agents-dir-restart
+context:
+  scaffold_script: fixture.sh
