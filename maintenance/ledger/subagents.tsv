@@ -1,0 +1,614 @@
+page	heading	decision	file	reason
+sub-agents	Create custom subagents	included	invoking.md	
+sub-agents	Built-in subagents	included	invoking.md	all but the CLAUDE.md and git status clauses, the restricting bullets, and the sentence that an Agent tool call omitting `subagent_type` fails without a `general-purpose` subagent
+sub-agents	Built-in subagents	included	excluding.md	the bullets on restricting built-in subagents (`permissions.deny`, denying `Agent`, `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS`, `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS`)
+sub-agents	Built-in subagents	excluded		the CLAUDE.md clauses repeat What loads at startup (instructions reference); the git status clause repeats What loads at startup; the `subagent_type` sentence repeats errors › subagent\_type is required
+sub-agents	Quickstart: create your first subagent	included	invoking.md	the sentence that the delegation appears as a tool call row naming the subagent and a short task description
+sub-agents	Quickstart: create your first subagent	included	placing.md	the Note that `/agents` prints a reminder to ask Claude or edit `.claude/agents/` and `~/.claude/agents/`
+sub-agents	Quickstart: create your first subagent	excluded		the rest is tutorial steps, repeats Write subagent files (the restart case) or is history
+sub-agents	Configure subagents	excluded		only introduces its subsections
+sub-agents	Choose the subagent scope	included	placing.md	all but the clauses the hooks reference takes (plugin subagents' `hooks` and the plugin's `hooks/hooks.json`, and `hooks` in the `--agents` field list) and the agent-team teammate paragraph
+sub-agents	Choose the subagent scope	excluded		the agent-team teammate paragraph repeats agent-teams › Use subagent definitions for teammates
+sub-agents	Write subagent files	included	placing.md	the Note on watched directories and the three cases that need a restart
+sub-agents	Write subagent files	included	isolation.md	the paragraphs on the working directory and `cd`, and the sentence that a subagent with `isolation: worktree` runs its commands inside its worktree and fails one whose working directory resolves to the main checkout
+sub-agents	Write subagent files	excluded		the remaining worktree-check paragraphs repeat worktrees › How Claude Code enforces isolation
+sub-agents	Write subagent files	included	frontmatter.md	the file format, the body as system prompt, and `--append-subagent-system-prompt` and its file form
+sub-agents	Frontmatter reference	included	frontmatter.md	all but the `hooks` row (hooks reference), the `initialPrompt` clause that commands and skills are processed (skills reference), and the `omitClaudeMd` row's conditions on managed policy files and the main session agent (instructions reference)
+sub-agents	Subagent files Claude Code skips	included	troubleshooting.md	all but the sentence that a plugin subagent with no `name` or unparseable frontmatter still loads under its filename
+sub-agents	Check an `agents` directory before a session	included	troubleshooting.md	
+sub-agents	Choose a model	included	models.md	
+sub-agents	Run every subagent on one model	included	models.md	all but the bullet on a skill that runs in a subagent with `model: inherit`, which the skills reference takes
+sub-agents	Choose an effort level	included	models.md	
+sub-agents	Control subagent capabilities	excluded		only introduces its subsections
+sub-agents	Available tools	included	tools.md	
+sub-agents	Restrict which tools a subagent can use	included	tools.md	
+sub-agents	MCP server names that contain a double underscore	included	tools.md	
+sub-agents	Restrict which subagents can be spawned	included	tools.md	
+sub-agents	Scope MCP servers to a subagent	included	tools.md	
+sub-agents	Trust required for inline MCP servers	included	tools.md	
+sub-agents	Permission modes	included	tools.md	
+sub-agents	Preload skills into subagents	included	frontmatter.md	all but the clauses and sentences the skills reference takes (injection at startup up to 32 names, discovering and invoking skills without the field, blocking the Skill tool, missing or disabled skills), and the Note comparing it with `context: fork`
+sub-agents	Preload skills into subagents	excluded		the Note comparing the field with `context: fork` repeats skills › Run skills in a subagent
+sub-agents	Enable persistent memory	included	context.md	
+sub-agents	Persistent memory tips	excluded		compares or recommends (guidance)
+sub-agents	Conditional rules with hooks	included	tools.md	the sentence that `PreToolUse` hooks allow some operations of a tool while blocking others
+sub-agents	Conditional rules with hooks	excluded		the rest belongs to another tool type (hooks): hooks in subagent frontmatter
+sub-agents	Disable specific subagents	included	excluding.md	
+sub-agents	Define hooks for subagents	excluded		owned by the hooks reference
+sub-agents	Hooks in subagent frontmatter	excluded		owned by the hooks reference
+sub-agents	Project-level hooks for subagent events	excluded		owned by the hooks reference
+sub-agents	Work with subagents	excluded		only introduces its subsections
+sub-agents	Understand automatic delegation	included	invoking.md	
+sub-agents	Invoke subagents explicitly	included	invoking.md	all but the sentence that CLAUDE.md files and project memory still load under `--agent`, and the clause that a `-p` session as a custom agent starts without the git status snapshot; the CLAUDE.md sentence appears only as a mention
+sub-agents	Invoke subagents explicitly	excluded		the CLAUDE.md sentence is owned by the instructions reference; the git status clause repeats settings-reference › `includeGitInstructions`
+sub-agents	Run subagents in foreground or background	included	running.md	
+sub-agents	Which subagents run in the background	included	running.md	all but the sentence on skills with `context: fork`, which the skills reference takes
+sub-agents	Let Claude wait for a subagent	included	running.md	all but the clause on the VS Code Run in background action, which repeats vs-code › Move a running command or subagent to the background
+sub-agents	Tools, permissions, and results of background subagents	included	running.md	
+sub-agents	Finished subagents in the panel and task list	included	running.md	
+sub-agents	Subagent names	included	invoking.md	
+sub-agents	API errors in subagents	included	troubleshooting.md	
+sub-agents	Subagent output scanning	included	running.md	
+sub-agents	Common patterns	excluded		only introduces its subsections
+sub-agents	Isolate high-volume operations	excluded		compares or recommends (guidance)
+sub-agents	Run parallel research	included	running.md	the warning that results return to the main conversation, can consume significant context, and that each subagent spends tokens of its own
+sub-agents	Run parallel research	excluded		the rest is compares or recommends (guidance)
+sub-agents	Chain subagents	excluded		compares or recommends (guidance)
+sub-agents	Choose between subagents and main conversation	excluded		compares or recommends tool types (guidance)
+sub-agents	Let subagents spawn their own subagents	included	running.md	
+sub-agents	Concurrent subagent limit	included	running.md	
+sub-agents	Manage subagent context	excluded		only introduces its subsections
+sub-agents	What loads at startup	included	context.md	all but the CLAUDE.md files bullet, the `omitClaudeMd` and Explore and Plan paragraph on CLAUDE.md and path-scoped rules, and the paragraph on restating a rule in the delegation prompt (instructions reference), and the clauses on skills (skills reference)
+sub-agents	Resume subagents	included	context.md	
+sub-agents	Message a subagent by name after a restart	included	context.md	
+sub-agents	Auto-compaction	included	context.md	
+sub-agents	Set the auto-compact window for one subagent	included	context.md	
+sub-agents	Fork the current conversation	included	forking.md	
+sub-agents	Observe and steer running forks	included	forking.md	all but the clause that skills typed with a transcript open go to that agent, which the skills reference takes
+sub-agents	How forks differ from other subagents	included	forking.md	all but the clause that a fork's first request reuses the parent's prompt cache
+sub-agents	How forks differ from other subagents	excluded		the cache-reuse clause repeats prompt-caching › Subagents and the cache
+sub-agents	Turn fork mode off	included	forking.md	all but the sentence that fork mode is on by default and the sentence that Claude can't wait for a subagent while it is on
+sub-agents	Turn fork mode off	excluded		the default sentence repeats Fork the current conversation; the waiting sentence repeats Which subagents run in the background
+sub-agents	Example subagents	excluded		compares or recommends (guidance): example definitions and best-practice tips
+sub-agents	Code reviewer	excluded		compares or recommends (guidance): an example definition
+sub-agents	Debugger	excluded		compares or recommends (guidance): an example definition
+sub-agents	Data scientist	excluded		compares or recommends (guidance): an example definition
+sub-agents	Database query validator	excluded		belongs to another tool type (hooks): an example of hooks in subagent frontmatter
+sub-agents	Next steps	excluded		only links to other pages
+agent-teams	Use subagent definitions for teammates	included	invoking.md	all but the `skills` bullet, which the skills reference takes and this file keeps only as a mention
+agent-teams	Claude spawns teammates instead of subagents	included	troubleshooting.md	all but the launch rule, which repeats Subagent names
+agent-teams	Limitations	included	running.md	the bullet that an in-process teammate's subagents run in the foreground
+agent-teams	Limitations	excluded		the rest belongs to another tool type (agent teams)
+agent-teams	Enable agent teams	included	invoking.md	the clause that agent teams are enabled with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`, and the sentence that in `-p` a named subagent runs as an ordinary subagent
+agent-teams	Enable agent teams	excluded		the rest repeats Subagent names or belongs to another tool type (agent teams)
+agent-teams	How Claude starts agent teams	included	invoking.md	the sentence that Claude Code doesn't ask you to confirm the launch
+agent-teams	How Claude starts agent teams	excluded		the rest repeats Subagent names
+agent-teams	Specify teammates and models	excluded		belongs to another tool type (agent teams)
+agent-teams	Architecture	excluded		belongs to another tool type (agent teams)
+agent-teams	Token usage	excluded		belongs to another tool type (agent teams)
+agent-teams	Compare with subagents	excluded		compares or recommends tool types (guidance)
+agent-teams	When to use agent teams	excluded		compares or recommends tool types (guidance)
+debug-your-config	See what loaded into context	included	troubleshooting.md	the clause that `/context` lists custom subagents with the source each loaded from
+debug-your-config	See what loaded into context	excluded		the `/doctor` row's duplicate-names clause repeats Choose the subagent scope
+debug-your-config	Check common causes	excluded		the subagent row is owned by the instructions reference
+errors	Agent would be spawned with zero tools	included	troubleshooting.md	
+errors	subagent\_type is required	included	troubleshooting.md	
+errors	Invalid `--agents` configuration	included	troubleshooting.md	
+errors	Conflict between a system prompt flag and its file form	included	troubleshooting.md	the `--append-subagent-system-prompt` pair
+errors	Session agent no longer available	included	troubleshooting.md	the message and the fixes
+errors	Agent descriptions are over the 15.0k-token limit	included	troubleshooting.md	the sentence that the warning is a startup notice rather than on stderr, the message text, how tokens are counted and the fixes
+errors	Agent terminated early due to an API error	included	troubleshooting.md	the message and the step to match the error detail, stated with API errors in subagents
+errors	Auto mode cannot determine the safety of an action	included	troubleshooting.md	the two bullets on a background subagent in a `-p` run
+errors	Auto mode cannot determine the safety of an action	excluded		the rest is not about subagents
+errors	The server returned no safety verdict	included	troubleshooting.md	the bullet on a subagent that hit the limit
+errors	The server returned no safety verdict	excluded		the rest is not about subagents
+errors	Unrecognized model ID on a request	included	troubleshooting.md	what the line is and where it is written, the sentences that Claude Code still sends the request and writes the line once per model string per process with a separate line per further ID, the `agent:` `query_source` clause, the fix clause for a subagent's model, and the `modelOverrides` fix for an ID set on purpose, and the `claude update` fix for an ID newer than your version
+errors	Unrecognized model ID on a request	excluded		the rest is not about subagents
+errors	Model is restricted by your organization's settings	included	models.md	the agent and subagent clauses of the sentence on a prefixed notice and of the fix bullet
+errors	Model is restricted by your organization's settings	excluded		the rest repeats Choose a model or belongs to the skills reference
+errors	The response above may be incomplete	excluded		its subagent bullet repeats API errors in subagents
+errors	Waiting for API response	excluded		its subagent clause repeats API errors in subagents
+errors	Teammate's agent definition was not restored	excluded		belongs to another tool type (agent teams)
+errors	Advisor is less capable than the current main model	excluded		its subagent sentences repeat Choose an advisor model
+errors	Find your error	excluded		its subagent rows only index the sections they link to
+headless	Start faster with bare mode	included	excluding.md	the clause that bare mode skips subagents, the clause that it skips an `--add-dir` directory's `.claude/agents/`, the `--agents` table row with its header and lead-in sentence, and the clause that Claude can't run background subagents
+headless	Start faster with bare mode	excluded		the rest is not about subagents or belongs to other types
+headless	Background tasks at exit	included	running.md	the sentence that the run waits for background work, the bullet on background subagents and workflows, and the sentence that Claude Code stops what is still running after 10 minutes of idle waiting by default and drops its partial result
+headless	Background tasks at exit	excluded		the rest is not about subagents
+headless	Follow subagent messages	included	observing.md	the subagent clauses of the opening sentences, the `--forward-subagent-text` bullet, the nesting paragraph without its forked-skill clauses, the Agent-tool table row with the table header and the lead-in sentence "Find how the run started in the first column:", and the default `tool_use` and `tool_result` bullet only as a mention
+headless	Follow subagent messages	excluded		the version-minimum bullets are history
+large-codebases	Check out only the directories you need	included	isolation.md	the sentences that `sparsePaths` is particularly useful for subagent worktree isolation and that each subagent that runs in a worktree gets a lightweight checkout
+mcp	Plugin-provided MCP servers	included	tools.md	the clause that a subagent's `tools` field uses the full tool name, with the full-name form and its character-replacement rule
+plugins/components	Agents	included	placing.md	
+plugins/components	Organize agents in subfolders	included	placing.md	
+plugins/components	Frontmatter fields in plugin agents	included	frontmatter.md	all but the `hooks` clause, which the hooks reference takes, and the list of ignored fields the table cells state
+plugins/components	Default settings	included	invoking.md	the sentences on the `agent` key and the bullets on which value applies
+plugins/components	Default settings	excluded		the `subagentStatusLine` sentence belongs to another tool type (status line)
+plugins/components	Explore the plugin directory	excluded		its agent and `agent` key sentences repeat Agents and Default settings
+plugins/manifest-reference	Path-only fields	included	placing.md	the sentences on `agents` (one path or an array, entries must be `.md` files)
+plugins/manifest-reference	How each key combines with its default location	included	placing.md	the clause that `agents` replaces the default location, the warning shown when a default `agents/` folder exists and the manifest sets `agents`, and its fix
+plugins/manifest-reference	How each key combines with its default location	excluded		the rest is about other component keys
+plugins/manifest-reference	`settings`	excluded		its `agent` clause repeats Default settings
+plugins/manifest-reference	Where each variable resolves	included	frontmatter.md	the agent clause of the sentences that the variables aren't in the environment of Bash commands, so agent content writes the `${...}` reference in the Markdown body, substituted inline
+plugins/manifest-reference	Fields	excluded		its `settings` row repeats Default settings
+plugins/manifest-reference	Standard layout	excluded		its settings row repeats Default settings
+plugins/cli-reference	Validate a directory	included	troubleshooting.md	the bullets on validating `agents` directories without a manifest and the symlink bullets, as they apply to `agents`
+plugins/create	Convert an existing `.claude/` setup	included	placing.md	the clause that Claude sees `reviewer` and `my-plugin:reviewer` as two subagents
+plugins/create	Convert an existing `.claude/` setup	excluded		the rest is tutorial steps or belongs to another tool type (plugins)
+plugins/create	Convert an existing `.claude/` setup (2)	excluded		repeats the first copy of the section, which appears twice in the export
+plugins/create	Plugin layout	excluded		its `agents/` row repeats Agents
+plugins/create	Plugin layout (2)	excluded		repeats the first copy of the section, which appears twice in the export
+permissions	Additional directories grant file access, not configuration	included	placing.md	the clause that subagents from a flag-added directory load through the `project` setting source, the clause that bare mode skips them, the Subagents row with its header, and the subagents clause of the `/add-dir` subdirectory paragraph
+permissions	Move the session to another directory	included	placing.md	the clause that `/cd` loads the new directory's subagents
+permissions	What runs before you trust a folder	included	tools.md	the inline `mcpServers` row with the table header, and the sentences on reading the columns and the nested-repository case; the by-hand trust instruction appears only as a mention
+permissions	Match by input parameter	included	excluding.md	the `Agent(model:...)` and `Agent(isolation:...)` rows and the bullets that use them as examples
+permissions	Agent (subagents)	excluded		repeats Disable specific subagents
+permission-modes	How auto mode evaluates actions	included	tools.md	the How auto mode handles subagents accordion, apart from its ignored-`permissionMode` sentence, and the `Agent` item of the list of allow rules dropped on entering auto mode, with the sentence that they are restored on leaving it
+permission-modes	How auto mode evaluates actions	excluded		the rest is not about subagents
+prompt-caching	Which TTL each request gets	included	models.md	the Everything else bucket and its table row, with the header
+prompt-caching	Choose the TTL yourself	included	models.md	the sentence that each control takes `5m` or `1h`, the Everything else bullet, and the precedence list
+prompt-caching	Subagents and the cache	included	models.md	all but the session-copy, compaction and workflow fan-out bullets
+prompt-caching	Subagents and the cache	excluded		the session-copy, compaction and workflow fan-out bullets are not about subagents
+settings-reference	`subagentPromptCacheTtl`	included	models.md	all but the sentence listing the requests it applies to, which repeats prompt-caching › Which TTL each request gets
+settings-reference	`maxEffortLevel`	included	models.md	the clause that the cap applies to a subagent's `effort` frontmatter, and the sentence that the lower of this cap and an organization effort limit applies
+settings-reference	`attribution.commit`	included	models.md	the sentence that a subagent's commit trailer names the subagent's model
+settings-reference	`permissions.disableBypassPermissionsMode`	included	tools.md	the clause that an agent definition's `permissionMode: bypassPermissions` is ignored
+settings-reference	`agent`	included	invoking.md	all but the sentence on sessions dispatched from `claude agents`
+settings-reference	`agent`	excluded		the dispatch sentence belongs to another tool type (agent view)
+settings-reference	`strictPluginOnlyCustomization`	included	excluding.md	the agents clause of the first sentence
+settings-reference	`strictPluginOnlyCustomization.agents`	included	excluding.md	
+settings-reference	`disableSideloadFlags`	included	excluding.md	the clauses on rejecting `--agents`
+settings-reference	`promptCacheTtl`	excluded		its subagent example repeats `subagentPromptCacheTtl`
+settings-reference	`availableModels`	excluded		its subagent clause repeats Choose a model
+settings-reference	`subagentStatusLine`	excluded		belongs to another tool type (status line)
+settings-reference	`includeGitInstructions`	included	context.md	the `-p` bullet's custom-agent clause and fix; the setting and variable that turn the snapshot off appear only as a mention
+settings-reference	`includeGitInstructions`	excluded		the setting's default, `false` and variable precedence are owned by the skills reference; the cloud-session and Agent SDK sentences are web and Agent SDK
+settings-reference	`worktree.location`	excluded		web and desktop: only the desktop app reads the key
+settings-reference	Settings index	excluded		its rows only index their sections
+sessions	What a resumed session restores	included	invoking.md	the Agent bullet
+sessions	What a resumed session restores	included	running.md	the Background work bullet
+sessions	What a resumed session restores	excluded		the rest is not about subagents
+sessions	Branch a session	included	running.md	the background-subagents row with the table header
+sessions	Branch a session	excluded		the rest is not about subagents
+vs-code	Use the prompt box	included	running.md	the sentence on subagent progress rows and the Agent map bullet with its paragraphs
+vs-code	Move a running command or subagent to the background	included	running.md	
+vs-code	The Run in background action is missing under a subagent	included	running.md	
+vs-code	See a background subagent's tool calls	included	running.md	
+worktrees	How Claude Code enforces isolation	included	isolation.md	
+worktrees	Isolate subagents with worktrees	included	isolation.md	all but the paragraph on the instruction files a subagent in its own worktree takes, which the instructions reference takes, and the WorktreeCreate sentence
+worktrees	Isolate subagents with worktrees	excluded		the WorktreeCreate sentence repeats hooks › WorktreeRemove
+worktrees	Clean up subagent and background-session worktrees	included	isolation.md	all but the WorktreeCreate clause (hooks reference) and the bullets on `--worktree` sessions
+worktrees	Clean up subagent and background-session worktrees	excluded		the bullets on `--worktree` sessions are not about subagents
+worktrees	Choose the base branch	included	isolation.md	the `worktree.baseRef` values, the sentence that it can't name a branch, the `origin/HEAD` bullets and the example
+worktrees	Copy gitignored files into worktrees	included	isolation.md	the first two paragraphs, the example, and the subagent-worktree clause
+worktrees	Copy gitignored files into worktrees	excluded		the `**/` paragraph and the desktop clause are not about subagents
+worktrees	What worktrees share with the main checkout	included	placing.md	the `.claude/agents` part of the read-through sentence, with the condition it carries from the skills sentence
+worktrees	Claude Code refuses to use a worktree	included	isolation.md	all but the WorktreeCreate-hook paragraph and the history sentences
+worktrees	Claude Code refuses to use a worktree	excluded		the WorktreeCreate-hook paragraph belongs to the hooks reference; the history sentences are history
+advisor	Choose an advisor model	included	models.md	the sentences that subagents inherit the advisor and apply the pairing check, the rule that an advisor must rank at or above the model it advises, and the clause that subagents whose model satisfies the pairing may still use it
+checkpointing	Subagent edits not restored	included	isolation.md	the opening sentence and the Any other subagent bullet, apart from the forked-skill part the skills reference takes
+cli-reference	CLI flags	included	running.md	the `--max-budget-usd` row's sentences on subagent spend, `Budget limit reached` and stopping background subagents
+cli-reference	CLI flags	excluded		its other subagent rows (`--agent`, `--agents`, `--append-subagent-system-prompt`, its file form, `--forward-subagent-text`, `--bare`) repeat the sections they link to
+env-vars	Variables	included	running.md	the `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS`, `CLAUDE_AUTO_BACKGROUND_TASKS`, `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`, `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS` and `CLAUDE_CODE_WORKER_CHECKIN_SCHEDULE` rows and the subagent clauses of `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, without version history
+env-vars	Variables	included	context.md	the `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` row
+env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS` row, the `CLAUDE_AGENT_SDK_DISABLE_BUILTIN_AGENTS` row (its `subagent_type is required` sentence only as a mention) and the subagents clause of the `CLAUDE_CODE_SIMPLE` row; the equivalence of `CLAUDE_CODE_SIMPLE` to `--bare` appears only as a mention
+env-vars	Variables	included	observing.md	the `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` row
+env-vars	Variables	excluded		its other subagent rows repeat the sections they link to (`CLAUDE_CODE_FORK_SUBAGENT`, `CLAUDE_CODE_SUBAGENT_MODEL`, `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, `CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`) or are history (`CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION`, `CLAUDE_SUBAGENT_BG_SHELL_MAX_MS`)
+interactive-mode	Side questions with /btw	included	forking.md	the `f` key row
+interactive-mode	Side questions with /btw	excluded		the rest is not about subagents
+interactive-mode	General controls	excluded		its Ctrl+X Ctrl+K row repeats Chat actions
+interactive-mode	How backgrounding works	included	running.md	the sentence that tmux users must press Ctrl+B twice
+interactive-mode	How backgrounding works	excluded		its foreground-subagent bullet repeats When a background command stops; the rest is not about subagents
+keybindings	Chat actions	included	running.md	the sentence naming the `Chat` context and the `chat:killAgents` row with the table header
+keybindings	Footer actions	excluded		its `footer:close` row repeats Finished subagents in the panel and task list
+monitoring-usage	Span hierarchy	included	observing.md	the sentence and tree line on subagent spans
+monitoring-usage	Span attributes	included	observing.md	the `query_source`, `query_source_safe`, `agent_id`, `parent_agent_id` and `subagent_type` rows with their table headers
+monitoring-usage	Standard attributes	included	observing.md	the sentence that these attributes are on events and never on metrics, and the `agent_id` and `parent_agent_id` bullets
+monitoring-usage	Cost counter	included	observing.md	the `query_source`, `agent.name` and `plugin.name` bullets and the clause that `OTEL_LOG_TOOL_DETAILS=1` keeps the real names
+monitoring-usage	Tool result event	included	observing.md	the `tool_parameters` line for the Agent tool
+monitoring-usage	Tool decision event	included	observing.md	the `permission_mode` sentence on subagent calls and the `tool_parameters` line for the Agent tool
+monitoring-usage	Subagent completed event	included	observing.md	all but the agent-based hooks sentence, which the hooks reference takes; the agent-based hooks sentence appears only as a mention
+llm-gateway-protocol	Request headers	included	observing.md	the `x-claude-code-agent-id` and `x-claude-code-parent-agent-id` rows with the header, and the sentence on fresh subagent IDs
+llm-gateway-protocol	Gateway hint headers	included	observing.md	the sentences on when the headers are sent, and the `x-claude-code-request-class`, `x-claude-code-agent-type` and `x-claude-code-prompt-id` rows with the header, without version history
+model-config	Setting your model	included	models.md	the sentences that a `/model` switch reaches subagents that inherit the main conversation's model and that the retirement warning covers a `model` set in subagent frontmatter
+model-config	Ask before switching	included	models.md	the subagent bullet, and the `/config` choice and `switchModelsOnFlag` setting that give the prompt
+model-config	Pin models for third-party deployments	included	models.md	the clause that the `[1m]` suffix applies to subagents whose `model` names the pinned alias
+model-config	Restrict model selection	excluded		its subagent bullets repeat Choose a model
+model-config	Set the effort level	excluded		its subagent sentences repeat Choose an effort level; its organization-cap sentence is the skills reference's, and models.md states the organization limit from `maxEffortLevel`
+model-config	Fallback model chains	excluded		its subagent sentences repeat API errors in subagents
+model-config	Set the auto-compact window	excluded		its subagent bullet repeats Set the auto-compact window for one subagent
+model-config	Environment variables	excluded		its `CLAUDE_CODE_SUBAGENT_MODEL` row repeats Choose a model
+managed-settings	Keys only a managed source can set	excluded		its `disableSideloadFlags` row repeats `disableSideloadFlags`
+sandboxing	Scope	included	tools.md	the Subagents bullet
+terminal-config	Create a custom theme	included	frontmatter.md	the paragraph on the `<color>_FOR_SUBAGENTS_ONLY` tokens, without the colour names the `color` row lists
+tools-reference	Tools reference	included	tools.md	the clause that tool names are the strings subagent tool lists use, and the `SubagentHandback` row with the table header
+tools-reference	Tools reference	included	isolation.md	the subagent clauses of the `EnterWorktree` and `ExitWorktree` rows
+tools-reference	Agent tool behavior	included	tools.md	all but the `maxTurns` sentence, the sentence on where permission prompts appear, the background-default sentence and the foreground and background permission-prompt bullets
+tools-reference	Agent tool behavior	excluded		the permission-prompt sentences and bullets repeat Run subagents in foreground or background; the `maxTurns` sentence repeats Resume subagents
+tools-reference	When a background command stops	included	running.md	
+tools-reference	Foreground commands that move to the background	included	running.md	the clause that a foreground subagent's moved command still stops when that subagent's run ends
+tools-reference	Monitor tool	included	running.md	the sentence that stopping a subagent stops the monitors it started
+tools-reference	Glob tool behavior	included	tools.md	the bullet on a subagent that lists `Glob` or `Grep` and leaves out `Bash`, with the sentence it depends on
+tools-reference	Session search limit	included	tools.md	the clause that subagents' searches count against the session's WebSearch limit
+tools-reference	Task-tracking tools in subagents and agent teams	excluded		its subagent sentence repeats Available tools; the rest belongs to another tool type (agent teams)
+tools-reference	EndConversation tool behavior	excluded		its subagent sentence repeats Available tools
+tools-reference	What persists between commands	excluded		its subagent bullet repeats Write subagent files
+skills	Load skills from a directory outside the project	excluded		its `.claude/agents/` clauses repeat Choose the subagent scope and Write subagent files; the skills reference takes the section
+features-overview	Compare similar features	excluded		compares or recommends tool types (guidance)
+features-overview	Understand how features load	excluded		its Subagents tab repeats What loads at startup; its skills clause is the skills reference's
+features-overview	Understand how features layer	excluded		its subagent clause repeats Choose the subagent scope
+features-overview	Context cost by feature	excluded		its Subagents row repeats What loads at startup
+best-practices	Know what subagents cost	excluded		compares or recommends (guidance)
+best-practices	What you can stop doing	excluded		compares or recommends (guidance)
+costs	Delegate verbose operations to subagents	excluded		compares or recommends (guidance)
+costs	Choose the right model	excluded		compares or recommends (guidance)
+agents	Run agents in parallel	excluded		compares or recommends tool types (guidance)
+agents	Choose an approach	excluded		compares or recommends tool types (guidance)
+agents	Check on running work	included	placing.md	the sentence that `/agents` is separate from `claude agents`
+agents	Check on running work	excluded		the rest repeats the sub-agents page (Quickstart, Invoke subagents explicitly, Finished subagents)
+output-styles	How output styles work	excluded		its subagent sentences repeat What loads at startup
+memory	How it works	excluded		its subagent sentences repeat What loads at startup and Enable persistent memory
+claude-directory	Frontmatter fields by file	excluded		its `agents/*.md` row repeats Frontmatter reference
+claude-directory	Cleaned up automatically	included	context.md	the `projects/<project>/<session>/subagents/` row
+claude-directory	Cleaned up automatically	excluded		the rest repeats Resume subagents or is not about subagents
+glossary	Subagent	excluded		repeats Create custom subagents and Built-in subagents
+hooks	Hook locations	excluded		owned by the hooks reference
+hooks	SubagentStart	excluded		owned by the hooks reference
+hooks	SubagentStop input	excluded		owned by the hooks reference
+hooks	Agent	excluded		owned by the hooks reference
+hooks	WorktreeRemove	excluded		owned by the hooks reference
+hooks	PermissionRequest	excluded		owned by the hooks reference
+statusline	Subagent status lines	excluded		belongs to another tool type (status line)
+statusline	Task fields	excluded		belongs to another tool type (status line)
+plugins/mods/reference	Subagents	excluded		belongs to another tool type (mods)
+plugins/mods/reference	Agent and organization fields on `tool.check`	excluded		belongs to another tool type (mods)
+agent-view	Dispatch an agent from agent view	excluded		belongs to another tool type (agent view)
+agent-view	Dispatch an agent from your shell	excluded		belongs to another tool type (agent view)
+agent-view	How file edits are isolated	included	isolation.md	the sentences that a subagent a background session spawns inherits its working directory, so its edits land in the session's worktree, and that `isolation: "worktree"` can be passed when spawning it
+agent-view	How file edits are isolated	excluded		the rest belongs to another tool type (agent view)
+agent-view	Set the model, effort, and fast mode	excluded		belongs to another tool type (agent view)
+agent-view	What carries over when you background	excluded		belongs to another tool type (agent view)
+agent-view	Copy the session with /fork	excluded		its forked-subagent sentence repeats Fork the current conversation; the rest belongs to agent view
+agent-view	Version history	excluded		release notes
+workflows	Approve the plan before it runs	excluded		belongs to another tool type (workflows)
+workflows	Cost	excluded		belongs to another tool type (workflows)
+workflows	When an agent stalls and restarts	excluded		belongs to another tool type (workflows); its variable is stated by the `CLAUDE_ASYNC_AGENT_STALL_TIMEOUT_MS` row
+workflows	Let Claude decide with ultracode	excluded		its concurrent-limit bullet repeats Concurrent subagent limit
+cloud-environments	What carries over from your setup	excluded		web and desktop
+commands	All commands	excluded		its subagent rows (`/agents`, `/subtask`, `/tasks`, `/fork`) repeat the sections they link to
+context-window	What survives compaction	included	running.md	the row on background commands and background subagents, with the table header
+context-window	What survives compaction	excluded		the rest is not about subagents
+cross-session-messaging	Turn off cross-session messaging	included	context.md	the clause that denying `SendMessage` also removes messaging to subagents
+cross-session-messaging	Turn off cross-session messaging	excluded		the rest belongs to another tool type (cross-session messaging)
+cross-session-messaging	See which sessions Claude can reach	excluded		its Subagents bullet belongs to another tool type (cross-session messaging)
+cross-session-messaging	Limits	excluded		its subagent clause belongs to another tool type (cross-session messaging)
+permission-modes	Protected paths	included	context.md	the bullet that Markdown files in a subagent memory directory are an exception, in a session started without `--restricted`, and the protected-path write outcome for each mode, including plan mode
+permission-modes	Protected paths	excluded		the rest is not about subagents; its `--agents` file bullet names the flag only in a list of protected files
+tools-reference	Background commands	included	running.md	the sentence that when a subagent started a stopped command, that subagent moves on
+tools-reference	Background commands	excluded		the rest is not about subagents
+interactive-mode	When Claude Code sends what you queued	included	running.md	the sentence that a queued `!` shell command makes the key interrupt the turn, and the bullet that running shell commands, subagents and other work that can move to the background move there and keep running, and Claude reads your messages in the same turn
+interactive-mode	When Claude Code sends what you queued	excluded		the rest is not about subagents
+how-claude-code-works	Manage context with skills and subagents	excluded		its subagent sentences repeat What loads at startup
+feature-availability	Features available on every provider	included	invoking.md	the subagents clause of the list line that these features work on every provider
+feature-availability	Features available on every provider	excluded		its Subagents bullet repeats Built-in subagents; the rest is not about subagents
+network-config	Streaming idle watchdogs	excluded		its subagent sentence repeats API errors in subagents
+errors	Write or command blocked because the path cannot be safely resolved	included	isolation.md	all but the version sentence
+errors	Write or command blocked because the path cannot be safely resolved	excluded		the version sentence is history
+claude-apps-gateway-config	One-hour prompt cache	excluded		its `subagentPromptCacheTtl` sentence repeats `subagentPromptCacheTtl`
+claude-directory	File reference	excluded		its `agents/*.md` and `agent-memory/` rows repeat Choose the subagent scope and Enable persistent memory
+claude-directory	State files to keep	excluded		its `agent-memory/` bullet repeats Enable persistent memory
+monitoring-usage	Token counter	excluded		its subagent attributes repeat Cost counter
+monitoring-usage	API request event	excluded		its `query_source` and attribution bullets repeat Span attributes and Cost counter
+monitoring-usage	API error event	excluded		its `query_source` and attribution bullets repeat Span attributes and Cost counter
+monitoring-usage	API refusal event	excluded		its `query_source` and attribution bullets repeat Span attributes and Cost counter
+monitoring-usage	Assistant response event	excluded		its `query_source` bullet repeats Span attributes
+best-practices	Keep cost and context down	excluded		compares or recommends (guidance); its subagent cache note repeats Subagents and the cache
+best-practices	Change the model and effort	excluded		compares or recommends (guidance)
+best-practices	Review against your spec	excluded		compares or recommends (guidance)
+best-practices	Run sessions in parallel	excluded		compares or recommends (guidance); its subagent-worktree bullets repeat Isolate subagents with worktrees
+workflows	When to use a workflow	excluded		compares or recommends tool types (guidance)
+workflows	Prompt caching in a fan-out	excluded		belongs to another tool type (workflows)
+workflows	What the saved script looks like	excluded		belongs to another tool type (workflows)
+code-review-local	Review locally with /code-review	excluded		about the bundled `/code-review` command; its background-subagent sentence repeats Run subagents in foreground or background
+code-review-local	What the review reads and edits	excluded		about the bundled `/code-review` command; its rewind sentence repeats Subagent edits not restored
+code-review-local	How findings are reported	excluded		about the bundled `/code-review` command
+plugin-evals	"Agent type '...' not found" for one of your plugin's agents	excluded		belongs to another tool type (plugins)
+plugins/create	A component path isn't found	excluded		belongs to another tool type (plugins)
+plugins/create	A component path isn't found (2)	excluded		repeats the first copy of the section, which appears twice in the export
+plugins/troubleshooting	`commands path not found: <path>`	excluded		belongs to another tool type (plugins)
+plugins/troubleshooting	`Plugin <name> has conflicting manifests`	excluded		belongs to another tool type (plugins)
+plugins/troubleshooting	`--plugin-dir is disabled by your organization's managed settings (disableSideloadFlags)`	excluded		its `--agents` clause repeats `disableSideloadFlags`
+plugins/manifest-reference	Manifest file	excluded		belongs to another tool type (plugins); its `agents` example repeats Path-only fields
+plugins/manifest-reference	How entry fields combine with `plugin.json`	excluded		belongs to another tool type (plugins)
+plugins/marketplace-reference	How an entry combines with plugin.json	excluded		belongs to another tool type (plugins)
+plugins/marketplace-reference	Strict mode	excluded		belongs to another tool type (plugins)
+plugins/cli-reference	plugin init	excluded		belongs to another tool type (plugins)
+plugins/org	Control matrix	excluded		its `--agents` clause repeats `disableSideloadFlags`
+plugins/mods/admin	Choose how much to allow	excluded		its `--agents` clause repeats `disableSideloadFlags`
+plugins/mods/admin	Review what a mod can do	excluded		belongs to another tool type (mods)
+plugins/mods/api	What refused calls return	excluded		belongs to another tool type (mods)
+plugins/mods/api	Send and receive messages between sessions	excluded		belongs to another tool type (mods)
+plugins/mods/api	Work your mod started before the interruption	excluded		belongs to another tool type (mods)
+plugins/mods/api	Calls refused in `claude -p` runs and Agent SDK sessions	excluded		belongs to another tool type (mods)
+plugins/mods/api	Use prompt caching	excluded		belongs to another tool type (mods)
+plugins/mods/events	Follow a turn	excluded		belongs to another tool type (mods)
+plugins/mods/events	Guard or change a tool call	excluded		belongs to another tool type (mods)
+plugins/mods/reference	Mods API methods	excluded		belongs to another tool type (mods)
+statusline	Available data	excluded		belongs to another tool type (status line)
+statusline	When the status line updates	excluded		belongs to another tool type (status line)
+agent-view	Monitor sessions with agent view	excluded		belongs to another tool type (agent view)
+agent-view	Switch sessions without leaving the terminal	excluded		belongs to another tool type (agent view)
+agent-view	Keyboard shortcuts	excluded		belongs to another tool type (agent view)
+agent-view	Dispatch defaults	excluded		belongs to another tool type (agent view)
+agent-view	The supervisor process	excluded		belongs to another tool type (agent view)
+agent-view	`claude agents` lists subagents instead of opening agent view	included	placing.md	the first paragraph
+agent-view	`claude agents` lists subagents instead of opening agent view	excluded		the rest belongs to another tool type (agent view)
+agent-view	Backgrounding shows a `Background this session?` dialog	excluded		belongs to another tool type (agent view)
+agent-view	The conversation says a background agent `was carried into this session and not resumed`	excluded		belongs to another tool type (agent view)
+agent-view	Dynamic workflows when you background	excluded		belongs to another tool type (agent view)
+agent-view	Send the session to the background	excluded		belongs to another tool type (agent view)
+agent-view	Sessions that can't be forked	excluded		belongs to another tool type (agent view)
+mcp	Automatic backgrounding of long tool calls	excluded		its subagent bullet belongs to another tool type (MCP)
+mcp	What a call needs to become an MCP task	excluded		its subagent bullet belongs to another tool type (MCP)
+mcp	Where the helper runs	excluded		belongs to another tool type (MCP)
+mcp	Which variables a helper can read	excluded		belongs to another tool type (MCP)
+mcp	Trust a folder before its headersHelper runs	excluded		belongs to another tool type (MCP); its agent-file sentence repeats Trust required for inline MCP servers
+remote-control	Connect from another device	excluded		web and desktop: about devices connected through Remote Control
+memory	When Claude Code reads AGENTS.md	excluded		owned by the instructions reference
+skills	Run skills in a subagent	excluded		owned by the skills reference
+skills	Example: Research skill using Explore agent	excluded		owned by the skills reference
+skills	Control who invokes a skill	excluded		owned by the skills reference
+skills	Frontmatter reference	excluded		owned by the skills reference
+skills	Permission checks on injected commands	excluded		owned by the skills reference
+skills	Stack several skills in one message	excluded		owned by the skills reference
+settings-reference	What runs under `allowManagedHooksOnly`	excluded		its agent-frontmatter hooks clause is owned by the hooks reference
+settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		owned by the skills reference
+hooks	Hooks in skills and agents	excluded		owned by the hooks reference
+hooks	SubagentStart input	excluded		owned by the hooks reference
+hooks	SubagentStop	excluded		owned by the hooks reference
+hooks	Common input fields	excluded		owned by the hooks reference
+hooks	Exit code 2 behavior per event	excluded		owned by the hooks reference
+hooks	Matcher patterns	excluded		owned by the hooks reference
+hooks	Stop input	excluded		owned by the hooks reference
+hooks	Notification	excluded		owned by the hooks reference
+hooks	PreToolUse `ask` decisions in auto mode	excluded		owned by the hooks reference
+hooks	UserPromptSubmit	excluded		owned by the hooks reference
+hooks	WorktreeCreate	excluded		owned by the hooks reference
+hooks	Agent-based hooks	excluded		owned by the hooks reference
+hooks	How agent hooks work	excluded		owned by the hooks reference
+hooks	SessionStart input	excluded		owned by the hooks reference
+hooks	Workspace trust	excluded		owned by the hooks reference
+hooks-guide	Configure hook location	excluded		owned by the hooks reference
+hooks-guide	Filter hooks with matchers	excluded		owned by the hooks reference
+hooks-guide	How hooks work	excluded		owned by the hooks reference
+hooks-guide	Agent-based hooks	excluded		owned by the hooks reference
+agent-sdk/agent-loop	Hooks	excluded		Agent SDK
+agent-sdk/agent-loop	Next steps	excluded		Agent SDK
+agent-sdk/agent-loop	Put it all together	excluded		Agent SDK
+agent-sdk/agent-loop	Built-in tools	excluded		Agent SDK
+agent-sdk/agent-loop	Effort level	excluded		Agent SDK
+agent-sdk/agent-loop	Keep context efficient	excluded		Agent SDK
+agent-sdk/agent-loop	Turns and budget	excluded		Agent SDK
+agent-sdk/agent-loop	Budget headroom	excluded		Agent SDK
+agent-sdk/claude-code-features	Choose the right feature	excluded		Agent SDK
+agent-sdk/claude-code-features	Control filesystem settings with settingSources	excluded		Agent SDK
+agent-sdk/claude-code-features	Related resources	excluded		Agent SDK
+agent-sdk/claude-code-features	When to use which hook type	excluded		Agent SDK
+agent-sdk/configuration	Configure specific features	excluded		Agent SDK
+agent-sdk/configuration	Limit turns and spend	excluded		Agent SDK
+agent-sdk/cost-tracking	Get the total cost of a query	excluded		Agent SDK
+agent-sdk/cost-tracking	Track costs in streaming input mode	excluded		Agent SDK
+agent-sdk/cost-tracking	Break down usage per model	excluded		Agent SDK
+agent-sdk/cost-tracking	Extend the prompt cache TTL to one hour	excluded		Agent SDK
+agent-sdk/cost-tracking	Recover totals after a session crash	excluded		Agent SDK
+agent-sdk/cost-tracking	Track per-step usage	excluded		Agent SDK
+agent-sdk/file-checkpointing	Rewind file changes with checkpointing	excluded		Agent SDK
+agent-sdk/file-checkpointing	Limitations	excluded		Agent SDK
+agent-sdk/hooks	Available hooks	excluded		Agent SDK
+agent-sdk/hooks	How hooks work	excluded		Agent SDK
+agent-sdk/hooks	Hook not firing	excluded		Agent SDK
+agent-sdk/hooks	Hook timeout	excluded		Agent SDK
+agent-sdk/hooks	Recursive hook loops with subagents	excluded		Agent SDK
+agent-sdk/hooks	Subagent permission prompts multiplying	excluded		Agent SDK
+agent-sdk/hooks	Track subagent activity	excluded		Agent SDK
+agent-sdk/hooks	Inputs	excluded		Agent SDK
+agent-sdk/hosting	Hosting the Agent SDK	excluded		Agent SDK
+agent-sdk/hosting	Known limitations	excluded		Agent SDK
+agent-sdk/mcp	Named servers	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Reminders Claude Code adds to the conversation	excluded		Agent SDK
+agent-sdk/modifying-system-prompts	Turn off the context your agent replaces	excluded		Agent SDK
+agent-sdk/observability	Read agent traces	excluded		Agent SDK
+agent-sdk/overview	Capabilities	excluded		Agent SDK
+agent-sdk/overview	Compare the Agent SDK to other Claude tools	excluded		Agent SDK
+agent-sdk/overview	Next steps	excluded		Agent SDK
+agent-sdk/permissions	Available modes	excluded		Agent SDK
+agent-sdk/plugins	Plugins in the SDK	excluded		Agent SDK
+agent-sdk/plugins	See also	excluded		Agent SDK
+agent-sdk/python	`AgentDefinition`	excluded		Agent SDK
+agent-sdk/python	`ClaudeAgentOptions`	excluded		Agent SDK
+agent-sdk/python	`HookEvent`	excluded		Agent SDK
+agent-sdk/python	`HookInput`	excluded		Agent SDK
+agent-sdk/python	`PermissionRequestHookInput`	excluded		Agent SDK
+agent-sdk/python	`PostToolUseFailureHookInput`	excluded		Agent SDK
+agent-sdk/python	`PostToolUseHookInput`	excluded		Agent SDK
+agent-sdk/python	`PreToolUseHookInput`	excluded		Agent SDK
+agent-sdk/python	`ResultMessage`	excluded		Agent SDK
+agent-sdk/python	`StreamEvent`	excluded		Agent SDK
+agent-sdk/python	`SubagentStartHookInput`	excluded		Agent SDK
+agent-sdk/python	`SubagentStopHookInput`	excluded		Agent SDK
+agent-sdk/python	`TaskNotificationMessage`	excluded		Agent SDK
+agent-sdk/python	`TaskStartedMessage`	excluded		Agent SDK
+agent-sdk/python	`ToolPermissionContext`	excluded		Agent SDK
+agent-sdk/python	`UserMessage`	excluded		Agent SDK
+agent-sdk/python	Agent	excluded		Agent SDK
+agent-sdk/python	ExitPlanMode	excluded		Agent SDK
+agent-sdk/python	`HookSpecificOutput`	excluded		Agent SDK
+agent-sdk/python	Handle slow or stalled API responses	excluded		Agent SDK
+agent-sdk/python	Return type: `SessionMessage`	excluded		Agent SDK
+agent-sdk/secure-deployment	Containers	excluded		Agent SDK
+agent-sdk/session-storage	Supported on	excluded		Agent SDK
+agent-sdk/session-storage	The `SessionStore` interface	excluded		Agent SDK
+agent-sdk/session-storage	Write your own adapter	excluded		Agent SDK
+agent-sdk/session-storage	Subagent transcripts	excluded		Agent SDK
+agent-sdk/sessions	Fork to explore alternatives	excluded		Agent SDK
+agent-sdk/skills	How skills work with the Agent SDK	excluded		Agent SDK
+agent-sdk/skills	Related resources	excluded		Agent SDK
+agent-sdk/streaming-output	StreamEvent reference	excluded		Agent SDK
+agent-sdk/subagents	Subagents in the SDK	excluded		Agent SDK
+agent-sdk/subagents	Benefits of using subagents	excluded		Agent SDK
+agent-sdk/subagents	Cap subagent depth, concurrency, and spend	excluded		Agent SDK
+agent-sdk/subagents	Create subagents	excluded		Agent SDK
+agent-sdk/subagents	Detect subagent invocation	excluded		Agent SDK
+agent-sdk/subagents	Invoke subagents	excluded		Agent SDK
+agent-sdk/subagents	Overview	excluded		Agent SDK
+agent-sdk/subagents	Related documentation	excluded		Agent SDK
+agent-sdk/subagents	Resume subagents	excluded		Agent SDK
+agent-sdk/subagents	Scale up with dynamic workflows	excluded		Agent SDK
+agent-sdk/subagents	Tool restrictions	excluded		Agent SDK
+agent-sdk/subagents	What subagents inherit	excluded		Agent SDK
+agent-sdk/subagents	AgentDefinition configuration	excluded		Agent SDK
+agent-sdk/subagents	Automatic invocation	excluded		Agent SDK
+agent-sdk/subagents	Claude not delegating to subagents	excluded		Agent SDK
+agent-sdk/subagents	Common tool combinations	excluded		Agent SDK
+agent-sdk/subagents	Dynamic agent configuration	excluded		Agent SDK
+agent-sdk/subagents	Explicit invocation	excluded		Agent SDK
+agent-sdk/subagents	Filesystem-based agents not loading	excluded		Agent SDK
+agent-sdk/subagents	Filesystem-based definition (alternative)	excluded		Agent SDK
+agent-sdk/subagents	Forked subagents	excluded		Agent SDK
+agent-sdk/subagents	Programmatic definition (recommended)	excluded		Agent SDK
+agent-sdk/subagents	Run Opus 5 with subagents	excluded		Agent SDK
+agent-sdk/subagents	Choose whether Claude waits for subagents	excluded		Agent SDK
+agent-sdk/todo-tracking	Examples	excluded		Agent SDK
+agent-sdk/troubleshooting	Troubleshoot the Agent SDK	excluded		Agent SDK
+agent-sdk/typescript	`AgentDefinition`	excluded		Agent SDK
+agent-sdk/typescript	`AgentInfo`	excluded		Agent SDK
+agent-sdk/typescript	`AgentMcpServerSpec`	excluded		Agent SDK
+agent-sdk/typescript	`BUILTIN_TOOL_NAMES` and `LEGACY_TOOL_NAME_ALIASES`	excluded		Agent SDK
+agent-sdk/typescript	`CanUseTool`	excluded		Agent SDK
+agent-sdk/typescript	`HookEvent`	excluded		Agent SDK
+agent-sdk/typescript	`HookInput`	excluded		Agent SDK
+agent-sdk/typescript	`Options`	excluded		Agent SDK
+agent-sdk/typescript	`prewarm()`	excluded		Agent SDK
+agent-sdk/typescript	`SDKAssistantMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKBackgroundTasksChangedMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKContextUsage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKControlGetContextUsageResponse`	excluded		Agent SDK
+agent-sdk/typescript	`SDKControlInterruptResponse`	excluded		Agent SDK
+agent-sdk/typescript	`SDKControlReloadPluginsResponse`	excluded		Agent SDK
+agent-sdk/typescript	`SDKPartialAssistantMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKPermissionDeniedMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKResultMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKSessionStateChangedMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKTaskNotificationMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKTaskProgressMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKTaskStartedMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKThinkingTokensMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKToolProgressMessage`	excluded		Agent SDK
+agent-sdk/typescript	`SDKUserMessage`	excluded		Agent SDK
+agent-sdk/typescript	Agent	excluded		Agent SDK
+agent-sdk/typescript	Agent (2)	excluded		Agent SDK
+agent-sdk/typescript	Bash (2)	excluded		Agent SDK
+agent-sdk/typescript	Task-notification subkinds	excluded		Agent SDK
+agent-sdk/typescript	Workflow	excluded		Agent SDK
+agent-sdk/typescript	Workflow (2)	excluded		Agent SDK
+agent-sdk/typescript	`applyFlagSettings()`	excluded		Agent SDK
+agent-sdk/typescript	`backgroundTasks()`	excluded		Agent SDK
+agent-sdk/typescript	`SessionStartHookInput`	excluded		Agent SDK
+agent-sdk/typescript	`SubagentStartHookInput`	excluded		Agent SDK
+agent-sdk/typescript	`SubagentStopHookInput`	excluded		Agent SDK
+agent-sdk/typescript	`SyncHookJSONOutput`	excluded		Agent SDK
+agent-sdk/typescript	`user_message_uuid`	excluded		Agent SDK
+agent-sdk/typescript	Handle slow or stalled API responses	excluded		Agent SDK
+agent-sdk/typescript	Load more plugin folders with `addPlugins`	excluded		Agent SDK
+agent-sdk/typescript	Methods	excluded		Agent SDK
+agent-sdk/typescript	Return type: `SessionMessage`	excluded		Agent SDK
+agent-sdk/user-input	Limitations	excluded		Agent SDK
+changelog	Claude Code changelog	excluded		release notes
+claude-code-on-the-web	Environment expired	excluded		web and desktop
+claude-code-on-the-web	Manage context	excluded		web and desktop
+desktop	Arrange your workspace	excluded		web and desktop
+desktop	Watch background tasks	excluded		web and desktop
+desktop-quickstart	Now what?	excluded		web and desktop
+whats-new/2026-w15	Week 15 · April 6–10, 2026	excluded		release notes
+whats-new/2026-w16	Week 16 · April 13–17, 2026	excluded		release notes
+whats-new/2026-w17	Week 17 · April 20–24, 2026	excluded		release notes
+whats-new/2026-w19	Week 19 · May 4–8, 2026	excluded		release notes
+whats-new/2026-w20	Week 20 · May 11–15, 2026	excluded		release notes
+whats-new/2026-w21	Week 21 · May 18–22, 2026	excluded		release notes
+whats-new/2026-w22	Week 22 · May 25–29, 2026	excluded		release notes
+whats-new/2026-w23	Week 23 · June 1–5, 2026	excluded		release notes
+whats-new/2026-w24	Week 24 · June 8–12, 2026	excluded		release notes
+whats-new/2026-w25	Week 25 · June 15–19, 2026	excluded		release notes
+whats-new/2026-w26	Week 26 · June 22–26, 2026	excluded		release notes
+whats-new/2026-w27	Week 27 · June 29 – July 3, 2026	excluded		release notes
+whats-new/2026-w29	Week 29 · July 13–17, 2026	excluded		release notes
+whats-new/2026-w30	Week 30 · July 20–24, 2026	excluded		release notes
+whats-new/2026-w32	Week 32 · August 3–7, 2026	excluded		release notes
+whats-new/2026-w33	Week 33 · August 10–14, 2026	excluded		release notes
+whats-new/2026-w35	Week 35 · August 24–28, 2026	excluded		release notes
+whats-new/2026-w37	Week 37 · September 7–11, 2026	excluded		release notes
+whats-new/index	What's new	excluded		release notes
+debug-your-config	Test against a clean configuration	included	excluding.md	the clause that `--safe-mode` disables custom agents
+debug-your-config	Test against a clean configuration	excluded		the rest belongs to the instructions and hooks references
+errors	Command blocked by the worktree isolation checks	included	isolation.md	
+worktrees	Worktree locks and manual removal	included	isolation.md	
+errors	Agent descriptions are over the 15.0k-token limit	excluded		the threshold and that every agent still loads repeat Create custom subagents and Understand automatic delegation
+errors	Agent terminated early due to an API error	excluded		the partial-output and retry sentences repeat API errors in subagents; the version sentences are history
+errors	Session agent no longer available	excluded		the lookup and default-tools sentences repeat sessions › What a resumed session restores
+agent-teams	Claude spawns teammates instead of subagents	excluded		the launch rule repeats Subagent names
+errors	Write or command blocked because the path names a network location	included	isolation.md	all but the version sentence
+errors	Write or command blocked because the path names a network location	excluded		the version sentence is history
+sub-agents	Let Claude wait for a subagent	excluded		the VS Code Run in background clause repeats vs-code › Move a running command or subagent to the background
+settings-reference	`subagentPromptCacheTtl`	excluded		the sentence listing the requests it applies to repeats prompt-caching › Which TTL each request gets
+monitoring-usage	Span hierarchy	excluded		the rest is not about subagents or belongs to another reference
+monitoring-usage	Span attributes	excluded		the rest is not about subagents or belongs to another reference
+monitoring-usage	Standard attributes	excluded		the rest is not about subagents or belongs to another reference
+monitoring-usage	Cost counter	excluded		the rest is not about subagents or belongs to another reference
+monitoring-usage	Tool result event	excluded		the rest is not about subagents or belongs to another reference
+monitoring-usage	Tool decision event	excluded		the rest is not about subagents or belongs to another reference
+llm-gateway-protocol	Request headers	excluded		the rest is not about subagents or belongs to another reference
+llm-gateway-protocol	Gateway hint headers	excluded		the rest is not about subagents or belongs to another reference
+mcp	Plugin-provided MCP servers	excluded		the rest is not about subagents or belongs to another reference
+permissions	What runs before you trust a folder	excluded		the rest is not about subagents or belongs to another reference
+settings-reference	`permissions.disableBypassPermissionsMode`	excluded		the rest is not about subagents or belongs to another reference
+sandboxing	Scope	excluded		the rest is not about subagents or belongs to another reference
+tools-reference	Tools reference	excluded		the rest is not about subagents or belongs to another reference
+tools-reference	Glob tool behavior	excluded		the rest is not about subagents or belongs to another reference
+tools-reference	Session search limit	excluded		the rest is not about subagents or belongs to another reference
+plugins/cli-reference	Validate a directory	excluded		the rest is not about subagents or belongs to another reference
+plugins/manifest-reference	Path-only fields	excluded		the rest is not about subagents or belongs to another reference
+large-codebases	Check out only the directories you need	excluded		the rest is not about subagents or belongs to another reference
+worktrees	Choose the base branch	excluded		the rest is not about subagents or belongs to another reference
+worktrees	What worktrees share with the main checkout	excluded		the rest is not about subagents or belongs to another reference
+model-config	Setting your model	excluded		the rest is not about subagents or belongs to another reference
+model-config	Ask before switching	excluded		the rest is not about subagents or belongs to another reference
+model-config	Pin models for third-party deployments	excluded		the rest is not about subagents or belongs to another reference
+advisor	Choose an advisor model	excluded		the rest is not about subagents or belongs to another reference
+settings-reference	`maxEffortLevel`	excluded		the rest is not about subagents or belongs to another reference
+settings-reference	`attribution.commit`	excluded		the rest is not about subagents or belongs to another reference
+settings-reference	`strictPluginOnlyCustomization`	excluded		the rest is not about subagents or belongs to another reference
+settings-reference	`disableSideloadFlags`	excluded		the rest is not about subagents or belongs to another reference
+permissions	Match by input parameter	excluded		the rest is not about subagents or belongs to another reference
+permissions	Move the session to another directory	excluded		the rest is not about subagents or belongs to another reference
+permissions	Additional directories grant file access, not configuration	excluded		the rest is not about subagents or belongs to another reference
+prompt-caching	Which TTL each request gets	excluded		the rest is not about subagents or belongs to another reference
+prompt-caching	Choose the TTL yourself	excluded		the rest is not about subagents or belongs to another reference
+vs-code	Use the prompt box	excluded		the rest is not about subagents or belongs to another reference
+keybindings	Chat actions	excluded		the rest is not about subagents or belongs to another reference
+checkpointing	Subagent edits not restored	excluded		the rest is not about subagents or belongs to another reference
+tools-reference	Foreground commands that move to the background	excluded		the rest is not about subagents or belongs to another reference
+tools-reference	Monitor tool	excluded		the rest is not about subagents or belongs to another reference
+terminal-config	Create a custom theme	excluded		the rest is not about subagents or belongs to another reference
+plugins/manifest-reference	Where each variable resolves	excluded		the rest is not about subagents or belongs to another reference
+plugins/components	Frontmatter fields in plugin agents	excluded		the rest is not about subagents or belongs to another reference
+sub-agents	Frontmatter reference	excluded		the rest is not about subagents or belongs to another reference
+sub-agents	Run every subagent on one model	excluded		the rest is not about subagents or belongs to another reference
+sub-agents	Which subagents run in the background	excluded		the rest is not about subagents or belongs to another reference
+sub-agents	Observe and steer running forks	excluded		the rest is not about subagents or belongs to another reference
+sub-agents	What loads at startup	excluded		the rest is not about subagents or belongs to another reference
+plugins/create	Test and debug	excluded		belongs to another tool type (plugins)
+plugins/create	Test and debug (2)	excluded		repeats the first copy of the section, which appears twice in the export
+sub-agents	Subagent files Claude Code skips	excluded		the plugin-subagent sentence repeats plugins/components › Frontmatter fields in plugin agents
+cli-reference	System prompt flags in resumed conversations	included	invoking.md	the first paragraph, and the sentences that in bare mode recording stays off unless `--system-prompt-snapshot on` and that `--system-prompt-snapshot off` rebuilds the prompt on every request
+cli-reference	System prompt flags in resumed conversations	excluded		the version sentences are history
+claude-directory	Cleaned up automatically	included	isolation.md	the sentence that the age cutoff applies to automatic removal of orphaned worktrees

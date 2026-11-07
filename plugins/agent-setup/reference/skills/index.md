@@ -71,9 +71,8 @@ and how to turn them off or find out why one isn't working.
   with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, while an earlier run of it is going, or when a session-scoped
   scheduled task fires with it as the prompt. An agent in a dynamic workflow that invokes one waits for its result.
   See [forking.md › Background or foreground](forking.md).
-- A backgrounded fork loses every built-in tool outside a fixed set, other than `Agent` and `ExitPlanMode`, even one
-  listed in its `tools` field, with no error unless the list resolves to nothing; `background: false` avoids that
-  cut.
+- A backgrounded fork runs with the narrower tool set that applies to background subagents, because the exemption
+  for forks of the conversation doesn't cover it; `background: false` keeps the full tool set.
   See [forking.md › Tools in a background fork](forking.md).
 - `paths` patterns are relative to Claude's current working directory; a skill with `paths` doesn't activate for
   files outside it, such as a sibling worktree, even one added with `/add-dir`.

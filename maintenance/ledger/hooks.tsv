@@ -285,7 +285,7 @@ headless	Auto-approve tools	excluded		its PermissionRequest sentence repeats the
 headless	Examples	excluded		repeats Start faster with bare mode and the `--safe-mode` clause of CLI flags
 headless	Read session metadata	included	troubleshooting.md	the sentence on `hook_started`, `hook_progress` and `hook_response` events
 headless	Read session metadata	excluded		the rest is not about hooks
-headless	Start faster with bare mode	included	excluding.md	the hooks sentences
+headless	Start faster with bare mode	included	excluding.md	the hooks clauses
 headless	Start faster with bare mode	excluded		the rest is not about hooks
 headless	Stop a run with SIGTERM	included	events.md	the SessionEnd sentences
 headless	Stop a run with SIGTERM	excluded		the rest is not about hooks

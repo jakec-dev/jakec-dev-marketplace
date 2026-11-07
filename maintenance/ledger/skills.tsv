@@ -32,13 +32,11 @@ commands	All commands	included	excluding.md	the clause of the `/skills` row on w
 skills	Run skills in a subagent	included	forking.md	
 skills	Example: Research skill using Explore agent	included	forking.md	
 checkpointing	Subagent edits not restored	included	forking.md	the Foreground forked skill bullet, and the part of the Any other subagent bullet on a forked skill that runs in the background
-headless	Follow subagent messages	included	forking.md	the sentences and the table on forked skills in the stream, including the `forked-command-` value, the default that a run's `tool_use` and `tool_result` blocks appear, and the sentence that messages from the main conversation carry `null` in `parent_tool_use_id`
-sub-agents	Run every subagent on one model	included	frontmatter.md	the bullets on which model subagents run on with both variables or only `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`, including the Explore exception; the sentence that while it is on Claude Code ignores the `model` field in subagent definitions and Claude can't pass a model; and the bullet on a skill that runs in a subagent with `model: inherit`
-sub-agents	Run subagents in foreground or background	included	forking.md	the Foreground and Background bullets on permission prompts
-sub-agents	Available tools	included	forking.md	the sentence that subagents inherit the main conversation's tools narrowed by two filters, the first filter's bullets (`AskUserQuestion`, `EnterPlanMode`, `EndConversation`, `ScheduleWakeup`, `WaitForMcpServers`, `Workflow`, `Agent` and `ExitPlanMode`), the sentence listing the built-in tools a background subagent keeps, the sentence that Claude Code removes every other built-in tool from a background subagent, whether inherited or listed in the `tools` field, so the same definition can resolve to different tools in the foreground and the background, and the sentence that the removal reports no error
+headless	Follow subagent messages	included	forking.md	the forked-skill clauses and sentences, including the `forked-command-` value, the forked-skill clause of the nesting paragraph, the Skill-tool and `/<skill-name>` table rows with the rest of the lead-in, the default that a run's `tool_use` and `tool_result` blocks appear, and the sentence that messages from the main conversation carry `null` in `parent_tool_use_id`
+sub-agents	Run every subagent on one model	included	frontmatter.md	the bullet on a skill that runs in a subagent with `model: inherit`
 skills	Frontmatter reference	included	frontmatter.md	
 skills	Using skill frontmatter outside Claude Code	included	frontmatter.md	
-errors	Model is restricted by your organization's settings	included	frontmatter.md	the sentence on a notice prefixed with an agent, skill, or command name, and the bullet on removing or updating the `model` frontmatter of a subagent, skill, or command
+errors	Model is restricted by your organization's settings	included	frontmatter.md	the skill and command clauses of the sentence on a notice prefixed with an agent, skill, or command name, and of the bullet on removing or updating the `model` frontmatter
 hooks	Common fields	included	frontmatter.md	the `once` row
 hooks	Hook handler fields	included	frontmatter.md	the sentence that a plugin's or skill's copy of the same handler stays separate
 hooks	Hooks in skills and agents	included	frontmatter.md	the opening sentence, the Skill hooks bullet, the skill example, and the two sentences on workspace trust for a project skill's frontmatter hooks
@@ -58,8 +56,8 @@ env-vars	Variables	included	invoking.md	the `CLAUDE_CODE_DISABLE_GIT_INSTRUCTION
 headless	Create a commit	included	invoking.md	the bullet that user-invoked skills and custom commands work in `-p`
 interactive-mode	Complete a command mid-prompt	included	invoking.md	the sentences that a plugin skill matches on its bare name and is inserted with its full name
 scheduled-tasks	Run a prompt repeatedly with /loop	included	invoking.md	the paragraph on passing a skill as the prompt, and its list
-sub-agents	Observe and steer running forks	included	invoking.md	the sentence that follow-up messages and skills go to the agent whose transcript is open
-sub-agents	Frontmatter reference	included	invoking.md	the clause of the `initialPrompt` row that commands and skills are processed when the agent runs as the main session agent, with its condition that it is ignored for plugin subagents
+sub-agents	Observe and steer running forks	included	invoking.md	the clause that skills typed with a fork's or subagent's transcript open go to that agent
+sub-agents	Frontmatter reference	included	invoking.md	the clause of the `initialPrompt` row that commands and skills are processed when the agent runs as the main session agent
 tools-reference	Tools reference	included	invoking.md	the `Skill` row, the Info sentence on how to read the `Permission required` column, and the sentence that a skill runs through the existing `Skill` tool
 vs-code	VS Code extension vs. Claude Code CLI	included	invoking.md	the Commands and skills row
 skills	Edit a skill during a session	included	loading.md	
@@ -119,7 +117,7 @@ skills	Share skills	included	sharing.md
 errors	Directory couldn't be resolved to a real location	included	sharing.md	
 env-vars	Variables	included	sharing.md	the `CLAUDE_CODE_SYNC_SKILLS` and `CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS` rows; the clauses of the `DISABLE_GROWTHBOOK`, `DISABLE_TELEMETRY`, `DO_NOT_TRACK` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` rows on what each does to feature-flag fetching, and the `DISABLE_TELEMETRY` row's sentence that `0` or `false` still opts out; the `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` row's sentence that `0` or `false` still disables this traffic; the `DO_NOT_TRACK` row's sentence that `0` leaves telemetry on
 env-vars	Features that need feature-flag fetching	included	sharing.md	the list of sessions that skip the fetch, and the item that such sessions can't sync the skills enabled for your claude.ai account into terminal sessions
-permissions	Additional directories grant file access, not configuration	included	sharing.md	the sentence limiting the exceptions to directories added with `--add-dir` or `/add-dir`; the clause that skills, commands and subagents from a flag-added directory load through the `project` setting source, so they don't load when `--setting-sources` excludes it; the rows on skills in `.claude/skills/` and command files in `.claude/commands/`; the paragraph that `/add-dir` on a subdirectory of the primary working directory loads its skills, commands and subagents for the session without a prompt or a new working directory
+permissions	Additional directories grant file access, not configuration	included	sharing.md	the sentence limiting the exceptions to directories added with `--add-dir` or `/add-dir`; the clause that skills and commands from a flag-added directory load through the `project` setting source, so they don't load when `--setting-sources` excludes it; the rows on skills in `.claude/skills/` and command files in `.claude/commands/`; the paragraph that `/add-dir` on a subdirectory of the primary working directory loads its skills and commands for the session without a prompt or a new working directory
 settings-reference	Variables Claude Code ignores in `env`	included	sharing.md	the clause that `CLAUDE_CODE_SYNC_SKILLS` is among the variables ignored in an `env` block, with the list's lead sentence
 skills	Work on Claude API projects	included	troubleshooting.md	the `prompt-audit` row
 skills	Find unused skills	included	troubleshooting.md	
@@ -131,7 +129,7 @@ skills	Claude stops following a skill	included	troubleshooting.md
 skills	Personal skills disappeared	included	troubleshooting.md	
 monitoring-usage	Skill activated event	included	troubleshooting.md	
 plugins/troubleshooting	Plugin loads but its skills are missing	included	troubleshooting.md	
-claude-directory	Cleaned up automatically	included	troubleshooting.md	the `skills/.trash/` row and the lead sentences on `cleanupPeriodDays`, its 30-day default and minimum of 1
+claude-directory	Cleaned up automatically	included	troubleshooting.md	the `skills/.trash/` row and the first two sentences of the lead paragraph on `cleanupPeriodDays`, its 30-day default and minimum of 1
 commands	All commands	included	troubleshooting.md	the `/skills` row
 costs	Plan usage breakdown	included	troubleshooting.md	the Attribution bullet and the sentence that the figures are approximate, from local session history on this machine
 debug-your-config	Check common causes	included	troubleshooting.md	the two skill rows
@@ -195,7 +193,6 @@ plugins/troubleshooting	`<directory> is not a plugin or skill folder` from `clau
 plugins/cli-reference	plugin validate	included	troubleshooting.md	the `--strict` flag row
 plugins/cli-reference	Output and exit codes	included	troubleshooting.md	the lead sentence and the exit code table
 settings-reference	Allowed source types	included	excluding.md	the `skills-dir` bullet of the rules beyond the table: any allowlist, even an empty one, stops Claude Code loading `@skills-dir` plugins from both `~/.claude/skills/` and a project's `.claude/skills/` unless it has the `{ "source": "skills-dir" }` entry and `strictPluginOnlyCustomization` is unset
-sub-agents	Let subagents spawn their own subagents	included	forking.md	the sentences that by default a subagent can spawn subagents up to three layers below the main conversation, and that `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` sets the number of layers
 features-overview	Understand how features load	included	troubleshooting.md	the sentence that Claude matches your task against skill descriptions, and that vague or overlapping descriptions can make it load the wrong skill or miss one
 features-overview	Understand how features load	included	loading.md	the Skills tab sentence that for user-only skills (`disable-model-invocation: true`) nothing loads until you invoke them
 skills	Restrict Claude's skill access	included	loading.md	the Hide individual skills sentence that `disable-model-invocation: true` removes the skill from Claude's context entirely
@@ -273,12 +270,12 @@ skills	Extend Claude with skills	excluded		the sentence on when to create a skil
 skills	Inject dynamic context	excluded		the synced-skill sentences repeat How Claude Code handles the body of a synced skill; "most useful in managed settings" repeats the Scope line of `disableSkillShellExecution`; the version requirements are history
 skills	Restrict Claude's skill access	excluded		the default-invocation and turn-grant sentences and the rest of the Hide individual skills paragraph with its Note repeat Control who invokes a skill and Pre-approve tools for a skill
 skills	Work on Claude API projects	excluded		the Minimum version column and the sentence on the versions the table tracks are history
-sub-agents	Available tools	excluded		the rest belongs to another tool type (subagents)
+sub-agents	Available tools	excluded		belongs to another tool type (subagents)
 sub-agents	Frontmatter reference	excluded		belongs to another tool type (subagents); its `skills` row repeats Preload skills into subagents and the `disable-model-invocation` row
 sub-agents	Observe and steer running forks	excluded		the rest belongs to another tool type (subagents)
 sub-agents	Preload skills into subagents	excluded		the rest belongs to another tool type (subagents) or repeats the `disable-model-invocation` row and Run skills in a subagent
 sub-agents	Run every subagent on one model	excluded		the rest belongs to another tool type (subagents)
-sub-agents	Run subagents in foreground or background	excluded		the rest belongs to another tool type (subagents)
+sub-agents	Run subagents in foreground or background	excluded		belongs to another tool type (subagents)
 sub-agents	What loads at startup	excluded		instructions owns the rest; the rest belongs to another tool type (subagents)
 tools-reference	Configure tools with permission rules and hooks	excluded		the rest is not about skills
 tools-reference	Output limits	excluded		the 5 GB kill, the 64 MiB truncation and the advice on when to raise `BASH_MAX_OUTPUT_LENGTH` are not about skills; the version requirement is history
@@ -505,7 +502,7 @@ plugins/cli-reference	Output and exit codes	excluded		the `--json` report fields
 settings-reference	Allowed source types	excluded		the rest belongs to another tool type (plugins)
 plugins/measure	OpenTelemetry events for plugin installs and use	excluded		its skill rows repeat Skill activated event; the rest belongs to another tool type (plugins)
 plugins/measure	Redacted plugin names in your backend	excluded		its skill rows repeat Skill activated event; the rest belongs to another tool type (plugins)
-sub-agents	Let subagents spawn their own subagents	excluded		the rest belongs to another tool type (subagents)
+sub-agents	Let subagents spawn their own subagents	excluded		belongs to another tool type (subagents)
 best-practices	Put team procedures in skills	excluded		recommends a tool type (guidance); its `disable-model-invocation` and context-cost sentences repeat Control who invokes a skill and Skill content lifecycle
 routines	Create a scheduled task	excluded		web and desktop
 skills	Stack several skills in one message	included	invoking.md	
@@ -532,8 +529,7 @@ hooks	Reload skills that a hook installs	included	loading.md
 plugins/mods/reference	Source and frontmatter fields on `skill.prompt`	included	loading.md	
 sub-agents	Which subagents run in the background	included	forking.md	the sentence that for a skill with `context: fork` Claude Code follows the rules in Run skills in a subagent instead, whether or not fork mode is on
 sub-agents	Which subagents run in the background	excluded		the rest belongs to another tool type (subagents)
-sub-agents	Tools, permissions, and results of background subagents	included	forking.md	the paragraph that background subagents surface every permission prompt in your main session and a lasting answer applies to the whole session
-sub-agents	Tools, permissions, and results of background subagents	excluded		the rest belongs to another tool type (subagents)
+sub-agents	Tools, permissions, and results of background subagents	excluded		belongs to another tool type (subagents)
 plugins/loading	Skills-directory plugins blocked by managed settings	included	excluding.md	
 plugins/loading	Trust check and component limits for repository plugins	included	placing.md	the sentences that a project-scope plugin, including a skills-directory plugin, loads only after the same trust check as project allow rules, that trusting a parent folder or running with `-p` isn't enough, and that the trust check doesn't apply to a plugin under your own `~/.claude/skills/`
 plugins/loading	Trust check and component limits for repository plugins	excluded		the component limits on MCP servers and monitors belong to another tool type (plugins)

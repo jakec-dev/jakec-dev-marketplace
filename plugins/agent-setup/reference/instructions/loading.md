@@ -103,28 +103,27 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 
 ## In subagents
 
-- Each subagent starts with a fresh, isolated context window and doesn't see your conversation history or the files
-  Claude has already read. The exception is a fork, which inherits the parent conversation instead of starting fresh.
-  [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
 - A non-fork subagent's initial context contains every level of the CLAUDE.md hierarchy the main conversation loads,
   including `~/.claude/CLAUDE.md`, project rules, `CLAUDE.local.md`, managed policy files, and any `AGENTS.md` files
-  loaded as project instructions. The built-in Explore and Plan agents skip this.
+  loaded as project instructions. The built-in Explore and Plan agents skip this. A fork inherits the parent
+  conversation instead.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
 - A subagent whose definition sets `omitClaudeMd` loads only the managed policy files, or none at all when the
   definition comes from managed settings. For Explore, Plan, and subagents with `omitClaudeMd`, a subdirectory's
   `CLAUDE.md` and matching path-scoped rules still load when the subagent works with files there. To launch one of
   your own subagents without the user, project, and local CLAUDE.md files, set `omitClaudeMd: true` in its
-  frontmatter or `--agents` JSON. `omitClaudeMd` is ignored when
-  the agent runs as the main session agent via `--agent` or the `agent` setting.
+  frontmatter or `--agents` JSON. `omitClaudeMd` is ignored when the agent runs as the main session agent via
+  `--agent` or the `agent` setting: `CLAUDE.md` files and project memory then still load through the normal message
+  flow.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup),
-  [sub-agents › Frontmatter reference](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields)
+  [sub-agents › Frontmatter reference](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields),
+  [sub-agents › Invoke subagents explicitly](https://code.claude.com/docs/en/sub-agents#invoke-subagents-explicitly)
 - The main conversation still has your full CLAUDE.md when it reads these subagents' results, so most rules don't
   need to reach the subagent itself. If a rule must, such as "ignore the `vendor/` directory," restate it in the
   prompt you give Claude when delegating.
   [sub-agents › What loads at startup](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup)
-- A subagent runs in its own worktree when you ask Claude to "use worktrees for your agents" or its frontmatter sets
-  `isolation: worktree`. It takes the instruction files it starts with from your main conversation, not from its
-  worktree. When that worktree is in the default location under `.claude/worktrees/`, the subagent also doesn't load
+- A subagent in its own worktree takes the instruction files it starts with from your main conversation, not from
+  its worktree. When that worktree is in the default location under `.claude/worktrees/`, the subagent also doesn't load
   the `CLAUDE.md` file or `.claude/rules/` directory at the worktree's root as it reads files there, even if those
   differ on the worktree's branch.
   [worktrees › Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees)
