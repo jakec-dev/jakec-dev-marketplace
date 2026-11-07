@@ -24,6 +24,17 @@ Claude also uses each skill on its own when a request matches its description. E
 built from Claude Code's documentation, and its guidance on what makes a Claude tool good, before it writes
 anything.
 
+## Reference
+
+The reference in `reference/` covers these tool types, one directory each, with an `index.md` to start from:
+
+| Type | What it covers |
+| --- | --- |
+| `instructions` | `CLAUDE.md`, `AGENTS.md` and rules in `.claude/rules/` |
+| `skills` | Skills and custom commands |
+| `hooks` | Hooks in settings, plugins, skills and subagents |
+| `subagents` | Subagent definitions, built-in agents, forks, isolation and running in the background |
+
 ## Install
 
 ```text
