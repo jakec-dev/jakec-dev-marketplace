@@ -12,8 +12,7 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
 
 ## Supported events
 
-- Prompt hooks (`type: "prompt"`) use an LLM to evaluate whether to allow or block an action; agent hooks
-  (`type: "agent"`) spawn an agentic verifier with tool access. Not all events support every hook type.
+- Not all events support every hook type.
   [hooks › Prompt-based hooks](https://code.claude.com/docs/en/hooks#prompt-based-hooks)
 - Events that support all five hook types (`command`, `http`, `mcp_tool`, `prompt`, and `agent`): `PermissionDenied`,
   `PostToolBatch`, `PostToolUse`, `PostToolUseFailure`, `PreToolUse`, `Stop`, `SubagentStop`, `TaskCompleted`,
@@ -36,11 +35,9 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
 
 - For decisions that require judgment rather than deterministic rules, use `type: "prompt"` hooks: instead of
   running a shell command, Claude Code sends your prompt and the hook's input data to a Claude model to make the
-  decision. You can specify a different model with the `model` field if you need more capability.
-  [hooks-guide › Prompt-based hooks](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks)
-- A prompt hook sends the hook input and your prompt to a Claude model, by default the one Claude Code uses for
-  [background functionality](https://code.claude.com/docs/en/costs#background-token-usage). The LLM responds with
-  structured JSON containing a decision, and Claude Code processes the decision automatically.
+  decision. The LLM responds with structured JSON containing a decision, and Claude Code processes the decision
+  automatically.
+  [hooks-guide › Prompt-based hooks](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks),
   [hooks › How prompt-based hooks work](https://code.claude.com/docs/en/hooks#how-prompt-based-hooks-work)
 - Set `type` to `"prompt"` and provide a `prompt` string instead of a `command`. Use the `$ARGUMENTS` placeholder to
   inject the hook's JSON input data into your prompt text.
@@ -62,6 +59,10 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
     }
   }
   ```
+
+- In a prompt or agent hook, you can write the `prompt` as a rule about what to block or allow, such as "Block any Bash
+  command that reads `.env` files", or as a condition that must hold, such as "All unit tests pass".
+  [hooks › Prompt hook configuration](https://code.claude.com/docs/en/hooks#prompt-hook-configuration)
 
 - Fields of a prompt hook, which also accepts the [common fields](https://code.claude.com/docs/en/hooks#common-fields):
   [hooks › Prompt hook configuration](https://code.claude.com/docs/en/hooks#prompt-hook-configuration),
@@ -148,12 +149,11 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
   workflows command hooks are preferred.
   [hooks › Agent-based hooks](https://code.claude.com/docs/en/hooks#agent-based-hooks)
 - An agent hook (`type: "agent"`) is like a prompt hook but with multi-turn tool access: instead of a single LLM
-  call, it spawns a subagent that can read files, search code, and inspect the codebase to verify conditions. Agent
-  hooks support the same events as prompt hooks, except `PermissionRequest`.
-  [hooks › Agent-based hooks](https://code.claude.com/docs/en/hooks#agent-based-hooks)
-- When an agent hook fires, Claude Code spawns a subagent with your prompt and the hook's JSON input. The subagent
-  can use tools like Read, Grep, and Glob to investigate. After up to 50 turns, it returns a structured
-  `{ "ok": true/false }` decision.
+  call, it spawns a subagent with your prompt and the hook's JSON input, which can use tools like Read, Grep, and Glob
+  to read files, search code, and inspect the codebase.
+  [hooks › Agent-based hooks](https://code.claude.com/docs/en/hooks#agent-based-hooks),
+  [hooks › How agent hooks work](https://code.claude.com/docs/en/hooks#how-agent-hooks-work)
+- After up to 50 turns, the agent hook's subagent returns a structured `{ "ok": true/false }` decision.
   [hooks › How agent hooks work](https://code.claude.com/docs/en/hooks#how-agent-hooks-work)
 - Claude Code allows the action if `ok` is `true`. If `ok` is `false`, it handles the block the same way as a prompt
   hook with `continueOnBlock: true` on that event, so on `PreToolUse` and `PostToolUse` the turn continues.
@@ -163,8 +163,7 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
   The fields are the same as for prompt hooks, except that agent hooks have a longer default timeout of 60 seconds
   and no `continueOnBlock` field.
   [hooks › Agent hook configuration](https://code.claude.com/docs/en/hooks#agent-hook-configuration)
-- The response schema is `{ "ok": true }` to allow or `{ "ok": false, "reason": "..." }` to block. Agent hooks don't
-  support the prompt-hook `impossible` field.
+- The response schema is `{ "ok": true }` to allow or `{ "ok": false, "reason": "..." }` to block.
   [hooks › Agent hook configuration](https://code.claude.com/docs/en/hooks#agent-hook-configuration)
 
   ```json

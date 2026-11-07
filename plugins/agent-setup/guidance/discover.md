@@ -2,11 +2,11 @@
 
 Deciding what in a repository or a way of working deserves a Claude tool, and what does not.
 
-The documentation states the "Signs that something belongs in CLAUDE.md" and "What the codebase already says"
-sections for CLAUDE.md files. It also says "Claude Code can read `AGENTS.md` as your
-project instructions"
-([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies those two sections to
-an `AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
+The documentation states the "Signs that something belongs in CLAUDE.md" section, and the architecture, `/doctor`
+and `/init` parts of "What the codebase already says", for CLAUDE.md files. It also says "Claude Code can read
+`AGENTS.md` as your project instructions"
+([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies those parts to an
+`AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
 
 ## Add a tool when a trigger appears
 
@@ -35,23 +35,27 @@ an `AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it 
   this codebase, when you type the same correction into chat that you typed last session, or when a new teammate
   would need the same context to be productive.
   [memory › When to add to CLAUDE.md](https://code.claude.com/docs/en/memory#when-to-add-to-claude-md)
-- What to include and exclude in CLAUDE.md:
+- For CLAUDE.md, "the file works best when it only holds what Claude couldn't work out from the code itself":
+  - "How to confirm work in this repo: the exact test, typecheck, and lint commands, and how to run a single test
+    file"
+  - "Places where the code is misleading: an old pattern that's everywhere but that new code must not copy, or a
+    directory that looks unused but isn't"
+  - "Decisions that aren't in the repo: which error helper the team settled on, how deploys work, what needs a
+    migration review"
+  - "Anything you've had to correct twice already"
 
-  | Include | Exclude |
-  | - | - |
-  | Bash commands Claude can't guess | Anything Claude can figure out by reading code |
-  | Code style rules that differ from defaults | Standard language conventions Claude already knows |
-  | Testing instructions and preferred test runners | Detailed API documentation (link to docs instead) |
-  | Repository etiquette (branch naming, PR conventions) | Information that changes frequently |
-  | Architectural decisions specific to your project | Long explanations or tutorials |
-  | Developer environment quirks (required env vars) | File-by-file descriptions of the codebase |
-  | Common gotchas or non-obvious behaviors | Self-evident practices like "write clean code" |
-
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
-- Check: each proposed entry traces to one of these four signs; no entry falls in the Exclude column.
+  [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
+- Check: does each proposed entry trace to one of the four signs or to one of the kinds of content listed?
 
 ## What the codebase already says
 
+- "Only write down what Claude can't find by reading the repo, or what it would otherwise spend time rediscovering
+  every session." "A good test before you write anything down for Claude": "Could it find this by reading the code?"
+  and "Would it actually go and look?" "If both are yes, leave it out."
+  [best-practices › Tell Claude what it can't see](https://code.claude.com/docs/en/best-practices#tell-claude-what-it-cant-see)
+  So describing your architecture and file layout in CLAUDE.md is advice current models have made unnecessary:
+  "Claude reads the repo itself. Only write down what isn't in there."
+  [best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)
 - The `/doctor` checkup's trims for a checked-in CLAUDE.md cut "content Claude can derive from the codebase, such
   as directory layouts, dependency lists, and architecture overviews", and keep "pitfalls, rationale, and
   conventions that differ from tool defaults".
@@ -59,8 +63,10 @@ an `AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it 
 - When `/init` generates a CLAUDE.md, the documentation says to "refine from there with instructions Claude wouldn't
   discover on its own".
   [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md)
+  "`/init` generates a starting version from your codebase. From there the work is mostly removing lines."
+  [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
 - Evidence: eval case linted-conventions-rule
-- Check: no proposed entry restates what reading the repository would tell Claude.
+- Check: is each proposed entry something Claude couldn't find by reading the code, or wouldn't go and look for?
 
 ## Update what exists before adding
 

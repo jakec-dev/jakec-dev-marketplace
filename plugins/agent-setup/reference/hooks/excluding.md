@@ -57,6 +57,14 @@ boundary, and reviewing a plugin's hooks before installing.
   [settings-reference › `disableAllHooks`](https://code.claude.com/docs/en/settings-reference#disableallhooks),
   [hooks › Disable or remove hooks](https://code.claude.com/docs/en/hooks#disable-or-remove-hooks),
   [plugins/mods/admin › Choose how much to allow](https://code.claude.com/docs/en/plugins/mods/admin#choose-how-much-to-allow)
+- In the Agent SDK's `managedSettings` option, on a machine where an administrator deploys managed settings, Claude Code
+  ignores the key unless the administrator
+  [lets an embedding host add policy](https://code.claude.com/docs/en/managed-settings#let-an-embedding-host-add-policy).
+  Where it takes effect, user, project, local and plugin hooks stop, as do any in the SDK's `settings` option; an
+  administrator's managed hooks, force-enabled plugins' hooks and your SDK hook callbacks keep running. Passing
+  `disableAllHooks: true` there doesn't by itself disable command plugin sources.
+  [settings-reference › `disableAllHooks`](https://code.claude.com/docs/en/settings-reference#disableallhooks),
+  [settings-reference › `disableCommandPluginSources`](https://code.claude.com/docs/en/settings-reference#disablecommandpluginsources)
 - The key also stops mods, which are plugins whose code registers hooks. In managed settings, the mods in every
   installed plugin stop, your organization's included. In any other settings file, the mods you installed stop and your
   organization's mods keep running. Mods built into Claude Code keep running in both cases, each with its own switch.
@@ -84,7 +92,8 @@ boundary, and reviewing a plugin's hooks before installing.
   ```
 
 - Everything else is blocked: user, project and local hooks, hooks and mods from other installed plugins, and hooks
-  declared in agent frontmatter. Mods built into Claude Code keep running. To block only users' mods, set
+  declared in agent frontmatter. A plugin's monitors don't start unless the plugin is force-enabled. Mods built into
+  Claude Code keep running. To block only users' mods, set
   `allowManagedModsOnly` instead, which leaves users' settings hooks running.
   [settings-reference › What runs under `allowManagedHooksOnly`](https://code.claude.com/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly),
   [plugins/mods/admin › Choose how much to allow](https://code.claude.com/docs/en/plugins/mods/admin#choose-how-much-to-allow),
@@ -104,16 +113,11 @@ boundary, and reviewing a plugin's hooks before installing.
   strictest value any source sets, and a looser value applies only from the highest-ranked source.
   [managed-settings › Compose every managed source](https://code.claude.com/docs/en/managed-settings#compose-every-managed-source)
 - `strictPluginOnlyCustomization` with `"hooks"` in its array locks the `hooks` surface: Claude Code stops running
-  hooks from user, project and local `settings.json`, and keeps running plugin hooks and hooks in managed settings.
-  Scope: managed; default: not locked. Setting the key to `true` locks all four kinds of customization (`"skills"`,
-  `"agents"`, `"hooks"` and `"mcp"`), hooks included. Claude Code ignores surface names it doesn't recognise rather
-  than failing the settings file.
-  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks),
-  [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization)
-- When a managed source sets `strictPluginOnlyCustomization` to a value that is neither a boolean nor an array, Claude
-  Code treats it as `true`, locking all four surfaces, hooks included. An array entry that Claude Code doesn't recognise
-  as a surface locks nothing.
-  [managed-settings › Keys that fail closed](https://code.claude.com/docs/en/managed-settings#keys-that-fail-closed)
+  hooks from user, project and local `settings.json`, and keeps running hooks in managed settings and hooks from
+  plugins other than skills-directory plugins. It also stops frontmatter hooks in agents from the sources that an
+  `agents` lock would block, and those agents still load while their own surface isn't locked. Scope: managed;
+  default: not locked.
+  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
 
   ```json
   {
@@ -140,12 +144,16 @@ boundary, and reviewing a plugin's hooks before installing.
 - Hostname matching is case-insensitive and treats `hooks.example.com.`, with the trailing dot that marks a fully
   qualified domain name, the same as `hooks.example.com`. The allowlist applies to hooks from every source, including
   managed settings.
+  In the Agent SDK's `managedSettings` option, Claude Code ignores a list with entries; pass it in the SDK's
+  [`settings` option](https://code.claude.com/docs/en/agent-sdk/typescript#options) instead.
   [settings-reference › `allowedHttpHookUrls`](https://code.claude.com/docs/en/settings-reference#allowedhttphookurls)
 - `httpHookAllowedEnvVars` sets an outer limit on the `allowedEnvVars` list of every HTTP hook: a hook can put an
   environment variable's value into a request header only if both its own `allowedEnvVars` and this key name it. Use it
   to stop a hook from reading a secret it shouldn't, even when the hook's definition asks for it. Scope: any file, and
   arrays merge across settings files; type: array of environment variable names; default: unset, so each hook's own
   `allowedEnvVars` list applies. It applies to hooks from every source, including managed settings.
+  In the Agent SDK's `managedSettings` option, Claude Code ignores a list with entries; pass it in the SDK's
+  [`settings` option](https://code.claude.com/docs/en/agent-sdk/typescript#options) instead.
   [settings-reference › `httpHookAllowedEnvVars`](https://code.claude.com/docs/en/settings-reference#httphookallowedenvvars),
   [hooks › Hook locations](https://code.claude.com/docs/en/hooks#hook-locations)
 
@@ -226,24 +234,33 @@ boundary, and reviewing a plugin's hooks before installing.
   [cli-reference › CLI flags](https://code.claude.com/docs/en/cli-reference#cli-flags),
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables),
   [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration)
-- To test with no user or project hooks another way, point `CLAUDE_CONFIG_DIR` at an empty directory and launch from a
-  directory with no `.claude` folder, `.mcp.json` or `CLAUDE.md`. The clean session has no user or project settings or
-  hooks. Managed settings still apply if your organization deploys them, because Claude Code reads MDM profiles,
-  registry policy and `managed-settings.json` from locations outside the configuration directory, and fetches
-  server-managed settings again for the clean session once it has credentials.
-  [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration)
-- `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=1` uses a shorter system prompt and abbreviated tool descriptions on any model; the
-  full tool set, hooks, MCP servers and CLAUDE.md discovery remain enabled, so it doesn't turn hooks off.
+- `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT` chooses between Claude Code's full system prompt and a shorter one with
+  abbreviated tool descriptions: `1` uses the shorter prompt on any model, and `0`, `false`, `no` or `off` uses the
+  full prompt on any model. Either prompt keeps the full tool set, hooks, MCP servers and CLAUDE.md discovery, so it
+  doesn't turn hooks off.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` strips credentials from subprocess environments (Bash tool, hooks, MCP stdio
-  servers): Anthropic and cloud provider credentials, any other variable Claude Code recognises as a credential, and
-  credentials embedded in package registry URLs. The parent Claude process keeps them for API calls. The scrub also
-  removes Claude Code's own configuration-store pointer variables (such as `CLAUDE_CONFIG_DIR`), so a child process
-  cannot locate a relocated configuration directory; leave the scrub unset if a subprocess needs these variables. On
-  Linux, it also runs Bash subprocesses in an isolated PID namespace so they cannot read host process environments via
-  `/proc`; as a side effect, `ps`, `pgrep` and `kill` cannot see or signal host processes. `claude-code-action` sets it
-  automatically when `allowed_non_write_users` is configured.
-  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB=1` removes credentials from the environments of the subprocesses Claude Code
+  starts, such as Bash commands, hooks and stdio MCP servers, which reduces what a prompt injection attack can read.
+  The Claude Code process keeps the credentials for its own API calls. `claude-code-action` sets it automatically when
+  `allowed_non_write_users` is configured.
+  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables),
+  [env-vars › What the subprocess environment scrub removes](https://code.claude.com/docs/en/env-vars#what-the-subprocess-environment-scrub-removes)
+- The scrub recognises a credential by its variable name or by the shape of its value, so use it as one layer alongside
+  narrow permission rules rather than as the only control. Leave the scrub unset if a subprocess needs one of the
+  removed variables. What it does to example variables:
+  [env-vars › What the subprocess environment scrub removes](https://code.claude.com/docs/en/env-vars#what-the-subprocess-environment-scrub-removes)
+
+  | Example variable | What the scrub does |
+  | :- | :- |
+  | `ANTHROPIC_API_KEY`, `AWS_SECRET_ACCESS_KEY` | Removes it |
+  | `NPM_TOKEN`, `DB_PASSWORD` | Removes it, because the name looks like a credential |
+  | `DATABASE_URL` that contains a password | Removes it, because the value looks like a credential |
+  | `PIP_INDEX_URL` or `NPM_CONFIG_REGISTRY` that contains a password | Keeps the URL and cuts the username and password from it |
+  | `CLAUDE_CONFIG_DIR` | Removes it |
+  | `GITHUB_TOKEN`, `GH_TOKEN`, `GH_ENTERPRISE_TOKEN`, `GITHUB_ENTERPRISE_TOKEN` | Leaves it in place, so that `gh` and scripts that call the GitHub API keep working |
+  | `HTTP_PROXY`, `HTTPS_PROXY` | Leaves it in place, including a [username and password in the URL](https://code.claude.com/docs/en/network-config#basic-authentication). The [sandbox](https://code.claude.com/docs/en/sandboxing#network-isolation) can set these variables itself for sandboxed commands |
+  | `GIT_CONFIG_COUNT`, `GIT_CONFIG_KEY_<n>`, `GIT_CONFIG_VALUE_<n>` | Leaves it in place, whatever it holds |
+  | A secret whose variable name and value don't look like a credential | Leaves it in place |
 
 ## The sandbox boundary
 
@@ -285,9 +302,6 @@ boundary, and reviewing a plugin's hooks before installing.
   "user, project, local, and plugin hooks" when set outside managed settings, and "every configured hook" in managed
   settings.
   [settings-reference › `disableAllHooks`](https://code.claude.com/docs/en/settings-reference#disableallhooks)
-- Whether `strictPluginOnlyCustomization` with `"hooks"` also blocks frontmatter hooks in skills and agents: the
-  documentation names hooks from user, project and local `settings.json`.
-  [settings-reference › `strictPluginOnlyCustomization.hooks`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-hooks)
 - Whether `--bare` or `CLAUDE_CODE_SIMPLE` skips hooks from managed settings: the documentation says only that they skip
   auto-discovery of hooks, and states that `--safe-mode` still applies managed hooks.
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)

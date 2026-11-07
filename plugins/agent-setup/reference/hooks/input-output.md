@@ -7,6 +7,8 @@ context, terminal notifications, HTTP responses and combined results.
 
 - Input
 - Exit codes
+- Hooks that start a background process
+- Block the action when a hook fails
 - Exit code 2 behavior per event
 - Plain text and JSON on stdout
 - JSON output
@@ -35,6 +37,11 @@ context, terminal notifications, HTTP responses and combined results.
 - A hook process inherits the parent environment, apart from the `OTEL_*` exporter variables that Claude Code removes
   from every subprocess it spawns and, when `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set to `1`, the variables it strips.
   [hooks › Common input fields](https://code.claude.com/docs/en/hooks#common-input-fields)
+- In a session that gets the HIPAA configuration, Claude Code also removes Anthropic credentials from the hook's
+  environment: the credentials it uses to reach Anthropic, such as `ANTHROPIC_API_KEY` and `ANTHROPIC_AUTH_TOKEN`. It
+  doesn't remove cloud provider or GitHub credentials.
+  [hooks › Common input fields](https://code.claude.com/docs/en/hooks#common-input-fields)
+  and [hipaa-setup › Anthropic credentials in commands, hooks, and MCP servers](https://code.claude.com/docs/en/hipaa-setup#anthropic-credentials-in-commands-hooks-and-mcp-servers)
 
 Common input fields, in addition to each event's own fields:
 [hooks › Common input fields](https://code.claude.com/docs/en/hooks#common-input-fields)
@@ -47,14 +54,14 @@ Common input fields, in addition to each event's own fields:
 | `cwd` | Current working directory when the hook is invoked |
 | `scratchpad_dir` | Path to the session's [scratchpad directory](https://code.claude.com/docs/en/claude-directory#session-scratchpad-directory), where Claude keeps temporary working files. Absent when the session has no scratchpad or the temp directory is unavailable |
 | `permission_mode` | Current [permission mode](https://code.claude.com/docs/en/permissions#permission-modes): `"default"`, `"plan"`, `"acceptEdits"`, `"auto"`, `"dontAsk"`, or `"bypassPermissions"`. The mode labeled **Manual** arrives as `"default"`, never as `"manual"`, so scripts that match `"default"` keep working. Not all events receive this field. Check the JSON example in each [hook event](https://code.claude.com/docs/en/hooks#hook-events) section |
-| `effort` | Object with a `level` field holding the [effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level) in effect when the hook runs: `"low"`, `"medium"`, `"high"`, `"xhigh"`, or `"max"`. If you set a level the active model doesn't support, `level` reports the level Claude Code ran instead; [Adjust effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level) says how it picks that level. The object matches the [status line](https://code.claude.com/docs/en/statusline#available-data) `effort` field. Present for events that fire within a tool-use context, such as `PreToolUse`, `PostToolUse`, `Stop`, and `SubagentStop`, when the current model supports the effort parameter. The level is also available to hook commands and the Bash tool as the `$CLAUDE_EFFORT` environment variable. |
+| `effort` | Object whose `level` is the [effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level) setting when the hook runs: `"low"`, `"medium"`, `"high"`, `"xhigh"`, or `"max"`. Present for `PreToolUse`, `PostToolUse`, `Stop`, `SubagentStop`, and other events with a tool-use context, on models with effort. If the model doesn't support your level, `level` is the level that ran. A level you changed can show here before it [starts](https://code.claude.com/docs/en/model-config#when-a-new-effort-level-starts). |
 | `hook_event_name` | Name of the event that fired |
 
-When running with `--agent` or inside a subagent, two additional fields are included:
+`agent_id` and `agent_type` tell your script which agent a hook fired in, such as a subagent, an [in-process teammate](https://code.claude.com/docs/en/agent-teams#choose-a-display-mode), or the agent you chose with `--agent`:
 
 | Field | Description |
 | :- | :- |
-| `agent_id` | Unique identifier for the subagent. Present only when the hook fires inside a subagent call. Use this to distinguish subagent hook calls from main-thread calls. |
+| `agent_id` | Unique identifier for the subagent or in-process teammate the hook fires in. |
 | `agent_type` | Agent name (for example, `"Explore"` or `"security-reviewer"`). Present when the session uses `--agent` or the hook fires inside a subagent. For subagents, the subagent's type takes precedence over the session's `--agent` value. See [SubagentStart](https://code.claude.com/docs/en/hooks#subagentstart) for the values custom and plugin subagents report and how to write a matcher against a plugin-scoped name. |
 
 - A session has a scratchpad only when all of these hold: you're signed in with a claude.ai account rather than an API
@@ -98,35 +105,59 @@ When running with `--agent` or inside a subagent, two additional fields are incl
 
 ## Exit codes
 
-- The exit code tells Claude Code whether the action should proceed, be blocked, or be ignored, but it doesn't act
-  alone. Claude Code reads JSON output fields from stdout on every exit code, not just 0, and for events that use the
-  standard decision model, a parsed object that passes schema validation takes effect alongside the code. Exit 2's
-  block is the one outcome JSON can't override.
+- When a hook's run finishes, Claude Code uses its exit code to decide whether to continue with the action that
+  triggered it, such as a tool call or a prompt. Success is exit 0: Claude Code applies any JSON output fields the hook
+  printed, and the action goes ahead unless those fields block or deny it. A blocking error is exit 2: on events that
+  can block, Claude Code stops the action. A non-blocking error is any other exit code, or another failure such as not
+  starting or printing invalid JSON: the action goes ahead, except for hooks whose failure blocks the action, for
+  example a hook with `onFailure` set to `"block"`. On events such as `PreToolUse`, a non-blocking error shows a
+  `<hook name> hook error` notice in the transcript.
   [hooks › Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)
-- Exit code 2 behavior per event says what exit codes do for each event, and Decision control says which decision
-  fields each event honors. Universal fields such as `systemMessage` work across most events and are listed in the
-  JSON output table.
+- What the hook prints to stdout can change the outcome; for example, when a `PreToolUse` hook exits 1 but prints JSON
+  that passes validation, that JSON can still decide what happens. To find a hook's outcome on an event such as
+  `PreToolUse`, match its stdout in the first column of this table with its exit code along the top.
+  [hooks › Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)
+
+| Stdout | Exit 0 | Exit 2 | Any other exit code |
+| :- | :- | :- | :- |
+| JSON object that passes [schema validation](https://code.claude.com/docs/en/hooks#json-output) | Success. The fields apply | Blocking error. Claude Code still reads the fields, but they can't override the block | Success. Claude Code ignores the exit code, and the fields alone decide. For hooks [whose failure blocks the action](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails), the run counts as a failure instead |
+| JSON that [can't be parsed](https://code.claude.com/docs/en/hooks#exit-code-0) or fails schema validation | Non-blocking error. The notice carries the parse or validation message | Blocking error. Your stderr is the reason | Non-blocking error. The notice carries the parse or validation message |
+| [Plain text](https://code.claude.com/docs/en/hooks#exit-code-0), or nothing | Success | Blocking error. Your stderr is the reason | Non-blocking error. The notice carries the first line of your stderr |
+
+- Some events have their own rules. `WorktreeCreate`: any non-zero exit code makes worktree creation fail, whatever your
+  JSON says. `WorktreeRemove`: any non-zero exit code makes worktree removal fail if the directory still exists
+  afterward. `Stop`, `SubagentStop`, `TaskCompleted` and a plugin's `UserPromptSubmit` hook: when the hook exits 2 with
+  nothing on stdout and its stderr says a file is missing, such as `No such file or directory`, Claude Code treats the
+  run as a non-blocking error. `Elicitation` and `ElicitationResult`: Claude Code applies the hook's
+  `hookSpecificOutput` when it exits 0, and ignores it on any other exit code. Events that discard hook output, such as
+  `StopFailure`: Claude Code ignores the JSON on any exit code, apart from side-effect fields like `terminalSequence`,
+  which still fire.
+  [hooks › Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)
+- To check what exit code 2 does on an event, see Exit code 2 behavior per event below; to check which decision fields
+  an event honors, see Decision control below.
   [hooks › Exit code output](https://code.claude.com/docs/en/hooks#exit-code-output)
 - Exit 0 means success, and is the intended exit code when you print JSON for structured control. For a `PreToolUse`
   hook it doesn't approve the tool call: the normal permission flow still applies.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
   and [hooks-guide › Hook output](https://code.claude.com/docs/en/hooks-guide#hook-output)
-- Stderr from a hook that exits 0 goes to the debug log only, never the transcript, and Claude never sees it. To
-  surface a warning to Claude from a `PostToolUse` or `PostToolUseFailure` hook, exit 2 instead so Claude sees the
-  stderr even though the tool already ran.
+- Claude never sees stderr from a hook that exits 0. To read it yourself on events such as `PreToolUse`, enable debug
+  logging. To surface a warning to Claude from a `PostToolUse` or `PostToolUseFailure` hook, exit 2 instead so Claude
+  sees the stderr even though the tool already ran.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
-- Exit 2 means a blocking error. On events that can block, exit 2 blocks whether or not you print JSON: even a JSON
-  `permissionDecision` of `"allow"` can't override it. Claude Code still reads any valid JSON output on stdout, except
-  that on `Elicitation` and `ElicitationResult`, an exit-2 hook's `hookSpecificOutput` is ignored.
+- Exit with code 2 to block the action. On events that can block, Claude Code stops the action: a `PreToolUse` hook
+  blocks the tool call, for example, and a `UserPromptSubmit` hook rejects the prompt.
   [hooks › Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)
-- The blocking message is the reason from your JSON's blocking decision when it makes one, and your stderr text
-  otherwise. What the block does varies by event: `PreToolUse` blocks the tool call, `UserPromptSubmit` rejects the
-  prompt, and so on. Where the message goes depends on the event: some events feed it to Claude as feedback, others
-  show it to the user, and a few, such as `ConfigChange` and `Elicitation`, surface no message.
+- The message that comes with an exit-2 block is the hook's stderr. If the hook also printed JSON that makes a blocking
+  decision, Claude Code uses that decision's reason instead. Where the message goes depends on the event: some events
+  feed it to Claude as feedback, others show it to the user, and a few, such as `ConfigChange` and `Elicitation`,
+  surface no message.
   [hooks › Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)
   and [hooks-guide › Hook output](https://code.claude.com/docs/en/hooks-guide#hook-output)
-- A hook that exits 2 while printing JSON that fails JSON output schema validation still blocks: Claude Code uses
-  stderr as the blocking reason and records the validation failure in the debug log.
+- Exit 2 blocks even when the hook prints JSON. JSON that passes schema validation: Claude Code still reads the JSON
+  output fields, but they can't override the block, and even a `permissionDecision` of `"allow"` doesn't let the action
+  through; on `Elicitation` and `ElicitationResult`, an exit-2 hook's `hookSpecificOutput` is ignored. JSON that fails
+  schema validation: the hook still blocks, Claude Code uses stderr as the blocking reason and records the validation
+  failure in the debug log.
   [hooks › Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)
 - This script blocks `rm` commands by exiting 2 and leaves every other command to the normal permission flow.
   [hooks › Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)
@@ -145,39 +176,134 @@ fi
 exit 0  # No decision: the normal permission flow applies
 ```
 
-- For most hook events, exit code 2 is the only exit code that blocks through the code alone. Without valid JSON on
-  stdout, Claude Code treats exit code 1 as a non-blocking error and proceeds with the action, even though 1 is the
-  conventional Unix failure code, so a hook meant to enforce a policy must use `exit 2`. The worktree events differ:
-  any non-zero exit code from `WorktreeCreate` aborts worktree creation, and any non-zero exit code from
-  `WorktreeRemove` makes worktree removal fail if the directory still exists afterward.
-  [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
-- Any other exit code doesn't block on its own for most hook events; what happens depends on your stdout. With a
-  parsed object that passes schema validation, for events that use the standard decision model, Claude Code ignores the
-  exit code and the JSON alone decides the outcome: each field the event supports is honored, including
-  `permissionDecision`, `additionalContext`, `updatedInput` and `systemMessage`, and the hook isn't reported as an
-  error.
-  [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
-- With a parsed object that fails schema validation, or with stdout that Claude Code tries to parse as JSON and can't,
-  for events that use the standard decision model, it's a non-blocking error on any exit code other than 2: the action
-  proceeds, and the `<hook name> hook error` notice carries the validation or parse message.
-  [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
-- With stdout that Claude Code treats as plain text, or with empty stdout, it's a non-blocking error for most hook
-  events: the action proceeds, and the transcript shows a `<hook name> hook error` notice followed by the first line of
-  stderr, prefixed with `Failed with non-blocking status code:`. To capture the full stderr, enable debug logging with
-  `claude --debug` or by running `/debug` mid-session.
+- With this script registered as a `PreToolUse` hook on `Bash`, a command that starts with `rm` is blocked, and Claude
+  receives the hook's stderr as the tool's error, prefixed with the event name, the tool name, and the hook's command.
+  [hooks › Exit code 2](https://code.claude.com/docs/en/hooks#exit-code-2)
+
+```text
+PreToolUse:Bash hook error: [${CLAUDE_PROJECT_DIR}/.claude/hooks/no-rm.sh]: Blocked: rm commands are not allowed
+```
+
+- A `<hook name> hook error` notice with `Failed with non-blocking status code:` means the hook's exit code wasn't 0 or
+  2 and its stdout was plain text or empty. Unless the hook is one whose failure blocks the action, this is a
+  non-blocking error, so the hook didn't stop the action. To capture the hook's full stderr rather than the first line
+  the notice shows, enable debug logging, with `claude --debug` or by running `/debug` mid-session.
   [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
   and [hooks-guide › Hook output](https://code.claude.com/docs/en/hooks-guide#hook-output)
-- Events outside the standard decision model keep their own rows in the per-event table: `WorktreeCreate` fails
-  creation on any nonzero exit no matter what your JSON says, and events that discard hook output entirely, like
-  `StopFailure`, ignore your JSON on every exit code, apart from side-effect fields like `terminalSequence`, which
-  still fire.
+- For example, when a `PreToolUse` hook on `Bash` prints `something broke` to stderr and exits 1, the
+  `PreToolUse:Bash hook error` notice carries this line.
   [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
-- A hook that can't start lands in the same non-blocking bucket. When the script path doesn't exist or isn't
-  executable, the shell exits with a code like 127 and you see the same notice with the interpreter's message, such as
-  `Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or directory`. For most hook events,
-  the action proceeds, so a mistyped path in `settings.json` leaves a policy hook's gate silently disabled; watch for
-  this notice on its first run.
+
+```text
+Failed with non-blocking status code: something broke
+```
+
+- If the notice carries the shell's `No such file or directory` message, as in the following line, the hook never ran,
+  for example because its script path doesn't exist. If the path is wrong, correct it where the hook is configured.
+  In shell form, when the script path doesn't exist or isn't executable, the shell exits with a code like 127 and the
+  notice carries the interpreter's message. Unless the hook is one whose failure blocks the action, a hook that can't
+  start is a non-blocking error too.
   [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
+
+```text
+Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or directory
+```
+
+- When you set up a policy hook, watch for this notice on its first run, because a mistyped path in `settings.json`
+  means the hook never runs. To block the action when the hook can't start, set `onFailure: "block"`.
+  [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
+- Exit code 1 without valid JSON output is a non-blocking error unless the hook is one whose failure blocks the action,
+  even though 1 is the conventional Unix failure code. If a hook is meant to enforce a policy, use `exit 2`.
+  [hooks › Other exit codes](https://code.claude.com/docs/en/hooks#other-exit-codes)
+- With an exit code besides 0 and 2 and no valid JSON output, the action proceeds on most events, unless the hook is
+  one whose failure blocks the action. For a parsed object that passes schema validation, Claude Code ignores the exit
+  code, the JSON alone decides the outcome, and the hook isn't reported as an error; a parsed object that fails
+  schema validation, or stdout that Claude Code tries to parse as JSON but that isn't valid JSON, is a non-blocking
+  error whose notice carries the validation or parse message.
+  [hooks-guide › Hook output](https://code.claude.com/docs/en/hooks-guide#hook-output)
+
+## Hooks that start a background process
+
+- If a command hook makes its decision in a background process and exits, a deny that process prints after Claude Code
+  has stopped reading doesn't block the tool call. For a hook that isn't async, Claude Code finishes reading the hook's
+  output shortly after the hook's own process exits.
+  [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
+- Print the decision before you start a background process, and redirect that process's stdout and stderr. If the
+  script prints an allow, then starts a background process without redirecting its stdout and stderr, Claude Code
+  blocks the tool call, and the hook error includes `refusing to honor the suspect capture`.
+  [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
+- This `PreToolUse` hook script prints the decision with `policy-check.sh`, then uploads metrics in the background.
+  `|| exit $?` makes the check's exit code the hook's own, so a check that exits 2 to deny still blocks; otherwise the
+  hook exits with the last line's code, which is 0. `>/dev/null 2>&1 &` runs `upload-metrics.sh` in the background with
+  its output redirected, so it doesn't keep the hook's output open. To test it, make `policy-check.sh` exit 2, then
+  trigger a tool call that the hook matches: the tool call is blocked.
+  [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
+
+```bash
+#!/bin/bash
+"$CLAUDE_PROJECT_DIR"/.claude/hooks/policy-check.sh || exit $?
+"$CLAUDE_PROJECT_DIR"/.claude/hooks/upload-metrics.sh >/dev/null 2>&1 &
+```
+
+## Block the action when a hook fails
+
+- On most events, when a hook fails or times out, Claude Code still carries out the action, so a policy hook with a
+  wrong path or a crashing script lets everything through. To block the action instead, set `"onFailure": "block"` on a
+  `command` or `http` hook.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+- On Windows without Git Bash, a shell-form `PreToolUse` or `PermissionRequest` command hook that fails with
+  `onFailure` unset can instead block the tool call.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+- This `PreToolUse` hook in `.claude/settings.json` runs a project script before each Bash command, and blocks the
+  command if the script fails.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/check-command.js"],
+            "onFailure": "block"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+- To test it, leave `check-command.js` missing and ask Claude to run a Bash command such as `ls`. Claude Code blocks
+  the call, and the error includes `failed; blocking because onFailure is "block"` followed by node's own error
+  output, trimmed here to one line. After a timeout, the message says `timed out` instead of `failed`. Without
+  `onFailure` set, the same missing script is a non-blocking error and `ls` runs.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+
+```text
+PreToolUse:Bash hook error: [node ${CLAUDE_PROJECT_DIR}/.claude/hooks/check-command.js]: failed; blocking because onFailure is "block"
+Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
+```
+
+- Each of these counts as a failure. Can't start: a command hook fails to start, for example because the script or
+  executable doesn't exist. Exit code other than 0 or 2: counts for a command hook even if it printed JSON that allows
+  the action, such as `permissionDecision: "allow"`, so to return a JSON decision, exit 0. HTTP error: an HTTP hook's
+  connection fails, or the response status isn't 2xx. Timeout: the hook reaches its `timeout`. Invalid output: the JSON
+  output can't be parsed or fails schema validation; for an HTTP hook, a 2xx body that is neither empty nor a JSON
+  object also counts, and plain-text stdout from a command hook isn't a failure.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+- With `"block"` set, a failure does what exit code 2 does on that event, except on `PermissionRequest`, where it
+  denies the request. For example, a `PreToolUse` failure blocks the tool call and a `UserPromptSubmit` failure blocks
+  the prompt.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
+- The field has no effect on `Stop`, `SubagentStop`, `TaskCompleted` and `TeammateIdle` hooks, because exit code 2 on
+  these events sends Claude back to keep working and Claude can't repair a hook that won't run. It also has no effect
+  on background command hooks, which are command hooks that set `async` or `asyncRewake`.
+  [hooks › Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails)
 
 ## Exit code 2 behavior per event
 
@@ -215,7 +341,7 @@ already happened or can't be prevented.
 | `PostCompact` | No | Shows stderr to user only |
 | `PreModelSwitch` | Yes | Blocks the model switch and shows stderr to the user |
 | `PostModelSwitch` | No | Shows stderr to user only; the model already switched |
-| `Elicitation` | Yes | Denies the elicitation |
+| `Elicitation` | Yes | Declines the request, and no dialog appears |
 | `ElicitationResult` | Yes | Blocks the response (action becomes decline) |
 | `WorktreeCreate` | Yes | Any non-zero exit code causes worktree creation to fail |
 | `WorktreeRemove` | Yes | Any non-zero exit code causes worktree removal to fail if the directory still exists afterward. See [WorktreeRemove](https://code.claude.com/docs/en/hooks#worktreeremove) for what happens to the directory |
@@ -231,23 +357,24 @@ already happened or can't be prevented.
 
 - For most events, Claude Code writes stdout to the debug log and doesn't show it in the transcript. The exceptions
   are `UserPromptSubmit`, `UserPromptExpansion`, `SessionStart` and `PostModelSwitch`, where Claude Code adds
-  plain-text stdout as context that Claude can see and act on.
+  plain-text stdout as context that Claude can see and act on. On those events, Claude Code doesn't add stdout it
+  failed to parse.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
-- Whether Claude Code reads stdout as JSON or as plain text depends on how it starts and ends, ignoring surrounding
-  whitespace. Starting with `{` and ending with `}`: it parses it as JSON. Starting with `{` but not ending with `}`:
-  plain text. Starting with anything else, a JSON array or a quoted JSON string included: plain text.
+- For a hook that isn't async, stdout counts as JSON output only when the hook prints one JSON object, on one line or
+  several, with nothing around it but whitespace. Claude Code reads any other stdout as plain text or a parse failure.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
-- When stdout that starts with `{` and ends with `}` is two or more lines that each parse as JSON on their own, and no
-  line is a JSON output object that sets a field, Claude Code treats the whole output as plain text. When one of those
-  lines does set a field, the whole output is a parse failure.
+- Output that doesn't start with `{`, or that starts with `{` and doesn't end with `}`, is plain text; a JSON array and
+  a quoted JSON string are plain text by this rule.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
-- For events that use the standard decision model, exit 0 with a parsed object that fails schema validation is a
-  non-blocking error: the action proceeds, and the transcript shows a `<hook name> hook error` notice with the
-  validation message. The same happens on any exit code other than 2, while exit 2 still blocks.
+- Two or more lines that each parse as JSON on their own, the first starting with `{` and the last ending with `}`, are
+  plain text when no line is a JSON output object that sets a field. When one line is, the output is a parse failure,
+  so print that object with nothing else on stdout.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
-- For events that use the standard decision model, when Claude Code tries to parse your stdout as JSON and can't, it
-  reports a non-blocking error on every exit code other than 2, with a `<hook name> hook error` notice carrying the
-  parse message. On the events that add plain-text stdout as context, Claude Code doesn't add the text.
+- Anything else that starts with `{` and ends with `}` but isn't valid JSON is a parse failure.
+  [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
+- When a hook exits 0 but prints JSON that can't be parsed or fails schema validation, the action goes ahead unless the
+  hook is one whose failure blocks the action. Instead of a success with the fields applied, the run is a non-blocking
+  error. To fix the output, use the parse or validation message that the `<hook name> hook error` notice carries.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
 
 ## JSON output
@@ -260,8 +387,8 @@ already happened or can't be prevented.
   control. If you mix them, exit 2 keeps its blocking effect, and Claude Code still reads the JSON fields, with the one
   elicitation exception noted under exit code 2.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output)
-- Your hook's stdout must contain only the JSON object. If your shell profile prints text on startup, it can interfere
-  with JSON parsing.
+- Print nothing but the JSON object to stdout. For a hook that isn't async, other text there, such as a line your shell
+  profile echoes at startup, keeps Claude Code from reading the object as JSON.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output)
 - A hook's `additionalContext`, `systemMessage` and `initialUserMessage` strings, and its plain stdout, are capped at
   10,000 characters. Claude Code measures each string on its own, even when several hooks run for the same event: for
@@ -269,8 +396,8 @@ already happened or can't be prevented.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output)
 - Over the limit, Claude Code saves the output to a file in the session directory and replaces it with the file path
   and a preview of up to the first 2,000 characters. This cap has no setting or environment variable to raise it.
-  Claude Code doesn't ask Claude to read the file, so keep anything Claude must always see within the cap; for
-  `additionalContext`, Claude can read the file.
+  Claude Code doesn't ask Claude to read the file, so keep anything Claude must always see within the cap. For
+  `additionalContext`, Claude can read the file; Claude Code doesn't ask it to.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output), [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
 - The JSON object supports three kinds of fields. Universal fields like `continue` are accepted by every event, but
   some events discard them or deliver `systemMessage` somewhere other than the transcript; each event's section says
@@ -340,6 +467,9 @@ already happened or can't be prevented.
   [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
 - When several hooks return `additionalContext` for the same event, Claude receives all of the values.
   [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
+- If the string contains a `<system-reminder>` or `</system-reminder>` tag, Claude receives the string with that tag's
+  `<` replaced by `&lt;`.
+  [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
 - Use `additionalContext` for information Claude should know about the current state of your environment or the
   operation that just ran: environment state (the current branch, deployment target or active feature flags),
   conditional project rules (which test command applies to the file just edited, which directories are read-only in
@@ -399,19 +529,20 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 
 ## HTTP hooks
 
-- HTTP hooks use HTTP status codes and response bodies instead of exit codes and stdout. The outcomes below apply to
-  most events; an event with its own failure contract in the per-event table, such as `WorktreeCreate`, applies that
-  contract to a failed HTTP hook too.
+- HTTP hooks use HTTP status codes and response bodies instead of exit codes and stdout. To block the action when the
+  request fails or returns a non-2xx status, set `onFailure: "block"`. To block a tool call or deny a permission,
+  return a 2xx response with a JSON body containing the appropriate decision fields.
+  [hooks › HTTP response handling](https://code.claude.com/docs/en/hooks#http-response-handling)
+- After a non-blocking error, the action goes ahead unless the hook is one whose failure blocks the action. Except on
+  events with their own failure contract in the per-event table, such as `WorktreeCreate`, an HTTP hook gives these
+  results for each response or failure.
   [hooks › HTTP response handling](https://code.claude.com/docs/en/hooks#http-response-handling)
 - 2xx with an empty body is success, equivalent to exit code 0 with no output. 2xx with a JSON object body is parsed
   using the same JSON output schema as command hooks, and a body that fails schema validation is a non-blocking error.
   [hooks › HTTP response handling](https://code.claude.com/docs/en/hooks#http-response-handling)
 - 2xx with any other body, such as plain text, is a non-blocking error, handled the same as a non-2xx status; Claude
-  Code doesn't add the text to Claude's context. A non-2xx status and a connection failure are non-blocking errors and
-  execution continues. A timeout cancels the hook, as described under Timeouts.
-  [hooks › HTTP response handling](https://code.claude.com/docs/en/hooks#http-response-handling)
-- Unlike command hooks, HTTP hooks can't signal a blocking error through status codes alone. To block a tool call or
-  deny a permission, return a 2xx response with a JSON body containing the appropriate decision fields.
+  Code doesn't add the text to Claude's context. A non-2xx status and a connection failure are non-blocking errors. A
+  timeout cancels the hook, as described under Timeouts.
   [hooks › HTTP response handling](https://code.claude.com/docs/en/hooks#http-response-handling)
 
 ## Decision control
@@ -431,8 +562,7 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 | PermissionDenied | `hookSpecificOutput` | `retry: true` tells the model it may retry the denied tool call; Claude Code ignores it for [no-verdict denials](https://code.claude.com/docs/en/hooks#permissiondenied-decision-control) |
 | WorktreeCreate | path return | Command hook prints path on stdout; HTTP hook returns `hookSpecificOutput.worktreePath`. Hook failure or missing path fails creation |
 | WorktreeRemove | Exit code | Any non-zero exit code makes the removal fail if the directory still exists afterward. JSON output is discarded |
-| Elicitation | `hookSpecificOutput` | `action` (accept/decline/cancel), `content` (form field values for accept) |
-| ElicitationResult | `hookSpecificOutput` | `action` (accept/decline/cancel), `content` (form field values override) |
+| Elicitation, ElicitationResult | `hookSpecificOutput` or top-level `decision` | `action` (accept/decline/cancel), `content` (form field values). `decision: "block"` also [declines](https://code.claude.com/docs/en/hooks#other-ways-to-decline-an-elicitation) |
 | MessageDisplay | `hookSpecificOutput` | `displayContent` replaces the displayed text on screen. Display-only: the transcript and what Claude sees keep the original |
 | SessionStart, SubagentStart, PostModelSwitch | Context only | `hookSpecificOutput.additionalContext` adds context for Claude. SessionStart also accepts [`initialUserMessage`, `watchPaths`, `sessionTitle`, and `reloadSkills`](https://code.claude.com/docs/en/hooks#sessionstart-decision-control). No blocking or decision control |
 | Setup, Notification, SessionEnd, PostCompact, InstructionsLoaded, StopFailure, CwdChanged, DirectoryAdded, FileChanged | None | No decision control. Used for side effects like logging or cleanup |
@@ -479,7 +609,8 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
   results. One hook returning `deny` doesn't stop sibling hooks from executing, so don't rely on one hook's `deny` to
   suppress side effects in another hook.
   [hooks-guide › Combine results from multiple hooks](https://code.claude.com/docs/en/hooks-guide#combine-results-from-multiple-hooks)
-- For `PreToolUse` permission decisions, the most restrictive decision applies. Text from `additionalContext` is kept
+- For `PreToolUse` permission decisions, the most restrictive answer applies, in the order `deny`, `defer`, `ask`,
+  `allow`. Text from `additionalContext` is kept
   from every hook and passed to Claude together.
   [hooks-guide › Combine results from multiple hooks](https://code.claude.com/docs/en/hooks-guide#combine-results-from-multiple-hooks)
 - In this example, two `PreToolUse` hooks on `Bash` both run in parallel. The first appends every command to a log file
@@ -517,7 +648,8 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
   [hooks › Timeouts](https://code.claude.com/docs/en/hooks#timeouts)
 - On `PreModelSwitch`, a hook canceled at its timeout blocks the model switch.
   [hooks › Timeouts](https://code.claude.com/docs/en/hooks#timeouts)
-- On `PreToolUse`, a timed-out `command`, `http` or `mcp_tool` hook doesn't block the tool call: the call continues
-  through the normal permission flow, so don't count on a stalled hook to act as a gate. An Agent SDK callback hook
-  that exceeds its timeout blocks the tool call.
+- On `PreToolUse`, a timed-out `command`, `http` or `mcp_tool` hook doesn't block the tool call, except for hooks whose
+  failure blocks the action. The call continues through the normal permission flow, so don't count on a stalled hook
+  to act as a gate. To block the call when a `command` or `http` hook times out, set `onFailure: "block"`. An Agent SDK
+  callback hook that exceeds its timeout blocks the tool call.
   [hooks › Timeouts](https://code.claude.com/docs/en/hooks#timeouts)

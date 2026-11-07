@@ -13,22 +13,23 @@ follows and the auditor applies.
 
 - Make a tool only for a trigger that has happened, such as Claude getting a convention wrong twice.
   See [discover.md › Add a tool when a trigger appears](discover.md).
-- Leave out what Claude can work out from the code or already knows.
+- Write down only what Claude can't find by reading the repository, or would otherwise rediscover every session.
   See [discover.md › What the codebase already says](discover.md).
 - In a repository that relies on `AGENTS.md`, never add a lone `CLAUDE.md` or `CLAUDE.local.md`: Claude then stops
   reading `AGENTS.md`. See [choose.md › The instruction file the repository already uses](choose.md).
-- What must happen every time is a hook; an instruction is a request, not a guarantee.
-  See [choose.md › Must happen every time: a hook](choose.md).
+- What must happen every time, with no exceptions, is a hook, or a deny rule or managed setting to stop an action;
+  an instruction is a request, not a guarantee, and a preference stays one.
+  See [choose.md › Must happen every time: a hook](choose.md) and
+  [choose.md › A preference stays an instruction, not a hook](choose.md).
 - Load an instruction only where it is needed: every session, some paths, or on demand.
   See [choose.md › One part of the codebase: a path-scoped rule or a nested CLAUDE.md](choose.md).
-- Keep a line only if removing it would cause Claude to make mistakes.
-  See [write.md › Earn every line](write.md).
 - Write instructions concrete enough that someone could tell whether they were followed.
   See [write.md › Concrete enough to verify](write.md).
 - Every tool adds to Claude's context; prefer the tool that loads only when needed.
   See [compose.md › The whole setup has a context budget](compose.md).
-- A tool is done when there is evidence it loads and changes what Claude does.
-  See [verify.md › It changes what Claude does](verify.md).
+- A hook is done when it is seen to load and to act on a task that should trigger it; a skill when its output is
+  compared with a fresh run without it. See [verify.md › A hook is seen to load and to act](verify.md) and
+  [verify.md › A skill is compared with a fresh run without it](verify.md).
 - An audit deletes instructions the current model no longer needs.
   See [maintain.md › Prune, and revisit after model releases](maintain.md).
 
@@ -45,6 +46,8 @@ follows and the auditor applies.
 - [choose.md](choose.md): picking the kind of Claude tool that fits a goal
   - The instruction file the repository already uses
   - Must happen every time: a hook
+  - Never-rules are deny rules or hooks, not auto mode
+  - A preference stays an instruction, not a hook
   - A rule on a command's text: keep it, and add a PreToolUse hook
   - Every session needs it: CLAUDE.md
   - Context that never changes: CLAUDE.md, not a hook
@@ -55,17 +58,16 @@ follows and the auditor applies.
   - Background knowledge is a skill only Claude invokes
   - About the response, not the project: an output style
   - Isolated or parallel work: a subagent or a dynamic workflow
-  - An external system: MCP, with a skill for using it
+  - An external system: a CLI or MCP, with a skill for using it
   - The same setup in another repository: a plugin
   - Instructions shipped in a plugin are skills
 
 - [write.md](write.md): writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it
-  - Earn every line
   - Concrete enough to verify
   - Short files
   - Headings and bullets
   - No contradictions
-  - Emphasis on one line, not many
+  - Plain wording, not emphasis
 
 - [write-skills.md](write-skills.md): writing a skill's description, body and bundled files so that Claude finds the
   skill and follows it
@@ -86,7 +88,7 @@ follows and the auditor applies.
 
 - [write-hooks.md](write-hooks.md): writing a hook's event, handler, command and output so that it fires when it should
   and Claude can act on what it returns
-  - Hooks run a command for a rule, a prompt hook for judgement
+  - Hooks enforce with a command or HTTP hook, judge with a prompt hook
   - Production hooks prefer command hooks to agent hooks
   - A hook that must prevent a tool call runs before it
   - Hooks on a file's change use FileChanged
@@ -111,7 +113,6 @@ follows and the auditor applies.
 
 - [verify.md](verify.md): proving that a tool works before calling it done
   - It loaded
-  - It changes what Claude does
   - Work the tool does has a check
   - A hook is seen to load and to act
   - A skill is checked for triggering and for output, separately
@@ -126,6 +127,8 @@ follows and the auditor applies.
 - [maintain.md](maintain.md): keeping existing tools useful, and finding the ones to cut
   - Read the symptoms
   - Prune, and revisit after model releases
+  - Cut hooks and deny rules that guard preferences
+  - Turn off MCP servers you don't use
   - Use the built-in audits
   - Capture a gap while it is fresh
   - Cut skills that are never invoked

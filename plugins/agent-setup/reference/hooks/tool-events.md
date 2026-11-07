@@ -26,11 +26,21 @@ Hooking a tool call: `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PostTool
   name except [`EndConversation`](https://code.claude.com/docs/en/tools-reference#endconversation-tool-behavior): built-in tools such as `Bash`, `PowerShell`, `Edit`, `Write`, `Read`, `Glob`, `Grep`,
   `Agent`, `Workflow`, `WebFetch`, `WebSearch`, `AskUserQuestion`, and `ExitPlanMode`, and any MCP tool names.
   [hooks › PreToolUse](https://code.claude.com/docs/en/hooks#pretooluse)
-- `PreToolUse` runs only when Claude calls a tool. Files you reference with `@` in your prompt are added without any
-  tool call, because Claude Code inserts their contents while building the prompt, so no `PreToolUse` hook fires for
-  them, including hooks matching `Read`. To block specific paths from `@` references, use a
-  [`Read` deny rule](https://code.claude.com/docs/en/permissions#read-and-edit) instead.
+- An [Agent SDK callback hook](https://code.claude.com/docs/en/agent-sdk/hooks#hook-timeout) on `PreToolUse` that
+  exceeds its timeout blocks the tool call.
   [hooks › PreToolUse](https://code.claude.com/docs/en/hooks#pretooluse)
+- `PreToolUse` runs only when Claude calls a tool. By default, files you reference with `@` in your prompt are added
+  without any tool call, because Claude Code inserts their contents while building the prompt, so no `PreToolUse` hook
+  fires for them, including hooks matching `Read`. `PreToolUse` also doesn't fire for `EndConversation`.
+  [hooks › PreToolUse](https://code.claude.com/docs/en/hooks#pretooluse) and
+  [common-workflows › Reference files and directories](https://code.claude.com/docs/en/common-workflows#reference-files-and-directories)
+  - **Block specific paths**: add a [`Read` deny rule](https://code.claude.com/docs/en/permissions#read-and-edit) for
+    them. Claude Code doesn't include a file that the rule matches.
+  - **Turn the insertion off**: set `CLAUDE_CODE_DISABLE_FILE_MENTIONS=1` in your shell, user settings, or managed
+    settings. It stops `@` file and directory references in your messages from including content, even for paths your
+    hooks don't check. Claude then gets the mentioned paths with a note to read them using its file tools, and if it
+    does, your matching `PreToolUse` hooks run before it opens a referenced path with a tool such as `Read`. Claude
+    Code ignores the variable in project and local settings.
 - To run a hook when a specific file changes on disk, whatever wrote it, use `FileChanged` instead of matching
   file-editing tools by name. Unlike `PreToolUse`, Claude Code runs `FileChanged` hooks after the change, and they have
   no decision control, so they can't block the write.
@@ -205,6 +215,7 @@ The `tool_input` fields depend on the tool.
 | :- | :- | :- | :- |
 | `url` | string | `"https://example.com/api"` | URL to fetch content from |
 | `prompt` | string | `"Extract the API endpoints"` | Prompt to run on the fetched content |
+| `offset` | number | `100000` | Optional number of characters to skip from the start of the page. Claude sets it to keep reading a long page |
 
 #### WebSearch
 
@@ -216,6 +227,7 @@ The `tool_input` fields depend on the tool.
 | `query` | string | `"react hooks best practices"` | Search query |
 | `allowed_domains` | array | `["docs.example.com"]` | Optional: only include results from these domains |
 | `blocked_domains` | array | `["spam.example.com"]` | Optional: exclude results from these domains |
+| `mode` | string | `"extended"` | Optional: search type. `"standard"` requests a lighter search and `"extended"` the full search. Some sessions don't send `mode`, and a call without it runs the full search |
 
 #### Agent
 
@@ -237,7 +249,7 @@ The `tool_input` fields depend on the tool.
 
 | Field | Type | Example | Description |
 | :- | :- | :- | :- |
-| `status` | string | `"completed"` | `"completed"` for foreground subagents, `"async_launched"` for background subagents. Subagents run in the background by default, so an Agent call that omits `run_in_background` also produces `"async_launched"` |
+| `status` | string | `"completed"` | `"completed"` for foreground subagents, `"async_launched"` for background subagents. For which subagents run each way, see [Run subagents in foreground or background](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background) |
 | `agentId` | string | `"a4d2c8f1e0b3a297"` | Identifier for the subagent run |
 | `content` | array | `[{"type": "text", "text": "Found 12 endpoints..."}]` | The subagent's final text blocks, or, for a subagent whose report goes through `SubagentHandback`, a short note about that hand-back in their place |
 | `resolvedModel` | string | `"claude-sonnet-4-5"` | Model the subagent started on, which may differ from the requested model |
@@ -271,7 +283,7 @@ The `tool_input` fields depend on the tool.
 
 | Field | Type | Example | Description |
 | :- | :- | :- | :- |
-| `questions` | array | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React"}], "multiSelect": false}]` | Questions to present, each with a `question` string, short `header`, `options` array, and optional `multiSelect` flag |
+| `questions` | array | `[{"question": "Which framework?", "header": "Framework", "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}], "multiSelect": false}]` | Questions to present, each with a `question` string, short `header`, `options` array, and optional `multiSelect` flag |
 | `answers` | object | `{"Which framework?": "React"}` | Optional. Maps question text to the selected option label. Multi-select answers join labels with commas. Claude doesn't set this field; supply it via `updatedInput` to answer programmatically |
 
 #### ExitPlanMode
@@ -302,40 +314,38 @@ The `tool_input` fields depend on the tool.
 
 | Field | Description |
 | :- | :- |
-| `permissionDecision` | `"allow"` skips the permission prompt, except for the [actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves) and for `AskUserQuestion` and `ExitPlanMode`, which need `updatedInput` paired with it. `"deny"` prevents the tool call. `"ask"` prompts the user to confirm. `"defer"` exits gracefully so the tool can be resumed later. [Deny and ask rules](https://code.claude.com/docs/en/permissions#manage-permissions) are still evaluated regardless of what the hook returns |
+| `permissionDecision` | `"allow"` skips the permission prompt, except for the [actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves) and [reads from network paths](https://code.claude.com/docs/en/permissions#network-paths). It doesn't skip approval for calls to [tools an Agent SDK app marks `always_ask`](https://code.claude.com/docs/en/agent-sdk/custom-tools#require-approval-for-specific-tools) either, unless the [permission mode approves the call](https://code.claude.com/docs/en/agent-sdk/typescript#permission-modes-that-can-approve-an-always_ask-call). `AskUserQuestion` and `ExitPlanMode` need [`updatedInput` paired with `"allow"`](https://code.claude.com/docs/en/hooks#allow-with-updatedinput). `"deny"` prevents the tool call. `"ask"` prompts the user to confirm. `"defer"` ends the turn so the tool can be resumed later, and requires [non-interactive mode](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later) with the `-p` flag. [Deny and ask rules](https://code.claude.com/docs/en/permissions#manage-permissions) are still evaluated regardless of what the hook returns |
 | `permissionDecisionReason` | For `"ask"`, shown to the user in the permission prompt. When Claude Code [denies the call](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs) in a `-p` run where no one can answer that prompt, Claude reads the reason in the tool result instead. For `"deny"`, shown to Claude. For `"allow"` and `"defer"`, written to the [debug log](https://code.claude.com/docs/en/hooks#debug-hooks) only |
 | `updatedInput` | Modifies the tool's input parameters before execution. Replaces the entire input object, so include unchanged fields alongside modified ones. Claude Code evaluates permission rules and a Bash command's [auto-background eligibility](https://code.claude.com/docs/en/tools-reference#foreground-commands-that-move-to-the-background) against the input your hook returns, not the input Claude sent. Combine with `"allow"` to auto-approve, or `"ask"` to show the modified input to the user. For `"defer"`, ignored |
 | `additionalContext` | String added to Claude's context alongside the tool result. Ignored when `permissionDecision` is `"defer"`. See [Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude) |
 
-- A hook's `"ask"` also forces a permission prompt in auto mode: the classifier can still deny the tool call, but it
-  can't approve the call silently.
-  [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
-- On `PreToolUse`, Claude Code handles each `permissionDecision` value as follows:
-  [hooks-guide › Structured JSON output](https://code.claude.com/docs/en/hooks-guide#structured-json-output)
-  - `"allow"`: skip the interactive permission prompt.
-  - `"deny"`: cancel the tool call and send the reason to Claude.
-  - `"ask"`: show the permission prompt to the user as normal.
-- When multiple `PreToolUse` hooks return different decisions, precedence is `deny` > `defer` > `ask` > `allow`.
-  [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
-- An `"allow"` from a hook doesn't skip the approval prompt for an MCP tool whose server marks it with
-  [`_meta["anthropic/requiresUserInteraction"]`](https://code.claude.com/docs/en/mcp#require-approval-for-a-specific-tool),
-  with or without `updatedInput`, because Claude Code can't confirm the hook collected the interaction the tool needs.
-  It also doesn't skip the prompt for connector tools
-  [your organization set to `ask`](https://code.claude.com/docs/en/mcp#organization-controls-on-connector-tools) in
-  sessions where that setting reaches Claude Code.
-  [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control),
+- On `PreToolUse`, `"deny"` cancels the tool call and feeds `permissionDecisionReason` back to Claude, `"ask"` shows the
+  user the normal permission prompt, and `"allow"` skips the interactive permission prompt. With `"allow"`, deny and ask
+  rules, including enterprise managed deny lists, still apply, as do prompts for:
   [hooks-guide › Structured JSON output](https://code.claude.com/docs/en/hooks-guide#structured-json-output) and
   [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
+  - Reads from [network paths](https://code.claude.com/docs/en/permissions#network-paths).
+  - Calls to [tools an Agent SDK app marks `always_ask`](https://code.claude.com/docs/en/agent-sdk/custom-tools#require-approval-for-specific-tools),
+    unless the [permission mode approves the call](https://code.claude.com/docs/en/agent-sdk/typescript#permission-modes-that-can-approve-an-always_ask-call).
+- The actions no mode auto-approves, which a `PreToolUse` `"allow"` doesn't approve either, are: tools matched by an
+  explicit ask rule; connector tools your organization set to `ask`, where that setting reaches Claude Code; the
+  built-in `AskUserQuestion` tool and MCP tools marked `requiresUserInteraction`; recognised `rm` and `rmdir`
+  critical-path removals and Bash commands flagged `Dangerous rm operation not ruled out`; the cross-session messaging
+  safeguards; and reads outside the working directories while `permissions.blockReadsOutsideWorkingDirectories` is
+  on, where recognised file-reading Bash commands, an unsandboxed retry that needs approval, and a command the shell
+  parser can't trace prompt even in auto mode and `bypassPermissions` mode. The prompt for a command the parser can't
+  trace doesn't apply when the command runs in the sandbox and the sandbox enforces the block.
+  [permission-modes › Actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves)
 - A hook that blocks by exiting 2 routes the same way as `"deny"`: Claude sees the stderr message as the denial reason.
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
 - When a hook returns `"ask"`, the permission prompt displayed to the user includes a label identifying where the hook
   came from: `[settings]` for a hook from any settings file or from agent frontmatter, or `[plugin:<name>]` for a
-  plugin's hook (`[skill]` for a hook from skill frontmatter). This helps users understand which configuration source
+  plugin's hook. This helps users understand which configuration source
   is requesting confirmation.
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
 - When multiple `PreToolUse` hooks return [`updatedInput`](https://code.claude.com/docs/en/hooks#pretooluse) to rewrite
-  a tool's arguments, the last one to finish takes effect. Since hooks run in parallel, the order is non-deterministic,
-  so avoid having more than one hook modify the same tool's input.
+  a tool's input, Claude Code doesn't merge the rewrites or guarantee which rewrite the tool runs with. Avoid having
+  more than one hook rewrite the same tool's input.
   [hooks-guide › Limitations](https://code.claude.com/docs/en/hooks-guide#limitations)
 - Output shape of a `PreToolUse` decision:
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
@@ -354,15 +364,42 @@ The `tool_input` fields depend on the tool.
   }
   ```
 
-- In [non-interactive mode](https://code.claude.com/docs/en/headless) with the `-p` flag, Claude Code offers
-  `AskUserQuestion` and `ExitPlanMode` only when the run has a
-  [permission host](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs) to receive
-  the prompt, such as an Agent SDK `canUseTool` callback. These tools require user interaction. Returning
-  `permissionDecision: "allow"` together with `updatedInput` satisfies that requirement: the hook reads the tool's
-  input from stdin, collects the answer through your own UI, and returns it in `updatedInput` so the tool runs without
-  prompting. Returning `"allow"` alone is not sufficient for these tools. For `AskUserQuestion`, echo back the original
-  `questions` array and add an `answers` object mapping each question's text to the chosen answer.
-  [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
+- `AskUserQuestion` and `ExitPlanMode` require user interaction. In
+  [non-interactive mode](https://code.claude.com/docs/en/headless) with the `-p` flag, Claude Code offers them only when
+  the run has a [permission host](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs)
+  to receive the prompt, such as an Agent SDK `canUseTool` callback. A `PreToolUse` hook satisfies that requirement when
+  it reads the tool's input from stdin, collects the answer through your own UI, and returns
+  `permissionDecision: "allow"` together with `updatedInput` that holds the answer, so the tool runs without prompting.
+  Returning `"allow"` alone is not sufficient for these tools. For `AskUserQuestion`, echo back the original
+  `questions` array and add an `answers` object mapping each question's text to the chosen answer. This output answers
+  one question with `React`:
+  [hooks › Tools that require user interaction](https://code.claude.com/docs/en/hooks#allow-with-updatedinput)
+
+  ```json
+  {
+    "hookSpecificOutput": {
+      "hookEventName": "PreToolUse",
+      "permissionDecision": "allow",
+      "updatedInput": {
+        "questions": [
+          {
+            "question": "Which framework?",
+            "header": "Framework",
+            "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}],
+            "multiSelect": false
+          }
+        ],
+        "answers": {"Which framework?": "React"}
+      }
+    }
+  }
+  ```
+
+- A hook can't skip the approval prompt of an MCP tool whose server marks it with
+  [`_meta["anthropic/requiresUserInteraction"]`](https://code.claude.com/docs/en/mcp#require-approval-for-a-specific-tool)
+  with `"allow"`, with or without `updatedInput`, because Claude Code can't confirm the hook collected the interaction
+  the tool needs.
+  [hooks › Tools that require user interaction](https://code.claude.com/docs/en/hooks#allow-with-updatedinput)
 - Top-level `decision` and `reason` fields are deprecated for `PreToolUse`. Use
   `hookSpecificOutput.permissionDecision` and `hookSpecificOutput.permissionDecisionReason` instead. The deprecated
   values `"approve"` and `"block"` map to `"allow"` and `"deny"` respectively. Other events like `PostToolUse` and
@@ -382,8 +419,8 @@ The `tool_input` fields depend on the tool.
   `--permission-prompt-tool`, so start the run with one. The round trip works like this:
   [hooks › Defer a tool call for later](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later)
   1. Claude calls `AskUserQuestion`. The `PreToolUse` hook fires.
-  2. The hook returns `permissionDecision: "defer"`. The tool doesn't execute. The process exits with
-     `stop_reason: "tool_deferred"` and the pending tool call preserved in the transcript.
+  2. The hook returns `permissionDecision: "defer"`. The tool doesn't execute. The turn ends with a
+     result carrying `stop_reason: "tool_deferred"`, and the pending tool call stays in the transcript.
   3. The calling process reads `deferred_tool_use` from the SDK result, surfaces the question in its own UI, and waits
      for an answer.
   4. The calling process runs `claude -p --resume <session-id>` with the same permission host. The same tool call
@@ -403,7 +440,7 @@ The `tool_input` fields depend on the tool.
     "deferred_tool_use": {
       "id": "toolu_01abc",
       "name": "AskUserQuestion",
-      "input": { "questions": [{ "question": "Which framework?", "header": "Framework", "options": [{"label": "React"}, {"label": "Vue"}], "multiSelect": false }] }
+      "input": { "questions": [{ "question": "Which framework?", "header": "Framework", "options": [{"label": "React", "description": "Component library"}, {"label": "Vue", "description": "Progressive framework"}], "multiSelect": false }] }
     }
   }
   ```
@@ -412,23 +449,29 @@ The `tool_input` fields depend on the tool.
   [`cleanupPeriodDays`](https://code.claude.com/docs/en/settings-reference#cleanupperioddays) retention sweep, which
   deletes session files after 30 days by default, following the
   [retention sweep rules](https://code.claude.com/docs/en/claude-directory#cleaned-up-automatically). If the answer is
-  not ready when you resume, the hook can return `"defer"` again and the process exits the same way. The calling
-  process controls when to break the loop by eventually returning `"allow"` or `"deny"` from the hook.
+  not ready when you resume without a prompt, the hook can return `"defer"` again. If you sent a prompt and the hook
+  defers again, Claude Code treats the prompt the same way: it answers without the tool's result and drops the call.
+  Resume without a prompt until the hook returns `"allow"` or `"deny"`, which is how the calling process breaks the
+  loop.
   [hooks › Defer a tool call for later](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later)
 - `"defer"` only works when Claude makes a single tool call in the turn. If Claude makes several tool calls at once,
   `"defer"` is ignored with a warning and the tool proceeds through the normal permission flow. The constraint exists
   because resume can only re-run one tool: there is no way to defer one call from a batch without leaving the others
   unresolved.
   [hooks › Defer a tool call for later](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later)
-- If the deferred tool is no longer available when you resume, the process exits with
-  `stop_reason: "tool_deferred_unavailable"` and `is_error: true` before the hook fires. This happens when an MCP
+- If the deferred tool is no longer available when you resume, the resume's first result has
+  `stop_reason: "tool_deferred_unavailable"` and `is_error: true`, and the hook doesn't fire. This happens when an MCP
   server that provided the tool is not connected for the resumed session. The `deferred_tool_use` payload is still
   included so you can identify which tool went missing.
   [hooks › Defer a tool call for later](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later)
+  - **If you sent no prompt, with the resume or after it**, the call is still pending. Resume again with the tool
+    available and it runs first.
+  - **If you sent a prompt, with the resume or after it**, Claude Code answers it without the tool's result and drops
+    the deferred call. Send a new prompt once the tool is available if you still need it called.
 - To resume a deferred session in plan mode, pass
   [`--permission-prompt-tool`](https://code.claude.com/docs/en/cli-reference#cli-flags) along with `--resume` so that
-  Claude Code can present the plan for approval. If you pass certain other launch flags, the resumed run doesn't return
-  to plan mode; see [Resume in plan mode with `-p`](https://code.claude.com/docs/en/sessions#resume-in-plan-mode-with-p).
+  Claude Code can present the plan for approval. For the other conditions, see
+  [Resume in plan mode with `-p`](https://code.claude.com/docs/en/sessions#resume-in-plan-mode-with-p).
   [hooks › Defer a tool call for later](https://code.claude.com/docs/en/hooks#defer-a-tool-call-for-later)
 - When you resume with `-p`, Claude Code doesn't restore any other stored permission mode. It starts the run in the
   permission mode a new `claude -p` run would start in, so pass `--permission-mode` or `--dangerously-skip-permissions`
@@ -472,8 +515,7 @@ The `tool_input` fields depend on the tool.
   exit 0
   ```
 
-- Hook scripts must be executable for Claude Code to run them. On macOS and Linux, run
-  `chmod +x .claude/hooks/protect-files.sh`.
+- On macOS and Linux, make the script executable with `chmod +x .claude/hooks/protect-files.sh`.
   [hooks-guide › Block edits to protected files](https://code.claude.com/docs/en/hooks-guide#block-edits-to-protected-files)
 - Register the script as a `PreToolUse` hook in `.claude/settings.json` that runs before any `Edit` or `Write` tool
   call. Claude Code blocks the edit before it runs and passes the script's `Blocked:` message to Claude as feedback.
@@ -531,12 +573,21 @@ The `tool_input` fields depend on the tool.
   requests that nothing else resolves. In a `-p` run with no permission host, these requests are denied either way, and
   the flag also tells Claude not to retry them.
   [headless › Turn off permission prompts in unattended runs](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs)
-- A critical-path removal asks you to approve it in `default`, `acceptEdits` and `bypassPermissions` modes, and in
-  `auto` mode in the terminal; `auto` mode denies it elsewhere, and `dontAsk` mode denies it. `plan` mode asks too,
-  except that when the classifier reviews commands during planning and no bypass permissions are available, it handles
-  the removal as in `auto` mode. If an explicit ask rule matches the command, Claude Code asks you instead, even in
-  `auto` mode. In modes that ask, a `PermissionRequest` hook can answer the prompt.
+- A critical-path removal asks you to approve it in `default` and `acceptEdits` modes. `auto` mode asks in the terminal,
+  with a time limit, and denies elsewhere. `bypassPermissions` mode asks in the terminal before a time limit runs out;
+  elsewhere, see the table below. `dontAsk` mode denies it. `plan` mode asks too, except that when the classifier
+  reviews commands during planning and no bypass permissions are available, it handles the removal as in `auto` mode.
+  If an explicit ask rule matches the command, Claude Code asks you instead, even in `auto` mode and without a time
+  limit. In modes that ask, a `PermissionRequest` hook can answer the prompt.
   [permission-modes › Critical-path removals in each permission mode](https://code.claude.com/docs/en/permission-modes#critical-path-removals-in-each-permission-mode)
+- In `auto` and `bypassPermissions` modes, away from the terminal, you don't get the critical-path removal prompt:
+  [permission-modes › Time limits and denials in auto and bypassPermissions modes](https://code.claude.com/docs/en/permission-modes#time-limits-and-denials-in-auto-and-bypasspermissions-modes)
+
+| Where | `auto` | `bypassPermissions` |
+| :- | :- | :- |
+| [VS Code extension](https://code.claude.com/docs/en/vs-code)'s chat panel | Denies it | Denies it unless a [`PermissionRequest` hook](https://code.claude.com/docs/en/hooks#permissionrequest) allows it |
+| [Desktop app](https://code.claude.com/docs/en/desktop) | Denies it | Denies it unless a `PermissionRequest` hook allows it |
+| [`-p` run](https://code.claude.com/docs/en/headless) or [Agent SDK session](https://code.claude.com/docs/en/agent-sdk/permissions) | Denies it | Your [`--permission-prompt-tool`](https://code.claude.com/docs/en/cli-reference#cli-flags) or [`canUseTool` callback](https://code.claude.com/docs/en/agent-sdk/user-input#handle-tool-approval-requests) decides. With neither, or under [`--permission-prompts none`](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs), denies it unless a `PermissionRequest` hook allows it. To run these removals with no prompt instead, see [Turn off the critical-path removal prompt](https://code.claude.com/docs/en/permission-modes#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode) |
 
 ### Input
 
@@ -595,7 +646,7 @@ The `tool_input` fields depend on the tool.
 | `interrupt` | For `"deny"` only: if `true`, stops Claude |
 
 - A hook that exits 2 without a `decision` object leaves the permission flow unchanged, and its stderr is discarded.
-  Only the `decision` object can grant or deny the request.
+  To grant or deny the request, return the `decision` object.
   [hooks › PermissionRequest decision control](https://code.claude.com/docs/en/hooks#permissionrequest-decision-control)
 - Output shape of a `PermissionRequest` decision:
   [hooks › PermissionRequest decision control](https://code.claude.com/docs/en/hooks#permissionrequest-decision-control)
@@ -1113,15 +1164,12 @@ The `tool_input` fields depend on the tool.
   a `PreToolUse` hook returns: a matching deny rule blocks the call, and a matching ask rule still prompts even when
   the hook returned `"allow"` or `"ask"`. This preserves the deny-first precedence, including deny rules set in managed
   settings.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
 - A hook that exits with code 2 stops the tool call before permission rules are evaluated, so the block applies even
   when an allow rule would otherwise let the call proceed. To run all Bash commands without prompts except for a few
   you want blocked, add `"Bash"` to your allow list and register a `PreToolUse` hook that rejects those specific
   commands.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
-- Hooks in settings files and in a plugin's `hooks/hooks.json` can tighten restrictions but not loosen them past what
-  permission rules allow.
-  [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
 
 ## Hook decisions and permission modes
 
@@ -1132,48 +1180,108 @@ The `tool_input` fields depend on the tool.
   mode.
   [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
 - In `dontAsk` mode, which auto-denies every tool call that would otherwise prompt, Claude still runs calls approved by
-  a `PreToolUse` hook, along with actions that need no approval and actions matching your `permissions.allow` rules.
+  a `PreToolUse` hook, along with actions that need no approval and actions matching your `permissions.allow` rules. A
+  mod you installed can still approve some of the calls the mode would deny.
   [permission-modes › Allow only pre-approved tools with dontAsk mode](https://code.claude.com/docs/en/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)
-- Claude Code never lets a [`permissions.allow`](https://code.claude.com/docs/en/permissions#manage-permissions) rule or
-  a [`PreToolUse` hook](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks) that returns
-  `"allow"` approve an `rm` or `rmdir` command that targets a critical path, such as the filesystem root, your home
-  directory, or your working directory, even in modes that skip other prompts.
-  [permission-modes › Critical paths](https://code.claude.com/docs/en/permission-modes#critical-paths)
-- In `dontAsk` mode, `rm` and `rmdir` removals targeting a critical path, such as `rm -rf /` and `rm -rf ~`, are denied
-  even when an allow rule matches them or a `PreToolUse` hook allows them.
+- Claude Code checks `rm` and `rmdir` commands before they run, and no
+  [`permissions.allow`](https://code.claude.com/docs/en/permissions#manage-permissions) rule and no
+  [`PreToolUse` hook](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks) that returns `"allow"`
+  approves one whose target it recognizes as a critical path, such as the filesystem root, your home directory, or
+  your working directory, even in the permission modes that skip other prompts. This holds in `bypassPermissions` mode
+  too, where you can [turn off that prompt](https://code.claude.com/docs/en/permission-modes#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode).
+  [permission-modes › Critical paths](https://code.claude.com/docs/en/permission-modes#critical-paths) and
+  [permission-modes › The `Dangerous rm operation not ruled out` prompt](https://code.claude.com/docs/en/permission-modes#dangerous-rm-operation-not-ruled-out)
+- In `dontAsk` mode, an allow rule or `PreToolUse` hook can't approve recognized `rm` and `rmdir`
+  [critical-path removals](https://code.claude.com/docs/en/permission-modes#critical-paths), such as `rm -rf /` and
+  `rm -rf ~`, or reads from a [network path](https://code.claude.com/docs/en/permissions#network-paths).
   [permission-modes › Allow only pre-approved tools with dontAsk mode](https://code.claude.com/docs/en/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)
+- In [plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode), apart from
+  `ExitPlanMode`, a `PreToolUse` hook's `"allow"` has no effect on a file edit or another call that isn't read-only. You
+  get the same prompt, block, or approval the call would get with no hook, and Claude Code still applies any
+  `updatedInput` the hook returns. If the hook answers `ExitPlanMode` with `"allow"` and `updatedInput`, that tool
+  still runs without a prompt. To lift this limit on hook and mod approvals, [approve the plan](https://code.claude.com/docs/en/permission-modes#review-and-approve-a-plan)
+  or switch to another permission mode.
+  [permissions › Hook approvals in plan mode](https://code.claude.com/docs/en/permissions#hook-approvals-in-plan-mode)
+- If `CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS` has no effect and critical-path removals keep their usual
+  prompt or denial, causes that involve hooks include a `PermissionRequest` hook with any matcher, or a
+  [mod](https://code.claude.com/docs/en/plugins/mods/events#hook-the-settings-hook-events) that handles that event
+  (remove the hook or mod and restart `claude`), a `claude` started from a session's Bash tool or a hook, even with
+  the variable on its command line (start `claude` from your own shell, and don't rely on this nested-session limit
+  as a security boundary), and a `PreToolUse` hook that answers `ask` for a removal (change what the hook returns).
+  [permission-modes › Why the critical-path removal prompt stays on](https://code.claude.com/docs/en/permission-modes#why-the-critical-path-removal-prompt-stays-on)
 
 ## Auto mode and hooks
 
-- In the Manual and `acceptEdits` permission modes, when [auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode) is available, Claude Code
-  adds **Yes, and switch to auto mode** to a Bash command's permission prompt; selecting it approves the command and
-  switches the session to auto mode. Claude Code doesn't add the option to prompts forced by one of your
+- In the Manual and `acceptEdits` modes, when auto mode is available, Claude Code adds **Yes, and switch to auto
+  mode** to a Bash command's permission prompt; PowerShell prompts don't offer it. Claude Code doesn't add the option
+  to prompts forced by one of your
   [`ask` rules](https://code.claude.com/docs/en/permissions#manage-permissions) or by a
   [hook](https://code.claude.com/docs/en/hooks#pretooluse-decision-control), because auto mode still shows you those
   prompts, so switching wouldn't remove them.
   [permission-modes › Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)
+- In auto mode, a `PreToolUse` hook's `"ask"` normally sends the tool call to the permission prompt, and the
+  [classifier](https://code.claude.com/docs/en/permission-modes#how-the-classifier-evaluates-actions) doesn't decide it.
+  Some calls take a different path:
+  [hooks › PreToolUse `ask` decisions in auto mode](https://code.claude.com/docs/en/hooks#pretooluse-ask-decisions-in-auto-mode)
+  - **Calls that Claude Code's own checks flag too**: these include writes to
+    [protected paths](https://code.claude.com/docs/en/permission-modes#protected-paths) and commands that ask to
+    [run outside the sandbox](https://code.claude.com/docs/en/sandboxing#the-unsandboxed-retry-escape-hatch). The
+    classifier can deny one of these calls before any prompt appears. If it approves, the call normally still goes to
+    the prompt.
+  - **`SubagentHandback` calls**: this tool delivers a subagent's report. No prompt appears for it, and the call runs
+    even if the classifier objects.
+- To stop a `SubagentHandback` call, return `"deny"`. Claude Code then tells the subagent, up to three times, that its
+  report wasn't delivered and to call the tool again. If your hook keeps denying, the subagent ends without delivering
+  a report through this tool, and the conversation waiting on it gets a note saying so.
+  [hooks › PreToolUse `ask` decisions in auto mode](https://code.claude.com/docs/en/hooks#pretooluse-ask-decisions-in-auto-mode)
 
 ## Mods and hooks
 
-- A [mod](https://code.claude.com/docs/en/plugins/mods/overview) you install that handles `tool.check` answers after
-  the rules and the `PreToolUse` hooks have decided, and its answer can replace theirs. The mod can approve a call that
-  an ask rule would prompt for, and it can approve a call that a `PreToolUse` hook blocked, unless the hook is in
-  managed settings. `tool.check` fires after those hooks and the permission rules have decided, so a hook on it can
-  approve a call that a `PreToolUse` hook from a settings file other than managed settings or from a plugin blocked.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
-  and [plugins/mods/events › Where settings hooks run in the order](https://code.claude.com/docs/en/plugins/mods/events#where-settings-hooks-run-in-the-order)
-- In [auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode), a call that a mod
-  approves runs without a classifier check.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
-- On a machine with managed settings, or when you're signed in with a Team or Enterprise plan, deny rules hold over the
-  mod by default, and your organization can change that. Anywhere else, the mod can approve a call that a deny rule
-  refuses.
-  [permissions › Extend permissions with hooks](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks)
-- `PreToolUse` hooks from managed settings run before the first mod's `tool.call` hook, and a block from one of them is
-  final, so no mod sees the call.
+- A [mod](https://code.claude.com/docs/en/plugins/mods/overview) you install that handles the
+  [`tool.check`](https://code.claude.com/docs/en/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked)
+  event gives its answer after the `PreToolUse` hooks have run. `tool.check` fires after those hooks and before the
+  permission prompt, [auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode)'s
+  classifier, or a `PermissionRequest` hook. The rule that hooks can't bypass deny and ask rules covers hooks in
+  settings files and in a plugin's `hooks/hooks.json`.
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
+  and [plugins/mods/events › Approve or refuse a tool call before the user is asked](https://code.claude.com/docs/en/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked)
+- With [managed settings](https://code.claude.com/docs/en/settings#check-what-your-organization-enforces) on the
+  machine, or a Team or Enterprise [`/login`](https://code.claude.com/docs/en/authentication#authentication-precedence)
+  as the session's credential, these outcomes stay in place by default when the mod approves a call:
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
+  - A call that a deny rule refuses stays refused, and your organization can change that.
+  - A call that an ask rule would prompt for still prompts you.
+  - A call that a `PreToolUse` hook or
+    [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockreadsoutsideworkingdirectories)
+    would prompt for still prompts you.
+  - A call that a `PreToolUse` hook blocked stays blocked, whichever settings file the hook comes from.
+  - A call that your [`--permission-prompt-tool`](https://code.claude.com/docs/en/cli-reference#cli-flags) or Agent SDK
+    [`canUseTool` callback](https://code.claude.com/docs/en/agent-sdk/user-input#handle-tool-approval-requests) would be
+    asked about is still put to that tool or callback.
+- With neither managed settings nor a Team or Enterprise `/login` as the session's credential, the mod can approve a
+  call that a deny rule refuses or a `PreToolUse` hook blocked. A session that runs on an API key or a long-lived
+  [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/en/authentication#generate-a-long-lived-token) instead isn't
+  using that login, even when that login is stored. In that setup you aren't prompted when the mod approves a call that
+  an ask rule, a `PreToolUse` hook, or `permissions.blockReadsOutsideWorkingDirectories` would prompt for, and your
+  `--permission-prompt-tool` or `canUseTool` callback isn't asked about a call the mod approves.
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
+- Auto mode, plan mode, and `dontAsk` mode each add an outcome of their own in every setup:
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
+  - **Auto mode**: a call the mod approves runs without a classifier check, except where the mod can't bypass your
+    permission prompt tool or Agent SDK permission callback. There the classifier checks the call first.
+  - **Plan mode**: the mod can't approve a call that isn't read-only, such as a file edit or a shell command that
+    writes. It can still block such a call. See [permissions › Hook approvals in plan mode](https://code.claude.com/docs/en/permissions#hook-approvals-in-plan-mode).
+  - **`dontAsk` mode**: the mod can approve a call that nothing but the mode would deny.
+- For a [tool that requires user interaction](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves),
+  such as `AskUserQuestion` or an MCP tool marked `requiresUserInteraction`, a mod's `tool.check` approval doesn't skip
+  the prompt.
+  [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
+- `PreToolUse` hooks from managed settings run before the first mod's `tool.call` hook, and when a managed hook blocks
+  the call, no mod's `tool.call` hook runs for that call.
   [plugins/mods/events › Where settings hooks run in the order](https://code.claude.com/docs/en/plugins/mods/events#where-settings-hooks-run-in-the-order)
   and [plugins/mods/admin › Know which controls still apply](https://code.claude.com/docs/en/plugins/mods/admin#know-which-controls-still-apply)
-- If a mod rewrites the call, your managed `PreToolUse` hooks run again on the rewritten call, so a block still applies.
+- If the call goes ahead and a mod rewrites it, your managed `PreToolUse` hooks run again on the rewritten call, so
+  they can still block it.
   [plugins/mods/admin › Know which controls still apply](https://code.claude.com/docs/en/plugins/mods/admin#know-which-controls-still-apply)
 - `PreToolUse` hooks from every other settings file and from plugins' `hooks/hooks.json` run after the last mod calls
   `next`, as part of Claude Code's own behavior. A mod that answers `tool.call` without calling `next`, such as one that
@@ -1223,7 +1331,7 @@ The `tool_input` fields depend on the tool.
 - Which decision wins when several `PermissionRequest` hooks disagree: the documentation gives a precedence only for
   `PreToolUse` hooks.
   [hooks › PermissionRequest decision control](https://code.claude.com/docs/en/hooks#permissionrequest-decision-control)
-- Whether a `PermissionRequest` hook can answer a critical-path removal prompt in `auto` mode where it denies the
-  removal outside the terminal: the documentation says a `PermissionRequest` hook can answer the prompt in modes that
-  ask.
-  [permission-modes › Critical-path removals in each permission mode](https://code.claude.com/docs/en/permission-modes#critical-path-removals-in-each-permission-mode)
+- Whether a `PermissionRequest` hook can answer a critical-path removal in `auto` mode where it is denied outside the
+  terminal: the documentation says a `PermissionRequest` hook allows it in `bypassPermissions` mode in those places,
+  but for `auto` mode says only that Claude Code denies it.
+  [permission-modes › Time limits and denials in auto and bypassPermissions modes](https://code.claude.com/docs/en/permission-modes#time-limits-and-denials-in-auto-and-bypasspermissions-modes)

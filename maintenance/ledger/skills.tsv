@@ -516,7 +516,7 @@ errors	Skill or command name refused	included	placing.md
 skills	Run a same-named skill from an added directory	included	placing.md	
 skills	Angle brackets in a skill description show as `&lt;` and `&gt;`	included	frontmatter.md	
 hooks	Limits on skill hooks	included	frontmatter.md	
-settings-reference	`strictPluginOnlyCustomization.hooks`	included	frontmatter.md	the Stops running bullet on frontmatter hooks in skills and custom commands, and the sentence that skills and custom commands whose frontmatter hooks stop running still load while their own surface isn't locked, and the Keeps running bullet
+settings-reference	`strictPluginOnlyCustomization.hooks`	included	frontmatter.md	the Stops running bullet on frontmatter hooks in skills and custom commands, and the clause of the still-load sentence on skills and custom commands
 settings-reference	`strictPluginOnlyCustomization.hooks`	included	permissions.md	the paragraph that a personal or project skill declaring `hooks` loses its `allowed-tools` pre-approval, and that one running through `context: fork` or declaring no `hooks` keeps it
 settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		the rest belongs to another tool type (hooks)
 statusline	Available data	included	frontmatter.md	the clause of the `effort.level` row that it doesn't show a level a skill set
@@ -582,7 +582,7 @@ skills	When managed settings lock hooks to plugins	excluded		the `/status` check
 tools-reference	Shell selection in settings, hooks, and skills	included	dynamic-context.md	the sentence of the `shell: powershell` bullet that it requires the PowerShell tool to be enabled
 code-review-local	Change or build on the review	included	excluding.md	the sentence that `/code-review` is a bundled skill whose instructions are built into Claude Code, with no `SKILL.md` file on disk
 errors	Path escapes plugin directory	included	troubleshooting.md	the `SKILL.md` at the plugin root item and the sentences on a `commands` path that leads outside the plugin being dropped, with its message, and the backslash rule, the symlink form of the message and the symlink fix, as they apply to a declared `commands` or `skills` path
-hooks	Common input fields	included	frontmatter.md	the clause of the `effort` row that it includes a skill's level, and that `$CLAUDE_EFFORT` holds the same level, with the row's presence conditions and the sentence that `level` is the level that ran
+hooks	Common input fields	included	frontmatter.md	the clause of the `effort` row that it includes a skill's level, and that `$CLAUDE_EFFORT` holds the same level
 plugins/cli-reference	Advice on the README	excluded		belongs to another tool type (plugins)
 skills	Where synced skills load	excluded		the clause that the files can be recovered until the retention sweep deletes them repeats claude-directory › Cleaned up automatically
 code-review-local	Review locally with /code-review	excluded		about the bundled `/code-review` command's use; its background-subagent sentence repeats Run skills in a subagent; the `/review` alias repeats Resolve skills that share a name; the version sentence is history

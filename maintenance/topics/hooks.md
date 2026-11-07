@@ -6,8 +6,9 @@
 - `configuring.md`: writing a hook's settings entry (structure, matchers including MCP tools, `if`, handler types and
   fields, exec and shell form, PowerShell, timeouts, async hooks, the environment hook processes get, security practices)
 - `prompt-and-agent.md`: writing a prompt or agent hook (supported events, configuration, response schema, model)
-- `input-output.md`: reading a hook's input and returning its result (common input fields, exit codes, stdout and
-  stderr, JSON output, `additionalContext`, `systemMessage`, terminal notifications, HTTP responses, combining results)
+- `input-output.md`: reading a hook's input and returning its result (common input fields, exit codes, failure handling
+  (`onFailure`), stdout and stderr, JSON output, `additionalContext`, `systemMessage`, terminal notifications, HTTP
+  responses, combining results)
 - `tool-events.md`: hooking a tool call (PreToolUse and per-tool input, defer, PermissionRequest and permission updates,
   PostToolUse, PostToolUseFailure, PostToolBatch, PermissionDenied, and how hook decisions meet permission rules, modes,
   auto mode and mods)
@@ -17,7 +18,7 @@
   `strictPluginOnlyCustomization.hooks`, workspace trust, `--bare`, `--safe-mode`, the sandbox boundary, reviewing
   plugins)
 - `troubleshooting.md`: checking whether a hook runs and why not (`/hooks`, the debug log, error notices, validation,
-  plugin hook errors, OpenTelemetry hook events)
+  plugin hook errors, OpenTelemetry hook and safety events)
 
 Hooks in skill frontmatter are split between types: skills owns the `once` field, a skill's own copy of a handler and
 the trust rule as it applies to a project skill (`skills/frontmatter.md`); hooks owns the rest. The InstructionsLoaded

@@ -73,8 +73,8 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
 - In the `PreToolUse` example, exit code 0 with no output means the hook has no decision to report, so the tool call
   continues through the normal permission flow. The hook can deny the call, but staying silent doesn't approve it.
   [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
-- A script that Claude Code runs as the hook command must be executable, for example
-  `chmod +x .claude/hooks/block-rm.sh`. A Bash script that parses the JSON input with `jq` needs `jq` installed and on
+- On macOS and Linux, make a hook script executable with `chmod +x .claude/hooks/block-rm.sh` so Claude Code can run
+  it. A Bash script that parses the JSON input with `jq` needs `jq` installed and on
   your `PATH`.
   [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
 - This `PreToolUse` hook spawns `block-rm.sh` only when the matcher matches a Bash call and the `if` condition matches
@@ -164,7 +164,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | `SessionStart` | how the session started | `startup`, `resume`, `clear`, `compact`, `fork` |
   | `Setup` | which CLI flag triggered setup | `init`, `maintenance` |
   | `SessionEnd` | why the session ended | `clear`, `resume`, `logout`, `prompt_input_exit`, `other` |
-  | `Notification` | notification type | `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`, `elicitation_url_dialog`, `elicitation_complete`, `elicitation_response`, `agent_needs_input`, `agent_completed`, `quota_auto_resume_fired`, `quota_auto_resume_stale`, `quota_auto_resume_disabled` |
+  | `Notification` | notification type | `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`, `elicitation_url_dialog`, `elicitation_complete`, `elicitation_response`, `agent_needs_input`, `agent_completed`, `quota_auto_resume_fired`, `quota_auto_resume_stale`, `quota_auto_resume_disabled`, `plugin_notification` |
   | `SubagentStart` | agent type | `general-purpose`, `Explore`, `Plan`, custom agent names, or plugin-scoped names like `^my-plugin:reviewer$` |
   | `PreCompact`, `PostCompact` | what triggered compaction | `manual`, `auto` |
   | `PreModelSwitch`, `PostModelSwitch` | canonical name of the model the session switches to, as described under [PreModelSwitch](https://code.claude.com/docs/en/hooks#premodelswitch) | `claude-opus-5`, `claude-opus-4-6\|claude-opus-5`, `.*opus.*` |
@@ -210,9 +210,9 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   and
   [tools-reference › Configure tools with permission rules and hooks](https://code.claude.com/docs/en/tools-reference#configure-tools-with-permission-rules-and-hooks)
 - The label shown for a tool in the transcript and permission dialog can differ from its canonical name; for example,
-  the tool labeled `Stop Task` in the transcript has the canonical name `TaskStop`. Hook matchers don't match the
-  label. Use the canonical names listed in the tools reference.
-  [permissions › Tool name wildcards](https://code.claude.com/docs/en/permissions#tool-name-wildcards)
+  the tool labeled `Stop Task` in the transcript has the canonical name `TaskStop`. Permission rules and hook matchers
+  don't match the label. Use the canonical names listed in the tools reference.
+  [permissions › Match all uses of a tool](https://code.claude.com/docs/en/permissions#match-all-uses-of-a-tool)
 
 ## Matching MCP tools
 
@@ -276,7 +276,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   write `"Edit(**/src/**)"`. [hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)
 - For Bash patterns, whether your hook command runs depends on the shape of the pattern and the Bash command Claude is
   invoking. Leading `VAR=value` assignments are stripped before matching.
-  [hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)
+  [hooks › How `if` patterns match Bash commands](https://code.claude.com/docs/en/hooks#bash-if-matching)
 
   | `if` pattern | Bash command | Hook runs? | Why |
   | :- | :- | :- | :- |
@@ -288,7 +288,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
 
 - When Claude Code can't determine which commands the Bash input runs, it runs your hook regardless of the pattern.
   Because the `if` filter is best-effort, use the permission system rather than a hook to enforce a hard allow or
-  deny. [hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)
+  deny. [hooks › How `if` patterns match Bash commands](https://code.claude.com/docs/en/hooks#bash-if-matching)
 - An `if` rule has the format `ToolName(specifier)`.
   [tools-reference › Configure tools with permission rules and hooks](https://code.claude.com/docs/en/tools-reference#configure-tools-with-permission-rules-and-hooks)
 
@@ -306,7 +306,9 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
     JSON.
   - `type: "agent"`: spawns a subagent that can use tools like Read, Grep and Glob to verify conditions before
     returning a decision. Agent hooks are experimental and may change.
-- All matching hooks run in parallel. If you define the same handler in more than one settings file, it runs once.
+- When an event fires, its matching hooks run in parallel. If more than 12 of them are prompt or agent hooks, 12 of
+  those run at once and the rest start as running ones finish. Each waiting hook's `timeout` starts counting when that
+  hook starts. If you define the same handler in more than one settings file, it runs once.
   [hooks › Hook handler fields](https://code.claude.com/docs/en/hooks#hook-handler-fields)
 - Handlers run in the current directory with Claude Code's environment. If the current directory no longer exists,
   for example a worktree or temp directory that another shell deleted mid-session, Claude Code runs command hooks from
@@ -319,12 +321,9 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | Field | Required | Description |
   | :- | :- | :- |
   | `type` | yes | `"command"`, `"http"`, `"mcp_tool"`, `"prompt"`, or `"agent"` |
-  | `if` | no | Permission rule syntax to filter when this hook runs, such as `"Bash(git *)"` or `"Edit(*.ts)"`. The hook command only runs if the tool call matches the pattern. See the Bash matching table for how Bash patterns evaluate against subcommands, `$()`, and backticks. Only evaluated on tool events: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, and `PermissionDenied`. On other events, a hook with `if` set never runs. Uses the same syntax as [permission rules](https://code.claude.com/docs/en/permissions) |
+  | `if` | no | [Permission rule syntax](https://code.claude.com/docs/en/permissions#permission-rule-syntax) to filter when this hook runs, such as `"Bash(git *)"` or `"Edit(*.ts)"`. The hook command only runs if the tool call matches the pattern. See the Bash matching table for how Bash patterns evaluate against subcommands, `$()`, and backticks. Only evaluated on tool events: `PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PermissionRequest`, and `PermissionDenied`. On other events, a hook with `if` set never runs |
   | `timeout` | no | Seconds before canceling. Claude Code doesn't enforce it on a command hook you run with [`async: true`](https://code.claude.com/docs/en/hooks#run-hooks-in-the-background). Defaults: 600 for `command`, `http`, and `mcp_tool`; 30 for `prompt`; 60 for `agent`. Claude Code lowers the `command`, `http`, and `mcp_tool` default to 30 on [`UserPromptSubmit`](https://code.claude.com/docs/en/hooks#userpromptsubmit), [`PreModelSwitch`](https://code.claude.com/docs/en/hooks#premodelswitch), and [`PostModelSwitch`](https://code.claude.com/docs/en/hooks#postmodelswitch), and to 10 on [`MessageDisplay`](https://code.claude.com/docs/en/hooks#messagedisplay). [`SessionEnd`](https://code.claude.com/docs/en/hooks#sessionend) hooks share a 1.5-second budget; if your settings set a longer per-hook `timeout`, Claude Code raises the budget to match, up to 60 seconds |
   | `statusMessage` | no | Custom spinner message displayed while the hook runs |
-
-- `once` applies only to hooks declared in skill frontmatter; it is ignored in settings files and agent frontmatter.
-  [hooks › Common fields](https://code.claude.com/docs/en/hooks#common-fields)
 
 ## Command hooks: exec form and shell form
 
@@ -337,6 +336,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | `args` | no | Argument list. When present, `command` is resolved as an executable and spawned directly with `args` as the argument vector, with no shell involved. See [Exec form and shell form](https://code.claude.com/docs/en/hooks#exec-form-and-shell-form) |
   | `async` | no | If `true`, runs in the background without blocking. See [Run hooks in the background](https://code.claude.com/docs/en/hooks#run-hooks-in-the-background) |
   | `asyncRewake` | no | If `true`, runs in the background and wakes Claude on exit code 2. The hook's stderr, or stdout if stderr is empty, is shown to Claude as a [system reminder](https://code.claude.com/docs/en/glossary#system-reminder) so it can react to a long-running background failure |
+  | `onFailure` | no | Whether the action that triggered the hook goes ahead when the hook fails: `"continue"` or `"block"`. See [Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails) for `"block"` and for leaving the field unset |
   | `shell` | no | Shell to use for this hook. Accepts `"bash"` or `"powershell"`. Defaults to `"bash"`, or to `"powershell"` on Windows when Git Bash isn't installed. Setting `"powershell"` runs the command via PowerShell on Windows. Does not require `CLAUDE_CODE_USE_POWERSHELL_TOOL` since hooks spawn PowerShell directly. Ignored when `args` is set |
 
 - A command hook runs as exec form when `args` is set, and shell form when `args` is omitted. Set `args` whenever the
@@ -398,12 +398,14 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/process.sh" }
   ```
 
-- On Windows, the substituted paths use forward slashes so a shell doesn't read backslashes as escapes. A plugin hook
-  therefore receives `${CLAUDE_PLUGIN_ROOT}` as `C:/Users/you/...` rather than `C:\Users\you\...`, which breaks a
-  script that expected backslashes: Claude Code runs shell-form hooks through Git Bash on Windows and substitutes the
-  plugin root in the forward-slash Win32 form on purpose, and Bash builtins, MSYS tools and native Windows binaries
-  all accept it. If your script needs backslashes, use an exec-form hook, which spawns the process directly with an
-  `args` array, or a hook with `"shell": "powershell"`.
+- On Windows, most substituted paths use forward slashes, as in `C:/Users/you/...`. They keep their native backslashes
+  in an exec-form hook and in a hook that runs through PowerShell, which is the default shell on Windows when Git Bash
+  isn't installed. A plugin hook that runs through Git Bash receives `${CLAUDE_PLUGIN_ROOT}` as `C:/Users/you/...`
+  rather than `C:\Users\you\...`, which breaks a script that expected backslashes. With Git Bash installed, a
+  shell-form hook runs through Git Bash by default, and Claude Code passes the path with forward slashes on purpose so
+  that Bash doesn't read backslashes as escapes; Bash builtins, MSYS tools and native Windows binaries all accept it.
+  If your script needs backslashes, use an exec-form hook, which spawns the process directly with an `args` array, or
+  a hook with `"shell": "powershell"`.
   [plugins/manifest-reference › Quoting and path separators](https://code.claude.com/docs/en/plugins/manifest-reference#quoting-and-path-separators)
   and
   [plugins/troubleshooting › `${CLAUDE_PLUGIN_ROOT}` shows forward slashes on Windows](https://code.claude.com/docs/en/plugins/troubleshooting#claude-plugin-root-shows-forward-slashes-on-windows)
@@ -458,11 +460,11 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   the hook is defined in `settings.json`, a plugin or a skill. PowerShell then resolves the value from the exported
   environment after parsing, so the placeholder works inside double-quoted strings but not inside single-quoted
   strings, where PowerShell never expands variables.
-  [hooks › Windows PowerShell tool](https://code.claude.com/docs/en/hooks#windows-powershell-tool)
+  [hooks › Reference scripts by path in PowerShell hooks](https://code.claude.com/docs/en/hooks#reference-scripts-by-path-in-powershell-hooks)
 - Don't write the bare `$CLAUDE_PROJECT_DIR` spelling in a PowerShell hook. PowerShell parses it as an undefined local
   variable and resolves it to `$null`, which leaves the script path without its project-root prefix. Claude Code
   doesn't rewrite that form; it logs a warning in the debug log instead.
-  [hooks › Windows PowerShell tool](https://code.claude.com/docs/en/hooks#windows-powershell-tool)
+  [hooks › Reference scripts by path in PowerShell hooks](https://code.claude.com/docs/en/hooks#reference-scripts-by-path-in-powershell-hooks)
 
   ```json
   {
@@ -489,6 +491,11 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   [hooks-guide › HTTP hooks](https://code.claude.com/docs/en/hooks-guide#http-hooks),
   [hooks › Hook handler fields](https://code.claude.com/docs/en/hooks#hook-handler-fields)
   and [hooks › HTTP hook fields](https://code.claude.com/docs/en/hooks#http-hook-fields)
+- Claude Code checks the response status as well as the body. On a 2xx status, return the appropriate
+  `hookSpecificOutput` fields in the body to block a tool call. On any other status, or when the request fails, Claude
+  Code reports a non-blocking error and lets the action continue; to make a failed endpoint block the action, set
+  `onFailure: "block"` on the hook.
+  [hooks-guide › HTTP hooks](https://code.claude.com/docs/en/hooks-guide#http-hooks)
 - In addition to the common fields, HTTP hooks accept these fields.
   [hooks › HTTP hook fields](https://code.claude.com/docs/en/hooks#http-hook-fields)
 
@@ -497,6 +504,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | `url` | yes | URL to send the POST request to |
   | `headers` | no | Additional HTTP headers as key-value pairs. Values support environment variable interpolation using `$VAR_NAME` or `${VAR_NAME}` syntax. Only variables listed in `allowedEnvVars` are resolved |
   | `allowedEnvVars` | no | List of environment variable names that may be interpolated into header values. References to unlisted variables are replaced with empty strings. Required for any env var interpolation to work |
+  | `onFailure` | no | What happens to the action when the hook fails: `"continue"`, the default, or `"block"`. See [Block the action when a hook fails](https://code.claude.com/docs/en/hooks#block-the-action-when-a-hook-fails) |
 
 - This handler sends `PreToolUse` events for Bash calls to a local validation service, authenticating with a token
   from the `MY_TOKEN` environment variable.
@@ -584,14 +592,19 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   hook receives the same JSON input via stdin as a synchronous hook.
   [hooks › How async hooks execute](https://code.claude.com/docs/en/hooks#how-async-hooks-execute)
 - After the background process exits, Claude Code delivers the `additionalContext` and `systemMessage` fields from the
-  hook's JSON response to Claude on the next conversation turn; if the session is idle, the response waits until the
-  next user interaction. Unlike a synchronous hook's `systemMessage`, neither field is shown to you. An `asyncRewake`
-  hook that exits with code 2 wakes Claude immediately even when the session is idle. A `PostToolUse` async hook
-  reports results to Claude through `additionalContext` in `hookSpecificOutput`.
+  hook's JSON response to Claude on the next conversation turn, except for repeated `SessionStart` output (see the
+  `SessionStart` bullet below); if the session is idle, the response waits until the next user
+  interaction. Unlike a synchronous hook's `systemMessage`, neither field is shown to you. An `asyncRewake` hook that
+  exits with code 2 wakes Claude immediately even when the session is idle. A `PostToolUse` async hook reports results
+  to Claude through `additionalContext` in `hookSpecificOutput`.
   [hooks › Configure an async hook](https://code.claude.com/docs/en/hooks#configure-an-async-hook),
   [hooks › How async hooks execute](https://code.claude.com/docs/en/hooks#how-async-hooks-execute),
   [hooks › Limitations](https://code.claude.com/docs/en/hooks#limitations)
   and [hooks › Run tests after file changes](https://code.claude.com/docs/en/hooks#run-tests-after-file-changes)
+- Print the JSON response alone on stdout or on one line of its own. When the response is the only text on stdout, it
+  can span several lines, such as pretty-printed `jq` output. An async
+  hook can also print other text to stdout when the response fits on one line by itself, for example with `jq -c`.
+  [hooks › How async hooks execute](https://code.claude.com/docs/en/hooks#how-async-hooks-execute)
 - Claude Code validates that JSON response against the same output schema as synchronous hooks, and drops any field
   whose value has the wrong type, such as a `systemMessage` that isn't a string, instead of delivering it. Run with
   `--debug` to see a warning naming each dropped field.
@@ -599,8 +612,13 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
 - Async hook completion notifications are suppressed by default. To see them, enable verbose mode with `Ctrl+O` or
   start Claude Code with `--verbose`.
   [hooks › How async hooks execute](https://code.claude.com/docs/en/hooks#how-async-hooks-execute)
-- Each execution of an async hook creates a separate background process. There is no deduplication across multiple
-  firings of the same async hook. [hooks › Limitations](https://code.claude.com/docs/en/hooks#limitations)
+- Each execution of an async hook creates a separate background process.
+  [hooks › Limitations](https://code.claude.com/docs/en/hooks#limitations)
+- An async `SessionStart` hook runs every time the event fires. Claude Code skips the hook's output when the
+  `additionalContext` and `systemMessage` text matches what Claude last received from that hook, unless a synchronous
+  `SessionStart` hook has added other text since. Claude Code delivers the text when it changes, and again the next
+  time the hook runs after a compaction or `/clear`.
+  [hooks › Limitations](https://code.claude.com/docs/en/hooks#limitations)
 
 ## The environment hook processes get
 

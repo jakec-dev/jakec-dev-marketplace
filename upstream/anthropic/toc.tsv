@@ -12,7 +12,7 @@ platform.claude.com/agents-and-tools/agent-skills/best-practices	4	Pattern 1: Hi
 platform.claude.com/agents-and-tools/agent-skills/best-practices	4	Pattern 2: Domain-specific organization	318	353	353
 platform.claude.com/agents-and-tools/agent-skills/best-practices	4	Pattern 3: Conditional details	354	374	374
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Avoid deeply nested references	375	404	404
-platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Structure longer reference files with table of contents	405	431	431
+platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Structure longer reference files with a table of contents	405	431	431
 platform.claude.com/agents-and-tools/agent-skills/best-practices	2	Workflows and feedback loops	432	433	568
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Use workflows for complex tasks	434	524	524
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Implement feedback loops	525	568	568
@@ -31,7 +31,7 @@ platform.claude.com/agents-and-tools/agent-skills/best-practices	2	Anti-patterns
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Avoid Windows-style paths	847	855	855
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Avoid offering too many options	856	872	872
 platform.claude.com/agents-and-tools/agent-skills/best-practices	2	Advanced: Skills with executable code	873	876	1123
-platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Solve, don't defer	877	929	929
+platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Solve, don’t defer	877	929	929
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Provide utility scripts	930	986	986
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Use visual analysis	987	1008	1008
 platform.claude.com/agents-and-tools/agent-skills/best-practices	3	Create verifiable intermediate outputs	1009	1027	1027

@@ -46,10 +46,14 @@ Deciding where a hook is defined and what it applies to.
   [hooks › Hook locations](https://code.claude.com/docs/en/hooks#hook-locations),
   [sub-agents › Define hooks for subagents](https://code.claude.com/docs/en/sub-agents#define-hooks-for-subagents)
 - Hooks and other `.claude/settings.json` keys load from the current working directory's `.claude/` folder with no
-  parent-directory fallback, alongside your user `~/.claude/settings.json` and managed settings. Directories added
-  with `--add-dir` or `/add-dir` load only the `enabledPlugins` and `extraKnownMarketplaces` keys from their
-  `.claude/settings.json` and `.claude/settings.local.json`, so their hooks don't load, and directories listed in
-  `permissions.additionalDirectories` grant file access only and load no configuration.
+  parent-directory fallback, alongside your user `~/.claude/settings.json` and managed settings.
+  [permissions › Where output styles, hooks, and local settings load from](https://code.claude.com/docs/en/permissions#where-output-styles-hooks-and-local-settings-load-from)
+- `.claude/settings.local.json` loads from the git repository root instead, even when you start Claude Code in a
+  subdirectory, except where Claude Code doesn't use the repository root, such as on Windows.
+  [permissions › Where output styles, hooks, and local settings load from](https://code.claude.com/docs/en/permissions#where-output-styles-hooks-and-local-settings-load-from)
+- Directories added with `--add-dir` or `/add-dir` load only the `enabledPlugins` and `extraKnownMarketplaces` keys
+  from their `.claude/settings.json` and `.claude/settings.local.json`, so their hooks don't load, and directories
+  listed in `permissions.additionalDirectories` grant file access only and load no configuration.
   [permissions › Additional directories grant file access, not configuration](https://code.claude.com/docs/en/permissions#additional-directories-grant-file-access-not-configuration)
 - In a large repository with `worktree.sparsePaths` set, project settings inside the worktree load from the
   worktree root's `.claude/settings.json`, the checked-out copy of the repository root's file. Put settings you need
@@ -104,7 +108,8 @@ Deciding where a hook is defined and what it applies to.
   [server-managed-settings › Security approval dialogs](https://code.claude.com/docs/en/server-managed-settings#security-approval-dialogs)
 - When Claude Code can't show the approval dialog for settings that need approval, such as a hook: an interactive
   session that can't show it doesn't apply the delivered settings and keeps the last-approved settings. A
-  non-interactive run, such as `claude -p`, applies them for that run only and doesn't record them as approved. When an
+  non-interactive run, such as `claude -p`, an Agent SDK session, or a session in the VS Code extension's chat panel or
+  the desktop app's Code tab, applies them for that run only and doesn't record them as approved. When an
   error closes the dialog before you answer, Claude Code also keeps the last-approved settings. In each case the dialog
   appears in the next session that can show it.
   [server-managed-settings › Approval memory](https://code.claude.com/docs/en/server-managed-settings#approval-memory)
@@ -134,7 +139,8 @@ Deciding where a hook is defined and what it applies to.
   applying `hooks`. If a developer declines, Claude Code exits that session rather than applying the policy. When you
   push a new hook to a broad policy, every matching developer therefore sees the dialog in their interactive
   sessions: a running interactive session shows it on the next hourly poll, and otherwise it appears at the
-  developer's next interactive startup. A non-interactive run applies pushed settings for that run only.
+  developer's next interactive startup. A non-interactive run, such as `claude -p`, an Agent SDK session, or a
+  session in Claude Desktop's Code tab, applies pushed settings for that run only.
   [claude-apps-gateway-config › What goes in `cli`](https://code.claude.com/docs/en/claude-apps-gateway-config#what-goes-in-cli)
 
 ## Plugin hooks
@@ -175,6 +181,17 @@ Deciding where a hook is defined and what it applies to.
   a session loads the plugin, and they fire on their events from then on. To limit when a hook runs, narrow its
   `matcher`.
   [plugins/components › When plugin hooks fire](https://code.claude.com/docs/en/plugins/components#when-plugin-hooks-fire)
+- When you install and enable two plugins with the same manifest name from different marketplaces, both appear as
+  enabled in `/plugin`, but one of them registers the hooks in its `hooks/hooks.json` and the other's are left out.
+  When your organization's managed settings turn on one of the copies, that copy holds the name; otherwise the copy
+  Claude Code loads first does. To see which copy holds the name, open the **Errors** tab in `/plugin`: a note for the
+  left-out copy, beginning `Its hooks.json hooks do not run`, names the copy that holds the name, and the left-out
+  copy's details show the same note. To run the left-out copy's
+  hooks instead, disable or uninstall the copy that holds the name, then run `/reload-plugins`, which registers the
+  remaining copy's hooks and clears the note. If your managed settings turn on the holding copy, you can't disable
+  it, and the other copy's hooks stay off while both are installed.
+  [plugins/loading › Hooks when two enabled plugins share a name](https://code.claude.com/docs/en/plugins/loading#hooks-when-two-enabled-plugins-share-a-name),
+  [plugins/components › Hooks](https://code.claude.com/docs/en/plugins/components#hooks)
 - To write hooks as JavaScript functions that run inside Claude Code and can draw in its interface, list a module
   file under a `modules` key in the same `hooks/hooks.json`. A plugin with one is a mod.
   [plugins/components › Hooks](https://code.claude.com/docs/en/plugins/components#hooks)
@@ -304,6 +321,13 @@ Deciding where a hook is defined and what it applies to.
   }
   ```
 
+- When someone adds a marketplace, Claude Code clones its repository and fetches only the git submodules that hold
+  plugin files. If a plugin at the marketplace root runs a file from a submodule, write the file's path out in the
+  plugin's hook or server configuration, such as `${CLAUDE_PLUGIN_ROOT}/vendor/tool/run.sh`. Claude Code reads those
+  paths to find out whether the plugin needs the submodules, and it can't see a path that a script builds while it
+  runs.
+  [plugins/create-marketplace › Keep unused submodules out of the clone](https://code.claude.com/docs/en/plugins/create-marketplace#keep-unused-submodules-out-of-the-clone)
+
 ## Skill and subagent frontmatter
 
 - Hooks can be defined in subagents using frontmatter, in the same configuration format as settings-based hooks, and
@@ -391,6 +415,11 @@ Deciding where a hook is defined and what it applies to.
   root where the session started, so `${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh` still runs the script in
   the main checkout. The `cwd` field in the hook's input JSON follows Claude: it is the worktree root after Claude
   enters a worktree, and the new directory after Claude runs `cd`.
+  [hooks › Reference scripts by path](https://code.claude.com/docs/en/hooks#reference-scripts-by-path)
+- In a worktree session you start from the desktop app, Claude Code reads project hooks from the main checkout's root,
+  runs hook commands in that root, and points `${CLAUDE_PROJECT_DIR}` at it. To reach the files Claude is working on,
+  read the worktree's path from the hook's `cwd` input field.
+  [worktrees › What worktrees share with the main checkout](https://code.claude.com/docs/en/worktrees#what-worktrees-share-with-the-main-checkout),
   [hooks › Reference scripts by path](https://code.claude.com/docs/en/hooks#reference-scripts-by-path)
 - `/cd <path>` moves the session to a different primary working directory. As soon as you move, Claude Code applies
   the new directory's project settings, including their hooks. Hooks the move activates still receive

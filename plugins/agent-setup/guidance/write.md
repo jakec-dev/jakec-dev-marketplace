@@ -7,17 +7,6 @@ project instructions"
 ([memory › AGENTS.md](https://code.claude.com/docs/en/memory#agents-md)), so the plugin applies them to an
 `AGENTS.md` that Claude reads in place of a `CLAUDE.md`, and says so when it does.
 
-## Earn every line
-
-- For CLAUDE.md: "For each line, ask: *"Would removing this cause Claude to make mistakes?"* If not, cut it.
-  Bloated CLAUDE.md files cause Claude to ignore your actual instructions!" CLAUDE.md "is loaded every session, so
-  only include things that apply broadly."
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
-- For an over-specified CLAUDE.md: "If Claude already does something correctly without the instruction, delete it or
-  convert it to a hook."
-  [best-practices › Avoid common failure patterns](https://code.claude.com/docs/en/best-practices#avoid-common-failure-patterns)
-- Check: every line answers yes to the question above.
-
 ## Concrete enough to verify
 
 - "Claude treats CLAUDE.md files as context, not enforced configuration, so how you write instructions affects how
@@ -32,8 +21,12 @@ project instructions"
 
 ## Short files
 
-- "Target under 200 lines per CLAUDE.md file. Longer files consume more context and reduce adherence." Imports "help
-  you organize a long file but don't reduce its context cost, because imported files also load at launch."
+- "Claude Code loads `CLAUDE.md` into every session, which means every line in it takes a little of Claude's
+  attention on *every* task, whether it's relevant or not."
+  [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
+- "target under 200 lines per CLAUDE.md file. Longer files consume more context and reduce adherence." Imports "help
+  you organize a long file but don't reduce its context cost, because imported files load together with the CLAUDE.md
+  that imports them."
   [memory › Write effective instructions](https://code.claude.com/docs/en/memory#write-effective-instructions)
 - A warning appears at startup and in `/status` when an instruction file is over the recommended length, or when
   files within it add up past a combined limit; "Each CLAUDE.md, rules file, and `@path` import counts as a separate
@@ -62,9 +55,10 @@ project instructions"
 - Check: a new instruction contradicts nothing in the other instruction files that load with it, nor Claude Code's
   built-in git instructions.
 
-## Emphasis on one line, not many
+## Plain wording, not emphasis
 
-- "If Claude keeps skipping one instruction, add emphasis such as "IMPORTANT" to that line alone. If you emphasize
-  many lines, none of them stands out."
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
-- Check: emphasis appears only on a line Claude has been seen to skip.
+- Adding "IMPORTANT or ALL CAPS to instructions Claude keeps missing" is advice current models have made unnecessary:
+  "Current ones follow a plainly worded line, and piling on emphasis mostly makes Claude over-apply the rule."
+  [best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)
+- Check: is every instruction worded plainly, with no IMPORTANT, ALL CAPS or other emphasis added to make Claude
+  follow it?

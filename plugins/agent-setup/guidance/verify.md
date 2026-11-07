@@ -5,7 +5,6 @@ Proving that a tool works before calling it done.
 ## Contents
 
 - [It loaded](#it-loaded)
-- [It changes what Claude does](#it-changes-what-claude-does)
 - [Work the tool does has a check](#work-the-tool-does-has-a-check)
 - [A hook is seen to load and to act](#a-hook-is-seen-to-load-and-to-act)
 - [A skill is checked for triggering and for output, separately](#a-skill-is-checked-for-triggering-and-for-output-separately)
@@ -36,32 +35,36 @@ Proving that a tool works before calling it done.
 - Check: the tool's user is told how to confirm it loaded, and for a path-scoped rule, which file to open to trigger
   it.
 
-## It changes what Claude does
-
-- For CLAUDE.md: "test changes by observing whether Claude's behavior actually shifts."
-  [best-practices › Write an effective CLAUDE.md](https://code.claude.com/docs/en/best-practices#write-an-effective-claude-md)
-- Check: each new instruction comes with a prompt or task that shows the behaviour it should change.
-
 ## Work the tool does has a check
 
-- "Give Claude a check it can run: tests, a build, a screenshot to compare." "Give Claude something that produces a
-  pass or fail, and the loop closes on its own." How hard the check gates the stop:
-  - In one prompt: ask Claude to run the check and iterate in the same message.
-  - Across a session: set the check as a `/goal` condition. If Claude stalls, Claude Code eventually stops the run
-    with the goal still set.
-  - As a deterministic gate: a Stop hook runs the check as a script and blocks the turn from ending until it passes.
-    The block has a cap: after stop hooks have continued the turn eight times in a row, Claude Code overrides the next
-    block and ends the turn; `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` raises it.
-  - By a second opinion: a verification subagent or a dynamic workflow that checks its own findings has a fresh model
-    try to refute the result.
+- "Give Claude something it can run that comes back pass or fail. Once it has that, it can keep going on its own and
+  you don't have to watch." "If your repo already has one of these, the single most useful line in your `CLAUDE.md` is
+  the command that runs it." How strict the check is goes "from Claude deciding for itself all the way to Claude Code
+  enforcing it":
+  - In the prompt, such as `run the auth tests after, and keep going until they pass`: "Claude decides for itself when
+    it's satisfied."
+  - As a goal: `/goal` "sets a condition that a separate model checks against the conversation after every turn, and
+    Claude keeps going until it's met"; it "matters for long background runs". If Claude stalls, Claude Code
+    eventually stops the run with the goal still set.
+  - As a Stop hook: it "runs your script whenever Claude tries to end its turn, and sends Claude back to work if the
+    script exits with code 2", enforced by Claude Code. The block has a cap: after stop hooks have continued the turn
+    eight times in a row, Claude Code overrides the next block and ends the turn. "The count of consecutive
+    continuations resets each time Claude calls a tool." `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP` raises the cap.
+  - By someone who didn't write the code: in the terminal, `/code-review` "reviews the diff in a fresh subagent that
+    never saw your conversation."
 
-  [best-practices › Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)
+  [best-practices › Give Claude a check to run](https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run)
   [hooks › Stop input](https://code.claude.com/docs/en/hooks#stop-input)
   [goal › How evaluation works](https://code.claude.com/docs/en/goal#how-evaluation-works)
-- "Have Claude show evidence rather than asserting success: the test output, the command it ran and what it
-  returned, or a screenshot of the result."
-  [best-practices › Give Claude a way to verify its work](https://code.claude.com/docs/en/best-practices#give-claude-a-way-to-verify-its-work)
-- Check: a tool that directs work names the check that ends it and asks for evidence, not a claim of success.
+- "Whichever option you use, ask Claude for *evidence*: the command it ran and its output, or the screenshot. "All
+  tests pass" on its own tells you very little".
+  [best-practices › Give Claude a check to run](https://code.claude.com/docs/en/best-practices#give-claude-a-check-to-run)
+- Telling Claude to "keep going, loop until done, don't be lazy" is advice current models have made unnecessary:
+  "lines like that are more likely to cause over-work than fix a stall. Giving Claude a check to pass is different,
+  and still worth doing."
+  [best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)
+- Check: does a tool that directs work name a check that comes back pass or fail, ask for evidence such as the command
+  and its output rather than a claim of success, and use no "keep going" line in place of a check?
 
 ## A hook is seen to load and to act
 
@@ -73,9 +76,16 @@ Proving that a tool works before calling it done.
 - Because command hooks run with your full user permissions: "Review and test all hook commands before adding them to
   your configuration."
   [hooks › Disclaimer](https://code.claude.com/docs/en/hooks#disclaimer)
-- Check: was each hook command tested before it was added, and seen under its event in `/hooks`, and, for a hook that
-  rewrites a tool's input, does the debug log show a `modified tool input keys` line after a task that should trigger
-  it?
+- Run a task that should trigger the hook and look for its effect. For the page's formatter hook: "To check the hook,
+  ask Claude to add a badly indented line to a file Prettier formats. The saved file comes back with the indentation
+  fixed."
+  [best-practices › Enforce steps with hooks](https://code.claude.com/docs/en/best-practices#enforce-steps-with-hooks)
+  For its typecheck Stop hook: "To see it work, ask Claude for a change that breaks a type: instead of finishing, it
+  gets the compiler errors back and keeps going until `tsc` passes."
+  [best-practices › Enforce the check with a Stop hook](https://code.claude.com/docs/en/best-practices#enforce-the-check-with-a-stop-hook)
+- Check: was each hook command tested before it was added, seen under its event in `/hooks`, and shown to have its
+  effect on a task that should trigger it, and, for a hook that rewrites a tool's input, does the debug log show a
+  `modified tool input keys` line after such a task?
 
 ## A skill is checked for triggering and for output, separately
 
