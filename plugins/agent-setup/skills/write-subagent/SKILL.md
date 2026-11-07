@@ -43,6 +43,10 @@ passed to `claude --agents`.
      version control, user for personal ones, a plugin to share across repositories, `--agents` for one session.
    - Write the frontmatter with field names and values exactly as `frontmatter.md › Frontmatter fields` gives them,
      or the `--agents` keys `placing.md › The --agents flag` lists.
+   - Keep the `description` to what the subagent is for and when to delegate to it, and put what it checks or how it
+     works in the body: descriptions take up context, and the body loads only when the subagent runs
+     (`write-subagents.md › Subagent descriptions say when to delegate, and single one out`). When the user asks for
+     that detail in the description, write it in the body and say why in one line, rather than refusing.
    - Write the body as the subagent's whole system prompt: it gets this and basic environment details, not Claude
      Code's system prompt (`frontmatter.md › File format`).
    - Set `tools` and `disallowedTools` as `tools.md › Restricting tools` describes.
