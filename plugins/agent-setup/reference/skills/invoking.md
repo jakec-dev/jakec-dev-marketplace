@@ -83,8 +83,8 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
 - Some features are only available in the CLI. For commands and skills, the CLI supports all of them and the VS Code
   extension a subset (type `/` to see what is available). [vs-code › VS Code extension vs. Claude Code CLI](https://code.claude.com/docs/en/vs-code#vs-code-extension-vs-claude-code-cli)
 - In a subagent's `initialPrompt`, which is auto-submitted as the first user turn when that agent runs as the main
-  session agent (via `--agent` or the `agent` setting), commands and skills are processed. Plugin subagents ignore
-  `initialPrompt`.
+  session agent (via `--agent` or the `agent` setting), commands and skills are processed (plugin subagents ignore
+  `initialPrompt`).
   [sub-agents › Frontmatter reference](https://code.claude.com/docs/en/sub-agents#supported-frontmatter-fields)
 
 ## Which session a typed skill reaches
@@ -92,8 +92,7 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
 - While you're viewing an in-process teammate in an agent team, plain text and skills go to that teammate, and
   built-in commands go to the lead's session.
   [agent-teams › Talk to teammates directly](https://code.claude.com/docs/en/agent-teams#talk-to-teammates-directly)
-- With a fork's or subagent's transcript open, follow-up messages and skills go to that agent, and built-in commands
-  go to your main conversation.
+- With a fork's or subagent's transcript open, skills go to that agent, as follow-up messages do.
   [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks)
 - In agent view, skills, your own commands, and prompt-expanding built-ins such as `/init` are sent to a new
   background session as their first prompt.

@@ -60,10 +60,9 @@ key facts first; they are what models most often get wrong. Then read only the s
   See [loading.md › After compaction](loading.md).
 - A non-fork subagent starts with every level of CLAUDE.md files and project rules the main conversation loads; the
   built-in Explore and Plan agents skip them, and a subagent with `omitClaudeMd` loads only managed policy files, or
-  none when its definition comes from managed settings.
+  none when its definition comes from managed settings; `omitClaudeMd` is ignored for an agent run with `--agent`.
   See [loading.md › In subagents](loading.md).
-- A subagent that runs in its own worktree (when asked to "use worktrees for your agents" or its frontmatter sets
-  `isolation: worktree`) in the default location under `.claude/worktrees/` doesn't load the `CLAUDE.md` file or
+- A subagent in its own worktree in the default location under `.claude/worktrees/` doesn't load the `CLAUDE.md` file or
   `.claude/rules/` directory at the worktree's root as it reads files there, even if those differ on the worktree's
   branch.
   See [loading.md › In subagents](loading.md).

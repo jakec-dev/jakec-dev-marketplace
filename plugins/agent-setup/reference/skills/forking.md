@@ -85,44 +85,13 @@ and how the run appears in the output stream.
 - For a skill with `context: fork`, Claude Code follows the background and foreground rules from Run skills in a
   subagent, above, whether or not fork mode is on.
   [sub-agents › Which subagents run in the background](https://code.claude.com/docs/en/sub-agents#which-subagents-run-in-the-background)
-- Foreground subagents pass permission prompts through to you as they come up. A background subagent that reaches a
-  tool call needing permission has Claude Code surface the prompt in your main session, naming the subagent that is
-  asking: approve to let it continue, or press Esc to deny that one tool call without stopping the subagent.
-  [sub-agents › Run subagents in foreground or background](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background)
-- Background subagents surface every permission prompt in your main session. When you answer one of those prompts with
-  a choice that lasts beyond that one tool call, such as a grant that lasts for the rest of the session, Claude Code
-  applies your answer to the whole session, including your main conversation.
-  [sub-agents › Tools, permissions, and results of background subagents](https://code.claude.com/docs/en/sub-agents#tools-permissions-and-results-of-background-subagents)
 
 ## Tools in a background fork
 
 - A backgrounded fork runs with the
   [narrower tool set that applies to background subagents](https://code.claude.com/docs/en/sub-agents#run-subagents-in-foreground-or-background):
   the skill's subagent is a regular agent type, so the exemption for subagents that fork the conversation doesn't
-  cover it. If the skill's steps depend on a tool outside that set, set `background: false` to keep the full tool
-  set. [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
-- Apart from `Agent` and `ExitPlanMode`, which follow their own conditions wherever the subagent runs, a background
-  subagent keeps every MCP tool but only these built-in tools: `Read`, `Grep`, `Glob`, `LSP`, `Bash`, `PowerShell`,
-  `Edit`, `Write`, `NotebookEdit`, `WebFetch`, `WebSearch`, `TodoWrite`, `Skill`, `ToolSearch`, `EnterWorktree`,
-  `ExitWorktree`, `Monitor`, `TaskStop`, `SendMessage`, and `Artifact`, plus `SubagentHandback` for a subagent that
-  reports through it. Claude Code removes every other built-in tool from a background subagent, whether inherited or
-  listed in the `tools` field, so the same definition can resolve to different tools in the foreground and the
-  background. The removal reports no error unless it leaves the `tools` list resolving to nothing.
-  [sub-agents › Available tools](https://code.claude.com/docs/en/sub-agents#available-tools)
-- Subagents inherit the built-in and MCP tools available in the main conversation, narrowed by two filters. The second
-  filter applies to a background subagent, which loses the built-in tools outside the kept set above; background is
-  the default for forked skills. The first filter removes `AskUserQuestion`, `EnterPlanMode`, `EndConversation`,
-  `ScheduleWakeup`, `WaitForMcpServers` and `Workflow` from every subagent, even when listed in the `tools` field, so
-  a forked skill, being a subagent, can't ask you questions or enter plan mode.
-  [sub-agents › Available tools](https://code.claude.com/docs/en/sub-agents#available-tools)
-  [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
-- The first filter also removes `Agent` and `ExitPlanMode` from every subagent, even when listed in the `tools`
-  field, under these conditions: `Agent`, when the subagent is at the depth limit, which is three layers below the main
-  conversation unless `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH` changes it, with one exception: a fork (a subagent that
-  inherits the full conversation) keeps `Agent` listed but gets an error when it uses it; `ExitPlanMode`, unless the
-  subagent's `permissionMode` is `plan`.
-  [sub-agents › Available tools](https://code.claude.com/docs/en/sub-agents#available-tools),
-  [sub-agents › Let subagents spawn their own subagents](https://code.claude.com/docs/en/sub-agents#let-subagents-spawn-their-own-subagents)
+  cover it. If the skill's steps depend on a tool outside that set, set `background: false` to keep the full tool set. [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
 
 ## Checkpoints and `/rewind`
 
@@ -144,10 +113,8 @@ and how the run appears in the output stream.
   `tool_use` and `tool_result` blocks; with `--forward-subagent-text` or `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT`, it also
   carries the forked skill's text and thinking blocks.
   [headless › Follow subagent messages](https://code.claude.com/docs/en/headless#follow-subagent-messages)
-- With either option, Claude Code forwards messages from subagents at every nesting depth, whether each one was
-  spawned with the Agent tool or started as a forked skill. A nested subagent's messages carry in `parent_tool_use_id`
-  the ID of the Agent or Skill tool call that started it, so you can rebuild the full nesting tree by following those
-  IDs.
+- With either option, forked skills nested at any depth are forwarded too, and their messages carry the ID of the
+  Skill tool call that started them.
   [headless › Follow subagent messages](https://code.claude.com/docs/en/headless#follow-subagent-messages)
 - A run that Claude starts with a tool call carries that tool call's ID. A forked skill that you start by passing
   `/<skill-name>` as the prompt has no tool call, so its messages carry a `forked-command-` value instead and arrive
@@ -156,7 +123,6 @@ and how the run appears in the output stream.
 
   | How the run starts | `parent_tool_use_id` | When its messages arrive |
   | :- | :- | :- |
-  | Claude calls the Agent tool from the main conversation | The ID of that Agent `tool_use` block | While the subagent works |
   | Claude calls the Skill tool for a forked skill from the main conversation | The ID of that Skill `tool_use` block | While the forked skill works |
   | You pass `/<skill-name>` as the prompt | A value that starts with `forked-command-` | Together and in order after the forked skill finishes |
 

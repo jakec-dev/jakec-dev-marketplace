@@ -20,8 +20,8 @@ glossary	Frontmatter	included	scoping.md
 memory	How CLAUDE.md files load	included	loading.md	all but the paragraph on block-level HTML comments, handed to writing.md
 context-window	What survives compaction	included	loading.md	
 prompt-caching	Editing CLAUDE.md mid-session	included	loading.md	
-sub-agents	What loads at startup	included	loading.md	all but the clauses on skills (the skills already invoked, and the preloaded-skills bullet), which the skills reference takes
-worktrees	Isolate subagents with worktrees	included	loading.md	
+sub-agents	What loads at startup	included	loading.md	the CLAUDE.md files bullet, the paragraph on `omitClaudeMd` and on Explore, Plan and `omitClaudeMd` subagents loading a subdirectory's CLAUDE.md and path-scoped rules, and the paragraph on restating a rule in the delegation prompt
+worktrees	Isolate subagents with worktrees	included	loading.md	the paragraph on the instruction files a subagent in its own worktree takes
 prompt-caching	How the cache is organized	included	loading.md	the Project context row
 memory	Set up rules	included	loading.md	the sentence on rules without `paths` loading at launch with `.claude/CLAUDE.md` priority
 memory	User-level rules	included	loading.md	the sentences on user rules loading before project rules and neither overriding the other
@@ -39,7 +39,7 @@ plugins/mods/overview	Mods built into Claude Code	included	agents-md.md	the `cc-
 memory	Share rules across projects with symlinks	included	sharing.md	
 memory	Load from additional directories	included	sharing.md	
 large-codebases	Grant access across packages or repositories	included	sharing.md	
-large-codebases	Check out only the directories you need	included	sharing.md	
+large-codebases	Check out only the directories you need	included	sharing.md	all but the sentences that `sparsePaths` is particularly useful for subagent worktree isolation and that each subagent that runs in a worktree gets a lightweight checkout, which the subagents reference takes
 memory	Import additional files	included	sharing.md	the paragraph on importing a home-directory file across worktrees, and the external-import Warning
 memory	Exclude specific CLAUDE.md files	included	excluding.md	
 large-codebases	Exclude irrelevant CLAUDE.md files	included	excluding.md	
@@ -47,13 +47,13 @@ settings-reference	`claudeMdExcludes`	included	excluding.md
 memory	Set up rules	included	excluding.md	the sentence that project rules are skipped if you exclude `project` from `--setting-sources`, and the "Before v2.1.211" sentence, for current behaviour only
 memory	Choose which instruction files load	included	excluding.md	the `managed-only` row
 env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_DISABLE_CLAUDE_MDS` row
-headless	Start faster with bare mode	included	excluding.md	the sentence that `--bare` skips auto-discovery of CLAUDE.md, among others
+headless	Start faster with bare mode	included	excluding.md	the clause that `--bare` skips auto-discovery of CLAUDE.md
 memory	Migrate instructions from other tools	included	creating.md	all but the clause that `/import` carries over commands and skills, which the skills reference takes
 memory	View and edit with `/memory`	included	creating.md	all but the `/context` sentence, handed to troubleshooting.md
 memory	Set up a project CLAUDE.md	included	creating.md	the `/init` Tip
 commands	All commands	included	creating.md	the `/init` and `/import` rows, with the sentences on reading the table
 env-vars	Variables	included	creating.md	the `CLAUDE_CODE_NEW_INIT` row
-debug-your-config	See what loaded into context	included	troubleshooting.md	all but the bundled-skills sentence, which the skills reference takes, the `/skills` and `/mcp` table rows, and the subdirectory on-demand sentence
+debug-your-config	See what loaded into context	included	troubleshooting.md	all but the bundled-skills sentence, which the skills reference takes, the `/skills` and `/mcp` table rows, the subdirectory on-demand sentence, and the clause that `/context` lists custom subagents with the source each loaded from, which the subagents reference takes
 hooks	InstructionsLoaded	included	troubleshooting.md	
 hooks	InstructionsLoaded input	included	troubleshooting.md	
 hooks	InstructionsLoaded decision control	included	troubleshooting.md	
@@ -61,7 +61,7 @@ memory	Claude isn't following my CLAUDE.md	included	troubleshooting.md
 memory	My AGENTS.md isn't loading	included	troubleshooting.md	
 memory	Audit your instruction files	included	troubleshooting.md	all but the clauses on skills and commands, which the skills reference takes; the audit's scope list keeps them as list items
 memory	My CLAUDE.md is too large	included	troubleshooting.md	all but the sentences handed to writing.md
-debug-your-config	Test against a clean configuration	included	troubleshooting.md	
+debug-your-config	Test against a clean configuration	included	troubleshooting.md	all but the hooks clauses, which the hooks reference takes, and the clause that custom agents are disabled, which the subagents reference takes
 memory	Set up a project CLAUDE.md	included	troubleshooting.md	the sentence on confirming with `/context` under **Memory files**
 memory	Rule frontmatter reference	included	troubleshooting.md	the sentence on `claude --debug` showing the parse error
 hooks	Exit code 2 behavior per event	included	troubleshooting.md	the InstructionsLoaded row
@@ -149,7 +149,7 @@ features-overview	Understand how features layer	excluded		apart from the conflic
 debug-your-config	See what loaded into context	excluded		the sentence that subdirectory `CLAUDE.md` files load on demand and don't appear in the breakdown repeats Claude isn't following my CLAUDE.md
 agent-teams	Context and communication	included	loading.md	the first paragraph: teammates load CLAUDE.md like a regular session, and the restricted `--setting-sources` list, for current behaviour only
 agent-teams	Context and communication	excluded		apart from the first paragraph, about teammate messaging, not instruction files
-env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_SIMPLE` row
+env-vars	Variables	included	excluding.md	the CLAUDE.md clause of the `CLAUDE_CODE_SIMPLE` row
 env-vars	Variables	included	troubleshooting.md	the `CLAUDE_CODE_SAFE_MODE` row
 cli-reference	CLI flags	included	excluding.md	the `--setting-sources` row, with the table header
 cli-reference	CLI commands	included	creating.md	the `claude import [source]` row
@@ -211,7 +211,8 @@ hooks-guide	Re-inject context after compaction	excluded		belongs to another tool
 skills	Types of skill content	excluded		owned whole by skills; forking.md states how forked skills load CLAUDE.md
 skills	Run skills in a subagent	excluded		owned whole by skills; forking.md states how forked skills load CLAUDE.md
 sub-agents	Built-in subagents	excluded		repeats What loads at startup (Explore and Plan start without CLAUDE.md)
-sub-agents	Invoke subagents explicitly	excluded		its omitClaudeMd note repeats the Frontmatter reference row handed to loading.md
+sub-agents	Invoke subagents explicitly	included	loading.md	the sentence that CLAUDE.md files and project memory still load through the normal message flow under `--agent`, even when the definition sets `omitClaudeMd`
+sub-agents	Invoke subagents explicitly	excluded		the rest belongs to another tool type (subagents)
 permission-modes	How auto mode evaluates actions	excluded		its CLAUDE.md sentence repeats Where the classifier reads configuration
 agent-view	How file edits are isolated	included	troubleshooting.md	the bullet "Your git instructions take precedence", with the sentence introducing its list (a background session that made code changes in a worktree Claude entered)
 agent-view	How file edits are isolated	excluded		apart from the git-instructions bullet and the sentence that introduces its list, about agent view isolation, not instruction files
@@ -391,3 +392,4 @@ best-practices	Tell Claude what it can't see	excluded		recommends (guidance)
 memory	Claude ignores the end of my subdirectory CLAUDE.md	included	loading.md	the lead-in clause "which load on demand" as it applies to the item "Rules files in a subdirectory's `.claude/rules/`", also stated in writing.md's copy of the list
 env-vars	Features that need feature-flag fetching	included	creating.md	the third-party-provider item's exception for `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`
 env-vars	Features that need feature-flag fetching	excluded		the rest: the `claude import` and `/import` item and the other sessions repeat errors › claude import is not yet available in this build; the other items are not about this type
+worktrees	Isolate subagents with worktrees	excluded		the rest belongs to another tool type (subagents)

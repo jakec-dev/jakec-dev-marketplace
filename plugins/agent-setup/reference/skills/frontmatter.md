@@ -90,21 +90,17 @@ how `model` and `effort` interact with the session, and frontmatter `hooks`.
   model, Claude Code substitutes the newest version of the family that the allowlist permits and shows a notice naming
   the requested and substituted models.
   [model-config › Restrict model selection](https://code.claude.com/docs/en/model-config#restrict-model-selection)
-- A "restricted by your organization's settings" notice prefixed with an agent, skill, or command name means the
-  restriction applied to that subagent's requested model: the subagent runs on the substituted model and your
-  session's model is unchanged.
+- A "restricted by your organization's settings" notice prefixed with a skill or command name means the restriction
+  applied to that subagent's requested model, not your session's.
   [errors › Model is restricted by your organization's settings](https://code.claude.com/docs/en/errors#model-is-restricted-by-your-organizations-settings)
-- If the restricted model was set in the `model` frontmatter of a subagent, skill, or command, remove or update that
-  value so the notice doesn't recur.
+- If the restricted model was set in the `model` frontmatter of a skill or command, remove or update that value so
+  the notice doesn't recur.
   [errors › Model is restricted by your organization's settings](https://code.claude.com/docs/en/errors#model-is-restricted-by-your-organizations-settings)
 - When a skill or command's frontmatter names a `model` other than the session's current model, that turn is also a
   model switch: the next request reads the entire conversation history with no cache hits.
   [prompt-caching › Switching models](https://code.claude.com/docs/en/prompt-caching#switching-models)
-- While `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is on, Claude Code ignores the `model` field in subagent definitions,
-  and Claude can't pass a model when it starts a subagent. A skill that runs in a subagent with `model: inherit`
-  still runs on the main conversation's model. With only `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` set, subagents run on
-  the main conversation's model, except that the built-in Explore subagent runs on the model listed for it under
-  [Built-in subagents](https://code.claude.com/docs/en/sub-agents#built-in-subagents); with `CLAUDE_CODE_SUBAGENT_MODEL` also set, they run on that model.
+- While `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` forces one model onto subagents, a skill that runs in a subagent with
+  `model: inherit` still runs on the main conversation's model.
   [sub-agents › Run every subagent on one model](https://code.claude.com/docs/en/sub-agents#run-every-subagent-on-one-model)
 
 ## Effort
