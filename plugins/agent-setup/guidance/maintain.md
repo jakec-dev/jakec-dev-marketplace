@@ -48,8 +48,11 @@ Keeping existing tools useful as the codebase and models change, and finding the
 - For what the setup costs: "`/usage` is the first place to look. On Pro, Max, Ultra, Team, and Enterprise it breaks
   your usage down by skill, subagent, plugin, and MCP server."
   [best-practices › Keep cost and context down](https://code.claude.com/docs/en/best-practices#keep-cost-and-context-down)
-- Check: does an audit of instruction files name `/doctor prompt-audit` as a step the user can run, and does an audit
-  of what the setup costs name `/usage`?
+- "Check `/usage` to see what share of your usage each subagent type takes, so you can tell which ones are earning
+  their cost."
+  [best-practices › Know what subagents cost](https://code.claude.com/docs/en/best-practices#know-what-subagents-cost)
+- Check: does the audit name the built-in command that fits what it examines, `/doctor prompt-audit` for instruction
+  files and `/usage` for cost, including each subagent type's share?
 
 ## Capture a gap while it is fresh
 

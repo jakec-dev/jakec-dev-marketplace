@@ -15,6 +15,7 @@ Claude Code's skills and best practices pages. Where they disagree, Claude Code'
 - Skill files link one level deep from SKILL.md
 - Long skill files open with a contents list
 - Skill workflows are ordered steps, with a checklist when complex
+- Forked skills hold an explicit task
 - Skill examples show input and output
 - Skill output templates match how strict the format is
 - Skill scripts handle their own errors
@@ -108,6 +109,27 @@ Claude Code's skills and best practices pages. Where they disagree, Claude Code'
   [best-practices › Conditional workflow pattern](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#conditional-workflow-pattern)
 - Check: does a complex multi-step workflow in the skill give a checklist that Claude can copy into its response and
   tick off, and does a large workflow sit in a separate file that SKILL.md tells Claude to read for the task?
+
+## Forked skills hold an explicit task
+
+- "`context: fork` only makes sense for skills with explicit instructions. If your skill contains guidelines like "use
+  these API conventions" without a task, the subagent receives the guidelines but no actionable prompt, and returns
+  without meaningful output."
+  [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
+- Skills and subagents work together in two directions:
+
+  | Approach | System prompt | Task | Also loads |
+  | :- | :- | :- | :- |
+  | Skill with `context: fork` | From agent type | SKILL.md content | CLAUDE.md, per the agent's [startup context](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup) |
+  | Subagent with `skills` field | Subagent's markdown body | Claude's delegation message | Preloaded skills + CLAUDE.md, per the subagent's [startup context](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup) |
+
+  "With `context: fork`, you write the task in your skill and pick an agent type to execute it." For the inverse, a
+  custom subagent that uses skills as reference material, the subagent controls the system prompt and loads skill
+  content through its `skills` field; with `context: fork` in a skill, the skill content is injected into the agent
+  you specify.
+  [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
+  [sub-agents › Preload skills into subagents](https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents)
+- Check: does each skill with `context: fork` give the subagent a task to do, not only guidelines?
 
 ## Skill examples show input and output
 

@@ -21,6 +21,11 @@ follows and the auditor applies.
   an instruction is a request, not a guarantee, and a preference stays one.
   See [choose.md › Must happen every time: a hook](choose.md) and
   [choose.md › A preference stays an instruction, not a hook](choose.md).
+- Delegate to a subagent for isolation, parallel work, a fresh reviewer or fewer tools, not for a better answer, which
+  by default the same or a smaller model on the same task won't give; work that needs the conversation stays in it,
+  or runs as a fork.
+  See [choose.md › Side work that returns a summary: a subagent](choose.md) and
+  [choose.md › A task that needs the conversation so far: a fork, not a context: fork skill](choose.md).
 - Load an instruction only where it is needed: every session, some paths, or on demand.
   See [choose.md › One part of the codebase: a path-scoped rule or a nested CLAUDE.md](choose.md).
 - Write instructions concrete enough that someone could tell whether they were followed.
@@ -42,6 +47,7 @@ follows and the auditor applies.
   - What the codebase already says
   - Update what exists before adding
   - A skill closes a gap seen without it
+  - A worker you keep spawning becomes a custom subagent
 
 - [choose.md](choose.md): picking the kind of Claude tool that fits a goal
   - The instruction file the repository already uses
@@ -57,7 +63,11 @@ follows and the auditor applies.
   - A skill with side effects is user-only
   - Background knowledge is a skill only Claude invokes
   - About the response, not the project: an output style
-  - Isolated or parallel work: a subagent or a dynamic workflow
+  - Side work that returns a summary: a subagent
+  - Back-and-forth or shared context: the main conversation
+  - A task that needs the conversation so far: a fork, not a context: fork skill
+  - Workers that coordinate among themselves: an agent team
+  - Many subagents, or cross-checked findings: a dynamic workflow
   - An external system: a CLI or MCP, with a skill for using it
   - The same setup in another repository: a plugin
   - Instructions shipped in a plugin are skills
@@ -79,12 +89,30 @@ follows and the auditor applies.
   - Skill files link one level deep from SKILL.md
   - Long skill files open with a contents list
   - Skill workflows are ordered steps, with a checklist when complex
+  - Forked skills hold an explicit task
   - Skill examples show input and output
   - Skill output templates match how strict the format is
   - Skill scripts handle their own errors
   - Bundled scripts have advantages over generated code
   - Skill instructions say whether Claude runs a script or reads it
   - Skills list the packages they need
+
+- [write-subagents.md](write-subagents.md): writing a subagent's description, prompt, tools, model, memory and isolation
+  so that Claude delegates to it and it does the job
+  - Subagents do one task
+  - Subagent descriptions say when to delegate, and single one out
+  - Subagent prompts give the steps, the checks and the shape of the report
+  - Subagents return a short summary
+  - Reviewer subagents check against a spec and skip style
+  - Subagent tools are only those the task needs
+  - Subagents that shouldn't delegate leave Agent out of tools
+  - A subagent's partial tool limits: the prompt states them, a hook backs them
+  - An MCP server only one subagent needs is defined in its mcpServers
+  - omitClaudeMd only for subagents that take everything they need from the delegation prompt
+  - Subagents doing simple work set `model: haiku`
+  - Subagent memory defaults to project scope
+  - Subagents with memory say what to record
+  - Subagents that edit files in parallel run in worktrees
 
 - [write-hooks.md](write-hooks.md): writing a hook's event, handler, command and output so that it fires when it should
   and Claude can act on what it returns
@@ -123,6 +151,7 @@ follows and the auditor applies.
   - A skill's validation script names the problem
   - A skill's steps loop until validation passes
   - A skill is tried on real tasks and by its users
+  - A plugin subagent's delegation is measured with claude plugin eval
 
 - [maintain.md](maintain.md): keeping existing tools useful, and finding the ones to cut
   - Read the symptoms

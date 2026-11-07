@@ -86,3 +86,10 @@ and `/init` parts of "What the codebase already says", for CLAUDE.md files. It a
   [best-practices › Build evaluations first](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#build-evaluations-first)
 - Check: for a skill meant to fix a failure or missing context, is there a recorded task where Claude failed, or
   lacked context, without this skill, from a run made before writing it?
+
+## A worker you keep spawning becomes a custom subagent
+
+- "Define a custom subagent when you keep spawning the same kind of worker with the same instructions."
+  [sub-agents › Create custom subagents](https://code.claude.com/docs/en/sub-agents#page-title)
+- Check: does each proposed custom subagent replace the same kind of worker that keeps being spawned with the same
+  instructions?
