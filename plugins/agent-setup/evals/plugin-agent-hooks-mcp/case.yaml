@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: plugin-agent-hooks-mcp
+context:
+  scaffold_script: fixture.sh
