@@ -26,7 +26,7 @@ auto-mode-config	Add a human checkpoint	included	choose.md	the boundaries table 
 permissions	Precedence among rules, hooks, and mods	included	choose.md	the lead-in and the deny-rule clause of the first paragraph's second sentence; the sentence that a mod answers after the `PreToolUse` hooks; the deny-rule and `PreToolUse`-block outcomes with managed settings or a Team or Enterprise `/login`; the first sentence of the paragraph on neither, and the sentence on an API key or `CLAUDE_CODE_OAUTH_TOKEN`; and the clause that a hook exiting with code 2 stops the call before permission rules are evaluated; used in Must happen every time, with a mention in Never-rules are deny rules or hooks, not auto mode
 permissions	Precedence among rules, hooks, and mods	excluded		the rest: the ask-rule clause, the plugin-hooks sentence, the prompt outcomes for ask rules, hooks and `blockReadsOutsideWorkingDirectories` in both setups, the prompt-tool outcomes, the outcomes by permission mode, the interaction-tool paragraph, the allow-rule consequence and allow-list example are reference facts (hooks tool-events.md); the version sentence is history
 memory	AGENTS.md	included	choose.md	the opening sentence and the table
-memory	When Claude Code reads AGENTS.md	included	choose.md	the bullets on which files count, and the note on CLAUDE.local.md
+memory	When Claude Code reads AGENTS.md	included	choose.md	the bullets on which files count, the note on CLAUDE.local.md, and the `claude-md-and-agents-md` setting that keeps `AGENTS.md` read
 memory	When Claude Code reads AGENTS.md	included	verify.md	the session-start line
 memory	Share one file with other coding tools	included	choose.md	the import and its example
 memory	Where AGENTS.md differs from CLAUDE.md	included	verify.md	the InstructionsLoaded row
@@ -115,7 +115,6 @@ skills	Remove a skill	excluded		facts owned by the reference
 skills	Skill content lifecycle	excluded		repeats reference key facts
 skills	Pass arguments to skills	excluded		facts owned by the reference
 skills	Inject dynamic context	excluded		facts owned by the reference
-skills	Run skills in a subagent	excluded		repeats a reference fact (forking.md)
 skills	Restrict Claude's skill access	excluded		facts owned by the reference
 skills	Override skill visibility from settings	excluded		facts owned by the reference
 skills	Share skills	excluded		facts owned by the reference
@@ -129,7 +128,6 @@ skills	Extend Claude with skills	excluded		already in guidance (discover.md, cho
 claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill, rule and hook rows repeat choose.md
 costs	Move instructions from CLAUDE.md to skills	excluded		already in guidance (choose.md, write.md)
 plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md and its settings-hook column repeats choose.md
-workflows	When to use a workflow	excluded		compares workflows with other tools; belongs to the patterns guidance, not yet built
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	excluded		the worked example repeats the guideline
 goal	How evaluation works	excluded		the rest is not about verifying a tool
 scheduled-tasks	Run a prompt repeatedly with /loop	excluded		the rest belongs to the reference, not guidance
@@ -219,7 +217,6 @@ best-practices	Scope rules to one part of the codebase	excluded		repeats choose.
 best-practices	Put team procedures in skills	excluded		the rest: its `disable-model-invocation` sentence repeats choose.md › A skill with side effects is user-only; its loading sentence and example repeat skills reference facts
 best-practices	Connect the tools Claude needs	excluded		the rest: its code intelligence sentence repeats discover.md › Add a tool when a trigger appears; adding a server and seeing it under `/mcp` are commands with no tool advice
 best-practices	Give Claude a check to run	excluded		the rest: its `/verify` tip repeats the skills reference (Run and verify your app); its list of checks is examples
-best-practices	Review against your spec	excluded		about writing a review prompt; belongs to the subagent writing guidance, not yet built
 best-practices	Enforce the check with a Stop hook	excluded		the rest repeats hooks › Stop input (verify.md) and the hooks reference
 best-practices	Enforce the rules that can't have exceptions	excluded		the rest repeats the Tip
 best-practices	Enforce steps with hooks	excluded		the rest: its handler list repeats the hooks reference; its example and "works as a prompt" line are a tutorial
@@ -227,8 +224,6 @@ best-practices	Limit access with permission rules and the sandbox	excluded		the 
 best-practices	Choose who a rule applies to	excluded		the rest: its scope bullets restate where settings apply, with their hooks clauses in the hooks reference (placing.md, excluding.md); belongs to the settings guidance, not yet built
 best-practices	Change a default	excluded		describes Claude Code's defaults; states no tool guideline
 best-practices	Change the permission mode	excluded		the rest: permission modes, `autoMode` configuration and `/fewer-permission-prompts` belong to the settings guidance, not yet built
-best-practices	Change the model and effort	excluded		about model and effort, not a tool; its Haiku-for-subagents sentence belongs to the subagent writing guidance, not yet built
-best-practices	Know what subagents cost	excluded		the rest: its delegation bullets state defaults, with no advice; its `/usage` bullet repeats Keep cost and context down (maintain.md); its other spend-less items and reviewer example belong to the subagent writing guidance, not yet built
 best-practices	Keep cost and context down	included	maintain.md	the sentences that `/usage` is the first place to look and breaks usage down by skill, subagent, plugin and MCP server
 best-practices	Keep cost and context down	excluded		the rest: `/clear`, `/compact`, the cost of background work and the cache Note are session habits, not a tool; the 10% flagging is a `/usage` fact with no tool advice
 best-practices	Steer the session	excluded		session habits, not a tool
@@ -236,7 +231,7 @@ best-practices	Let Claude run without you	excluded		about unattended runs; belon
 best-practices	Run Claude from a script	excluded		CLI flags; states no tool guideline
 best-practices	Start runs on a schedule or an event	excluded		about scheduling runs; belongs to the patterns guidance, not yet built
 best-practices	Run sessions in parallel	excluded		worktree setup, including keeping the install command in CLAUDE.md; belongs to the patterns guidance, not yet built
-best-practices	What you can stop doing	excluded		the rest: its context-window and think-hard rows are about sessions and prompting; its better-answer row repeats Know what subagents cost; the rest of the IMPORTANT row repeats Keep CLAUDE.md short (maintain.md); its intro repeats large-codebases (maintain.md)
+best-practices	What you can stop doing	excluded		the rest: its context-window and think-hard rows are about sessions and prompting; the rest of the IMPORTANT row repeats Keep CLAUDE.md short (maintain.md); its intro repeats large-codebases (maintain.md)
 best-practices	Related resources	excluded		links only
 best-practices	Deterministic and non-deterministic instructions	excluded		the rest: its definitions of the two kinds, its examples and the sentence that following a line is still Claude's call restate the request-versus-enforcement point choose.md › Must happen every time makes from features-overview; its "which skills only you can start" cell repeats choose.md › A skill with side effects is user-only; its table's spend and last-word rows belong to the patterns guidance, not yet built (see Let Claude run without you), its strict-sandbox cell to the settings guidance, not yet built, and its other rows repeat choose.md › Must happen every time and verify.md › Work the tool does has a check; the first half of its Tip repeats Keep CLAUDE.md short (maintain.md)
 best-practices	Tell Claude what it can't see	excluded		the rest: its list of what Claude can't find repeats Keep CLAUDE.md short (discover.md)
@@ -250,3 +245,68 @@ code-review	Compare ways to get a review	excluded		compares review services; bel
 admin-setup	Decide what to enforce	excluded		its managed CLAUDE.md row repeats memory › Deploy organization-wide CLAUDE.md (choose.md); its table of managed-settings keys belongs to the settings guidance, not yet built; its WebFetch and `curl` sentence repeats choose.md › A rule on a command's text
 memory	Claude isn't following my CLAUDE.md	excluded		the rest: the opening paragraph, the bullet on testing a subdirectory CLAUDE.md and the `--append-system-prompt` paragraph repeat the instructions reference (troubleshooting.md); the second sentence of the hook paragraph restates choose.md › Must happen every time; the specificity and conflict bullets repeat write.md; the other debugging bullets are reference facts
 memory	My CLAUDE.md is too large	excluded		its Note on the size limit for path-scoped rules repeats the instructions reference (writing.md)
+memory	When AGENTS.md support is unavailable	included	choose.md	the CLAUDE.md-only condition for the disabled built-in plugin and the first session after an upgrade, and the import sentence
+memory	When AGENTS.md support is unavailable	excluded		the rest: the version sentences are history, and the `/config` panel detail is a symptom with no tool advice
+sub-agents	Create custom subagents	included	choose.md	the sentence "Use one when a side task would flood your main conversation…"
+sub-agents	Create custom subagents	included	discover.md	the sentence "Define a custom subagent when you keep spawning the same kind of worker with the same instructions."
+sub-agents	Create custom subagents	included	write-subagents.md	the sentence on trimming descriptions and moving detail into the system prompt
+sub-agents	Create custom subagents	excluded		the rest: reference facts (subagents invoking.md), benefits the used sections state, including the Haiku bullet (Know what subagents cost), and the Note on sessions, background agents and agent teams, which belongs to the patterns guidance, not yet built
+sub-agents	Choose between subagents and main conversation	included	choose.md	
+sub-agents	Isolate high-volume operations	excluded		the rest: the first paragraph repeats Create custom subagents (choose.md › Side work that returns a summary)
+sub-agents	Isolate high-volume operations	included	write-subagents.md	the example prompt
+sub-agents	Run parallel research	included	choose.md	the sentence that it works best when the research paths don't depend on each other
+sub-agents	Run parallel research	included	write-subagents.md	the Warning
+sub-agents	Run parallel research	excluded		the rest: the separate-sessions sentence belongs to the patterns guidance, not yet built
+sub-agents	Chain subagents	excluded		about prompting a session: its example and the sentence that Claude passes relevant context from one subagent to the next describe a request, with no rule for building a tool
+costs	Delegate verbose operations to subagents	excluded		the first paragraph repeats Create custom subagents (choose.md); the second repeats Know what subagents cost (write-subagents.md)
+costs	Choose the right model	included	write-subagents.md	the sentence that a switch to Opus also applies to subagents that inherit the session's model
+costs	Choose the right model	excluded		the rest: its session-model sentences are about `/model`; its `model: haiku` sentence repeats Know what subagents cost
+agents	Run agents in parallel	included	choose.md	the Subagents, Agent teams and Dynamic workflows rows of the table
+agents	Run agents in parallel	excluded		the rest: the intro only introduces; the MCP sentence repeats choose.md › An external system; the agent view, projects, worktrees, cross-session messaging, `/batch` and other-features parts belong to the patterns guidance, not yet built; the forked-subagent bullet repeats the subagents reference (forking.md); the Note on token usage repeats Know what subagents cost for subagents, and its sessions clause belongs to the patterns guidance
+agents	Choose an approach	included	choose.md	the who-coordinates bullet's subagent, agent team and dynamic workflow lines, the subagent and teammate sentences of the talk-to-each-other bullet, and the same-files bullet's sentence that agent teams don't isolate teammates in worktrees
+agents	Choose an approach	included	write-subagents.md	the same-files bullet's sentence on isolating the work with worktrees
+agents	Choose an approach	excluded		the rest: the framing sentence only introduces; the agent view parts and the cross-session messaging sentence belong to the patterns guidance, not yet built
+skills	Run skills in a subagent	included	choose.md	the Note only
+skills	Run skills in a subagent	included	write-skills.md	the Warning, the two-direction table, the "you write the task in your skill" sentence and the inverse sentence
+skills	Run skills in a subagent	excluded		the rest: the background, tool-set and checkpoint paragraphs, the sentence that the skill's instructions have to stand on their own, and the Explore and Plan paragraph with "Put everything the task needs in your SKILL.md" repeat the skills reference (forking.md)
+sub-agents	Fork the current conversation	included	choose.md	the sentence on when to use a fork, and how a fork is started
+sub-agents	How forks differ from other subagents	included	choose.md	the sentence that a fork costs less than a fresh subagent for tasks that need the same context
+sub-agents	Preload skills into subagents	included	choose.md	the Note's last sentence
+sub-agents	Preload skills into subagents	included	write-skills.md	the Note except its last sentence
+agent-teams	When to use agent teams	included	choose.md	
+agent-teams	Compare with subagents	included	choose.md	the table and the closing sentence
+agent-teams	Compare with subagents	excluded		the rest: the cross-session sentence and the diagram belong to the patterns guidance, not yet built
+workflows	When to use a workflow	included	choose.md	
+sub-agents	Example subagents	included	write-subagents.md	the Design focused subagents, Write descriptions that single out one subagent and Limit tool access tips
+sub-agents	Example subagents	excluded		the rest: the Check into version control tip repeats the subagents reference (placing.md › Project and user directories)
+sub-agents	Code reviewer	included	write-subagents.md	the intro sentence, a shortened prompt excerpt and its `tools` line
+sub-agents	Debugger	included	write-subagents.md	the sentence on a workflow from diagnosis to verification, its description and its inclusion of Edit
+sub-agents	Data scientist	excluded		states no guideline: an example definition whose only advice is its own `model: sonnet` choice
+sub-agents	Database query validator	included	write-subagents.md	the intro sentence, a shortened frontmatter excerpt and the last paragraph (the hook is a backstop)
+sub-agents	Database query validator	excluded		the rest: the script, chmod, PowerShell and exit-code paragraphs are hooks reference facts
+sub-agents	Understand automatic delegation	included	write-subagents.md	the first two paragraphs, including use proactively
+sub-agents	Understand automatic delegation	included	verify.md	the paragraph on measuring a plugin subagent's delegation with `claude plugin eval`
+errors	Agent descriptions are over the 15.0k-token limit	included	write-subagents.md	that every agent still loads, and the What to do list
+best-practices	Know what subagents cost	included	write-subagents.md	the `model: haiku`, short-summaries and `tools: Read, Grep, Glob` bullets, the reviewer file example and the sentence after it
+best-practices	Know what subagents cost	included	maintain.md	the bullet on `/usage` showing each subagent type's share
+best-practices	Know what subagents cost	excluded		the rest: its delegation bullets state defaults, with no advice
+best-practices	Review against your spec	included	write-subagents.md	
+best-practices	What you can stop doing	excluded		the better-answer row repeats Know what subagents cost (choose.md › Side work that returns a summary)
+best-practices	Change the model and effort	excluded		its Haiku sentence repeats Know what subagents cost (write-subagents.md); the effort bullets and session-model sentence are about `/effort` and `/model`, with no advice on a subagent's `effort` field
+sub-agents	Let subagents spawn their own subagents	included	write-subagents.md	the default of three layers and the sentence on omitting Agent from tools or adding it to disallowedTools
+sub-agents	Restrict which subagents can be spawned	included	write-subagents.md	the sentences that `Agent(type)` restricts spawning only for an agent run with `--agent`
+sub-agents	Scope MCP servers to a subagent	included	write-subagents.md	the paragraph on keeping a server out of the main conversation, and the shortened inline example
+sub-agents	Trust required for inline MCP servers	included	write-subagents.md	the folder-trust condition for project and `--add-dir` agent files, that `~/.claude/agents/` files load without it, and that a parent folder's trust and `-p` or SDK automatic trust don't count
+sub-agents	Frontmatter reference	included	write-subagents.md	the `omitClaudeMd` row's first and advice sentences and its managed-policy clause, the `isolation` row's branching sentence, and the `mcpServers` row's plugin clause
+sub-agents	What loads at startup	included	write-subagents.md	the paragraph on restating a rule in the delegation prompt, with the subject of the paragraph before it (Explore, Plan and `omitClaudeMd` subagents)
+plugins/components	Frontmatter fields in plugin agents	included	write-subagents.md	the clause that plugin agents ignore `hooks`
+sub-agents	Choose a model	included	write-subagents.md	the per-invocation precedence and that `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` ignores the `model` field
+sub-agents	Persistent memory tips	included	write-subagents.md	the project-scope bullet and the bullet on memory instructions in the markdown file, with its example
+sub-agents	Persistent memory tips	excluded		the rest: the consult and update bullets are prompts a user types
+sub-agents	Enable persistent memory	included	write-subagents.md	the scope table's user and local rows, that `memory` has no effect with auto memory off, and the sentence on Read, Write and Edit
+sub-agents	Subagent names	included	write-subagents.md	the sentence that frontmatter `isolation` doesn't prevent a teammate launch, which runs in the main session's working directory
+memory	Choose which instruction files load	included	choose.md	the sentence that the setting is read from `~/.claude/settings.json`, a `--settings` file or managed settings, and ignored in project and local settings files
+sub-agents	Restrict which tools a subagent can use	included	write-subagents.md	the `safe-researcher` example's sentence that a `tools` allowlist excludes MCP tools, the `mcp__<server>__*` entry, and the Bash deny-rule sentences
+sub-agents	Subagent names	included	choose.md	the sentence that with agent teams enabled Claude can name a subagent, and the sentence that a named subagent launches as a teammate unless the call is a fork or passes `isolation`
+worktrees	Choose the base branch	included	write-subagents.md	the `"head"` value for subagents that need in-progress work
+worktrees	Copy gitignored files into worktrees	included	write-subagents.md	the sentences that a worktree is a fresh checkout and `.worktreeinclude` copies gitignored files

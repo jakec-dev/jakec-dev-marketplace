@@ -15,6 +15,7 @@ Proving that a tool works before calling it done.
 - [A skill's validation script names the problem](#a-skills-validation-script-names-the-problem)
 - [A skill's steps loop until validation passes](#a-skills-steps-loop-until-validation-passes)
 - [A skill is tried on real tasks and by its users](#a-skill-is-tried-on-real-tasks-and-by-its-users)
+- [A plugin subagent's delegation is measured with claude plugin eval](#a-plugin-subagents-delegation-is-measured-with-claude-plugin-eval)
 
 ## It loaded
 
@@ -161,3 +162,12 @@ Proving that a tool works before calling it done.
   [best-practices › Develop Skills iteratively with Claude](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#develop-skills-iteratively-with-claude)
   [best-practices › Checklist for effective Skills](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#checklist-for-effective-skills)
 - Check: Has the skill been run on real tasks, and has someone who uses it said whether it activates when expected?
+
+## A plugin subagent's delegation is measured with claude plugin eval
+
+- "If the subagent ships in a plugin, you can measure how reliably Claude delegates to it across realistic prompts
+  instead of checking one at a time: `claude plugin eval` runs each prompt with and without the plugin and scores the
+  results."
+  [sub-agents › Understand automatic delegation](https://code.claude.com/docs/en/sub-agents#understand-automatic-delegation)
+- Check: for a subagent shipped in a plugin, has `claude plugin eval` scored how reliably Claude delegates to it
+  across realistic prompts?

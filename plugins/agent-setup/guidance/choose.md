@@ -17,7 +17,11 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - A skill with side effects is user-only
 - Background knowledge is a skill only Claude invokes
 - About the response, not the project: an output style
-- Isolated or parallel work: a subagent or a dynamic workflow
+- Side work that returns a summary: a subagent
+- Back-and-forth or shared context: the main conversation
+- A task that needs the conversation so far: a fork, not a context: fork skill
+- Workers that coordinate among themselves: an agent team
+- Many subagents, or cross-checked findings: a dynamic workflow
 - An external system: a CLI or MCP, with a skill for using it
 - The same setup in another repository: a plugin
 - Instructions shipped in a plugin are skills
@@ -40,6 +44,16 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   your own uncommitted instructions in a project that relies on `AGENTS.md` stops Claude from reading `AGENTS.md`
   for you."
   [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)
+- To keep your `CLAUDE.local.md` and still have Claude read `AGENTS.md`, set **Project instructions** to
+  `claude-md-and-agents-md`.
+  [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)
+  Claude Code reads that setting from `~/.claude/settings.json`, a `--settings` file or managed settings, and ignores
+  it in project and local settings files, so it can't be committed with the repository.
+  [memory › Choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load)
+- In sessions where you used `/plugin` to disable the built-in plugin that reads `AGENTS.md`, or, in some cases, in
+  your first session after you upgrade from a version that couldn't read `AGENTS.md` directly, Claude reads
+  `CLAUDE.md` files only. "To give Claude your `AGENTS.md` in any of them, import it from a `CLAUDE.md`."
+  [memory › When AGENTS.md support is unavailable](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)
 - To keep `AGENTS.md` as the one file every tool shares while adding Claude-specific instructions, put an
   `@AGENTS.md` import in a `CLAUDE.md` next to it, with the Claude-specific instructions below the import:
 
@@ -53,8 +67,8 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 
   [memory › Share one file with other coding tools](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools)
 - Evidence: eval case agents-md-instruction
-- Check: in a repository with an `AGENTS.md` and no `CLAUDE.md`, project instructions go into `AGENTS.md`, or into
-  a `CLAUDE.md` that imports it; no tool creates a `CLAUDE.md` or `CLAUDE.local.md` that leaves `AGENTS.md` unread.
+- Check: where a repository relies on `AGENTS.md`, does each `CLAUDE.md` or `CLAUDE.local.md` that Claude would read
+  instead import `@AGENTS.md`, unless it is one person's `CLAUDE.local.md` and they set `claude-md-and-agents-md`?
 
 ## Must happen every time: a hook
 
@@ -276,12 +290,22 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
 - Check: CLAUDE.md holds no instructions about response length, format or role.
 
-## Isolated or parallel work: a subagent or a dynamic workflow
+## Side work that returns a summary: a subagent
 
-- "Use a subagent when you need context isolation or when your context window is getting full." "Use a dynamic
-  workflow when a job outgrows a handful of subagents, or when you want the findings cross-checked before you see
-  them, such as a codebase-wide audit, a large migration, or a plan drafted from several angles."
+- "Use a subagent when you need context isolation or when your context window is getting full." Use one "when a side
+  task would flood your main conversation with search results, logs, or file contents you won't reference again": the
+  subagent "does that work in its own context and returns only the summary."
   [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
+  [sub-agents › Create custom subagents](https://code.claude.com/docs/en/sub-agents#page-title)
+- The documentation's own subagent cases: tasks that produce verbose output you don't need in your main context,
+  that need specific tool restrictions or permissions, or that are self-contained and can return a summary.
+  [sub-agents › Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)
+- For independent investigations, several subagents can work at once, and this "works best when the research paths
+  don't depend on each other."
+  [sub-agents › Run parallel research](https://code.claude.com/docs/en/sub-agents#run-parallel-research)
+  In the documentation's comparison of ways to run agents in parallel, subagents are "Delegated workers inside one
+  session".
+  [agents › Run agents in parallel](https://code.claude.com/docs/en/agents#page-title)
 - "Subagents pay off in these situations": running independent pieces of work at the same time; keeping long output,
   "like a full test run or a wide search", out of your main conversation; "Getting a reviewer that hasn't seen how
   the code was written"; and giving a task fewer tools than the main session has. "What they cost you is mostly
@@ -293,8 +317,108 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   getting full", while best-practices lists "Use subagents to protect your context window" as advice current models
   have made unnecessary: "Running out of context is rarely the problem anymore."
   [best-practices › What you can stop doing](https://code.claude.com/docs/en/best-practices#what-you-can-stop-doing)
-- Check: work that reads many files but needs only a summary back runs outside the main conversation, and each
-  subagent serves one of the four situations above, not a hope of a better answer.
+- Check: does each subagent serve one of the situations where subagents pay off: independent work run at the same
+  time, long output kept out of the main conversation, a reviewer that hasn't seen the code written, or fewer tools?
+
+## Back-and-forth or shared context: the main conversation
+
+- Use the main conversation when the task needs frequent back-and-forth or iterative refinement, when multiple phases
+  share significant context, "such as planning, implementation, and testing", when you're making a quick, targeted
+  change, or when latency matters, since "A subagent that isn't a fork starts fresh and may need time to gather
+  context". "Consider Skills instead when you want reusable prompts or workflows that run in the main conversation
+  context rather than isolated subagent context."
+  [sub-agents › Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)
+- For a question about something already in your conversation, use `/btw` instead of a subagent: it "sees your full
+  context but has no tool access, and the answer isn't added to history."
+  [sub-agents › Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)
+- Check: does a task that needs frequent back-and-forth, or shares significant context across phases, stay in the main
+  conversation?
+
+## A task that needs the conversation so far: a fork, not a context: fork skill
+
+- "Despite the name, a skill with `context: fork` doesn't run in a fork of the current conversation, which would hand
+  the subagent everything you've discussed so far. When the task depends on that history, fork the conversation
+  instead of using `context: fork`."
+  [skills › Run skills in a subagent](https://code.claude.com/docs/en/skills#run-skills-in-a-subagent)
+  A subagent that a skill's `context: fork` starts, or that a `skills` field preloads, starts without your
+  conversation history
+  ([sub-agents › Preload skills into subagents](https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents)).
+- "Use a fork when any other subagent would need too much background to be useful, or when you want to try several
+  approaches in parallel from the same starting point." You start one with `/subtask` followed by a task, and Claude
+  can start one on its own while fork mode is on, as it is by default; with agent view turned off, `/subtask` isn't
+  available and `/fork` starts the forked subagent.
+  [sub-agents › Fork the current conversation](https://code.claude.com/docs/en/sub-agents#fork-the-current-conversation)
+- A fork's first request reuses the parent's prompt cache, and "a fork costs less than a fresh subagent for tasks that
+  need the same context."
+  [sub-agents › How forks differ from other subagents](https://code.claude.com/docs/en/sub-agents#how-forks-differ-from-other-subagents)
+- Check: does a task that depends on the conversation's history run as a fork rather than as a skill with
+  `context: fork` or a fresh subagent?
+
+## Workers that coordinate among themselves: an agent team
+
+- "Use subagents when you need quick, focused workers that report back. Use agent teams when teammates need to share
+  findings, challenge each other, and coordinate on their own." Subagents and agent teams compare as:
+  [agent-teams › Compare with subagents](https://code.claude.com/docs/en/agent-teams#compare-with-subagents)
+
+  | | Subagents | Agent teams |
+  | :- | :- | :- |
+  | **Context** | Own context window; results return to the caller | Own context window; fully independent |
+  | **Communication** | Return a result to the caller. Subagents that Claude [named](https://code.claude.com/docs/en/sub-agents#subagent-names) when it spawned them can also [message each other](https://code.claude.com/docs/en/sub-agents#what-loads-at-startup) | Teammates message each other directly |
+  | **Coordination** | Main agent manages all work | Self-coordination through messages, plus a shared task list for [agents that have the Task tools](https://code.claude.com/docs/en/tools-reference#task-tool-availability) |
+  | **Best for** | Focused tasks where only the result matters | Complex work requiring discussion and collaboration |
+  | **Token cost** | Lower: results summarized back to main context | Higher: each teammate is a separate Claude instance |
+
+  In a session started with agent teams enabled, Claude can name a subagent, and in an interactive session a
+  subagent Claude spawns from the main conversation with a `name` launches as a teammate instead, unless the call is a
+  fork or passes `isolation` on the call itself.
+  [sub-agents › Subagent names](https://code.claude.com/docs/en/sub-agents#subagent-names)
+
+- Agent teams "are most effective for tasks where parallel exploration adds real value": research and review,
+  new modules or features, debugging with competing hypotheses, and cross-layer coordination. "Agent teams add
+  coordination overhead and use significantly more tokens than a single session. They work best when teammates can
+  operate independently. For sequential tasks, same-file edits, or work with many dependencies, a single session or
+  subagents are more effective."
+  [agent-teams › When to use agent teams](https://code.claude.com/docs/en/agent-teams#when-to-use-agent-teams)
+- Agent teams are "Multiple coordinated sessions with a shared task list and inter-agent messaging, managed by a
+  lead. Experimental and disabled by default."
+  [agents › Run agents in parallel](https://code.claude.com/docs/en/agents#page-title)
+  Where Claude plans, assigns and supervises a group of workers, that is an agent team; where Claude delegates and
+  collects results inside one conversation, it is subagents. Subagents report results back to the conversation that
+  spawned them, while teammates message each other directly. Agent teams don't isolate teammates in worktrees, so
+  partition the work so each teammate owns a different set of files.
+  [agents › Choose an approach](https://code.claude.com/docs/en/agents#choose-an-approach)
+- Check: do the workers need to share findings, challenge each other or coordinate on their own, the case the
+  documentation gives agent teams for?
+
+## Many subagents, or cross-checked findings: a dynamic workflow
+
+- "Use a dynamic workflow when a job outgrows a handful of subagents, or when you want the findings cross-checked
+  before you see them, such as a codebase-wide audit, a large migration, or a plan drafted from several angles."
+  [features-overview › Compare similar features](https://code.claude.com/docs/en/features-overview#compare-similar-features)
+  A dynamic workflow is "A script that runs many subagents and cross-checks their results, for work too big to
+  coordinate one turn at a time or that needs more than a single pass", and a script holds the plan instead of
+  Claude's turn-by-turn judgment.
+  [agents › Run agents in parallel](https://code.claude.com/docs/en/agents#page-title)
+  [agents › Choose an approach](https://code.claude.com/docs/en/agents#choose-an-approach)
+- Subagents, skills, agent teams and workflows can all run a multi-step task; "The difference is who holds the plan":
+  [workflows › When to use a workflow](https://code.claude.com/docs/en/workflows#when-to-use-a-workflow)
+
+  | | Subagents | Skills | Agent teams | Workflows |
+  | :- | :- | :- | :- | :- |
+  | What it is | A worker Claude spawns | Instructions Claude follows | A lead agent supervising peer sessions | A script the runtime executes |
+  | Who decides what runs next | Claude, turn by turn | Claude, following the prompt | The lead agent, turn by turn | The script |
+  | Where intermediate results live | Claude's context window | Claude's context window | A shared task list | Script variables |
+  | What's repeatable | The worker definition | The instructions | The team definition | The orchestration itself |
+  | Scale | A few delegated tasks per turn | Same as subagents | A handful of long-running peers | Dozens to hundreds of agents per run |
+  | Interruption | Restarts the turn | Restarts the turn | Teammates keep running | Resumable in the same session |
+
+  "A workflow moves the plan into code. With subagents, skills, and agent teams, Claude is the orchestrator: it
+  decides turn by turn what to spawn or assign next, and every result goes into a context window. A workflow script
+  holds the loop, the branching, and the intermediate results itself, so Claude's context holds only the final
+  answer." It can also "have independent agents adversarially review each other's findings before they're reported,
+  or draft a plan from several angles and weigh them against each other, so you get a more trustworthy result than a
+  single pass."
+- Check: does the job outgrow a handful of subagents, or need its findings cross-checked before you see them?
 
 ## An external system: a CLI or MCP, with a skill for using it
 

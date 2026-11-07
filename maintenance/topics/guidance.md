@@ -4,8 +4,18 @@
 - `choose.md`: picking the kind of Claude tool that fits a goal
 - `write.md`: writing the content of CLAUDE.md files, AGENTS.md files and rules so that Claude follows it
 - `write-skills.md`: writing a skill's description, body and bundled files so that Claude finds the skill and follows it
+- `write-subagents.md`: writing a subagent's description, prompt, tools, model, memory and isolation so that Claude
+  delegates to it and it does the job
 - `write-hooks.md`: writing a hook's event, handler, command and output so that it fires when it should and Claude can act
   on what it returns
 - `compose.md`: making several tools work together within Claude's context
 - `verify.md`: proving that a tool works before calling it done
 - `maintain.md`: keeping existing tools useful, and finding the ones to cut
+
+Planned topics, not yet built. Ledger rows that exclude a section as belonging to one of these record what it will
+draw on; neither has a file or guidelines yet.
+
+- Settings guidance: choosing permission modes, permission rules and the sandbox, and what to enforce through managed
+  settings
+- Patterns guidance: running Claude unattended, on a schedule or an event, or in parallel sessions, and choosing
+  between ways to get a review
