@@ -10,12 +10,13 @@ fix as a pull request for review.
 
 ## Status
 
-In development. Four skills are ready to use; the rest of the setup, and the automatic updates, are still to come.
+In development. Five skills are ready to use; the rest of the setup, and the automatic updates, are still to come.
 
 ## Skills
 
 | Skill | What it does |
 | --- | --- |
+| `/agent-setup:find-setup-content` | Experimental. Proposes what the setup should hold, and finds what does nothing or has gone stale, each with a test |
 | `/agent-setup:write-hook` | Writes, fixes or explains a hook, or says when another tool fits better |
 | `/agent-setup:write-rule` | Writes, fixes or explains a rule in `.claude/rules/`, or says when another tool fits better |
 | `/agent-setup:write-skill` | Writes, fixes or explains a skill or custom command, or says when another tool fits better |
