@@ -1,17 +1,19 @@
 ---
 name: find-setup-content
-description: Finds what a repository's Claude Code setup should hold and what it holds that does nothing, duplicates enforcement or contradicts the code, and proposes each change with its evidence, its tool and a test. Use when the user asks what to put in CLAUDE.md, AGENTS.md, rules, skills, subagents or hooks, wants to set Claude Code up for a repository, or wants an existing setup audited.
-allowed-tools: Read, Glob, Grep, Bash(git log *), Bash(git show *), Bash(git ls-files *), Bash(git shortlog *)
+description: Finds what a repository's Claude Code setup should hold and what it holds that does nothing, duplicates enforcement or contradicts the code, and proposes each change with its evidence, its tool and the result of a with-and-without test. Use when the user asks what to put in CLAUDE.md, AGENTS.md, rules, skills, subagents or hooks, wants to set Claude Code up for a repository, or wants an existing setup audited.
+allowed-tools: Read, Glob, Grep, Bash(git log *), Bash(git show *), Bash(git ls-files *), Bash(git shortlog *), Bash(mktemp *), Bash(${CLAUDE_SKILL_DIR}/scripts/try-content.sh *)
 ---
 
 # Find setup content
 
-Experimental. Produces a report of proposals; it writes no tool. The `write-rule`, `write-skill`, `write-subagent`
-and `write-hook` skills write each proposal the user accepts.
+Experimental. Produces a report of proposals; it writes no tool into the repository, and tests each proposal in
+throwaway clones. The `write-rule`, `write-skill`, `write-subagent` and `write-hook` skills write each proposal the
+user accepts.
 
 Base every proposal on evidence from this repository, not on a list of what repositories usually hold. Most of what a
 setup could say makes no difference: Claude copies what the code already shows. What earns its place is what Claude
-would get wrong without it, and only a run without it settles that, so every proposal ends in a test.
+would get wrong without it, and only a run without it settles that, so every proposal is tested before it is
+reported.
 
 1. **Read `${CLAUDE_PLUGIN_ROOT}/guidance/index.md` in full,** then `discover.md` and `choose.md` in full. Read the
    `write-*.md` section a proposal's tool needs before proposing it.
@@ -69,16 +71,39 @@ would get wrong without it, and only a run without it settles that, so every pro
    Check every claim a proposal makes about this repository against the code before reporting it: a file it says
    shows a pattern, a command it names, what a linter or CI job rejects. A wrong claim is a stale instruction from
    the day it is written.
-7. **Write a test for each proposal.** The user, or the `write-*` skill, runs it before keeping the change:
-   - one realistic task prompt that would need the knowledge;
-   - the difference to look for, such as "no `interface` declarations" or "the key ladder has all five rungs"; for
-     a process, the steps no example shows, such as "no file of the generator's example is left";
-   - at least three runs with it and three without, each in a fresh checkout, with hooks off if a hook would hide
-     the difference, and `claude plugin eval` for a skill that ships in a plugin
+7. **Test each proposal, and each existing item the audit questions,** with it and without it:
+   - Make one working directory with `mktemp -d`, and in it write a spec for each, at `<dir>/<name>/`:
+     - `prompt.txt`: one realistic task that would need the knowledge, without naming it. Pick a case where
+       Claude's default could differ from the convention: the textbook case of a well-known pattern, such as a
+       `Card` for compound components, passes with or without it and tests nothing;
+     - `check.sh`: a check of the files, run with bash in the checkout after Claude stops, that exits 0 when the
+       difference is there, such as no `interface` declaration in the new file, or no file of the generator's
+       example left; for a process, check the steps no example shows;
+     - the proposal's content as plain files in the spec, such as `rule.md`, and `add.txt` placing each at the path
+       step 6 chose, one `<file> <repository path>` line each, such as `rule.md .claude/rules/types.md`. Test a
+       `CLAUDE.md` addition as a rule without `paths`, which loads the same way;
+     - `remove.txt`: for an existing item, its path, so that the without-arm loses it.
+   - From the repository root, run `${CLAUDE_SKILL_DIR}/scripts/try-content.sh <dir>/<name> <dir>/<name>-out` with the
+     longest timeout the shell allows, not in the background: `allowed-tools` approves the script only for this turn,
+     and a background task's result arrives in a later one. It runs three trials per arm at once, each a full Claude
+     session in a fresh clone of `HEAD` with only the project's settings. It prints each arm's check passes and how
+     often the instructions loaded or the skill was invoked, then a line per trial with its check output and what
+     Claude looked at. `try-content.sh -h` lists its options, such as `--no-hooks` when a hook would hide the
+     difference. A skill that ships in a plugin is tested with `claude plugin eval` instead
      (`verify.md › A skill is compared with a fresh run without it`).
-
-   A proposal whose runs show no difference is not added, and an existing item whose runs show no difference is cut
-   only if it is always loaded.
+   - For more, read through the script, since the session may not be allowed to read `<dir>`, and run it on its own,
+     not piped: `${CLAUDE_SKILL_DIR}/scripts/try-content.sh --show <dir>/<name>-out <arm>-<run>`, such as
+     `without-1`, prints that trial's tool calls, check output and diff.
+   - A with-run where the content never loaded, or the skill was never invoked, tested the placement, not the
+     content: change the home or the description and run again before judging it.
+   - When both arms pass, look at what the without-runs looked at. If they found the knowledge in the repository,
+     such as a docs page, it needs no tool. If they never looked and passed anyway, the task matched Claude's
+     default: try a second task where the default could differ before calling the content redundant.
+   - Keep a proposal only where the with-arm passes clearly more often than the without-arm. Cut an existing item
+     whose arms show no difference only if it is always loaded. When the arms are close, read the trials' diffs
+     before judging, since a check can miss what it was meant to catch.
 8. **Report** in four groups, stale first: **Fix** (stale), **Cut or move**, **Add**, **Test before deciding**.
-   Each item gives the evidence, the proposed tool and file, and its test. End with what was not checked, such as
-   history beyond the commits read, or sessions the user did not share.
+   Each item gives the evidence, the proposed tool and file, and its test result per arm with the spec's path, so
+   the user can rerun it. **Test before deciding** holds what could not be tested here, such as a task that needs
+   dependencies installed or an MCP server, with why. End with what was not checked, such as history beyond the
+   commits read, or sessions the user did not share.
