@@ -1,0 +1,5 @@
+{
+  "name": "service-process",
+  "version": "0.0.0",
+  "description": "Eval fixture: a process skill for adding a feature to a service generated from a template."
+}

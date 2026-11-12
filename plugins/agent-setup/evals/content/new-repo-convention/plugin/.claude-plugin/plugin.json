@@ -1,0 +1,5 @@
+{
+  "name": "component-conventions",
+  "version": "0.0.0",
+  "description": "Eval fixture: one React component convention, added to Claude's context at session start."
+}

@@ -45,6 +45,7 @@ and `/init` parts of "What the codebase already says", for CLAUDE.md files. It a
   - "Anything you've had to correct twice already"
 
   [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
+- Evidence: eval case mature-repo-convention
 - Check: does each proposed entry trace to one of the four signs or to one of the kinds of content listed?
 
 ## What the codebase already says
@@ -66,6 +67,7 @@ and `/init` parts of "What the codebase already says", for CLAUDE.md files. It a
   "`/init` generates a starting version from your codebase. From there the work is mostly removing lines."
   [best-practices › Keep CLAUDE.md short](https://code.claude.com/docs/en/best-practices#keep-claude-md-short)
 - Evidence: eval case linted-conventions-rule
+- Evidence: eval case new-repo-convention
 - Check: is each proposed entry something Claude couldn't find by reading the code, or wouldn't go and look for?
 
 ## Update what exists before adding

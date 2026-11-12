@@ -208,7 +208,9 @@ upstream/anthropic/pages.txt               those pages, fetched by scripts/fetch
      skill authoring best practices. Quote or state it with the source's subject and conditions, linked as in
      reference.
   2. Our evals show it: a case in `plugins/agent-setup/evals/` whose baseline arm fails without the guideline and
-     whose plugin arm passes with it. Cite it as a bullet just before `- Check:`, as `- Evidence: eval case <case>`.
+     whose plugin arm passes with it. A case in `evals/content/` counts too: its plugin is a fixture carrying the
+     tool content the guideline is about, so its arms compare Claude's work with that content and without it. Cite
+     a case as a bullet just before `- Check:`, as `- Evidence: eval case <case>`, one bullet per case.
 - Other material, such as another vendor's documentation or published research, may suggest a guideline to test,
   but is never its support. A guideline drawn from it gets in once an eval case shows it, and is then cited to that
   case.
