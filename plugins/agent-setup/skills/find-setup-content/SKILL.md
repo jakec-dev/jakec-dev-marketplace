@@ -57,8 +57,9 @@ would get wrong without it, and only a run without it settles that, so every pro
    - **Likely inert:** a convention the code already shows consistently. Propose testing it, not deleting it: it
      still matters in new areas and new repositories, and costs little where it loads only on demand.
 6. **Place each proposal** by `choose.md`, and by where the knowledge is used:
-   - Work done for the first time in an empty area needs a skill, not a path-scoped rule: a path rule loads when
-     Claude reads a matching file, so it can miss an area that has none yet.
+   - Work done for the first time in an empty area needs a skill, not a path-scoped rule: a path rule loads only
+     once Claude reads, edits or writes a matching file, so in an area with none yet it arrives after the first file
+     is written, not while Claude plans the work.
    - A convention for every repository belongs in a shared plugin, not copied into each repository.
    - A process whose steps no example shows is a user-invoked or Claude-invoked skill
      (`choose.md › Needed sometimes, or a procedure: a skill`). It holds those steps, such as deleting the example
