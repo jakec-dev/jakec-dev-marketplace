@@ -151,6 +151,24 @@ run -n 1 --no-hooks "$spec" "$root/out-inline"
 check 'no-hooks: an inline paths list with braces matches the file Claude read' \
   [ "$(column "$root/out-inline/results.tsv" with 4)" = touched ]
 
+spec="$root/agents-spec"
+mkdir -p "$spec"
+printf '# Agents\n\nUse the style.\n' >"$spec/AGENTS.md"
+echo 'AGENTS.md AGENTS.md' >"$spec/add.txt"
+echo 'Add a file.' >"$spec/prompt.txt"
+echo 'true' >"$spec/check.sh"
+run -n 1 --no-hooks "$spec" "$root/out-agents"
+check 'no-hooks: a root AGENTS.md beside a CLAUDE.md does not load' \
+  [ "$(column "$root/out-agents/results.tsv" with 4)" = no ]
+git -C "$repo" rm -q CLAUDE.md
+git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q -m 'drop CLAUDE.md'
+run -n 1 --no-hooks "$spec" "$root/out-agents"
+check 'no-hooks: a root AGENTS.md with no CLAUDE.md loads at launch' \
+  [ "$(column "$root/out-agents/results.tsv" with 4)" = launch ]
+printf '# Project\n' >"$repo/CLAUDE.md"
+git -C "$repo" add CLAUDE.md
+git -C "$repo" -c user.name=test -c user.email=test@example.com commit -q -m 'restore CLAUDE.md'
+
 spec="$root/without-spec"
 mkdir -p "$spec"
 printf '# Trimmed\n' >"$spec/CLAUDE.md"

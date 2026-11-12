@@ -28,9 +28,10 @@
 #   -m <model>    model for Claude (default: Claude Code's default)
 #   --no-hooks    turn off every hook, for a repository whose hooks would hide the difference. Without the
 #                 InstructionsLoaded hook, what loaded is inferred from where each instruction file sits and what
-#                 Claude touched: `launch` for a rule without `paths` or the root CLAUDE.md, which load at launch;
-#                 `touched` for a path rule or nested CLAUDE.md whose files Claude read, edited or wrote, which is
-#                 what loads them. A rule loaded through a Bash read of a matching file is missed.
+#                 Claude touched: `launch` for a rule without `paths`, the root CLAUDE.md, or the root AGENTS.md
+#                 where no CLAUDE.md is there, which load at launch; `touched` for a path rule or a nested CLAUDE.md
+#                 or AGENTS.md whose files Claude read, edited or wrote, which is what loads them. A rule loaded
+#                 through a Bash read of a matching file is missed.
 #
 # Writes <out-dir>/<arm>-<run>/ for each trial (prompt, transcript, diff, check output, instructions loaded),
 # <out-dir>/results.tsv with one row per trial, and prints a summary per arm. --show prints results.tsv, or one
@@ -138,8 +139,18 @@ loaded_without_hooks() {
   [ -f "$checkout/$path" ] || return 0
   case $path in
     CLAUDE.md | .claude/CLAUDE.md) echo launch && return 0 ;;
-    */CLAUDE.md)
-      if touched_files "$checkout" "$transcript" | grep -q "^${path%CLAUDE.md}"; then echo touched; else echo no; fi
+    AGENTS.md | .claude/AGENTS.md)
+      # Claude reads AGENTS.md only where no CLAUDE.md takes its place.
+      if [ -f "$checkout/CLAUDE.md" ] || [ -f "$checkout/.claude/CLAUDE.md" ] ||
+        [ -f "$checkout/CLAUDE.local.md" ]; then
+        echo no
+      else
+        echo launch
+      fi
+      return 0
+      ;;
+    */CLAUDE.md | */AGENTS.md)
+      if touched_files "$checkout" "$transcript" | grep -q "^${path%/*}/"; then echo touched; else echo no; fi
       return 0
       ;;
     .claude/rules/*.md) ;;
