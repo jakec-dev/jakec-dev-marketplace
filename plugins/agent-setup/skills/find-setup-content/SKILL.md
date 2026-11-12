@@ -6,7 +6,7 @@ allowed-tools: Read, Glob, Grep, Bash(git log *), Bash(git show *), Bash(git ls-
 
 # Find setup content
 
-Experimental. Produces a report of proposals; it writes no tool into the repository, and tests each proposal in
+Produces a report of proposals; it writes no tool into the repository, and tests each proposal in
 throwaway clones. The `write-rule`, `write-skill`, `write-subagent` and `write-hook` skills write each proposal the
 user accepts.
 
@@ -78,7 +78,9 @@ reported.
        `Card` for compound components, passes with or without it and tests nothing;
      - `check.sh`: a check of the files, run with bash in the checkout after Claude stops, that exits 0 when the
        difference is there, such as no `interface` declaration in the new file, or no file of the generator's
-       example left; for a process, check the steps no example shows;
+       example left; for a process, check the steps no example shows. Trials can edit files but not run commands,
+       so a step that ends in a command, such as a commit, shows only in the commands Claude tried, which `--show`
+       lists, and its check can't pass in either arm;
      - the proposal's content as plain files in the spec, such as `rule.md`, and `add.txt` placing each at the path
        step 6 chose, one `<file> <repository path>` line each, such as `rule.md .claude/rules/types.md`. Test a
        `CLAUDE.md` addition as a rule without `paths`, which loads the same way;
@@ -107,7 +109,7 @@ reported.
      whose arms show no difference only if it is always loaded. When the arms are close, read the trials' diffs
      before judging, since a check can miss what it was meant to catch.
 8. **Report** in four groups, stale first: **Fix** (stale), **Cut or move**, **Add**, **Test before deciding**.
-   Each item gives the evidence, the proposed tool and file, and its test result per arm with the spec's path, so
-   the user can rerun it. **Test before deciding** holds what could not be tested here, such as a task that needs
-   dependencies installed or an MCP server, with why. End with what was not checked, such as history beyond the
-   commits read, or sessions the user did not share.
+   Each item gives the evidence, the proposed tool and file, and its test result per arm, copied from the
+   script's summary for that spec, with the spec's path, so the user can rerun it. **Test before deciding** holds
+   what could not be tested here, such as a task that needs dependencies installed or an MCP server, with why. End
+   with what was not checked, such as history beyond the commits read, or sessions the user did not share.
