@@ -61,10 +61,17 @@ would get wrong without it, and only a run without it settles that, so every pro
      Claude reads a matching file, so it can miss an area that has none yet.
    - A convention for every repository belongs in a shared plugin, not copied into each repository.
    - A process whose steps no example shows is a user-invoked or Claude-invoked skill
-     (`choose.md › Needed sometimes, or a procedure: a skill`).
+     (`choose.md › Needed sometimes, or a procedure: a skill`). It holds those steps, such as deleting the example
+     a generator leaves, and points to the nearest example for the rest: a step the code already shows changes
+     nothing.
+
+   Check every claim a proposal makes about this repository against the code before reporting it: a file it says
+   shows a pattern, a command it names, what a linter or CI job rejects. A wrong claim is a stale instruction from
+   the day it is written.
 7. **Write a test for each proposal.** The user, or the `write-*` skill, runs it before keeping the change:
    - one realistic task prompt that would need the knowledge;
-   - the difference to look for, such as "no `interface` declarations" or "the key ladder has all five rungs";
+   - the difference to look for, such as "no `interface` declarations" or "the key ladder has all five rungs"; for
+     a process, the steps no example shows, such as "no file of the generator's example is left";
    - at least three runs with it and three without, each in a fresh checkout, with hooks off if a hook would hide
      the difference, and `claude plugin eval` for a skill that ships in a plugin
      (`verify.md › A skill is compared with a fresh run without it`).
