@@ -68,6 +68,7 @@ Claude Code's skills and best practices pages. Where they disagree, Claude Code'
 - "Only add context Claude doesn't already have. Challenge each piece of information": does Claude really need the
   explanation, can it be assumed that Claude has this information, and does the paragraph justify its token cost?
   [best-practices › Concise is key](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#concise-is-key)
+- Evidence: eval case process-skill-unshown-steps
 - Check: would removing each paragraph of the skill body cause Claude to make mistakes?
 
 ## Skill steps match how fragile the task is
