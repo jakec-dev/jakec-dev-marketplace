@@ -82,14 +82,18 @@ reported.
      - the proposal's content as plain files in the spec, such as `rule.md`, and `add.txt` placing each at the path
        step 6 chose, one `<file> <repository path>` line each, such as `rule.md .claude/rules/types.md`. Test a
        `CLAUDE.md` addition as a rule without `paths`, which loads the same way;
-     - `remove.txt`: for an existing item, its path, so that the without-arm loses it.
+     - `remove.txt`: for an existing item, its path, so that the without-arm loses it. For part of an existing file,
+       such as one section of `AGENTS.md`, write the file without that part into the spec instead and place it with
+       `without.txt`, in `add.txt`'s format, which only the without-arm gets.
    - From the repository root, run `${CLAUDE_SKILL_DIR}/scripts/try-content.sh <dir>/<name> <dir>/<name>-out` with the
      longest timeout the shell allows, not in the background: `allowed-tools` approves the script only for this turn,
      and a background task's result arrives in a later one. It runs three trials per arm at once, each a full Claude
      session in a fresh clone of `HEAD` with only the project's settings. It prints each arm's check passes and how
      often the instructions loaded or the skill was invoked, then a line per trial with its check output and what
      Claude looked at. `try-content.sh -h` lists its options, such as `--no-hooks` when a hook would hide the
-     difference. A skill that ships in a plugin is tested with `claude plugin eval` instead
+     difference or run a build the trial can't, such as a Stop hook running tests. If the run outlasts the shell's
+     timeout and moves to the background, wait for it, then read its output file for the summary. A skill that ships
+     in a plugin is tested with `claude plugin eval` instead
      (`verify.md › A skill is compared with a fresh run without it`).
    - For more, read through the script, since the session may not be allowed to read `<dir>`, and run it on its own,
      not piped: `${CLAUDE_SKILL_DIR}/scripts/try-content.sh --show <dir>/<name>-out <arm>-<run>`, such as

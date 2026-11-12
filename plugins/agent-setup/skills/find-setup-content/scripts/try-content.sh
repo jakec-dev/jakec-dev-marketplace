@@ -11,21 +11,26 @@
 #                any path holding .claude/ as sensitive and asks before writing one.
 #   remove.txt   optional: repository paths, one per line, that the without-arm loses, to test content the
 #                repository already holds
+#   without.txt  optional: lines as in add.txt that the without-arm gets, such as a copy of AGENTS.md with one
+#                section cut, to test part of a file the repository already holds
 #
-# A spec needs add.txt, remove.txt or both. Each trial is a fresh shared clone of the repository, detached at HEAD,
-# so uncommitted changes are not tested and nothing is left in the repository. The with-arm gets add.txt's files;
-# the without-arm loses remove.txt's paths. Either way the change is hidden from git status and git diff, so
-# neither points Claude at it. Claude runs with only the project's
-# settings and instructions (--setting-sources project,local), so the user's own CLAUDE.md, rules, skills and
-# plugins stay out; managed settings still apply.
+# A spec needs at least one of add.txt, remove.txt and without.txt. Each trial is a fresh shared clone of the
+# repository, detached at HEAD, so uncommitted changes are not tested and nothing is left in the repository. The
+# with-arm gets add.txt's files; the without-arm loses remove.txt's paths and gets without.txt's files. Either way
+# the change is hidden from git status and git diff, so neither points Claude at it. Claude runs with only the
+# project's settings and instructions (--setting-sources project,local), so the user's own CLAUDE.md, rules, skills
+# and plugins stay out; managed settings still apply.
 #
 # Usage: try-content.sh [options] <spec-dir> <out-dir>
 #        try-content.sh --show <out-dir> [<arm>-<run>]
 #   -n <runs>     runs per arm (default 3)
 #   -j <jobs>     trials at once (default: every trial at once)
 #   -m <model>    model for Claude (default: Claude Code's default)
-#   --no-hooks    turn off every hook, for a repository whose hooks would hide the difference; what loaded is
-#                 then not recorded
+#   --no-hooks    turn off every hook, for a repository whose hooks would hide the difference. Without the
+#                 InstructionsLoaded hook, what loaded is inferred from where each instruction file sits and what
+#                 Claude touched: `launch` for a rule without `paths` or the root CLAUDE.md, which load at launch;
+#                 `touched` for a path rule or nested CLAUDE.md whose files Claude read, edited or wrote, which is
+#                 what loads them. A rule loaded through a Bash read of a matching file is missed.
 #
 # Writes <out-dir>/<arm>-<run>/ for each trial (prompt, transcript, diff, check output, instructions loaded),
 # <out-dir>/results.tsv with one row per trial, and prints a summary per arm. --show prints results.tsv, or one
@@ -51,16 +56,104 @@ suffix="
 Dependencies are not installed here, so don't install them or run builds, tests, type checks or codegen. Make the
 change, then stop."
 
-# add.txt's lines without blank lines, as `<file> <path>`.
-additions() {
-  if [ -f "$1/add.txt" ]; then sed -e '/^[[:space:]]*$/d' "$1/add.txt"; fi
+# A placement list's lines (add.txt or without.txt) without blank lines, as `<file> <path>`.
+placements() {
+  if [ -f "$1" ]; then sed -e '/^[[:space:]]*$/d' "$1"; fi
 }
 
-# The paths a spec adds or removes, relative to the repository root, one per line.
+# The paths a spec adds, removes or replaces, relative to the repository root, one per line.
 watched_paths() {
   local spec=$1
-  additions "$spec" | awk '{ print $2 }' | sed 's#^\./##'
+  { placements "$spec/add.txt" && placements "$spec/without.txt"; } | awk '{ print $2 }' | sed 's#^\./##' | sort -u
   if [ -f "$spec/remove.txt" ]; then sed -e 's#^\./##' -e 's#/*$##' -e '/^[[:space:]]*$/d' "$spec/remove.txt"; fi
+}
+
+# Copies a placement list's files into the checkout, each hidden from git status and git diff.
+place() {
+  local spec=$1 list=$2 checkout=$3 exclude=$4 file path
+  while read -r file path; do
+    path=${path#./}
+    mkdir -p "$(dirname "$checkout/$path")"
+    cp "$spec/$file" "$checkout/$path"
+    if [ -n "$(git -C "$checkout" ls-files -- "$path")" ]; then
+      hide_tracked "$checkout" "$path"
+    else
+      printf '/%s\n' "$path" >>"$exclude"
+    fi
+  done < <(placements "$list")
+}
+
+# The repository paths Claude read, edited or wrote in a transcript, one per line.
+touched_files() {
+  local checkout=$1 transcript=$2
+  { grep -oE '"name":"(Read|Edit|Write)","input":\{[^}]*"file_path":"[^"]*"' "$transcript" || true; } |
+    sed -E -e 's/.*"file_path":"//' -e 's/"$//' -e "s#^($checkout|$(cd "$checkout" && pwd -P))/##"
+}
+
+# A rule's `paths` patterns, one per line, with each {a,b} expanded, and each `**/` also given dropped, since it
+# matches no directory as well as any, which a shell pattern's `*` doesn't.
+rule_paths() {
+  awk '
+    function expand(p, i, j, n, k, parts) {
+      i = index(p, "{")
+      if (!i) { emit(p); return }
+      j = i + index(substr(p, i), "}") - 1
+      n = split(substr(p, i + 1, j - i - 1), parts, ",")
+      for (k = 1; k <= n; k++) expand(substr(p, 1, i - 1) parts[k] substr(p, j + 1))
+    }
+    function emit(p, q) {
+      print p
+      q = p
+      gsub(/\*\*\//, "", q)
+      if (q != p) print q
+    }
+    # Splits a line of patterns at commas and spaces outside braces.
+    function items(line, c, i, depth, item) {
+      item = ""
+      for (i = 1; i <= length(line); i++) {
+        c = substr(line, i, 1)
+        if (c == "{") depth++
+        if (c == "}") depth--
+        if (depth == 0 && (c == "," || c == " " || c == "\t")) {
+          if (item != "") expand(item)
+          item = ""
+        } else item = item c
+      }
+      if (item != "") expand(item)
+    }
+    NR == 1 && !/^---$/ { exit }
+    NR > 1 && /^---$/ { exit }
+    /^paths:/ { list = 1; sub(/^paths:[[:space:]]*/, ""); if ($0 == "") next }
+    list && /^[A-Za-z_]+:/ { list = 0 }
+    list {
+      gsub(/[]["\047]/, " ")
+      sub(/^[[:space:]]*-[[:space:]]/, " ")
+      items($0)
+    }' "$1"
+}
+
+# How an instruction file in the checkout loaded when no hook records it: `launch`, `touched` or `no`.
+loaded_without_hooks() {
+  local checkout=$1 path=$2 transcript=$3 patterns file pattern
+  [ -f "$checkout/$path" ] || return 0
+  case $path in
+    CLAUDE.md | .claude/CLAUDE.md) echo launch && return 0 ;;
+    */CLAUDE.md)
+      if touched_files "$checkout" "$transcript" | grep -q "^${path%CLAUDE.md}"; then echo touched; else echo no; fi
+      return 0
+      ;;
+    .claude/rules/*.md) ;;
+    *) echo no && return 0 ;;
+  esac
+  patterns=$(rule_paths "$checkout/$path")
+  if [ -z "$patterns" ]; then echo launch && return 0; fi
+  while IFS= read -r file; do
+    while IFS= read -r pattern; do
+      # shellcheck disable=SC2254 # the pattern is meant to match as a glob.
+      case $file in $pattern) echo touched && return 0 ;; esac
+    done <<<"$patterns"
+  done < <(touched_files "$checkout" "$transcript")
+  echo no
 }
 
 hide_tracked() {
@@ -83,25 +176,14 @@ trial() {
 
   exclude="$checkout/.git/info/exclude"
   mkdir -p "$(dirname "$exclude")"
-  if [ "$arm" = with ]; then
-    local file
-    while read -r file path; do
-      path=${path#./}
-      mkdir -p "$(dirname "$checkout/$path")"
-      cp "$spec/$file" "$checkout/$path"
-      if [ -n "$(git -C "$checkout" ls-files -- "$path")" ]; then
-        hide_tracked "$checkout" "$path"
-      else
-        printf '/%s\n' "$path" >>"$exclude"
-      fi
-    done < <(additions "$spec")
-  fi
+  if [ "$arm" = with ]; then place "$spec" "$spec/add.txt" "$checkout" "$exclude"; fi
   if [ "$arm" = without ] && [ -f "$spec/remove.txt" ]; then
     while IFS= read -r path; do
       hide_tracked "$checkout" "$path"
       rm -rf "${checkout:?}/$path"
     done < <(sed -e 's#^\./##' -e 's#/*$##' -e '/^[[:space:]]*$/d' "$spec/remove.txt")
   fi
+  if [ "$arm" = without ]; then place "$spec" "$spec/without.txt" "$checkout" "$exclude"; fi
 
   if [ "$TRY_NO_HOOKS" = 1 ]; then
     settings='{"disableAllHooks":true}'
@@ -130,7 +212,11 @@ trial() {
   # Skill calls naming a skill the spec adds or removes.
   local loaded='' skills=0 name reason cost
   if [ "$TRY_NO_HOOKS" = 1 ]; then
-    loaded=unknown
+    while IFS= read -r path; do
+      case $path in .claude/skills/*) continue ;; esac
+      reason=$(loaded_without_hooks "$checkout" "$path" "$dest/transcript.jsonl")
+      if [ -n "$reason" ] && [ "$reason" != no ]; then loaded="${loaded:+$loaded,}$reason"; fi
+    done < <(watched_paths "$spec")
   elif [ -f "$dest/instructions.jsonl" ]; then
     while IFS= read -r path; do
       reason=$(grep -F "/$path\"" "$dest/instructions.jsonl" | sed -n 's/.*"load_reason" *: *"\([^"]*\)".*/\1/p' |
@@ -224,8 +310,8 @@ spec=$(cd "$1" 2>/dev/null && pwd) || {
   echo "try-content: $spec has no check.sh" >&2
   exit 2
 }
-if [ ! -f "$spec/add.txt" ] && [ ! -f "$spec/remove.txt" ]; then
-  echo "try-content: $spec needs add.txt, remove.txt or both" >&2
+if [ ! -f "$spec/add.txt" ] && [ ! -f "$spec/remove.txt" ] && [ ! -f "$spec/without.txt" ]; then
+  echo "try-content: $spec needs add.txt, remove.txt or without.txt" >&2
   exit 2
 fi
 while read -r file path; do
@@ -234,7 +320,7 @@ while read -r file path; do
       "$file $path" >&2
     exit 2
   fi
-done < <(additions "$spec")
+done < <(placements "$spec/add.txt" && placements "$spec/without.txt")
 TRY_REPO=$(git rev-parse --show-toplevel 2>/dev/null) || {
   echo 'try-content: not in a git repository' >&2
   exit 2
@@ -279,16 +365,12 @@ for arm in with without; do
   awk -F '\t' -v arm="$arm" -v skills="$has_skills" -v instructions="$has_instructions" '
     NR > 1 && $1 == arm {
       n++; if ($3 == "pass") pass++
-      if ($4 != "no" && $4 != "unknown") loaded++
+      if ($4 != "no") loaded++
       if ($5 > 0) skill++
-      if ($4 == "unknown") unknown = 1
     }
     END {
       printf "%s: check passed %d/%d", arm, pass, n
-      if (instructions) {
-        if (unknown) printf "; instructions loaded: unknown under --no-hooks"
-        else printf "; instructions loaded %d/%d", loaded, n
-      }
+      if (instructions) printf "; instructions loaded %d/%d", loaded, n
       if (skills) printf "; skill invoked %d/%d", skill, n
       printf "\n"
     }' "$out/results.tsv"

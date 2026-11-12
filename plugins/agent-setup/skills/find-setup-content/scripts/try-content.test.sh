@@ -124,8 +124,43 @@ check 'summary: lists each trial with what it looked at' grep -q '^with-1 pass |
   "$root/output"
 
 run -n 1 --no-hooks "$root/add-spec" "$root/out-nohooks"
-check 'no-hooks: loaded is unknown' [ "$(column "$root/out-nohooks/results.tsv" with 4)" = unknown ]
+check 'no-hooks: a rule without paths loads at launch' [ "$(column "$root/out-nohooks/results.tsv" with 4)" = launch ]
 check 'no-hooks: hooks are turned off' grep -q 'disableAllHooks' "$root/out-nohooks/with-1/diff.patch"
+
+spec="$root/scoped-spec"
+mkdir -p "$spec"
+rule() {
+  printf -- '---\npaths:\n  - "%s/**"\n---\n\nEvery function in %s carries the %s annotation.\n' "$1" "$1" "$2"
+}
+rule src flamingo >"$spec/scoped.md"
+rule lib pelican >"$spec/unseen.md"
+printf 'scoped.md .claude/rules/scoped.md\nunseen.md .claude/rules/unseen.md\n' >"$spec/add.txt"
+echo 'Add a file.' >"$spec/prompt.txt"
+echo 'true' >"$spec/check.sh"
+run -n 1 --no-hooks "$spec" "$root/out-scoped"
+check 'no-hooks: a path rule matching a file Claude read is touched, and one matching none is not' \
+  [ "$(column "$root/out-scoped/results.tsv" with 4)" = touched ]
+
+spec="$root/inline-spec"
+mkdir -p "$spec"
+printf -- '---\npaths: ["**/*.{js,ts}"]\n---\n\nUse the style.\n' >"$spec/inline.md"
+echo 'inline.md .claude/rules/inline.md' >"$spec/add.txt"
+echo 'Add a file.' >"$spec/prompt.txt"
+echo 'true' >"$spec/check.sh"
+run -n 1 --no-hooks "$spec" "$root/out-inline"
+check 'no-hooks: an inline paths list with braces matches the file Claude read' \
+  [ "$(column "$root/out-inline/results.tsv" with 4)" = touched ]
+
+spec="$root/without-spec"
+mkdir -p "$spec"
+printf '# Trimmed\n' >"$spec/CLAUDE.md"
+echo 'CLAUDE.md CLAUDE.md' >"$spec/without.txt"
+echo 'Add a file.' >"$spec/prompt.txt"
+echo 'grep -q Project CLAUDE.md' >"$spec/check.sh"
+run -n 1 "$spec" "$root/out-without"
+check 'without: the with-arm keeps the file as it is' [ "$(column "$root/out-without/results.tsv" with 3)" = pass ]
+check 'without: the without-arm gets the cut version' [ "$(column "$root/out-without/results.tsv" without 3)" = fail ]
+check 'without: git status hides the cut version' lacks 'CLAUDE.md' "$root/out-without/without-1/diff.patch"
 
 spec="$root/bad-spec"
 mkdir -p "$spec"
@@ -134,7 +169,7 @@ run "$spec" "$root/out-bad"
 check 'usage: a spec without check.sh exits 2' [ "$(cat "$root/status")" = 2 ]
 echo 'true' >"$spec/check.sh"
 run "$spec" "$root/out-bad"
-check 'usage: a spec without add.txt or remove.txt exits 2' [ "$(cat "$root/status")" = 2 ]
+check 'usage: a spec without add.txt, remove.txt or without.txt exits 2' [ "$(cat "$root/status")" = 2 ]
 echo 'missing.md .claude/rules/missing.md' >"$spec/add.txt"
 run "$spec" "$root/out-bad"
 check 'usage: add.txt naming a missing file exits 2' [ "$(cat "$root/status")" = 2 ]
