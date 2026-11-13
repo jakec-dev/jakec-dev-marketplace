@@ -327,15 +327,6 @@ The `tool_input` fields depend on the tool.
   - Reads from [network paths](https://code.claude.com/docs/en/permissions#network-paths).
   - Calls to [tools an Agent SDK app marks `always_ask`](https://code.claude.com/docs/en/agent-sdk/custom-tools#require-approval-for-specific-tools),
     unless the [permission mode approves the call](https://code.claude.com/docs/en/agent-sdk/typescript#permission-modes-that-can-approve-an-always_ask-call).
-- The actions no mode auto-approves, which a `PreToolUse` `"allow"` doesn't approve either, are: tools matched by an
-  explicit ask rule; connector tools your organization set to `ask`, where that setting reaches Claude Code; the
-  built-in `AskUserQuestion` tool and MCP tools marked `requiresUserInteraction`; recognised `rm` and `rmdir`
-  critical-path removals and Bash commands flagged `Dangerous rm operation not ruled out`; the cross-session messaging
-  safeguards; and reads outside the working directories while `permissions.blockReadsOutsideWorkingDirectories` is
-  on, where recognised file-reading Bash commands, an unsandboxed retry that needs approval, and a command the shell
-  parser can't trace prompt even in auto mode and `bypassPermissions` mode. The prompt for a command the parser can't
-  trace doesn't apply when the command runs in the sandbox and the sandbox enforces the block.
-  [permission-modes › Actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves)
 - A hook that blocks by exiting 2 routes the same way as `"deny"`: Claude sees the stderr message as the denial reason.
   [hooks › PreToolUse decision control](https://code.claude.com/docs/en/hooks#pretooluse-decision-control)
 - When a hook returns `"ask"`, the permission prompt displayed to the user includes a label identifying where the hook
@@ -573,21 +564,13 @@ The `tool_input` fields depend on the tool.
   requests that nothing else resolves. In a `-p` run with no permission host, these requests are denied either way, and
   the flag also tells Claude not to retry them.
   [headless › Turn off permission prompts in unattended runs](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs)
-- A critical-path removal asks you to approve it in `default` and `acceptEdits` modes. `auto` mode asks in the terminal,
-  with a time limit, and denies elsewhere. `bypassPermissions` mode asks in the terminal before a time limit runs out;
-  elsewhere, see the table below. `dontAsk` mode denies it. `plan` mode asks too, except that when the classifier
-  reviews commands during planning and no bypass permissions are available, it handles the removal as in `auto` mode.
-  If an explicit ask rule matches the command, Claude Code asks you instead, even in `auto` mode and without a time
-  limit. In modes that ask, a `PermissionRequest` hook can answer the prompt.
+- In the permission modes that ask you to approve a critical-path removal, a `PermissionRequest` hook can answer the
+  prompt.
   [permission-modes › Critical-path removals in each permission mode](https://code.claude.com/docs/en/permission-modes#critical-path-removals-in-each-permission-mode)
-- In `auto` and `bypassPermissions` modes, away from the terminal, you don't get the critical-path removal prompt:
+- Away from the terminal, `bypassPermissions` mode denies a critical-path removal unless a `PermissionRequest` hook
+  allows it: in the VS Code extension's chat panel, in the desktop app, and in a `-p` run or Agent SDK session that has
+  neither a `--permission-prompt-tool` nor a `canUseTool` callback, or runs under `--permission-prompts none`.
   [permission-modes › Time limits and denials in auto and bypassPermissions modes](https://code.claude.com/docs/en/permission-modes#time-limits-and-denials-in-auto-and-bypasspermissions-modes)
-
-| Where | `auto` | `bypassPermissions` |
-| :- | :- | :- |
-| [VS Code extension](https://code.claude.com/docs/en/vs-code)'s chat panel | Denies it | Denies it unless a [`PermissionRequest` hook](https://code.claude.com/docs/en/hooks#permissionrequest) allows it |
-| [Desktop app](https://code.claude.com/docs/en/desktop) | Denies it | Denies it unless a `PermissionRequest` hook allows it |
-| [`-p` run](https://code.claude.com/docs/en/headless) or [Agent SDK session](https://code.claude.com/docs/en/agent-sdk/permissions) | Denies it | Your [`--permission-prompt-tool`](https://code.claude.com/docs/en/cli-reference#cli-flags) or [`canUseTool` callback](https://code.claude.com/docs/en/agent-sdk/user-input#handle-tool-approval-requests) decides. With neither, or under [`--permission-prompts none`](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs), denies it unless a `PermissionRequest` hook allows it. To run these removals with no prompt instead, see [Turn off the critical-path removal prompt](https://code.claude.com/docs/en/permission-modes#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode) |
 
 ### Input
 
@@ -1179,22 +1162,16 @@ The `tool_input` fields depend on the tool.
   `--dangerously-skip-permissions`. This lets you enforce policy that users can't bypass by changing their permission
   mode.
   [hooks-guide › Hooks and permission modes](https://code.claude.com/docs/en/hooks-guide#hooks-and-permission-modes)
-- In `dontAsk` mode, which auto-denies every tool call that would otherwise prompt, Claude still runs calls approved by
-  a `PreToolUse` hook, along with actions that need no approval and actions matching your `permissions.allow` rules. A
-  mod you installed can still approve some of the calls the mode would deny.
+- In `dontAsk` mode, calls approved by a `PreToolUse` hook still run, though a `PreToolUse` hook can't approve
+  critical-path removals or reads from a network path either.
   [permission-modes › Allow only pre-approved tools with dontAsk mode](https://code.claude.com/docs/en/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)
 - Claude Code checks `rm` and `rmdir` commands before they run, and no
-  [`permissions.allow`](https://code.claude.com/docs/en/permissions#manage-permissions) rule and no
   [`PreToolUse` hook](https://code.claude.com/docs/en/permissions#extend-permissions-with-hooks) that returns `"allow"`
   approves one whose target it recognizes as a critical path, such as the filesystem root, your home directory, or
   your working directory, even in the permission modes that skip other prompts. This holds in `bypassPermissions` mode
   too, where you can [turn off that prompt](https://code.claude.com/docs/en/permission-modes#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode).
   [permission-modes › Critical paths](https://code.claude.com/docs/en/permission-modes#critical-paths) and
   [permission-modes › The `Dangerous rm operation not ruled out` prompt](https://code.claude.com/docs/en/permission-modes#dangerous-rm-operation-not-ruled-out)
-- In `dontAsk` mode, an allow rule or `PreToolUse` hook can't approve recognized `rm` and `rmdir`
-  [critical-path removals](https://code.claude.com/docs/en/permission-modes#critical-paths), such as `rm -rf /` and
-  `rm -rf ~`, or reads from a [network path](https://code.claude.com/docs/en/permissions#network-paths).
-  [permission-modes › Allow only pre-approved tools with dontAsk mode](https://code.claude.com/docs/en/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)
 - In [plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode), apart from
   `ExitPlanMode`, a `PreToolUse` hook's `"allow"` has no effect on a file edit or another call that isn't read-only. You
   get the same prompt, block, or approval the call would get with no hook, and Claude Code still applies any
@@ -1212,9 +1189,7 @@ The `tool_input` fields depend on the tool.
 
 ## Auto mode and hooks
 
-- In the Manual and `acceptEdits` modes, when auto mode is available, Claude Code adds **Yes, and switch to auto
-  mode** to a Bash command's permission prompt; PowerShell prompts don't offer it. Claude Code doesn't add the option
-  to prompts forced by one of your
+- Claude Code doesn't add the **Yes, and switch to auto mode** option to prompts forced by one of your
   [`ask` rules](https://code.claude.com/docs/en/permissions#manage-permissions) or by a
   [hook](https://code.claude.com/docs/en/hooks#pretooluse-decision-control), because auto mode still shows you those
   prompts, so switching wouldn't remove them.

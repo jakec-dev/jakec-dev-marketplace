@@ -86,9 +86,8 @@ hooks	UserPromptExpansion	included	permissions.md	the paragraph that a `PreToolU
 hooks	UserPromptExpansion decision control	included	permissions.md	the `decision`, `reason` and `additionalContext` rows: `"block"` prevents the command from expanding, `reason` is shown to the user, and `additionalContext` is a string added to Claude's context alongside the expanded prompt, and the sentence that a hook that blocks by exiting 2 routes the same way as `reason`
 mcp	Plugin-provided MCP servers	included	permissions.md	the clause that a skill's `allowed-tools` list uses the full tool name, with the full-name form and its character-replacement rule
 permissions	What runs before you trust a folder	included	permissions.md	the clause of the first row on a project skill's `allowed-tools`, both columns
-permissions	Match by input parameter	included	permissions.md	the sentences that deny and ask rules can match a top-level input parameter on any built-in tool with `Tool(param:value)`, that allow rules keep each tool's own specifier syntax, and that the value supports `*`
-settings-reference	`allowManagedPermissionRulesOnly`	included	permissions.md	the paragraphs on `allowed-tools` in skills and command files, with their list of sources, and the sentences that Claude Code ignores `allow`, `ask` and `deny` rules in user, project, local and `--settings` files and ignores `--allowedTools`, and that `--disallowedTools` rules and the current session's `deny` and `ask` rules still apply; and the clauses that it hides the always-allow choices in permission prompts and stops saving new rules
-tools-reference	Configure tools with permission rules and hooks	included	permissions.md	the list item naming a skill's `allowed-tools`, the sentence that these accept the `ToolName(specifier)` rule format with its specifier table, and the sentence that tools not in the table accept only the bare name
+settings-reference	`allowManagedPermissionRulesOnly`	included	permissions.md	the paragraphs on `allowed-tools` in skills and command files, with their list of sources, and the clause of its first sentence that rules in user, project, local and `--settings` files are ignored, as it applies to `Skill(...)` rules
+tools-reference	Configure tools with permission rules and hooks	included	permissions.md	the list item naming a skill's `allowed-tools`
 skills	Extend Claude with skills	included	placing.md	the sentences that a skill is a `SKILL.md` Claude uses when relevant or you invoke with `/skill-name`, the custom-commands Note (from "A file at `.claude/commands/deploy.md`…"), and the Agent Skills standard paragraph
 skills	Run and verify your app	included	placing.md	
 skills	Choose where skills load	included	placing.md	
@@ -101,7 +100,7 @@ errors	A skill, command, or workflow wasn't loaded because its name is reserved	
 plugins/create	Name the plugin's skills	included	placing.md	
 claude-directory	File reference	included	placing.md	the `skills/<name>/SKILL.md` and `commands/*.md` rows (scope and commit)
 plugins/components	Skills	included	placing.md	the sentences on the `skills/` layout, who invokes it, additional directories in the `skills` manifest key, and a single skill at the plugin root
-sandboxing	Protected paths	included	placing.md	the clause that the sandbox denies writes to the `.claude/skills` and `.claude/commands` directories, the sentence that an `allowWrite` entry or `Edit` allow rule covering one of these paths doesn't lift the protection, and the sentence that `filesystem.disabled` turns it off with the rest of filesystem isolation, and the warning not to rely on protected paths with `allowNestedUserNamespaces` set to `true` on Linux or WSL2
+sandboxing	Protected paths	included	placing.md	the clause that the sandbox denies writes to the `.claude/skills` and `.claude/commands` directories
 plugins/manifest-reference	Path rules	included	placing.md	the `skills` bullet (current behaviour only)
 plugins/manifest-reference	How entry fields combine with `plugin.json`	included	placing.md	the sentence on a marketplace entry that lists specific `skills` subdirectories
 plugins/loading	Name conflicts	included	placing.md	the skills-directory clauses of items 2 and 3, and item 4
@@ -239,7 +238,7 @@ model-config	Set the effort level	excluded		the rest is not about skills
 monitoring-usage	Cost counter	excluded		the rest is about other attributes
 permission-modes	Eliminate permission prompts with auto mode	excluded		the rest is not about skills
 permissions	Additional directories grant file access, not configuration	excluded		the rest is not about skills
-permissions	Match by input parameter	excluded		its `Skill(skill:<name>)` bullet repeats the parameter-form row of Restrict Claude's skill access; the rest is not about skills
+permissions	Match by input parameter	excluded		owned by settings (permissions.md), apart from its `Skill(skill:<name>)` bullet, which repeats the parameter-form row of Restrict Claude's skill access
 permissions	What runs before you trust a folder	excluded		the rest is not about skills
 plugin-evals	Choose graders that give a stable signal	excluded		the rest is about plugin evals in general
 plugin-evals	Create your first eval suite	excluded		the rest is about plugin evals in general

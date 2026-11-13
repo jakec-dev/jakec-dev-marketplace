@@ -37,13 +37,10 @@ OpenTelemetry hook events.
   when you start an interactive session and in `claude doctor`. If the array is under `PreToolUse` or
   `PermissionRequest`, none of that file's other hooks load either.
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
-- Hooks configured globally in `~/.claude.json` are ignored: `~/.claude.json` holds app state and UI toggles, and
-  `permissions`, `hooks` and `env` belong in `~/.claude/settings.json`.
+- Hooks configured in `~/.claude.json` are ignored; put them in `~/.claude/settings.json`.
   [debug-your-config › Check common causes](https://code.claude.com/docs/en/debug-your-config#check-common-causes)
-- When you edit `settings.json`, the change takes effect in the running session after a brief file-stability delay,
-  even if you create the file or the project's `.claude/` folder itself after the session started, so you don't need
-  to restart. If `/hooks` still shows the old definition a few seconds after you save, run `/hooks` again to refresh
-  the view.
+- If `/hooks` still shows the old definition a few seconds after you save a settings file, run `/hooks` again to
+  refresh the view.
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - If `/hooks` still shows no hooks after you edited a settings file and refreshed it, the file watcher may have missed
   the change: restart your session to force a reload.
@@ -57,10 +54,6 @@ OpenTelemetry hook events.
 - At the start of an interactive session, a settings file with an unknown hook event name produces a Settings
   Warning: Claude Code skips only the failing entries and keeps the rest of the file in effect. After you continue,
   run `/status` to see the affected files and `claude doctor` for the details of each error.
-  [settings › Fix a broken settings file](https://code.claude.com/docs/en/settings#fix-a-broken-settings-file)
-- A `-p` run shows no settings dialog: unless a managed settings document can't be parsed, Claude Code skips the broken
-  file or values and continues with the rest, so after a `-p` run that ignores a setting, run `claude doctor` to see
-  what it dropped.
   [settings › Fix a broken settings file](https://code.claude.com/docs/en/settings#fix-a-broken-settings-file)
 - In the VS Code extension, select **Hooks** in the Customize section to view the hooks loaded in the session, grouped
   by event. You can add, edit, or remove hooks saved in your user, project, and local settings files. Hooks from other

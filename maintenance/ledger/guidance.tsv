@@ -223,7 +223,7 @@ best-practices	Enforce steps with hooks	excluded		the rest: its handler list rep
 best-practices	Limit access with permission rules and the sandbox	excluded		the rest: its example and strict sandbox mode sentences belong to the settings guidance, not yet built; its `WebFetch` edge repeats permissions › Read-only commands (choose.md)
 best-practices	Choose who a rule applies to	excluded		the rest: its scope bullets restate where settings apply, with their hooks clauses in the hooks reference (placing.md, excluding.md); belongs to the settings guidance, not yet built
 best-practices	Change a default	excluded		describes Claude Code's defaults; states no tool guideline
-best-practices	Change the permission mode	excluded		the rest: permission modes, `autoMode` configuration and `/fewer-permission-prompts` belong to the settings guidance, not yet built
+best-practices	Change the permission mode	excluded		the rest: permission modes, `autoMode` configuration and when to use `/fewer-permission-prompts` belong to the settings guidance, not yet built; what the command does is in the settings reference
 best-practices	Keep cost and context down	included	maintain.md	the sentences that `/usage` is the first place to look and breaks usage down by skill, subagent, plugin and MCP server
 best-practices	Keep cost and context down	excluded		the rest: `/clear`, `/compact`, the cost of background work and the cache Note are session habits, not a tool; the 10% flagging is a `/usage` fact with no tool advice
 best-practices	Steer the session	excluded		session habits, not a tool

@@ -209,9 +209,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference)
   and
   [tools-reference › Configure tools with permission rules and hooks](https://code.claude.com/docs/en/tools-reference#configure-tools-with-permission-rules-and-hooks)
-- The label shown for a tool in the transcript and permission dialog can differ from its canonical name; for example,
-  the tool labeled `Stop Task` in the transcript has the canonical name `TaskStop`. Permission rules and hook matchers
-  don't match the label. Use the canonical names listed in the tools reference.
+- Hook matchers don't match a tool's label in the transcript or permission dialog; use the canonical tool name.
   [permissions › Match all uses of a tool](https://code.claude.com/docs/en/permissions#match-all-uses-of-a-tool)
 
 ## Matching MCP tools
@@ -678,7 +676,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   commands. PowerShell hooks and exec-form hooks run without the prefix. The wrapper receives the command line as a
   single shell-quoted argument in `$1`, so it must re-evaluate `$1` with a shell, for example `exec bash -c "$1"`.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- Claude Code doesn't pass `OTEL_*` environment variables to the subprocesses it spawns, including hooks.
+- Claude Code doesn't pass `OTEL_*` environment variables to hooks.
   [monitoring-usage › Administrator configuration](https://code.claude.com/docs/en/monitoring-usage#administrator-configuration)
 - On Linux and WSL, setting `CLAUDE_CODE_TOOL_MEMORY_LIMIT` to a size such as `4G` caps the memory that Bash,
   PowerShell, and Monitor tool commands can use. Claude Code can also count other kinds of processes it starts against

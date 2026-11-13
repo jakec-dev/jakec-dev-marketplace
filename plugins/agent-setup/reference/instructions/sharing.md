@@ -161,9 +161,7 @@ directories and sparse worktrees.
 
 - The `sparsePaths` and `symlinkDirectories` settings are read from your starting directory before the worktree is
   created. After creation, the session's working directory is the worktree root, not the subdirectory you launched
-  from. Project settings inside the worktree therefore load from the worktree root's `.claude/settings.json`, the
-  checked-out copy of the repository root's file, so put any other settings you need inside worktrees, such as
-  permission rules or hooks, in the repository root's `.claude/settings.json`.
+  from.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 - Sparse checkout requires git to enable `extensions.worktreeConfig` in the repository's shared `.git/config` while a
   sparse worktree exists. Claude Code removes that entry after the last worktree is removed, but only if Claude Code

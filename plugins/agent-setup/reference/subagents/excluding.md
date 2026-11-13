@@ -41,17 +41,13 @@ Disabling or restricting subagents: deny rules, built-in agents, `--bare`, and m
   | `Agent(model:opus)` | Agent calls that request the Opus model tier |
   | `Agent(isolation:worktree)` | Agent calls that request a git worktree |
 
-- The parameter name must be a direct field of the tool's input, such as `model` on the Agent tool. Fields nested
-  inside an object or array are not matchable.
+- `Agent(isolation:*)` matches any explicit isolation value.
   [permissions › Match by input parameter](https://code.claude.com/docs/en/permissions#match-by-input-parameter)
-- Each rule names one parameter. To gate on both `model` and `isolation`, write two rules, `Agent(model:opus)` and
-  `Agent(isolation:worktree)`, rather than combining them in one rule.
+- To gate on both `model` and `isolation`, write two rules, `Agent(model:opus)` and `Agent(isolation:worktree)`.
   [permissions › Match by input parameter](https://code.claude.com/docs/en/permissions#match-by-input-parameter)
-- A parameter the model omits is never matched, so the wildcard rule `Agent(model:*)` (`*` matches any sequence of
-  characters; a value without it is exact) doesn't match a call that leaves `model` unset.
+- `Agent(model:*)` doesn't match a call that leaves `model` unset.
   [permissions › Match by input parameter](https://code.claude.com/docs/en/permissions#match-by-input-parameter)
-- The value is compared against the literal input Claude sends, before any normalization. `Agent(model:opus)` matches
-  the alias `opus` but not a full model ID.
+- `Agent(model:opus)` matches the alias `opus` but not a full model ID.
   [permissions › Match by input parameter](https://code.claude.com/docs/en/permissions#match-by-input-parameter)
 
 ## Remove built-in subagents

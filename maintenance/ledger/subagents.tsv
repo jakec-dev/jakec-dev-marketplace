@@ -141,9 +141,9 @@ plugins/create	Plugin layout (2)	excluded		repeats the first copy of the section
 permissions	Additional directories grant file access, not configuration	included	placing.md	the clause that subagents from a flag-added directory load through the `project` setting source, the clause that bare mode skips them, the Subagents row with its header, and the subagents clause of the `/add-dir` subdirectory paragraph
 permissions	Move the session to another directory	included	placing.md	the clause that `/cd` loads the new directory's subagents
 permissions	What runs before you trust a folder	included	tools.md	the inline `mcpServers` row with the table header, and the sentences on reading the columns and the nested-repository case; the by-hand trust instruction appears only as a mention
-permissions	Match by input parameter	included	excluding.md	the `Agent(model:...)` and `Agent(isolation:...)` rows and the bullets that use them as examples
+permissions	Match by input parameter	included	excluding.md	the `Agent(model:...)` and `Agent(isolation:...)` rows, and the Agent instances of the general rules: `Agent(isolation:*)` matching any explicit isolation value, two rules to gate `model` and `isolation`, `Agent(model:*)` not matching an unset `model`, and `Agent(model:opus)` matching only the alias
 permissions	Agent (subagents)	excluded		repeats Disable specific subagents
-permission-modes	How auto mode evaluates actions	included	tools.md	the How auto mode handles subagents accordion, apart from its ignored-`permissionMode` sentence, and the `Agent` item of the list of allow rules dropped on entering auto mode, with the sentence that they are restored on leaving it
+permission-modes	How auto mode evaluates actions	included	tools.md	the How auto mode handles subagents accordion, apart from its ignored-`permissionMode` sentence, and the `Agent` item of the list of allow rules dropped on entering auto mode, with the restore sentence as a mention (settings owns it)
 permission-modes	How auto mode evaluates actions	excluded		the rest is not about subagents
 prompt-caching	Which TTL each request gets	included	models.md	the Everything else bucket and its table row, with the header
 prompt-caching	Choose the TTL yourself	included	models.md	the sentence that each control takes `5m` or `1h`, the Everything else bullet, and the precedence list
@@ -282,7 +282,7 @@ cross-session-messaging	Turn off cross-session messaging	included	context.md	the
 cross-session-messaging	Turn off cross-session messaging	excluded		the rest belongs to another tool type (cross-session messaging)
 cross-session-messaging	See which sessions Claude can reach	excluded		its Subagents bullet belongs to another tool type (cross-session messaging)
 cross-session-messaging	Limits	excluded		its subagent clause belongs to another tool type (cross-session messaging)
-permission-modes	Protected paths	included	context.md	the bullet that Markdown files in a subagent memory directory are an exception, in a session started without `--restricted`, and the protected-path write outcome for each mode, including plan mode
+permission-modes	Protected paths	included	context.md	the bullet that Markdown files in a subagent memory directory are an exception, in a session started without `--restricted`
 permission-modes	Protected paths	excluded		the rest is not about subagents; its `--agents` file bullet names the flag only in a list of protected files
 tools-reference	Background commands	included	running.md	the sentence that when a subagent started a stopped command, that subagent moves on
 tools-reference	Background commands	excluded		the rest is not about subagents

@@ -82,11 +82,7 @@ directories, worktrees, symlinks, reserved names, name clashes, command names, p
   [plugins/loading › Check why a repository plugin didn't load](https://code.claude.com/docs/en/plugins/loading#check-why-a-repository-plugin-didnt-load)
   [permissions › What runs before you trust a folder](https://code.claude.com/docs/en/permissions#what-runs-before-you-trust-a-folder)
 - The sandbox denies sandboxed commands writes to the `.claude/skills` and `.claude/commands` directories in your
-  working directory and the directories above it, even inside directories they can write to. An `allowWrite` entry
-  or `Edit` allow rule covering one of these paths doesn't lift the protection. To turn the protection off, set
-  `filesystem.disabled`, which also turns off the rest of filesystem isolation. If you set
-  `allowNestedUserNamespaces` to `true` on Linux or WSL2, don't rely on protected paths: code from a sandboxed command
-  can end up running outside the sandbox.
+  working directory and the directories above it, even inside directories they can write to.
   [sandboxing › Protected paths](https://code.claude.com/docs/en/sandboxing#protected-paths)
 
 ## Command files

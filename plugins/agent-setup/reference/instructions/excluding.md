@@ -50,9 +50,7 @@ Stopping instruction files from loading: `claudeMdExcludes`, `--setting-sources`
   individuals add local overrides.
   [large-codebases › Exclude irrelevant CLAUDE.md files](https://code.claude.com/docs/en/large-codebases#exclude-irrelevant-claude-md-files),
   [memory › Exclude specific CLAUDE.md files](https://code.claude.com/docs/en/memory#exclude-specific-claude-md-files)
-- To keep the exclusion local to your machine, put it in `.claude/settings.local.json`. Claude Code adds that file
-  to your global gitignore when it saves a setting there; if you create the file by hand, add it to your gitignore
-  yourself.
+- To keep the exclusion local to your machine, put it in `.claude/settings.local.json`.
   [large-codebases › Exclude irrelevant CLAUDE.md files](https://code.claude.com/docs/en/large-codebases#exclude-irrelevant-claude-md-files)
 - The exclusion list is static, not a per-task switch: use it for directories you never work in, such as other
   teams' packages, legacy code, or vendored subtrees. To focus on one package today and another tomorrow, start
@@ -70,13 +68,6 @@ Stopping instruction files from loading: `claudeMdExcludes`, `--setting-sources`
   [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
 
 ## `--setting-sources`
-
-- The flag:
-  [cli-reference › CLI flags](https://code.claude.com/docs/en/cli-reference#cli-flags)
-
-  | Flag | Description | Example |
-  | :- | :- | :- |
-  | `--setting-sources` | Comma-separated list of setting sources to load (`user`, `project`, `local`). See [agent view](https://code.claude.com/docs/en/agent-view#what-carries-over-when-you-background) and [agent teams](https://code.claude.com/docs/en/agent-teams#context-and-communication) for the sessions you start from this one that inherit the list | `claude --setting-sources user,project` |
 
 - Project rules are skipped if you exclude `project` from `--setting-sources`, including rules that load on demand,
   such as path-scoped rules and rules in nested `.claude/rules/` directories.
