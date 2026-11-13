@@ -219,10 +219,10 @@ costs	Offload processing to hooks and skills	included	troubleshooting.md	the `mo
 costs	Offload processing to hooks and skills	excluded		the rest compares or recommends tool types (guidance)
 cross-session-messaging	The session's inbox socket	included	configuring.md	the sentences on hooks
 cross-session-messaging	The session's inbox socket	excluded		the rest is not about hooks
-debug-your-config	Check common causes	included	troubleshooting.md	the hook rows
+debug-your-config	Check common causes	included	troubleshooting.md	the hook rows, and the hooks clause of the `~/.claude.json` row
 debug-your-config	Check common causes	excluded		the rest is not about hooks
-debug-your-config	Check hooks	included	troubleshooting.md	all but the bullet that a hook in a skill's frontmatter is absent from `/hooks` until the skill is invoked
-debug-your-config	Check hooks	excluded		skills owns the bullet that a hook in a skill's frontmatter is absent from `/hooks` until the skill is invoked
+debug-your-config	Check hooks	included	troubleshooting.md	all but the parts the excluded row for this section names
+debug-your-config	Check hooks	excluded		skills owns the bullet that a hook in a skill's frontmatter is absent from `/hooks` until the skill is invoked; the sentence that a `settings.json` edit takes effect without a restart after a brief file-stability delay is owned by settings (configuring.md)
 debug-your-config	Debug your configuration	excluded		only introduces or links
 debug-your-config	Related resources	excluded		only introduces or links
 debug-your-config	See what loaded into context	excluded		its `/hooks` row repeats The `/hooks` menu; the rest is not about hooks
@@ -547,7 +547,7 @@ large-codebases	Recommend the right plugin at session start	excluded		compares o
 llm-gateway-protocol	Gateway hint headers	excluded		belongs to another tool type (gateway protocol)
 llm-gateway-rollout	The HIPAA configuration behind a gateway	excluded		its child-process bullet repeats hipaa-setup › Anthropic credentials in commands, hooks, and MCP servers; the rest is not about hooks
 managed-settings	Compose every managed source	included	excluding.md	the `allowManagedHooksOnly` lock entry
-managed-settings	Compose every managed source	included	placing.md	the clause on `hooks` under merge and the Lists row with the table's header
+managed-settings	Compose every managed source	included	placing.md	the clause on `hooks` under merge
 managed-settings	Compose every managed source	excluded		the rest is not about hooks
 managed-settings	Keys only a managed source can set	excluded		repeats the settings-reference sections on the hook settings
 managed-settings	Keys that fail closed	included	excluding.md	the `disableAllHooks`, `allowedHttpHookUrls` and `httpHookAllowedEnvVars` rows and the sentence that the two HTTP keys merge across settings files
@@ -605,33 +605,33 @@ output-styles	Choose between an output style and other features	excluded		compar
 output-styles	Output styles	excluded		compares or recommends tool types (guidance)
 overview	Use Claude Code everywhere	excluded		only introduces or links
 overview	What you can do	excluded		names hooks only in passing
-permission-modes	Actions no mode auto-approves	included	tool-events.md	
+permission-modes	Actions no mode auto-approves	excluded		owned by settings (modes.md); its PreToolUse clause repeats permission-modes › Critical paths
 permission-modes	Allow only pre-approved tools with dontAsk mode	included	tool-events.md	the PreToolUse clauses
 permission-modes	Allow only pre-approved tools with dontAsk mode	excluded		the rest is not about hooks
 permission-modes	Available modes	excluded		repeats Common input fields
-permission-modes	Critical paths	included	tool-events.md	the sentence that no allow rule or PreToolUse `allow` approves removing a critical path
+permission-modes	Critical paths	included	tool-events.md	the PreToolUse clause of the sentence that no allow rule or PreToolUse `allow` approves removing a critical path
 permission-modes	Critical paths	excluded		the rest is not about hooks
-permission-modes	Critical-path removals in each permission mode	included	tool-events.md	the PermissionRequest sentence and the modes in which a removal asks
+permission-modes	Critical-path removals in each permission mode	included	tool-events.md	the PermissionRequest sentence
 permission-modes	Critical-path removals in each permission mode	excluded		the rest is not about hooks
 permission-modes	How auto mode evaluates actions	excluded		its hook sentence repeats Annotate a result for the auto mode classifier; the rest is not about hooks
 permission-modes	See also	excluded		only introduces or links
 permission-modes	Startup notices about the critical-path removal prompt	excluded		names hooks only in passing
-permission-modes	Switch permission modes	included	tool-events.md	the sentence on where **Yes, and switch to auto mode** appears, the PowerShell clause, and the sentence on prompts forced by a hook
+permission-modes	Switch permission modes	included	tool-events.md	the sentence on prompts forced by an `ask` rule or a hook
 permission-modes	Switch permission modes	excluded		the rest is not about hooks
 permission-modes	The `Dangerous rm operation not ruled out` prompt	included	tool-events.md	the sentence that a `PreToolUse` hook returning `"allow"` can't approve the command
 permission-modes	The `Dangerous rm operation not ruled out` prompt	excluded		the rest is not about hooks
-permission-modes	Time limits and denials in auto and bypassPermissions modes	included	tool-events.md	the away-from-terminal table
+permission-modes	Time limits and denials in auto and bypassPermissions modes	included	tool-events.md	the `PermissionRequest` clauses of the away-from-terminal table
 permission-modes	Time limits and denials in auto and bypassPermissions modes	excluded		the rest is not about hooks
 permission-modes	Tool calls denied in `claude -p` and Agent SDK runs	excluded		names hooks only in passing
 permission-modes	Why the critical-path removal prompt stays on	included	tool-events.md	the bullets on a `PermissionRequest` hook with any matcher or a mod that handles that event, a `claude` started from a hook, and a `PreToolUse` hook answering `ask`
 permission-modes	Why the critical-path removal prompt stays on	excluded		the rest is not about hooks
-permissions	Additional directories grant file access, not configuration	included	placing.md	the Settings row for `--add-dir` and the sentence that `permissions.additionalDirectories` load no configuration
+permissions	Additional directories grant file access, not configuration	included	placing.md	the consequence for hooks of the Settings row and of the `permissions.additionalDirectories` sentence, which settings owns: hooks in an added directory's settings files don't load
 permissions	Additional directories grant file access, not configuration	excluded		the rest is not about hooks
 permissions	Exec wrappers and `find` actions	excluded		names hooks only in passing
 permissions	Extend permissions with hooks	included	tool-events.md	
 permissions	Hook approvals in plan mode	included	tool-events.md	
 permissions	Manage permissions	excluded		compares or recommends tool types (guidance)
-permissions	Match all uses of a tool	included	configuring.md	the sentence that permission rules and hook matchers don't match a tool's label
+permissions	Match all uses of a tool	included	configuring.md	the hook-matcher clause of the sentence that permission rules and hook matchers don't match a tool's label
 permissions	Match all uses of a tool	excluded		the rest is not about hooks
 permissions	Move the session to another directory	included	placing.md	the clauses on hooks
 permissions	Move the session to another directory	excluded		the rest is not about hooks
@@ -645,7 +645,7 @@ permissions	What a Bash rule doesn't match	excluded		compares or recommends tool
 permissions	What runs before you trust a folder	included	excluding.md	the settings-hooks and subagent-frontmatter-hooks rows with the sentences on reading the table, and the `--bare`, `disableAllHooks` and `--setting-sources user` bullets
 permissions	What runs before you trust a folder	included	troubleshooting.md	the sentence that the debug log names the key of a skipped subagent hook, with its `hasTrustDialogAccepted` instruction
 permissions	What runs before you trust a folder	excluded		the rest is not about hooks
-permissions	Where output styles, hooks, and local settings load from	included	placing.md	the sentence that hooks and other `.claude/settings.json` keys load from the working directory's `.claude/` with no parent-directory fallback, and the sentence that `.claude/settings.local.json` loads from the git repository root
+permissions	Where output styles, hooks, and local settings load from	included	placing.md	the hooks clause of the sentence that hooks and other `.claude/settings.json` keys load from the working directory's `.claude/` with no parent-directory fallback
 permissions	Where output styles, hooks, and local settings load from	excluded		the rest is not about hooks
 plugin-evals	How runs are isolated	excluded		belongs to another tool type (plugins)
 plugin-evals	Trust the plugin directory	excluded		belongs to another tool type (plugins)
@@ -941,22 +941,21 @@ self-hosted-environments-testing	Example script	excluded		web and desktop
 self-hosted-environments-testing	Install the capture hook on your test runner	excluded		web and desktop
 self-hosted-environments-testing	Remote test runners	excluded		web and desktop
 self-hosted-environments-testing	Save the hook files	excluded		web and desktop
-server-managed-settings	Approval memory	included	placing.md	the bullets on an interactive session that can't show the dialog, an error closing it, and a non-interactive run
-server-managed-settings	Approval memory	excluded		the rest is not about hooks
+server-managed-settings	Approval memory	excluded		owned by settings (managed.md); the rest is not about hooks
 server-managed-settings	Configure server-managed settings (2)	included	placing.md	the sentences on hooks
 server-managed-settings	Configure server-managed settings (2)	excluded		the rest is not about hooks
-server-managed-settings	Security approval dialogs	included	placing.md	the hook bullet with its lead and the sentence that a rejected approval exits Claude Code
+server-managed-settings	Security approval dialogs	included	placing.md	the hook bullet, with the rejected-approval sentence as a mention
 server-managed-settings	Security approval dialogs	excluded		the rest is not about hooks
 server-managed-settings	Security considerations	included	events.md	the ConfigChange sentence
 server-managed-settings	Security considerations	excluded		the rest is not about hooks
 sessions	Access conversations from scripts	excluded		repeats Common input fields
-settings	Fix a broken settings file	included	troubleshooting.md	the Settings Warning clause on an unknown hook event name, with the `/status`, `claude doctor` and `-p` sentences that say where the warning shows
+settings	Fix a broken settings file	included	troubleshooting.md	the Settings Warning clause on an unknown hook event name, with the `/status` and `claude doctor` sentence as a mention
 settings	Fix a broken settings file	excluded		the rest is not about hooks
 settings	Settings files and who they affect	excluded		repeats Hook locations
 settings	Settings in cloud sessions	excluded		web and desktop
 settings	Share settings with your team	excluded		repeats Hook locations
 settings	When edits take effect	included	events.md	the ConfigChange sentence
-settings	When edits take effect	included	placing.md	the hooks clause, the sentence on settings files created mid-session, and the sentence that MDM and claude.ai console settings arrive on a schedule
+settings	When edits take effect	included	placing.md	the hooks clause
 settings	When edits take effect	excluded		the rest is not about hooks
 settings-example	A team's shared settings	excluded		repeats How a hook resolves
 settings-reference	Command input and output	excluded		belongs to another tool type (settings and plugins); mentions hooks in passing

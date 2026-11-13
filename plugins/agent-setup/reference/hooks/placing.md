@@ -45,21 +45,15 @@ Deciding where a hook is defined and what it applies to.
   subagent. `SubagentStart` and `SubagentStop` fire when a subagent starts or finishes.
   [hooks › Hook locations](https://code.claude.com/docs/en/hooks#hook-locations),
   [sub-agents › Define hooks for subagents](https://code.claude.com/docs/en/sub-agents#define-hooks-for-subagents)
-- Hooks and other `.claude/settings.json` keys load from the current working directory's `.claude/` folder with no
-  parent-directory fallback, alongside your user `~/.claude/settings.json` and managed settings.
+- Hooks in a project's `.claude/settings.json` load from the current working directory's `.claude/` folder with no
+  parent-directory fallback.
   [permissions › Where output styles, hooks, and local settings load from](https://code.claude.com/docs/en/permissions#where-output-styles-hooks-and-local-settings-load-from)
-- `.claude/settings.local.json` loads from the git repository root instead, even when you start Claude Code in a
-  subdirectory, except where Claude Code doesn't use the repository root, such as on Windows.
-  [permissions › Where output styles, hooks, and local settings load from](https://code.claude.com/docs/en/permissions#where-output-styles-hooks-and-local-settings-load-from)
-- Directories added with `--add-dir` or `/add-dir` load only the `enabledPlugins` and `extraKnownMarketplaces` keys
-  from their `.claude/settings.json` and `.claude/settings.local.json`, so their hooks don't load, and directories
-  listed in `permissions.additionalDirectories` grant file access only and load no configuration.
+- Hooks in the settings files of a directory added with `--add-dir`, `/add-dir` or `permissions.additionalDirectories`
+  don't load.
   [permissions › Additional directories grant file access, not configuration](https://code.claude.com/docs/en/permissions#additional-directories-grant-file-access-not-configuration)
-- In a large repository with `worktree.sparsePaths` set, project settings inside the worktree load from the
-  worktree root's `.claude/settings.json`, the checked-out copy of the repository root's file. Put settings you need
-  inside worktrees, such as permission rules or hooks, in the repository root's `.claude/settings.json`. Root-level
-  directories aren't checked out, so include `.claude` in `worktree.sparsePaths` if you want the repository root's
-  `.claude/settings.json` available inside the worktree.
+- Hooks for worktree sessions belong in the repository root's `.claude/settings.json`. With `worktree.sparsePaths`
+  set, root-level directories aren't checked out, so include `.claude` in `worktree.sparsePaths` if you want the
+  repository root's `.claude/settings.json` available inside the worktree.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 - The `/update-config [request]` command is a skill: describe a settings change, such as adding a hook, and Claude
   edits the matching `settings.json` file.
@@ -101,32 +95,14 @@ Deciding where a hook is defined and what it applies to.
   ```
 
 - Because hooks execute shell commands, users in interactive sessions see a security approval dialog before Claude
-  Code applies server-managed hooks. Certain settings that could pose security risks require explicit user approval
-  before Claude Code applies them in an interactive session, and hook configurations (any hook definition) are one
-  of them. If a user rejects such settings, Claude Code exits.
+  Code applies server-managed hooks: any hook definition needs approval, and rejecting it exits Claude Code.
   [server-managed-settings › Configure server-managed settings](https://code.claude.com/docs/en/server-managed-settings#configure-server-managed-settings),
   [server-managed-settings › Security approval dialogs](https://code.claude.com/docs/en/server-managed-settings#security-approval-dialogs)
-- When Claude Code can't show the approval dialog for settings that need approval, such as a hook: an interactive
-  session that can't show it doesn't apply the delivered settings and keeps the last-approved settings. A
-  non-interactive run, such as `claude -p`, an Agent SDK session, or a session in the VS Code extension's chat panel or
-  the desktop app's Code tab, applies them for that run only and doesn't record them as approved. When an
-  error closes the dialog before you answer, Claude Code also keeps the last-approved settings. In each case the dialog
-  appears in the next session that can show it.
-  [server-managed-settings › Approval memory](https://code.claude.com/docs/en/server-managed-settings#approval-memory)
-- A server-managed change to a setting that needs approval, such as a hook or an `env` variable, waits for the
-  developer to accept the dialog in an interactive session, and applies for the current run in a session an IDE
-  extension or the Agent SDK hosts, apart from the updates that wait for the next launch. Other server-managed
-  changes apply on the next poll.
+- A server-managed change to a hook waits for the developer to accept the approval dialog in an interactive session.
   [managed-settings › Where and when a policy applies](https://code.claude.com/docs/en/managed-settings#where-and-when-a-policy-applies)
 - With `managedSourcesBehavior` set to `"merge"` in the highest-ranked source you deploy, Claude Code adds a lower
-  source's list entries, such as `permissions.allow` rules and hooks, to the policy. Turn it on only when every
-  source ranked below your highest one is under an administrator's control. This is how `hooks` combines:
+  source's hooks to the policy, combining the entries from every source.
   [managed-settings › Compose every managed source](https://code.claude.com/docs/en/managed-settings#compose-every-managed-source)
-
-  | Kind of key | How Claude Code combines it | Examples |
-  | :- | :- | :- |
-  | Lists | Combines the entries from every source | `permissions.allow`, `hooks`, `sandbox.network.allowedDomains`, `deniedMcpServers`, `deniedModels` |
-
 - In a Claude apps gateway `managed` block, the first matching policy is merged onto the `match: {}` catch-all base,
   and every `hooks` event-type array takes the union of the base and the matching policy, so an org-wide audit hook
   can't be accidentally dropped by a per-role override.
@@ -425,19 +401,13 @@ Deciding where a hook is defined and what it applies to.
   the new directory's project settings, including their hooks. Hooks the move activates still receive
   `${CLAUDE_PROJECT_DIR}` set to the project root where the session started.
   [permissions › Move the session to another directory](https://code.claude.com/docs/en/permissions#move-the-session-to-another-directory)
-- When the `/cd` directory isn't trusted yet, Claude Code lists in the trust prompt the allow rules, additional
-  directories, hooks, and helper commands the directory's settings would activate, so you can review them before you
-  accept. If you decline, the session stays where it is.
+- When the `/cd` directory isn't trusted yet, its trust prompt lists the hooks the directory's settings would activate.
   [permissions › Move the session to another directory](https://code.claude.com/docs/en/permissions#move-the-session-to-another-directory)
 
 ## When edits take effect
 
-- Claude Code watches your settings files and reloads them when they change, so it applies most edits to the running
-  session without a restart, including edits to `hooks`. Direct edits to hooks in settings files are normally picked
-  up automatically by the file watcher. Claude Code also loads a settings file you create mid-session if its folder
-  existed when the session started; for the project's `.claude/` folder, it loads the file even when you create the
-  folder in the same session. Managed settings that arrive through MDM or from the claude.ai console reach a running
-  session on a schedule rather than on save.
+- Edits to `hooks` in settings files apply to the running session without a restart; the file watcher normally picks
+  them up.
   [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect),
   [hooks › Disable or remove hooks](https://code.claude.com/docs/en/hooks#disable-or-remove-hooks)
 

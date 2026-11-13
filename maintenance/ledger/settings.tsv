@@ -1,0 +1,1272 @@
+page	heading	decision	file	reason
+permission-modes	Eliminate permission prompts with auto mode	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	Eliminate permission prompts with auto mode	excluded		the sentences on the built-in starting mode (repeats permission-modes › Which mode a session starts in); `defaultMode: "auto"` not taking effect from project files (repeats permission-modes › Which mode a session starts in); the critical-path removal default (repeats permission-modes › Critical-path removals in each permission mode); the "cannot determine the safety" message (repeats errors › Auto mode cannot determine the safety of an action); auto mode nudging Claude to keep working (owned by skills); the Proactive output style (another feature, output styles); version history
+permission-modes	Auto mode on Bedrock, Agent Platform, or Foundry	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	Auto mode on Bedrock, Agent Platform, or Foundry	excluded		the starting-mode sentences and bullets (repeat permission-modes › Which mode a session starts in and › Tool calls denied in `claude -p` and Agent SDK runs); the supported-models sentence (repeats permission-modes › Eliminate permission prompts with auto mode); minimum-version and version-history sentences
+permission-modes	Server-side classifier review	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	Server-side classifier review	excluded		minimum Claude Code versions (version history)
+permission-modes	Default classifier model	included	auto-mode.md	
+permission-modes	Choose the classifier model	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	Choose the classifier model	excluded		the minimum Claude Code version (version history)
+permission-modes	When your model doesn't review	included	auto-mode.md	
+permission-modes	Check which model the classifier used	included	auto-mode.md	
+permission-modes	What the classifier blocks by default	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	What the classifier blocks by default	excluded		the sentence on per-command allowed domains for sandboxed commands (repeats sandboxing › Per-command allowed domains in auto mode); the bullet on pushing to any branch and the sentence that a push's content is still checked (repeat auto-mode-config › Common boundaries); the final paragraph on `permissions.ask` rules for pushes (repeats auto-mode-config › Add a human checkpoint); version labels (version history)
+permission-modes	Boundaries you state in conversation	included	auto-mode.md	
+permission-modes	Approvals you state in conversation	included	auto-mode.md	
+permission-modes	When auto mode falls back	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	When auto mode falls back	excluded		the pointer to the error messages in the no-verdict-from-the-classifier bullet (repeats errors › Auto mode cannot determine the safety of an action); the bullet on no verdict from the server (repeats errors › The server returned no safety verdict)
+permission-modes	Repeated-block thresholds	included	auto-mode.md	
+permission-modes	How auto mode evaluates actions	included	auto-mode.md	all but the parts the excluded row for this section names
+permission-modes	How auto mode evaluates actions	excluded		the sentences on a mod that handles `tool.check` (another tool type, mods); the How auto mode handles subagents accordion apart from its ignored-`permissionMode` sentence and the `Agent` item with the restore sentence (subagents); the classifier reading CLAUDE.md beyond a mention (instructions); the PostToolUse hook's `classifierContext` sentence (hooks); version history
+auto-mode-config	Common boundaries	included	auto-mode.md	
+auto-mode-config	Add a human checkpoint	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Add a human checkpoint	excluded		the table row on a one-off boundary, apart from its clause that an ask or deny rule gives a durable guarantee (repeats permission-modes › Boundaries you state in conversation); the sentence recommending a PreToolUse hook (compares or recommends tool types, guidance)
+auto-mode-config	Where the classifier reads configuration	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Where the classifier reads configuration	excluded		the sentence on the classifier reading CLAUDE.md (instructions)
+auto-mode-config	Define trusted infrastructure	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Define trusted infrastructure	excluded		the sentence on `"$defaults"` (repeats settings-reference › `autoMode`); the minimum-version sentence (version history)
+auto-mode-config	Generate environment entries with `/auto-mode-setup`	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Generate environment entries with `/auto-mode-setup`	excluded		the version requirements in the note (version history)
+auto-mode-config	What `/auto-mode-setup` reads	included	auto-mode.md	
+auto-mode-config	Review and save the draft	included	auto-mode.md	
+auto-mode-config	Turn off `/auto-mode-setup`	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Turn off `/auto-mode-setup`	excluded		the sentences that the `skillOverrides` entry applies to this built-in command and `disableBundledSkills` doesn't turn it off (skills)
+auto-mode-config	`/auto-mode-setup` returns "Unknown command"	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	`/auto-mode-setup` returns "Unknown command"	excluded		the minimum-version history and the pointer to later sessions that start without the command (a link only)
+auto-mode-config	Override the block and allow rules	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Override the block and allow rules	excluded		the clause on where `"$defaults"` splices in (repeats settings-reference › `autoMode`); the pointer to `permissions.deny` (only links)
+auto-mode-config	Edit rules from `/permissions`	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Edit rules from `/permissions`	excluded		the minimum Claude Code version (version history)
+auto-mode-config	Route all shell commands through the classifier	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Route all shell commands through the classifier	excluded		the narrow-rules-stay paragraph, the sentence that `true` suspends every shell allow rule and the example (repeat settings-reference › `autoMode.classifyAllShell`)
+auto-mode-config	Inspect the defaults and your effective config	included	auto-mode.md	
+auto-mode-config	Review denials	included	auto-mode.md	
+auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	excluded		the **Hook** bullet on the `PermissionDenied` hook (hooks)
+settings-reference	`autoMode`	included	auto-mode.md	all but the parts the excluded row for this section names
+settings-reference	`autoMode`	excluded		the sentence that arrays from several files concatenate (repeats auto-mode-config › Where the classifier reads configuration); the terraform `soft_deny` example (the Override example shows the pattern)
+settings-reference	`autoMode.classifyAllShell`	included	auto-mode.md	all but the parts the excluded row for this section names
+settings-reference	`autoMode.classifyAllShell`	excluded		the `true` and `false` value bullets (repeat the intro); the minimum Claude Code version (version history)
+settings-reference	`disableAutoMode`	included	auto-mode.md	all but the parts the excluded row for this section names
+settings-reference	`disableAutoMode`	excluded		the sentence that a session starts in `default` instead (repeats permission-modes › Which mode a session starts in)
+settings-reference	`useAutoModeDuringPlan`	included	auto-mode.md	all but the parts the excluded row for this section names
+settings-reference	`useAutoModeDuringPlan`	excluded		the `true` and `false` value bullets' clauses that repeat the intro; the sentences on what the default `true` and `false` do repeat permission-modes › Analyze before you edit with plan mode
+settings-reference	`skipAutoPermissionPrompt`	included	auto-mode.md	all but the parts the excluded row for this section names
+settings-reference	`skipAutoPermissionPrompt`	excluded		the `true` value bullet and the clauses of the `false` bullet that repeat the intro
+headless	Auto-approve tools	included	auto-mode.md	the sentence that a bare `Bash` entry in `--allowedTools` is dropped as a broad allow rule in a run that starts in auto mode
+headless	Auto-approve tools	included	modes.md	the `acceptEdits` bullet's sentence on other shell commands and network requests
+headless	Auto-approve tools	excluded		the rest belongs to another tool type (non-interactive runs)
+model-config	Restrict model selection	included	auto-mode.md	the sentence that when the allowlist excludes the default classifier model, classifier requests run on the session model, or an Opus model in Fable sessions, and on providers other than the Anthropic API that Opus fallback runs on `ANTHROPIC_DEFAULT_OPUS_MODEL` or otherwise Opus 5 without consulting the allowlist
+model-config	Restrict model selection	excluded		the rest belongs to another tool type (models)
+llm-gateway-protocol	Disable pre-release capabilities	included	auto-mode.md	the paragraph that when a host sets `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`, `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` doesn't stop auto mode sessions from asking the server for classifier review, and that `CLAUDE_CODE_AUTO_MODE_SERVER=0` stops it
+llm-gateway-protocol	Disable pre-release capabilities	excluded		the rest belongs to another tool type (the gateway protocol)
+permissions	Manage permissions	included	auto-mode.md	the sentence on the auto mode classifier rules and the Auto mode tab in the dialog
+permissions	Read-only commands	included	auto-mode.md	the sentence that in auto mode these commands can wait for the classifier's review
+permission-modes	Which mode a session starts in	included	auto-mode.md	the sentence on the first-time auto mode notice
+permission-modes	Start in a different permission mode	included	auto-mode.md	the clause on `permissions.disableAutoMode` in the managed row
+permission-modes	Permission modes with the HIPAA configuration	included	auto-mode.md	the bullet on `permissions.disableAutoMode`
+auto-mode-classifier-billing	Auto mode classifier request charges	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-classifier-billing	Auto mode classifier request charges	excluded		the introductory sentences and the link to Make the session eligible (only introduce or link), and the sentences that repeat permission-modes › Server-side classifier review, apart from the sentence that server-side checks run at no charge
+auto-mode-classifier-billing	Respond to the notice	included	auto-mode.md	
+auto-mode-classifier-billing	Make the session eligible	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-classifier-billing	Make the session eligible	excluded		the link to the gateway compatibility guide (only links), the minimum Claude Code version (version history), and the sentence on `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` (repeats permission-modes › Server-side classifier review)
+auto-mode-classifier-billing	Why the notice appears	included	auto-mode.md	all but the parts the excluded row for this section names
+auto-mode-classifier-billing	Why the notice appears	excluded		the sentence pointing to Server-side classifier review and the closing sentence on denials with no verdict (repeat permission-modes › Server-side classifier review and errors › The server returned no safety verdict)
+auto-mode-classifier-billing	Related resources	excluded		only links to other sections
+settings	Change a setting	included	configuring.md	all but the parts the excluded row for this section names
+settings	Change a setting	excluded		the sentence that the system prompt isn't published and `CLAUDE.md` or `--append-system-prompt` give standing instructions: not about settings
+settings	Use the /config menu	included	configuring.md	all but the parts the excluded row for this section names
+settings	Use the /config menu	excluded		the bullet that the global config options save to `~/.claude.json` (repeats settings-reference › Global config settings)
+settings	Edit a settings file	included	configuring.md	all but the parts the excluded row for this section names
+settings	Edit a settings file	excluded		the sentence on permission rule entries and `permissions` syntax (only links)
+settings	Change a setting for one session	included	configuring.md	all but the parts the excluded row for this section names
+settings	Change a setting for one session	excluded		the sentence on where `--settings` sits in precedence repeats settings › Settings precedence; the sentence that `/config` writes to settings files repeats Use the /config menu; the `/effort` save sentences: another tool type (models)
+settings	When edits take effect	included	configuring.md	all but the parts the excluded row for this section names
+settings	When edits take effect	excluded		the `hooks` clause and the `ConfigChange` hook sentence: owned by hooks; the prompt-cache detail on `model` switching: another tool type (models)
+settings-example	Example settings files	included	configuring.md	
+settings-example	Your own settings	included	configuring.md	all but the parts the excluded row for this section names
+settings-example	Your own settings	excluded		the "What each key does" tab: repeats the copyable tab with comments on keys of other features
+settings-example	A team's shared settings	included	configuring.md	all but the parts the excluded row for this section names
+settings-example	A team's shared settings	excluded		the "What each key does" tab; the cloud-sessions bullet (web); the bullets on telemetry, allow rules and trust, and rules matching as written (repeat settings-reference and permissions sections); the `sandbox` `Read` deny clause (repeats sandboxing › Permission rules); the hook bullet beyond a clause (hooks)
+settings-example	An organization's managed settings	included	configuring.md	all but the parts the excluded row for this section names
+settings-example	An organization's managed settings	excluded		the paragraph on deploying the file (repeats managed-settings › Choose a delivery mechanism and server-managed-settings › Current limitations); the "What each key does" tab
+settings-reference	`env`	included	configuring.md	
+settings-reference	How `env` values interact with your shell	included	configuring.md	
+settings-reference	When Claude Code applies `env` values	included	configuring.md	all but the parts the excluded row for this section names
+settings-reference	When Claude Code applies `env` values	excluded		the version clause on `/cd`: version history
+settings-reference	Variables Claude Code ignores in `env`	included	configuring.md	all but the parts the excluded row for this section names
+settings-reference	Variables Claude Code ignores in `env`	excluded		the Before v2.1.251 and v2.1.290 history and every "requires v2.1.xxx" clause: version history
+env-vars	Set environment variables	included	configuring.md	
+env-vars	Set variables in settings files	included	configuring.md	all but the parts the excluded row for this section names
+env-vars	Set variables in settings files	excluded		the table of which file applies to whom repeats settings › Settings files and who they affect
+env-vars	Precedence	included	configuring.md	all but the parts the excluded row for this section names
+env-vars	Precedence	excluded		the sentence that `env` values between files follow settings precedence repeats settings › Settings precedence; the sentence that Claude Code writes each `env` entry over the shell value and the closing reapply sentence repeat settings-reference › `env` sections; the project and local ignored-variables sentence repeats settings-reference › Variables Claude Code ignores in `env`; the sentence that the settings file value applies in most sessions repeats settings-reference › How `env` values interact with your shell; the sentence that a few variables are special-cased (repeats settings-reference › How `env` values interact with your shell); the `ANTHROPIC_MODEL` clause of the read-first sentence repeats settings › Settings precedence
+commands	All commands	included	configuring.md	the `/config` row apart from its clauses on the Claude mobile app via Remote Control and on adjusting model and output style, which belong to other tool types (Remote Control, models, output styles)
+sessions	What a resumed session restores	included	configuring.md	the sentences that `--settings`, `--mcp-config`, `--plugin-dir`, `--fallback-model` and `--add-dir` directories aren't restored on resume and must be passed again, and that the standard settings files are re-read at launch
+sessions	What a resumed session restores	excluded		the rest belongs to another tool type (sessions)
+settings	Settings precedence	included	configuring.md	the paragraph that environment variables aren't a level
+debug-your-config	Check hooks	included	configuring.md	the clause that an edit applies after a brief file-stability delay
+debug-your-config	Check hooks	excluded		the rest belongs to another tool type (hooks)
+managed-settings	Where and when a policy applies	included	configuring.md	the clause that a server-managed change to an `env` variable that needs approval waits for the approval dialog, as a mention beside when `env` values apply
+sandboxing	Protect credentials	included	credentials.md	all but the parts the excluded row for this section names
+sandboxing	Protect credentials	excluded		the sentence that `deny` file paths are denied for reads and variables unset (repeats settings-reference › `sandbox.credentials.files` and `envVars`); the sentence that the file protection doesn't apply when filesystem isolation is disabled (repeats sandboxing › What changes when filesystem isolation is off); the sentence that env var and file entries also accept `mask` (a pointer, stated under masking); the minimum-version sentence (version history)
+sandboxing	Mask credentials	included	credentials.md	all but the parts the excluded row for this section names
+sandboxing	Mask credentials	excluded		the sentence that server-managed delivery of `mask` entries, `network.tlsTerminate` or `allowPlaintextInject` counts as settings that need approval (repeats server-managed-settings › Security approval dialogs)
+sandboxing	Mask environment variables	included	credentials.md	all but the parts the excluded row for this section names
+sandboxing	Mask environment variables	excluded		the bracketed IPv6 form for `allowedDomains` (repeats sandboxing › IPv6 addresses in domain lists); the minimum-version sentence (version history)
+sandboxing	Re-sign AWS requests	included	credentials.md	all but the parts the excluded row for this section names
+sandboxing	Re-sign AWS requests	excluded		the minimum-version requirements (version history)
+sandboxing	Mask credential files	included	credentials.md	all but the parts the excluded row for this section names
+sandboxing	Mask credential files	excluded		the minimum-version sentence (version history)
+settings-reference	`sandbox.credentials`	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.credentials`	excluded		the last paragraph on the `deny` file protection not applying when filesystem isolation is disabled (repeats sandboxing › What changes when filesystem isolation is off)
+settings-reference	Invalid credential entries in managed settings	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	Invalid credential entries in managed settings	excluded		the history sentence on v2.1.191 and v2.1.221 (version history); the pointer to managed-settings invalid entries
+settings-reference	`sandbox.credentials.files`	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.credentials.files`	excluded		the minimum-version sentences (version history)
+settings-reference	Mask fields for files	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	Mask fields for files	excluded		the minimum-version phrases in the table (version history)
+settings-reference	`sandbox.credentials.envVars`	included	credentials.md	
+settings-reference	Mask fields for environment variables	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	Mask fields for environment variables	excluded		the minimum-version phrases in the table (version history)
+settings-reference	`sandbox.credentials.allowPlaintextInject`	included	credentials.md	
+settings-reference	`sandbox.credentials.awsPairs`	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.credentials.awsPairs`	excluded		the minimum-version sentence (version history)
+settings-reference	`sandbox.credentials.sigv4`	included	credentials.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.credentials.sigv4`	excluded		the minimum-version sentence (version history)
+sandboxing	Which settings can disable it	included	credentials.md	the closing paragraph on a valid `mask` entry not locking the key and on listing an uncovered path as an explicit `deny` entry
+settings-reference	`sandbox.network.tlsTerminate`	included	credentials.md	its User-or-managed scope, beside the other masking keys
+settings-reference	Settings index	included	keys.md	
+settings-reference	`availableModelsMatch`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`availableModelsMatch`	excluded		everything except the Scope line: owned by another type (models)
+settings-reference	`deniedModels`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`deniedModels`	excluded		everything except the Scope line: owned by another type (models)
+settings-reference	`modelPricing`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`modelPricing`	excluded		everything except the Scope line: owned by another type (costs); the sentence on a host application's SDK table: Agent SDK; the sentence that with server-managed settings each session reports costs at list price until its fetch confirms repeats server-managed-settings › Fetch and caching behavior (managed.md)
+settings-reference	`autoMemoryDirectory`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`autoMemoryDirectory`	excluded		everything except the sentence that project or local settings are honoured under the workspace trust rule: owned by another type (auto memory)
+settings-reference	`autoContinueAtUsageLimit`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`autoContinueAtUsageLimit`	included	configuring.md	the sentence that `/config` hides the row while managed settings or `--settings` set the key
+settings-reference	`autoContinueAtUsageLimit`	excluded		everything except the Scope line and the sentence that `/config` hides the row while managed settings or `--settings` set the key: owned by another type (usage)
+settings-reference	`axScreenReader`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`axScreenReader`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`bashEditDiffEnabled`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`bashEditDiffEnabled`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`respectGitignore`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`respectGitignore`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`showTurnDuration`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`showTurnDuration`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`spellcheck`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`spellcheck`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`spinnerTipsOverride`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`spinnerTipsOverride`	excluded		everything except the Scope line, the sentence that `tipsFile` can't be set through server-managed settings and the multi-file sentence: owned by another type (interface)
+settings-reference	`terminalProgressBarEnabled`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`terminalProgressBarEnabled`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`theme`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`theme`	excluded		everything except the Scope line: owned by another type (themes)
+settings-reference	`verbose`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`verbose`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`vimInsertModeRemaps`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`vimInsertModeRemaps`	excluded		everything except the Scope line: owned by another type (interface)
+settings-reference	`workflowSizeGuideline`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`workflowSizeGuideline`	excluded		everything except the Scope line: owned by another type (workflows)
+settings-reference	`prependPlugins`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`prependPlugins`	excluded		everything except the Scope line: owned by another type (mods)
+settings-reference	`appendPlugins`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`appendPlugins`	excluded		everything except the Scope line: owned by another type (mods)
+settings-reference	`allowClaudeInChromeWithManagedMcp`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`allowClaudeInChromeWithManagedMcp`	excluded		everything except the Scope line: owned by another type (MCP)
+settings-reference	`allowedMcpServers`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`allowedMcpServers`	excluded		everything except the Scope line: owned by another type (MCP); the sentence advising to deploy it in managed settings to enforce it: repeats managed-settings › Keys read from every admin source
+settings-reference	`deniedMcpServers`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`deniedMcpServers`	excluded		everything except the Scope line: owned by another type (MCP); the sentence advising to deploy it in managed settings to enforce it: repeats managed-settings › Keys read from every admin source
+settings-reference	`enableAllProjectMcpServers`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`enableAllProjectMcpServers`	excluded		everything except the Scope line and the `false` bullet's trusted and untrusted folder sentence: owned by another type (MCP)
+settings-reference	`enabledMcpjsonServers`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`enabledMcpjsonServers`	excluded		everything except the Scope line: owned by another type (MCP)
+settings-reference	`managedMcpServers`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`managedMcpServers`	excluded		everything except the Scope line: owned by another type (MCP); the clause on the Claude Desktop app's Code tab and Cowork sessions: web or desktop app
+settings-reference	`teammateMode`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`teammateMode`	excluded		everything except the Scope line: owned by another type (agent teams)
+settings-reference	`agentPushNotifEnabled`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`agentPushNotifEnabled`	excluded		everything except the Scope line: owned by another type (notifications)
+settings-reference	`inputNeededNotifEnabled`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`inputNeededNotifEnabled`	excluded		everything except the Scope line: owned by another type (notifications)
+settings-reference	`preferredNotifChannel`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`preferredNotifChannel`	excluded		everything except the Scope line: owned by another type (notifications)
+settings-reference	`remote.defaultEnvironmentId`	excluded		repeats the Settings index row, which states the self-hosted source limit
+settings-reference	`remoteControlAtStartup`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`remoteControlAtStartup`	excluded		everything except the Scope line: owned by another type (remote control)
+settings-reference	`allowedProviders`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`allowedProviders`	excluded		everything except the Scope line: owned by another type (authentication)
+settings-reference	`forceLoginMethod`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`forceLoginMethod`	excluded		everything except the Scope line: owned by another type (authentication)
+settings-reference	`forceLoginGatewayUrl`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`forceLoginGatewayUrl`	excluded		everything except the Scope line: owned by another type (authentication); the clause that it is ignored in server-managed settings repeats settings-reference › `managedSourcesBehavior` (gateway login keys, managed.md)
+settings-reference	`forceLoginOrgUUID`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`forceLoginOrgUUID`	excluded		everything except the sentence that a single UUID in any other settings file pre-selects the organization during login without restricting it: owned by another type (authentication); the sentence that only a managed source enforces the restriction: repeats the Settings index row
+settings-reference	`gatewayInternalNetworks`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`gatewayInternalNetworks`	excluded		everything except the Scope line: owned by another type (authentication); the clause that it is ignored in server-managed settings repeats settings-reference › `managedSourcesBehavior` (gateway login keys, managed.md)
+settings-reference	`minimumVersion`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`minimumVersion`	excluded		everything except the Scope line: owned by another type (updates)
+settings-reference	`requiredMaximumVersion`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`requiredMaximumVersion`	excluded		everything except the Scope line: owned by another type (updates)
+settings-reference	`requiredMinimumVersion`	included	keys.md	all but the parts the excluded row for this section names
+settings-reference	`requiredMinimumVersion`	excluded		everything except the Scope line: owned by another type (updates)
+settings-reference	`modelPicker`	included	keys.md	the Scope line apart from its sentence that the highest source supplies the whole lineup (placing.md)
+settings-reference	`modelPicker`	excluded		the rest belongs to another tool type (models)
+settings	Check what your organization enforces	included	managed.md	all but the parts the excluded row for this section names
+settings	Check what your organization enforces	excluded		the Cowork sentence (desktop app); the sentence that `/status` names the managed source (repeats managed-settings › Read the source in /status); the local-admin-rights pointer clause and the closing paragraph of links to other pages; the embedding-host item (stated under Parent settings from an embedding host)
+managed-settings	Deploy managed settings	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Deploy managed settings	excluded		the paragraph pointing to other pages
+managed-settings	Deploy a managed settings file	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Deploy a managed settings file	excluded		the Setting sources check in step 3 (repeats managed-settings › Read the source in /status); the sentences pointing to other pages
+managed-settings	Choose a delivery mechanism	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Choose a delivery mechanism	excluded		the sentence on managed MCP servers (pointer to the MCP feature); the claude.ai console from the one-policy sentence (stated under server-managed-settings › Current limitations)
+managed-settings	Where and when a policy applies	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Where and when a policy applies	excluded		the clause on hooks in the Changes that need approval bullet (hooks); the desktop app's Code tab and Agent SDK sessions clause in the Surfaces bullet; the Claude Tag bullet's pointer to the Claude Tag admin settings (only links); the Cowork bullets (desktop app)
+managed-settings	Where each mechanism stores the policy	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Where each mechanism stores the policy	excluded		the clause naming the system directories (repeats managed-settings › Deploy a managed settings file)
+managed-settings	Split a file-based policy across teams	included	managed.md	
+managed-settings	How Claude Code combines managed sources	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	How Claude Code combines managed sources	excluded		the sentence on when remote settings are fetched (repeats server-managed-settings › Platform availability); the diagram; version history
+managed-settings	When an admin document counts as present	included	managed.md	
+managed-settings	Keys read from every admin source	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Keys read from every admin source	excluded		the clause on `syncClaudeAiSkills` (skills); the `allowedProviders` pointer sentence; version history
+managed-settings	Which managed source supplies login keys	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Which managed source supplies login keys	excluded		the bullet on gateway login keys (stated under settings-reference › `managedSourcesBehavior`); the sentence on setting keys in server-managed settings until every client updates (version history)
+managed-settings	Compose every managed source	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Compose every managed source	excluded		the table (repeats settings-reference › `managedSourcesBehavior`); the sentence on confirming sources in /status (repeats managed-settings › Read the source in /status); version history; the table's other examples (`permissions.allow`, `hooks`, `sandbox.network.allowedDomains`, `deniedMcpServers`, `allowManagedHooksOnly`, `permissions.disableBypassPermissionsMode`, `allowedMcpServers` and the rest; repeat settings-reference › `managedSourcesBehavior`; only `deniedModels`, `crossSessionInbound` and `availableModelsMatch` are stated)
+managed-settings	Let an embedding host add policy	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Let an embedding host add policy	excluded		the sentence that `parentSettingsBehavior` set to `"merge"` turns merging on (repeats settings-reference › `parentSettingsBehavior`); the pointers to other sections; version history
+managed-settings	What a developer can change	included	managed.md	
+managed-settings	Check that a policy is in force	included	managed.md	
+managed-settings	Read the source in /status	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Read the source in /status	excluded		version history
+managed-settings	Keys only a managed source can set	included	managed.md	all but the parts the excluded row for this section names
+managed-settings	Keys only a managed source can set	excluded		the Remote Control and cloud-session parts of the NOTE (remote control); version history
+server-managed-settings	Requirements	included	managed.md	
+server-managed-settings	Choose between server-managed and endpoint-managed settings	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Choose between server-managed and endpoint-managed settings	excluded		the sentences that endpoint-managed settings don't reach cloud sessions and that self-hosted environments also read the file (repeat managed-settings › Where and when a policy applies); the table (repeats managed-settings › Choose a delivery mechanism, apart from its "Best for" column, which recommends: guidance); the sentence defining endpoint-managed settings (repeats managed-settings › Choose a delivery mechanism)
+server-managed-settings	Configure server-managed settings (2)	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Configure server-managed settings (2)	excluded		the sentences and example on hooks (hooks); the paragraph on delivering an `autoMode` block (repeats auto-mode-config); the `Bash(curl *)` rule and its note (repeats permissions › What a Bash rule doesn't match); the sentence on a `sandbox` block with `allowManagedDomainsOnly` (repeats settings-reference › `sandbox.network.allowManagedDomainsOnly`)
+server-managed-settings	Verify settings delivery	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Verify settings delivery	excluded		version history
+server-managed-settings	Access control	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Access control	excluded		the list of roles (repeats server-managed-settings › Requirements)
+server-managed-settings	Current limitations	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Current limitations	excluded		the `managedMcpServers` sentences (MCP feature); the bullet that `policyHelper` runs only when its source is selected (repeats settings-reference › `policyHelper`); version history; the `policyHelper` example in the OS-level bullet (stated under Compute the policy with a helper program)
+server-managed-settings	Settings precedence	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Settings precedence	excluded		the first sentence (repeats settings › Settings precedence); the paragraph on the default first source (repeats managed-settings › How Claude Code combines managed sources); the two `policyHelper` paragraphs (repeat settings-reference › `policyHelper`); the clause that some keys stay in effect until relaunch (repeats server-managed-settings › Fetch and caching behavior); the sentence on running /status (repeats managed-settings › Read the source in /status)
+server-managed-settings	Per-key exceptions across managed sources	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Per-key exceptions across managed sources	excluded		the bullets on cross-source lock keys, first-party sign-in keys and gateway sign-in keys (repeat managed-settings › Keys read from every admin source and settings-reference › `managedSourcesBehavior`); the `allowedProviders` bullet (pointer); version history; the statement that `env` merges per variable (stated under Keys read from every admin source)
+server-managed-settings	Fetch and caching behavior	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Fetch and caching behavior	excluded		version history; the sentence that cached settings persist through network failures (the warning clause is stated; the rest repeats Enforce fail-closed startup)
+server-managed-settings	Enforce fail-closed startup	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Enforce fail-closed startup	excluded		the paragraph that the flag is honoured from any admin source (repeats settings-reference › `forceRemoteSettingsRefresh`, stated under Fail-closed startup); the pointer to the `policyHelper` entry; the sentence that a `policyHelper`'s output replaces every other managed source (repeats settings-reference › Write the helper output); the sentence on a machine that has never fetched (repeats Fetch and caching behavior)
+server-managed-settings	Security approval dialogs	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Security approval dialogs	excluded		the sentences on the `claudeMd` key (instructions); version history
+server-managed-settings	Approval memory	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Approval memory	excluded		version history
+server-managed-settings	Environment variables and the approval dialog	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Environment variables and the approval dialog	excluded		version history
+server-managed-settings	Platform availability	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Platform availability	excluded		the paragraph on Cowork sessions (desktop app; repeats managed-settings › Where and when a policy applies); version history
+server-managed-settings	Audit logging	included	managed.md	
+server-managed-settings	Security considerations	included	managed.md	all but the parts the excluded row for this section names
+server-managed-settings	Security considerations	excluded		the ConfigChange sentence (hooks); the closing sentence that endpoint-managed settings give stronger guarantees (repeats server-managed-settings › Choose between server-managed and endpoint-managed settings)
+settings-reference	`disableSideloadFlags`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`disableSideloadFlags`	excluded		the Agent SDK `addPlugins` bullet (Agent SDK); the paragraph on the desktop app's Code and Cowork sessions (desktop app); version history
+settings-reference	`forceRemoteSettingsRefresh`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`forceRemoteSettingsRefresh`	excluded		the sentence that `claude auth` subcommands are exempt (repeats server-managed-settings › Enforce fail-closed startup); the closing pointer to Enforce fail-closed startup; the five-second sign-in wait and Cloud gateway wait (repeat server-managed-settings › Fetch and caching behavior and › Enforce fail-closed startup)
+settings-reference	`managedSourcesBehavior`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`managedSourcesBehavior`	excluded		the sentence defining a policy key (repeats managed-settings › How Claude Code combines managed sources); the sentence that a lower source can't opt itself in (repeats managed-settings › Compose every managed source); the bullet on `forceLoginOrgUUID` and the `"claudeai"` and `"console"` values of `forceLoginMethod` (repeats managed-settings › Which managed source supplies login keys); the last sentence on `/status` (repeats managed-settings › Read the source in /status); version history; the `policyHelper` condition bullet (repeats settings-reference › `policyHelper`, stated under Compute the policy with a helper program)
+settings-reference	`parentSettingsBehavior`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`parentSettingsBehavior`	excluded		the closing pointer to other sections
+settings-reference	`policyHelper`	included	managed.md	
+settings-reference	Write the helper output	included	managed.md	
+settings-reference	Helper failures	included	managed.md	
+settings-reference	`policyHelper.path`	included	managed.md	
+settings-reference	`policyHelper.timeoutMs`	included	managed.md	
+settings-reference	`policyHelper.refreshIntervalMs`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`policyHelper.refreshIntervalMs`	excluded		the clause that a failed refresh keeps the policy (repeats settings-reference › Helper failures)
+settings-reference	`wslInheritsWindowsSettings`	included	managed.md	all but the parts the excluded row for this section names
+settings-reference	`wslInheritsWindowsSettings`	excluded		version history
+devcontainer	Enforce organization policy	included	managed.md	all but the parts the excluded row for this section names
+devcontainer	Enforce organization policy	excluded		the Linux path sentence's path clause (repeats managed-settings › Deploy a managed settings file); the paragraphs on `containerEnv`, pinning the Claude Code version and project-scope MCP servers (not about settings); the pointer to Set up Claude Code for your organization
+claude-apps-gateway	Restrict parent settings	included	managed.md	
+claude-apps-gateway	Deploy the locks	included	managed.md	
+claude-apps-gateway	Lock behavior across sources	included	managed.md	all but the parts the excluded row for this section names
+claude-apps-gateway	Lock behavior across sources	excluded		the sentence that the two sandbox locks and `allowManagedPermissionRulesOnly` still apply from a source below the winner (repeats managed-settings › Keys read from every admin source and › Let an embedding host add policy); the sentence on `policyHelper` fleets (repeats settings-reference › Write the helper output); the MCP server lock sentence and MCP servers bullet (repeat managed-settings › Keys read from every admin source); the network bullet (sandbox.md); the Read paths bullet (repeats settings-reference › `sandbox.filesystem.allowRead`); the lead sentence that each lock makes Claude Code ignore the developer's own entries (repeats managed-settings › Keys only a managed source can set)
+claude-apps-gateway	Settings the locks don't cover	included	managed.md	all but the parts the excluded row for this section names
+claude-apps-gateway	Settings the locks don't cover	excluded		the sentence on Claude Desktop sending a marketplace allowlist (desktop app); version history; the closing sentence pointing to the `"merge"` combining table
+settings	When edits take effect	included	managed.md	the sentence that MDM and claude.ai console settings arrive on a schedule
+settings	Fix a broken settings file	included	managed.md	the Managed settings bullet's sentence that Claude Code keeps enforcing the rest of the file
+settings-reference	`allowManagedPermissionRulesOnly`	included	managed.md	the paragraph on parent settings from an embedding host
+managed-settings	Choose a delivery mechanism	included	managed.md	the clause that the claude.ai console can't target a group, stated with the Current limitations bullet
+permission-modes	Choose a permission mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Choose a permission mode	excluded		the auto mode classifier sentence and the built-in default paragraph: repeat Which mode a session starts in and auto-mode.md; the v2.1.283 version requirement: history
+permission-modes	Available modes	included	modes.md	
+permission-modes	Actions no mode auto-approves	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Actions no mode auto-approves	excluded		the clause that no `PreToolUse` hook "allow" approves a critical-path removal: hooks; the clause that no allow rule approves a critical-path removal repeats Critical paths; the clause that you can turn off the dangerous `rm` prompt in `bypassPermissions` is kept as a mention, its detail stated from Turn off the critical-path removal prompt in bypassPermissions mode; the version requirement: history
+permission-modes	Which mode a session starts in	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Which mode a session starts in	excluded		the version requirements for the built-in auto default and the VS Code note on earlier versions: version history; the sentence on the permission mode of a resumed session points to sessions
+permission-modes	Tool calls denied in `claude -p` and Agent SDK runs	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Tool calls denied in `claude -p` and Agent SDK runs	excluded		the sentence that a run with no permission mode set starts in Manual mode repeats Which mode a session starts in; the TypeScript and Python tabs and SDK option names: Agent SDK; the before-v2.1.302 sentence: version history
+permission-modes	Start in a different permission mode	included	modes.md	all but the `permissions.disableAutoMode` clause in the managed row (handed to auto-mode.md)
+permission-modes	Permission modes with the HIPAA configuration	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Permission modes with the HIPAA configuration	excluded		the switching and starting-in-auto bullets and the `disableBypassPermissionsMode` bullet repeat other sections; the version requirement: history
+permission-modes	Switch permission modes	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Switch permission modes	excluded		the Desktop tab and the Web and mobile tab: web or desktop app, including the cloud-session `defaultMode` sentence, which repeats settings-reference › `permissions.defaultMode`; the sentence that the option is not added to prompts forced by an `ask` rule or a hook: hooks; the startup flag and `defaultMode` default sentences repeat Start in a different permission mode; status-bar labels other than those stated with their mode, and the video: interactive display; the version sentences: history
+permission-modes	Auto-approve file edits with acceptEdits mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Auto-approve file edits with acceptEdits mode	excluded		the symlink-check sentence (repeats permissions › Symlinks) and the read-only command set detail (repeats permissions › Read-only commands)
+permission-modes	Analyze before you edit with plan mode	included	modes.md	
+permission-modes	Review and approve a plan	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Review and approve a plan	excluded		the `showClearContextOnPlanAccept` clause: interface; the Ctrl+G and generated-title sentences: interactive use only
+permission-modes	Allow only pre-approved tools with dontAsk mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Allow only pre-approved tools with dontAsk mode	excluded		the `PreToolUse` clauses: hooks; the clause that a mod you installed can still approve some calls repeats the Available modes table; the clause that an allow rule can't approve critical-path removals repeats Critical paths; the startup flag sentence repeats Switch permission modes; the sentence that cloud sessions ignore `defaultMode: "dontAsk"` repeats Skip all checks with bypassPermissions mode
+permission-modes	Skip all checks with bypassPermissions mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Skip all checks with bypassPermissions mode	excluded		the sentence on `permissions.disableBypassPermissionsMode` repeats settings-reference; the sentence that cloud sessions don't honor `defaultMode: "bypassPermissions"` or `"dontAsk"` repeats settings-reference › `permissions.defaultMode`; the two cross-session messaging bullets: another feature (only the fact that they still apply is stated)
+permission-modes	Bypass permissions ignored in a background session	included	modes.md	
+permission-modes	`claude agents` shows the bypass permissions warning that interactive sessions skip	included	modes.md	
+permission-modes	Protected paths	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Protected paths	excluded		the subagent memory directory bullet: subagents
+permission-modes	Critical paths	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Critical paths	excluded		the clause that no `PreToolUse` hook that returns `"allow"` approves a critical-path removal: hooks
+permission-modes	Which paths are critical	included	modes.md	
+permission-modes	Other targets that count as critical paths	included	modes.md	
+permission-modes	Removals inside nested commands and inline scripts	included	modes.md	
+permission-modes	Rewrite a flagged command	included	modes.md	
+permission-modes	The `Dangerous rm operation not ruled out` prompt	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	The `Dangerous rm operation not ruled out` prompt	excluded		the sentence that a `PreToolUse` hook returning `"allow"` can't approve the command: hooks
+permission-modes	The mounted drive prompt	included	modes.md	
+permission-modes	Paths that get the mounted drive prompt	included	modes.md	
+permission-modes	Turn off the mounted drive prompt	included	modes.md	
+permission-modes	Removals that still prompt with the mounted drive prompt off	included	modes.md	
+permission-modes	Critical-path removals in each permission mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Critical-path removals in each permission mode	excluded		the sentence that a `PermissionRequest` hook can answer the prompt: hooks
+permission-modes	Time limits and denials in auto and bypassPermissions modes	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Time limits and denials in auto and bypassPermissions modes	excluded		the `claudeCode.environmentVariables` JSON example: VS Code extension, its instruction kept as a clause; the version sentence: history
+permission-modes	Turn off the critical-path removal prompt in bypassPermissions mode	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Turn off the critical-path removal prompt in bypassPermissions mode	excluded		the minimum version: history
+permission-modes	Startup notices about the critical-path removal prompt	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Startup notices about the critical-path removal prompt	excluded		the Agent SDK `stderr` sentences and the sentence that a missing line doesn't mean the prompt is on: Agent SDK
+permission-modes	Why the critical-path removal prompt stays on	included	modes.md	all but the parts the excluded row for this section names
+permission-modes	Why the critical-path removal prompt stays on	excluded		the `PermissionRequest` hook and mod clauses, and the `PreToolUse` hook answering `ask` bullet: hooks; the Agent SDK `canUseTool` callback: Agent SDK
+permission-modes	Common setups	included	modes.md	the clause that in a `claude -p "<prompt>" --dangerously-skip-permissions` run the few calls that would still prompt are denied instead
+permission-modes	Common setups	excluded		the rest compares or recommends setups for goals (guidance)
+permission-modes	Remove-Item in PowerShell	included	modes.md	
+settings-reference	`permissions.defaultMode`	included	modes.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.defaultMode`	excluded		the value descriptions repeat permission-modes › Available modes; the sentence that `--permission-mode` and `--dangerously-skip-permissions` take precedence repeats Which mode a session starts in; the VS Code sentence repeats Switch permission modes; the before-v2.1.257 sentence: history
+settings-reference	`permissions.disableBypassPermissionsMode`	included	modes.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.disableBypassPermissionsMode`	excluded		the clause that an agent definition's `permissionMode: bypassPermissions` is ignored: subagents; the before-v2.1.223 sentence: history
+settings-reference	`skipDangerousModePermissionPrompt`	included	modes.md	all but the parts the excluded row for this section names
+settings-reference	`skipDangerousModePermissionPrompt`	excluded		the sentence that Claude Code writes `true` to user settings repeats Skip all checks with bypassPermissions mode
+sessions	Permission mode on resume	included	modes.md	all but the parts the excluded row for this section names
+sessions	Permission mode on resume	excluded		the minimum version for restoring plan mode: history
+headless	Turn off permission prompts in unattended runs	included	modes.md	the `--permission-prompts none` behaviour
+headless	Turn off permission prompts in unattended runs	included	modes.md	the sentence on `permission_denied` messages and `permission_denials`
+headless	Turn off permission prompts in unattended runs	excluded		the `PermissionRequest` and `Elicitation` hook sentences: hooks; the minimum version: history
+sessions	Resume in plan mode with `-p`	included	modes.md	
+cli-reference	CLI flags	included	modes.md	the row `--permission-prompt-tool`
+permissions	Managed settings	included	modes.md	the sentence that `disableBypassPermissionsMode` works from any scope, so a user can set it to lock themselves out of bypass mode
+errors	Working directory is a network path	included	permissions.md	all but the parts the excluded row for this section names
+errors	Working directory is a network path	excluded		the sentence "Before v2.1.257, Claude Code accepted a reachable network path" is history
+permissions	Managed settings	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Managed settings	excluded		the pointer sentence to Deploy managed settings; the sentence that `allowManagedPermissionRulesOnly` makes managed settings the only source repeats settings-reference › `allowManagedPermissionRulesOnly`
+permissions	Settings precedence	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Settings precedence	excluded		the first sentence that permission rules follow the settings precedence repeats settings › Settings precedence; the sentence on mods only links to hooks; the paragraph on embedding hosts supplying policy repeats managed-settings › Let an embedding host add policy
+permissions	Configure permissions	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Configure permissions	excluded		the sentence on checking permission settings into version control repeats settings › Share settings with your team; the opening sentence is marketing
+permissions	Permission system	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Permission system	excluded		the clause that the saved rule location resolves through worktrees to the main checkout (repeats settings › Where Claude Code keeps the local file in a git repository); the sentence on where Claude Code saves the rule outside a git repository or on Windows repeats settings › Where Claude Code keeps the local file in a git repository; the prompt screenshot (only illustrates) and the "Yes, and switch to auto mode" sentence (repeats permission-modes › Switch permission modes)
+permissions	Add a comment when you answer a permission prompt	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Add a comment when you answer a permission prompt	excluded		the clause on `Shift+Tab` before v2.1.235 is history
+permissions	Manage permissions	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Manage permissions	excluded		the sentence on the version before v2.1.234 is history; the pointer to Denying an entire tool
+permissions	Permission rule syntax	included	permissions.md	
+permissions	Match all uses of a tool	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Match all uses of a tool	excluded		the hook-matcher clause (owned by hooks); the clause that a startup warning says so (repeats errors › Matches no tool · check for typos)
+permissions	Use specifiers for fine-grained control	included	permissions.md	
+permissions	Match by input parameter	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Match by input parameter	excluded		the `Agent(model:...)` and `Agent(isolation:...)` rows and the examples in the bullets that use them are owned by subagents; the `Skill(skill:<name>)` bullet repeats skills › Restrict Claude's skill access
+permissions	Wildcard patterns	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Wildcard patterns	excluded		the sentence that Claude Code warns at startup about an allow rule with a `*` before the subcommand (repeats errors › Has a wildcard before the rest of the command)
+permissions	Tool name wildcards	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Tool name wildcards	excluded		the sentence on the startup warning for a deny or ask rule matching no known tool (repeats errors › Matches no tool · check for typos)
+permissions	Bash	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Bash	excluded		the pointer sentences that list what the rest of the section covers
+permissions	Compound commands	included	permissions.md	
+permissions	Wrappers	included	permissions.md	
+permissions	Exec wrappers and `find` actions	included	permissions.md	
+permissions	What a Bash rule doesn't match	included	permissions.md	
+permissions	Read-only commands	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Read-only commands	excluded		the clause on Claude Code v2.1.290 or later is history
+permissions	Redirections	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Redirections	excluded		the clauses on v2.1.257 and v2.1.269 are history
+permissions	PowerShell	included	permissions.md	
+permissions	Read and Edit	included	permissions.md	
+permissions	What `Read` and `Edit` rules cover	included	permissions.md	all but the parts the excluded row for this section names
+permissions	What `Read` and `Edit` rules cover	excluded		the sentences on v2.1.290 and v2.1.228 are history
+permissions	`Write(path)`, `NotebookEdit(path)`, and `Glob(path)` rules never match	included	permissions.md	
+permissions	How path patterns match	included	permissions.md	
+permissions	Where a pattern anchors	included	permissions.md	
+permissions	How deep a pattern matches	included	permissions.md	
+permissions	Special characters and `!` negation	included	permissions.md	
+permissions	Symlinks	included	permissions.md	
+permissions	How rules match a symlinked path	included	permissions.md	all but the parts the excluded row for this section names
+permissions	How rules match a symlinked path	excluded		the sentence "Before v2.1.268, a deny or ask rule written through a symlinked directory didn't apply" is history
+permissions	Attachments through a symlink	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Attachments through a symlink	excluded		the link to errors › Refusing after a symlink changed, which has no such heading in toc.tsv
+permissions	Writes through a symlink	included	permissions.md	
+permissions	Paths that can't be resolved or that change	included	permissions.md	
+permissions	Network paths	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Network paths	excluded		the PreToolUse hook bullet repeats permissions › Precedence among rules, hooks, and mods (hooks); the clause "In Claude Code v2.1.292 and later" is history
+permissions	WebFetch	included	permissions.md	all but the parts the excluded row for this section names
+permissions	WebFetch	excluded		the sentence on v2.1.172 is history
+permissions	Allow or deny every fetch	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Allow or deny every fetch	excluded		the pointer sentence on the sandbox wildcard forms; the paragraph on per-command allowed domains in auto mode repeats sandboxing › Per-command allowed domains in auto mode; the sentence "Before v2.1.268, a bare WebFetch deny rule blocked every artifact read" is history
+permissions	MCP	included	permissions.md	
+permissions	Cd	included	permissions.md	
+permissions	Working directories	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Working directories	excluded		the paragraph on background sessions on macOS and protected folders belongs to another tool type (background sessions)
+permissions	Move the session to another directory	included	permissions.md	all but the parts the excluded row for this section names
+permissions	Move the session to another directory	excluded		the clause that `/cd` loads `CLAUDE.md`: owned by instructions; the clauses on hooks: owned by hooks; the plugins clause of the plugins, skills and subagents bullet belongs to another tool type (plugins), and its skills and subagents clauses are owned by skills and subagents; the `.mcp.json` bullet and the paragraph disconnecting MCP servers: another tool type (MCP); the sentence on `--resume` finding the moved session belongs to sessions; the sentence on v2.1.246 is history
+permissions	Project allow rules and workspace trust	included	permissions.md	
+permissions	When your local settings file needs trust	included	permissions.md	all but the note on `~/.claude/settings.local.json` and user settings (handed to placing.md)
+permissions	What runs before you trust a folder	included	permissions.md	all but the parts the excluded row for this section names
+permissions	What runs before you trust a folder	excluded		the hooks rows, the skill clauses and the `--bare`, `disableAllHooks` and `--setting-sources user` bullets: owned by hooks and skills; the `@skills-dir` plugin, inline `mcpServers`, `.mcp.json`, `headersHelper` and `disabledMcpjsonServers` content: owned by subagents, or another tool type (MCP); the debug-log clause on a skipped subagent hook: owned by hooks
+permissions	How permissions interact with sandboxing	included	permissions.md	all but the parts the excluded row for this section names
+permissions	How permissions interact with sandboxing	excluded		the sentence on merged paths and domains and the bullets under "These checks still apply" repeat sandboxing › Permission rules and › Auto-allow mode
+settings-reference	`allowManagedPermissionRulesOnly`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`allowManagedPermissionRulesOnly`	excluded		the paragraphs on `allowed-tools` and their source list: owned by skills; the sentence linking to Read and Edit rules for `!` patterns; the sentence "Before v2.1.257, Claude Code dropped those command-line and session rules" is history
+settings-reference	`permissions`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions`	excluded		the sentence on how permission rules combine across files repeats permissions › Settings precedence; the pointer to Permission rule syntax
+settings-reference	`permissions.allow`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.allow`	excluded		the sentence on `*` in an MCP rule repeats permissions › Tool name wildcards; the sentence on the workspace trust dialog repeats permissions › Project allow rules and workspace trust; the clause that a deny rule from any settings file still blocks a tool repeats permissions › Settings precedence
+settings-reference	`permissions.ask`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.ask`	excluded		the sentence that in `dontAsk` mode Claude Code denies a matching tool use repeats permission-modes › Allow only pre-approved tools with dontAsk mode
+settings-reference	`permissions.deny`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.deny`	excluded		the paragraph on Read and Edit deny rules repeats permissions › Read and Edit; the sentence on glob tool names and `EndConversation` repeats permissions › Tool name wildcards; the sentence on `Bash(curl *)` repeats permissions › What a Bash rule doesn't match
+settings-reference	`permissions.additionalDirectories`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.additionalDirectories`	excluded		the Scope clause on sandbox write limits repeats sandboxing › Repository settings under an admin-required sandbox; the sentences on the workspace trust dialog and on undiscovered `.claude/` configuration repeat permissions sections
+settings-reference	`permissions.blockReadsOutsideWorkingDirectories`	included	permissions.md	all but the parts the excluded row for this section names
+settings-reference	`permissions.blockReadsOutsideWorkingDirectories`	included	keys.md	the sentence on `autoMemoryDirectory` from project or repository-supplied local settings
+settings-reference	`permissions.blockReadsOutsideWorkingDirectories`	excluded		the sentence that Claude Code writes `true` on auto mode's first-read prompt repeats permission-modes › The first read outside the working directories; the rest of the `autoMemoryDirectory` paragraph belongs to auto memory; the clause "Requires Claude Code v2.1.257 or later" is history; the two pointer bullets on sandboxed commands and no-mode actions
+tools-reference	Configure tools with permission rules and hooks	included	permissions.md	all but the parts the excluded row for this section names
+tools-reference	Configure tools with permission rules and hooks	excluded		the list items on a skill's `allowed-tools`, a hook's `if` condition and the Agent SDK options, and the paragraph on hook `matcher` fields, belong to skills, hooks and the Agent SDK; the sentence that a Read deny rule blocks Edit and Write repeats permissions › What `Read` and `Edit` rules cover and the v2.1.228 clause is history
+tools-reference	Bash deny rules also turn off the PowerShell tool	included	permissions.md	
+tools-reference	WebFetch tool behavior	included	permissions.md	all but the parts the excluded row for this section names
+tools-reference	WebFetch tool behavior	excluded		the sentences on Markdown conversion, localhost, HTTP upgrade, 100,000 characters, cache, deadline, redirects, retries, headers and the artifact link are tool behaviour with no settings fact; the `CLAUDE_CODE_WEBFETCH_*` sentences are environment variables; the version clauses are history
+permission-modes	The first read outside the working directories	included	permissions.md	
+large-codebases	Block reads of generated and vendored code	included	permissions.md	the sentence that directory patterns ending `/**/*` rather than `/**` cover everything inside the directory but not the directory itself, and the sentences that Claude Code applies deny rules to Grep and Glob on a best-effort basis and that a Bash search such as `grep -r` or `find` over a directory with denied files still includes them
+large-codebases	Block reads of generated and vendored code	included	permissions.md	the sentences on committing rules per package and on `//` paths in the local file
+large-codebases	Block reads of generated and vendored code	excluded		the rest belongs to another tool type (working in large codebases)
+workflows	Approve the plan before it runs	included	permissions.md	the bullet that a `Workflow` allow rule approves every workflow and `Workflow(<name>)` approves one saved workflow by name
+workflows	Approve the plan before it runs	included	permissions.md	the sentences on deny rules, ask rules and `dontAsk` applying to the launch, and adding agent tools to allow rules
+workflows	Approve the plan before it runs	excluded		the rest belongs to another tool type (workflows)
+cli-reference	CLI flags	included	permissions.md	row `--allowedTools` only
+cli-reference	CLI flags	included	permissions.md	row `--disallowedTools`, only the sentence that its entries are deny rules
+cli-reference	CLI flags	included	permissions.md	row `--add-dir`, only the clause that Claude Code validates that each path exists as a directory
+cli-reference	CLI flags	included	permissions.md	row `--restricted`, only the clause that it confines the built-in file tools to the working directories
+tools-reference	EndConversation tool behavior	included	permissions.md	the sentences that neither `--disallowedTools` nor a `--tools` list can remove `EndConversation` while another tool remains, and that deny rules matching it, as `"*"` does, remove it once they remove every other tool unless an allow rule names it explicitly
+tools-reference	EndConversation tool behavior	excluded		the rest belongs to another tool type (the EndConversation tool)
+security	Additional safeguards	included	permissions.md	the sentence that there is no setting to persist trust accepted in the home directory, and the Command injection detection bullet's clause that an allow rule for part of a command, such as `Bash(git *)`, doesn't skip the prompt for a command Claude Code can't fully analyse, the clause that sandboxed commands can run without it, and the Windows WebDAV warning that enabling WebDAV or allowing access to paths such as `\\*` may let Claude Code trigger network requests to remote hosts, bypassing the permission system
+security	Additional safeguards	included	permissions.md	the sentence that trust acceptance is saved per directory when you start from a project subdirectory
+security	Additional safeguards	excluded		the rest belongs to another tool type (general security practice)
+commands	All commands	included	permissions.md	the `/permissions` row, only that the dialog also manages working directories and has the alias `/allowed-tools`
+commands	All commands	included	permissions.md	the `/add-dir` row, only the sentence that run while Claude is responding it asks you to confirm and the next tool call in the same turn can access the directory
+commands	All commands	included	permissions.md	the row on `/fewer-permission-prompts`
+commands	All commands	excluded		the rest belongs to another tool type (the features those commands control)
+tools-reference	WebSocket source	included	permissions.md	the sentence that opening a WebSocket prompts for approval, that the classifier decides in auto mode and that the prompt offers no option to skip future prompts for the host
+settings	Settings files and precedence	included	placing.md	all but the parts the excluded row for this section names
+settings	Settings files and precedence	excluded		everything except the note's sentence that the terminal, VS Code and JetBrains extensions and the desktop app read the same settings files: introduces or links to other pages; the sentence that the file read decides who a setting applies to repeats settings › Settings files and who they affect; the cloud-session sentence is web
+settings	Settings files and who they affect	included	placing.md	
+settings	Compare the scope of each settings file	included	placing.md	all but the parts the excluded row for this section names
+settings	Compare the scope of each settings file	excluded		the cloud session clauses (web); the bullets for ~/.claude/settings.json and settings.local.json and the managed settings' delivery routes repeat settings › Settings files and who they affect
+settings	Find or create your settings files	included	placing.md	all but the parts the excluded row for this section names
+settings	Find or create your settings files	excluded		the "Yes, and don't ask again" example of a standing approval repeats settings › Where Claude Code keeps the local file in a git repository; the sentence that a few `/config` options, including Show tips, save to `.claude/settings.local.json` repeats settings › Use the /config menu (configuring.md)
+settings	Share settings with your team	included	placing.md	all but the parts the excluded row for this section names
+settings	Share settings with your team	excluded		the sentence that each teammate can override the file in their own settings.local.json repeats settings › Keep personal settings out of a repository
+settings	Keep personal settings out of a repository	included	placing.md	all but the parts the excluded row for this section names
+settings	Keep personal settings out of a repository	excluded		the bullet that "Yes, and don't ask again" approvals are saved here repeats settings › Where Claude Code keeps the local file in a git repository; the bullet on allow rules not waiting for trust repeats permissions › When your local settings file needs trust
+settings	Where Claude Code keeps the local file in a git repository	included	placing.md	all but the parts the excluded row for this section names
+settings	Where Claude Code keeps the local file in a git repository	excluded		the version clause of the Before v2.1.211 paragraph and the version requirements (history); the Agent SDK resolveSettings() sentence (Agent SDK); the desktop app worktree sentence (desktop app)
+settings	Settings precedence	included	placing.md	all but the parts the excluded row for this section names
+settings	Settings precedence	excluded		the sentence on precedence within the managed tier only links; the sentence that for a few security-sensitive keys a stricter lower-level value beats managed repeats settings › Exceptions to managed settings precedence; the descriptions of project local, shared project and user settings repeat settings › Settings files and who they affect
+settings	Lists merge instead of overriding	included	placing.md	all but the parts the excluded row for this section names
+settings	Lists merge instead of overriding	excluded		the modelPicker clause that project and local settings are ignored repeats the Scope column of settings-reference › Settings index; the modelPicker version requirement (history)
+settings	Precedence examples	included	placing.md	
+settings	Team settings override personal settings	included	placing.md	
+settings	Organization settings override everything	included	placing.md	
+settings	The command line overrides your files for one session	included	placing.md	
+settings	A flag or environment variable sets the same thing	included	placing.md	all but the parts the excluded row for this section names
+settings	A flag or environment variable sets the same thing	excluded		the sentence that ANTHROPIC_MODEL overrides model and --model overrides both (repeats env-vars › Precedence); the rest repeats settings › Settings precedence
+settings	Exceptions to managed settings precedence	included	placing.md	all but the parts the excluded row for this section names
+settings	Exceptions to managed settings precedence	excluded		the syncClaudeAiSkills row (owned by skills); version requirements (history)
+settings-reference	Global config settings	included	placing.md	
+claude-directory	File reference	included	placing.md	the settings.json, settings.local.json and ~/.claude.json rows, and the sentence explaining the Scope column (project-scope files under .claude/ in the repo, global-scope files in ~/.claude/ applying across all projects)
+claude-directory	File reference	excluded		the rest belongs to another tool type (the other files in `.claude`)
+permissions	Additional directories grant file access, not configuration	included	placing.md	all but the parts the excluded row for this section names
+permissions	Additional directories grant file access, not configuration	excluded		the sentence limiting the exceptions to --add-dir and /add-dir, the clause on skills and commands loading through the project setting source, the Skills and Command files rows and the /add-dir subdirectory paragraph (skills); the clause on subagents loading through the project source and the Subagents row (subagents); the Agent SDK additionalDirectories and add_dirs paragraph (Agent SDK); the v2.1.257 requirement (history); the Skills, Command files and Subagents table rows are owned by skills and subagents (their types)
+permissions	Where output styles, hooks, and local settings load from	included	placing.md	all but the parts the excluded row for this section names
+permissions	Where output styles, hooks, and local settings load from	excluded		the hooks clause of the first-paragraph sentence (hooks); the sentence on output style discovery (output styles); the sentence that settings.local.json loads from the git repository root repeats settings › Where Claude Code keeps the local file in a git repository
+env-vars	Variables	included	placing.md	the row CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST, only the clause that Claude Code then ignores provider-selection, endpoint and authentication variables in settings files
+cli-reference	CLI flags	included	placing.md	the row --setting-sources
+cli-reference	CLI flags	included	placing.md	the row --restricted, only its settings facts
+large-codebases	Check out only the directories you need	included	placing.md	the NOTE's sentences that project settings inside a worktree load from the worktree root's .claude/settings.json and that other settings needed inside worktrees go in the repository root's .claude/settings.json, and a mention that with worktree.sparsePaths the root .claude must be listed (hooks owns that sentence)
+settings-reference	`extraKnownMarketplaces`	included	placing.md	only the sentence that the highest-precedence file's same-name entry replaces the lower one whole
+settings-reference	`extraKnownMarketplaces`	included	keys.md	the Scope line, with its trust condition as a mention
+settings-reference	`extraKnownMarketplaces`	excluded		the rest belongs to another tool type (plugins)
+permissions	When your local settings file needs trust	included	placing.md	the note that ~/.claude/settings.local.json is local scope, read only in sessions started in the home directory, and that user settings apply across projects
+large-codebases	Check out only the directories you need	excluded		the NOTE's sentence that `sparsePaths` and `symlinkDirectories` are read from the starting directory, and the rest of the section, are owned by instructions, hooks and subagents
+settings-reference	Sandboxed commands under the block	included	sandbox.md	
+sandboxing	Configure the sandboxed Bash tool	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Configure the sandboxed Bash tool	excluded		the NOTE block of links to other pages: only links
+sandboxing	What the sandbox restricts	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	What the sandbox restricts	excluded		the sentence that the sandbox is off by default and `/sandbox` or `sandbox.enabled` turns it on: repeats settings-reference › `sandbox.enabled`; the sentence that while the sandbox is on, commands start inside its boundary with the processes they start: repeats sandboxing › Configure the sandboxed Bash tool
+sandboxing	What runs outside the sandbox	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	What runs outside the sandbox	excluded		the clause on command hooks: owned by hooks
+sandboxing	Get started	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Get started	excluded		the sentence that Claude Code adds `.claude/settings.local.json` to your global gitignore: repeats settings › Keep personal settings out of a repository; the pointers to Configure sandboxing, managed settings and the bubblewrap container fix: only links; the sentences in step 2 on what auto-allow and regular permissions do: repeat sandboxing › Sandbox modes; the auto mode sentence in step 3: repeats sandboxing › Per-command allowed domains in auto mode
+sandboxing	Confirm commands run inside the sandbox	included	sandbox.md	
+sandboxing	Set up Linux and WSL2	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Set up Linux and WSL2	excluded		the sentence that `allowAllUnixSockets` allows Windows binary launches on WSL2: repeats settings-reference › `sandbox.network.allowAllUnixSockets`
+sandboxing	Sandbox modes	included	sandbox.md	
+sandboxing	Regular permissions mode	included	sandbox.md	
+sandboxing	Auto-allow mode	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Auto-allow mode	excluded		the bullet on a bare `Bash` ask rule being skipped for sandboxed commands and its plan mode clause: repeats permissions › How permissions interact with sandboxing; the sentence that an allow rule also approves an unsandboxed retry: repeats sandboxing › The unsandboxed retry escape hatch
+sandboxing	The unsandboxed retry escape hatch	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	The unsandboxed retry escape hatch	excluded		the final sentence on `Sandbox is required`: repeats sandboxing › Commands are refused with `Sandbox is required`
+sandboxing	Turn off the retry with strict sandbox mode	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Turn off the retry with strict sandbox mode	excluded		the history sentences (before v2.1.285, before v2.1.260): version history
+sandboxing	Temporary directories	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Temporary directories	excluded		the sentence that a per-user temp directory is writable by default alongside the working directory: repeats sandboxing › What the sandbox restricts
+sandboxing	Configure sandboxing	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Configure sandboxing	excluded		the sentence on merging across scopes: repeats settings-reference › `sandbox.filesystem` and Keep developers from widening the policy; the `Requires Claude Code v2.1.246` sentence: minimum version; the sentence that `allowWrite` is recommended over `excludedCommands` for a tool that needs write access: repeats sandboxing › Run commands outside the sandbox with `excludedCommands`
+sandboxing	Run commands outside the sandbox with `excludedCommands`	included	sandbox.md	
+sandboxing	Disable filesystem isolation	included	sandbox.md	
+sandboxing	Which settings can disable it	included	sandbox.md	all but the closing paragraph on a valid `mask` entry not locking the key and on listing an uncovered path as an explicit `deny` (handed to credentials.md)
+sandboxing	What changes when filesystem isolation is off	included	sandbox.md	
+sandboxing	Filesystem isolation	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Filesystem isolation	excluded		the Default write behavior and Default read behavior bullets: repeat settings-reference › `sandbox.filesystem`; the closing sentence on `sandbox.filesystem.disabled`: repeats sandboxing › Disable filesystem isolation; the Read block bullet is stated once with Sandboxed commands under the block
+sandboxing	Protected paths	included	sandbox.md	
+sandboxing	When the sandbox deletes `HEAD`, `objects`, or `refs`	included	sandbox.md	
+sandboxing	Denied paths that pass through a symlink	included	sandbox.md	
+sandboxing	Network isolation	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Network isolation	excluded		the Strict allowlist bullet: repeats settings-reference › `sandbox.network.strictAllowlist`; the Managed lockdown bullet: repeats settings-reference › `sandbox.network.allowManagedDomainsOnly`; the minimum-version sentences: version history
+sandboxing	Hosts outside your allowed domains	included	sandbox.md	
+sandboxing	Hostnames that resolve to local addresses	included	sandbox.md	
+sandboxing	Per-command allowed domains in auto mode	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Per-command allowed domains in auto mode	excluded		the minimum-version sentence: version history
+sandboxing	IPv6 addresses in domain lists	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	IPv6 addresses in domain lists	excluded		the minimum-version sentence: version history
+sandboxing	OS-level enforcement	included	sandbox.md	
+sandboxing	How sandboxing relates to permissions and permission modes	included	sandbox.md	the sentence that sandboxing, permission rules, and permission modes are complementary layers
+sandboxing	How sandboxing relates to permissions and permission modes	excluded		the rest only introduces the subsections
+sandboxing	Permission rules	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Permission rules	excluded		the two bullets contrasting permission rules with sandboxing: repeat permissions › How permissions interact with sandboxing; the sentence linking the claude-code examples directory: only links
+sandboxing	Permission modes	included	sandbox.md	
+sandboxing	Enforce sandboxing with managed settings	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Enforce sandboxing with managed settings	excluded		the two bullets on `failIfUnavailable` and `allowUnsandboxedCommands: false`: repeat settings-reference › `sandbox.failIfUnavailable` and `sandbox.allowUnsandboxedCommands`
+sandboxing	Keep developers from widening the policy	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Keep developers from widening the policy	excluded		the paragraph on `allowManagedReadPathsOnly`: repeats settings-reference › `sandbox.filesystem.allowManagedReadPathsOnly`; the closing paragraph: repeats sandboxing › Which settings can disable it
+sandboxing	Repository settings under an admin-required sandbox	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Repository settings under an admin-required sandbox	excluded		the closing history sentence (v2.1.282 to v2.1.284) and the minimum-version sentence: version history
+sandboxing	Locks that apply without an admin-required sandbox	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Locks that apply without an admin-required sandbox	excluded		the minimum-version sentence: version history
+sandboxing	Custom proxy configuration	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Custom proxy configuration	excluded		the history sentence (before v2.1.285): version history
+sandboxing	Limitations	included	sandbox.md	the sentence that sandboxing reduces risk but is not a complete isolation boundary
+sandboxing	Limitations	excluded		the rest only introduces the subsections
+sandboxing	Security limitations	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Security limitations	excluded		the Network filtering bullet except its last sentence and its sentence that `network.tlsTerminate` terminates TLS at the proxy for `mask` substitution but does not add content filtering: repeats sandboxing › Network isolation; the Linux sandbox strength bullet (except its clause that this considerably weakens security), Apple Events (except its sentence on which settings can enable it), User namespaces and Unix sockets (except its clause that it effectively grants access to the host system, so consider carefully the sockets you allow) bullets: repeat settings-reference `sandbox.enableWeakerNestedSandbox`, `sandbox.allowAppleEvents`, `sandbox.allowNestedUserNamespaces` and `sandbox.network.allowUnixSockets`
+sandboxing	Scope	included	sandbox.md	all but the parts the excluded row for this section names
+sandboxing	Scope	excluded		the Subagents bullet: owned by subagents
+settings-reference	`sandbox`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox`	excluded		the sentence on the platforms: repeats sandboxing › Configure the sandboxed Bash tool; the paragraph on Boolean and array merging: repeats sandboxing › Keep developers from widening the policy
+settings-reference	`sandbox.enabled`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.enabled`	excluded		the sentence that Linux and WSL2 need `bubblewrap` and `socat`: repeats sandboxing › Set up Linux and WSL2; the clause that Claude Code runs commands unsandboxed unless `failIfUnavailable` is set: repeats `sandbox.failIfUnavailable`
+settings-reference	`sandbox.failIfUnavailable`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.failIfUnavailable`	excluded		the example: repeats sandboxing › Enforce sandboxing with managed settings; the clause on later failures refusing each command: repeats sandboxing › Commands are refused with `Sandbox is required`
+settings-reference	`sandbox.autoAllowBashIfSandboxed`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.autoAllowBashIfSandboxed`	excluded		the clause that a bare `Bash` ask rule is skipped for sandboxed commands: repeats permissions › How permissions interact with sandboxing
+settings-reference	`sandbox.excludedCommands`	included	sandbox.md	
+settings-reference	`sandbox.allowUnsandboxedCommands`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.allowUnsandboxedCommands`	excluded		the last two sentences: only links; the minimum-version sentence: version history
+settings-reference	`sandbox.filesystem`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.filesystem`	excluded		the merge-and-locks paragraph: repeats sandboxing › Keep developers from widening the policy and the `allowManagedReadPathsOnly` key; the sentence on the default write and read boundaries: repeats sandboxing › What the sandbox restricts
+settings-reference	Sandbox path prefixes	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	Sandbox path prefixes	excluded		the history sentence (before v2.1.224): version history
+settings-reference	Where wildcards work in sandbox paths	included	sandbox.md	
+settings-reference	Directory names with brackets, braces, or parentheses	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	Directory names with brackets, braces, or parentheses	excluded		the history sentence (before v2.1.304): version history
+settings-reference	`sandbox.filesystem.allowWrite`	included	sandbox.md	
+settings-reference	`sandbox.filesystem.denyWrite`	included	sandbox.md	
+settings-reference	`sandbox.filesystem.denyRead`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.filesystem.denyRead`	excluded		the last sentence: repeats sandboxing › What changes when filesystem isolation is off
+settings-reference	`sandbox.filesystem.allowRead`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.filesystem.allowRead`	excluded		the history sentence (before v2.1.236): version history
+settings-reference	`sandbox.filesystem.allowManagedReadPathsOnly`	included	sandbox.md	
+settings-reference	`sandbox.filesystem.disabled`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.filesystem.disabled`	excluded		the paragraph on what stays enforced: repeats sandboxing › What changes when filesystem isolation is off
+settings-reference	`sandbox.ignoreViolations`	included	sandbox.md	
+settings-reference	`sandbox.enableWeakerNestedSandbox`	included	sandbox.md	
+settings-reference	`sandbox.enableWeakerNetworkIsolation`	included	sandbox.md	
+settings-reference	`sandbox.allowAppleEvents`	included	sandbox.md	
+settings-reference	`sandbox.allowNestedUserNamespaces`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.allowNestedUserNamespaces`	excluded		the minimum-version sentence: version history
+settings-reference	`sandbox.ripgrep`	included	sandbox.md	
+settings-reference	`sandbox.bwrapPath`	included	sandbox.md	
+settings-reference	`sandbox.socatPath`	included	sandbox.md	
+settings-reference	`sandbox.network`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.network`	excluded		the sentence on merging array sub-keys: repeats sandboxing › Keep developers from widening the policy
+settings-reference	`sandbox.network.allowUnixSockets`	included	sandbox.md	
+settings-reference	`sandbox.network.allowAllUnixSockets`	included	sandbox.md	
+settings-reference	`sandbox.network.allowLocalBinding`	included	sandbox.md	
+settings-reference	`sandbox.network.allowMachLookup`	included	sandbox.md	
+settings-reference	`sandbox.network.allowedDomains`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.network.allowedDomains`	excluded		the IPv6 sentence: repeats sandboxing › IPv6 addresses in domain lists; the minimum-version sentence: version history
+settings-reference	`sandbox.network.deniedDomains`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.network.deniedDomains`	excluded		the IPv6 sentence: repeats sandboxing › IPv6 addresses in domain lists
+settings-reference	`sandbox.network.strictAllowlist`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.network.strictAllowlist`	excluded		the minimum-version sentences: version history
+settings-reference	`sandbox.network.allowManagedDomainsOnly`	included	sandbox.md	all but the parts the excluded row for this section names
+settings-reference	`sandbox.network.allowManagedDomainsOnly`	excluded		the clause that only managed settings can set a proxy port: repeats sandboxing › Custom proxy configuration; the sentence that denied domains still merge from every source: repeats settings-reference › `sandbox.network.deniedDomains`
+settings-reference	`sandbox.network.httpProxyPort`	included	sandbox.md	
+settings-reference	`sandbox.network.socksProxyPort`	included	sandbox.md	
+settings-reference	`sandbox.network.tlsTerminate`	included	sandbox.md	
+env-vars	Variables	included	sandbox.md	the row `CLAUDE_CODE_TMPDIR`, only the clause that on macOS and Linux sandboxed Bash subprocesses get a short fallback `$TMPDIR` under the system default when the override is a long path
+env-vars	Variables	included	configuring.md	the rows `CLAUDE_CODE_PROCESS_WRAPPER` and `OTEL_LOG_MANAGED_SETTINGS`, only the clauses on where to set them
+env-vars	Variables	excluded		the rest belongs to other tool types (the features those variables configure)
+tools-reference	WebFetch tool behavior	included	sandbox.md	the paragraph on sandboxed commands not inheriting the preapproved domains, `allowedDomains` and the sandbox allowlist
+plugins/mods/overview	What a mod can reach	included	sandbox.md	the sentence that a process a mod starts runs outside the sandbox, which isolates the Bash commands Claude runs
+plugins/mods/overview	What a mod can reach	excluded		the rest belongs to another tool type (mods)
+claude-apps-gateway	Lock behavior across sources	included	sandbox.md	the sentence that locking `sandbox.network.allowManagedDomainsOnly` with an empty managed domain list blocks all sandboxed outbound traffic
+plugins/mods/overview	What a mod can reach (2)	included	sandbox.md	the sentence that a process a mod starts runs outside the sandbox, which isolates the Bash commands Claude runs
+plugins/mods/overview	What a mod can reach (2)	excluded		the rest belongs to another tool type (mods)
+tools-reference	WebSocket source	included	sandbox.md	the sentence that Claude Code denies a WebSocket host listed in `sandbox.network.deniedDomains` and, when `sandbox.network.allowManagedDomainsOnly` is set in managed settings, any host outside the managed allowlist
+tools-reference	WebSocket source	excluded		the rest belongs to another tool type (the Monitor tool)
+settings	Confirm what loaded	included	troubleshooting.md	
+settings	Fix a broken settings file	included	troubleshooting.md	all but the parts the excluded row for this section names
+settings	Fix a broken settings file	excluded		the Managed settings bullet (-> managed.md); the clause on an unknown hook event name in the Settings Warning bullet (owned by hooks)
+settings	Troubleshoot a setting that doesn't apply	included	troubleshooting.md	all but the parts the excluded row for this section names
+settings	Troubleshoot a setting that doesn't apply	excluded		the sentence pointing to Debug your configuration (links to another page)
+settings	A value you set is ignored	included	troubleshooting.md	all but the parts the excluded row for this section names
+settings	A value you set is ignored	excluded		the security key bullet (repeats settings > Exceptions to managed settings precedence); the sentence on a telemetry export variable in `env` (repeats settings-reference > Variables Claude Code ignores in `env`); the Before v2.1.257 sentence (history)
+settings	A change you made in Claude Code is lost in new sessions	included	troubleshooting.md	
+settings	A managed change hasn't reached you	included	troubleshooting.md	
+settings	A committed key doesn't reach teammates	included	troubleshooting.md	all but the parts the excluded row for this section names
+settings	A committed key doesn't reach teammates	included	permissions.md	the clause that teammates get no plugins from a declared marketplace until they trust the folder
+settings	A committed key doesn't reach teammates	excluded		the sentence on telemetry variables inside `env` repeats settings-reference › Variables Claude Code ignores in `env`; the trust bullet's prompts clause and its sentence that `deny` and `ask` rules apply right away repeat permissions › Project allow rules and workspace trust
+settings	Permission rules combine differently than you expected	included	troubleshooting.md	
+errors	Settings file exceeds the 2MiB limit	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Settings file exceeds the 2MiB limit	excluded		the Before v2.1.214 sentence (history)
+errors	Could not read Claude Code config	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Could not read Claude Code config	excluded		the Before v2.1.222 sentence (history)
+errors	Configuration warnings	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Configuration warnings	excluded		the Before v2.1.305 sentence (history)
+errors	Output styles are saved to local settings which this session doesn't load	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Output styles are saved to local settings which this session doesn't load	excluded		the Agent SDK `settingSources` and TypeScript `settings` clauses (Agent SDK); the output style feature itself (another tool type, output styles)
+debug-your-config	Check resolved settings	included	troubleshooting.md	all but the parts the excluded row for this section names
+debug-your-config	Check resolved settings	excluded		the sentence on the order of scopes and flags and variables as another override layer (repeats settings > Settings precedence); the sentence on `/status` and its Setting sources line (repeats settings > Confirm what loaded)
+debug-your-config	Check common causes	included	troubleshooting.md	all but the parts the excluded row for this section names
+debug-your-config	Check common causes	excluded		the hook rows (owned by hooks); the skill rows (owned by skills); the two CLAUDE.md rows and the subagent row (owned by instructions); the MCP rows apart from the clause that `settings.json` does not read an `mcpServers` key (another tool type, MCP)
+managed-settings	Find entries Claude Code dropped	included	troubleshooting.md	
+managed-settings	Keys that fail closed	included	troubleshooting.md	all but the parts the excluded row for this section names
+managed-settings	Keys that fail closed	excluded		the `disableAllHooks` bullet, the `allowedHttpHookUrls` and `httpHookAllowedEnvVars` rows and the sentence that those two keys merge across settings files (owned by hooks); the `strictPluginOnlyCustomization` row (owned by skills); the `sandbox.credentials` row (repeats settings-reference > Invalid credential entries in managed settings); the `sandbox` row (repeats managed-settings > Invalid values inside `sandbox`); the version-requirement sentences (history)
+managed-settings	Invalid values inside `sandbox`	included	troubleshooting.md	all but the parts the excluded row for this section names
+managed-settings	Invalid values inside `sandbox`	excluded		the sentences on Claude Code v2.1.283 and earlier versions (history)
+server-managed-settings	Invalid entries in delivered settings	included	troubleshooting.md	all but the parts the excluded row for this section names
+server-managed-settings	Invalid entries in delivered settings	excluded		the clause saying which keys fall back to a stricter value (repeats managed-settings > Keys that fail closed); the Requires v2.1.169 sentence (history)
+errors	Remote managed settings failed to load	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Remote managed settings failed to load	excluded		the Before v2.1.282 and Before v2.1.248 sentences (history)
+errors	Managed settings were not approved	included	troubleshooting.md	
+errors	Managed settings need your approval	included	troubleshooting.md	
+errors	Managed settings document could not be parsed	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Managed settings document could not be parsed	excluded		the sentence that an empty file counts as `{}` (repeats managed-settings > Find entries Claude Code dropped); the pointer sentences to that section (link only)
+errors	Unable to read managed policy settings	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Unable to read managed policy settings	excluded		the sentence that an operating-system-denied read starts the session without that source's policies (repeats managed-settings > Find entries Claude Code dropped); the Before v2.1.285 sentence (history)
+errors	File is covered by a Read deny rule	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	File is covered by a Read deny rule	excluded		the sentence that NotebookEdit isn't covered by Read deny rules (repeats permissions > What `Read` and `Edit` rules cover); the Before v2.1.228 and v2.1.208 sentence (history)
+errors	Workspace has not been trusted	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Workspace has not been trusted	excluded		the pointer sentences to permissions > Project allow rules and workspace trust (repeat it); the paragraph on Claude Code versions 2.1.196 to 2.1.207 (history)
+errors	Malformed Tool(content) rule	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Malformed Tool(content) rule	excluded		the Edit(./Finance (2024)/**) example; the Before v2.1.260 sentence (history)
+errors	Matches no tool · check for typos	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Matches no tool · check for typos	excluded		the Before v2.1.305 sentence (history)
+errors	Is not matched by file permission checks	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Is not matched by file permission checks	excluded		the sentence on `Edit` and `Read` being the only checked rules (repeats permissions > `Write(path)`, `NotebookEdit(path)`, and `Glob(path)` rules never match); the Before v2.1.210 and Before v2.1.305 sentences (history)
+errors	Has a wildcard before the rest of the command	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Has a wildcard before the rest of the command	excluded		the sentence that `Bash(git * main)` also approves `-c` options (repeats permissions > Wildcard patterns); the Wildcard patterns pointer; the Before v2.1.246 and Before v2.1.305 sentences (history)
+errors	Denying Bash also turns off the PowerShell tool	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Denying Bash also turns off the PowerShell tool	excluded		the Before v2.1.287 and Before v2.1.305 sentences (history)
+errors	Auto mode cannot determine the safety of an action	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Auto mode cannot determine the safety of an action	excluded		the two bullets on a background subagent in a `-p` run (owned by subagents); the Before v2.1.216, v2.1.225, v2.1.229 and v2.1.296 sentences (history)
+sandboxing	Troubleshooting	included	troubleshooting.md	
+sandboxing	Commands fail with a host-not-allowed error	included	troubleshooting.md	
+sandboxing	`jest` hangs or fails	included	troubleshooting.md	
+sandboxing	Go-based CLIs fail TLS verification on macOS	included	troubleshooting.md	
+sandboxing	`open`, `osascript`, or browser-based auth flows fail with error `-600` on macOS	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	`open`, `osascript`, or browser-based auth flows fail with error `-600` on macOS	excluded		the sentence that Claude Code ignores `allowAppleEvents` in project settings and the sentence on lost code-execution isolation (repeat settings-reference > `sandbox.allowAppleEvents` and sandboxing > Security limitations)
+sandboxing	`docker` commands fail	included	troubleshooting.md	
+sandboxing	Chromium or rootless Podman fails inside the sandbox on Linux	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	Chromium or rootless Podman fails inside the sandbox on Linux	excluded		the WARNING (repeats settings-reference > `sandbox.allowNestedUserNamespaces` and sandboxing > Security limitations); the minimum-version sentence (history)
+sandboxing	`pbcopy`, `xclip`, or `wl-copy` doesn't update the clipboard	included	troubleshooting.md	
+sandboxing	A git command fails with `unable to unlink old`	included	troubleshooting.md	
+sandboxing	A folder named `objects` or `refs` disappears after a command	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	A folder named `objects` or `refs` disappears after a command	excluded		the pointer to When the sandbox deletes `HEAD`, `objects`, or `refs` (repeats that section); the Before v2.1.307 sentence (history); the first sentence is kept only as the condition clause that a top-level `objects` or `refs` folder that appeared during the session can be deleted after a sandboxed command ends
+sandboxing	Bubblewrap fails to start inside a container	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	Bubblewrap fails to start inside a container	excluded		the sentence that the setting exposes process information to sandboxed commands (repeats settings-reference > `sandbox.enableWeakerNestedSandbox`)
+sandboxing	`git` over SSH fails with the sandbox on	included	troubleshooting.md	
+sandboxing	A database client or other non-HTTP tool fails to reach an allowed host	included	troubleshooting.md	
+sandboxing	A command fails to reach a server on localhost	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	A command fails to reach a server on localhost	included	sandbox.md	the macOS bullet's sentences on reaching every localhost service and an unauthenticated service acting outside the sandbox
+sandboxing	A command fails to reach a server on localhost	excluded		the JSON example; the pointer to Hostnames that resolve to local addresses
+sandboxing	An allowed hostname is refused with `resolved to a loopback address`	included	troubleshooting.md	all but the parts the excluded row for this section names
+sandboxing	An allowed hostname is refused with `resolved to a loopback address`	excluded		the JSON example; the Before v2.1.284 sentence (history)
+sandboxing	Commands are refused with `Sandbox is required`	included	troubleshooting.md	
+sandboxing	`/sandbox` fails with `Sandbox settings are overridden by a higher-priority configuration`	included	troubleshooting.md	
+sandboxing	`/sandbox` prints `Sandbox settings not changed`	included	troubleshooting.md	
+errors	Sandbox allow entries are ignored under a managed lock	included	troubleshooting.md	
+errors	Sandbox mask files left behind at write-deny paths	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Sandbox mask files left behind at write-deny paths	excluded		the two history sentences (before v2.1.309, before v2.1.257)
+errors	The server returned no safety verdict	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	The server returned no safety verdict	excluded		the pointer sentence to the gateway compatibility guide; the Before v2.1.281, v2.1.280 and v2.1.302 sentences (history)
+errors	Was not reviewed and did not run	included	troubleshooting.md	
+agent-view	Settings, plugins, and MCP servers	included	troubleshooting.md	the sentence that a `--settings` path must point to an existing file or Claude Code exits with `Settings file not found`
+agent-view	Settings, plugins, and MCP servers	included	placing.md	the sentences and table rows on `--settings` and `--setting-sources` applying to agent view and passing to dispatched sessions
+agent-view	Settings, plugins, and MCP servers	excluded		the rest belongs to another tool type (agent view)
+cli-reference	CLI commands	included	troubleshooting.md	the `claude doctor` row
+cli-reference	CLI commands	included	placing.md	the clause in the `claude agents` row that it accepts `--settings`
+cli-reference	CLI commands	excluded		the rest belongs to another tool type (the features those commands control)
+cli-reference	CLI flags	included	troubleshooting.md	the row `--safe-mode`, only the clauses that it disables customizations, that permissions work normally, and that managed settings policy still applies but managed plugins, managed skills, managed CLAUDE.md and policy-configured MCP servers do not
+cli-reference	CLI flags	excluded		the rest belongs to another tool type (the features those flags control)
+settings-reference	Variables Claude Code ignores in `env`	included	troubleshooting.md	the sentence that a local interactive session shows a notice, that `/status` or `claude doctor` list ignored names, and the sentence that a `-p` or Agent SDK run shows no notice
+errors	Managed settings block the default model	included	troubleshooting.md	
+errors	Couldn't save it as your default	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Couldn't save it as your default	excluded		the Before v2.1.265 sentence (history); the pointers to settings sections (link only)
+permissions	Tool name wildcards	included	troubleshooting.md	the sentence that tool names containing `_` or `*`, and the names of removed tools such as `TaskOutput`, are exempt from the startup warning
+settings	Settings in cloud sessions	excluded		web or desktop app
+settings	What's next	excluded		only introduces or links
+settings-reference	All settings	excluded		only introduces or links
+settings-reference	See also	excluded		only introduces or links
+env-vars	Set variables in your shell	excluded		tutorial steps for shell exports, which any capable model knows
+debug-your-config	Test against a clean configuration	excluded		owned by instructions, apart from the hooks clauses, which hooks takes, and the custom-agents clause, which subagents takes
+claude-directory	Troubleshoot configuration	excluded		only introduces or links
+admin-setup	Decide how settings reach devices	included	managed.md	the sentences that Bedrock, Agent Platform and Foundry deployments can use the file-based or OS-level mechanisms, and that the plist and HKLM locations work with any provider and need admin privileges to write
+admin-setup	Decide how settings reach devices	excluded		the rest repeats managed-settings › Choose a delivery mechanism, managed-settings › How Claude Code combines managed sources, server-managed-settings › Fetch and caching behavior and settings-reference › `wslInheritsWindowsSettings`; its mixed-provider sentence and the advice to treat HKCU as a convenience default recommend (guidance)
+admin-setup	WSL sessions in Claude Code Desktop	excluded		web or desktop app (its `wslInheritsWindowsSettings` fact repeats the WSL paragraph of admin-setup › Decide how settings reach devices)
+admin-setup	Decide what to enforce	excluded		a map from controls to managed keys: its permission, sandbox and hook rows repeat keys.md's sections and its feature-key rows belong to their feature's type; the guidance ledger defers its advice to the settings guidance
+glossary	Auto mode	excluded		only repeats permission-modes › Eliminate permission prompts with auto mode
+glossary	Managed settings	excluded		only repeats settings › Settings precedence (and settings › Settings files and who they affect)
+glossary	Permission mode	excluded		only repeats permission-modes › Available modes
+glossary	Permission rule	excluded		only repeats permissions › Manage permissions
+glossary	Plan mode	excluded		only repeats permission-modes › Analyze before you edit with plan mode
+glossary	Project trust	excluded		only repeats permissions › Project allow rules and workspace trust
+glossary	Sandboxing	excluded		only repeats sandboxing › Configure the sandboxed Bash tool (and permissions › How permissions interact with sandboxing)
+glossary	Settings layers	excluded		only repeats settings › Settings precedence (and settings › Lists merge instead of overriding)
+managed-settings	Compute the policy with a helper program	excluded		only repeats settings-reference › `policyHelper` (its Write the helper output subsection holds the same "only managed settings" and cross-source-key rules, and the `forceRemoteSettingsRefresh` exception)
+managed-settings	Keep Cowork folder access when only managed rules apply	included	permissions.md	the sentence that allow rules must live in the managed source Claude Code selects
+managed-settings	Keep Cowork folder access when only managed rules apply	excluded		the rest: web or desktop app (Cowork in the Claude Desktop app); its `allowManagedPermissionRulesOnly` sentence repeats settings-reference › `allowManagedPermissionRulesOnly`
+managed-settings	Turn telemetry off for your organization	excluded		belongs to another tool type (telemetry); the sentence that `DISABLE_TELEMETRY` set to `1` applies without the approval dialog repeats server-managed-settings › Environment variables and the approval dialog
+managed-settings	See also	excluded		only introduces or links
+server-managed-settings	Configure server-managed settings	excluded		only repeats server-managed-settings › Configure server-managed settings (2) (the console path) and server-managed-settings › Requirements (the plans)
+server-managed-settings	Managed-only settings	excluded		only repeats managed-settings › Keys only a managed source can set
+server-managed-settings	Settings delivery	excluded		only introduces or links
+server-managed-settings	See also	excluded		only introduces or links
+settings-reference	Enterprise and managed settings	excluded		only introduces or links
+errors	Managed settings don't allow this API provider	included	troubleshooting.md	
+errors	MCP server is blocked by enterprise managed policy	excluded		belongs to another tool type (MCP)
+errors	Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded	excluded		owned by hooks
+permissions	Tool-specific permission rules	excluded		only introduces or links
+permissions	Agent (subagents)	excluded		only repeats sub-agents › Disable specific subagents (owned by subagents)
+permissions	Extend permissions with hooks	excluded		owned by hooks (tool-events.md)
+permissions	Precedence among rules, hooks, and mods	excluded		owned by hooks (tool-events.md)
+permissions	Hook approvals in plan mode	excluded		owned by hooks (tool-events.md)
+permissions	Example configurations	excluded		only introduces or links
+permissions	See also	excluded		only introduces or links
+settings-reference	Permission settings	excluded		only introduces or links
+settings-reference	Permission rule syntax	excluded		only repeats permissions › Permission rule syntax and permissions › Manage permissions
+errors	A command-line deny rule cannot be handed to a teammate intact	excluded		belongs to another tool type (agent teams)
+errors	Write or command blocked because the path cannot be safely resolved	excluded		owned by subagents (isolation.md)
+errors	Write or command blocked because the path names a network location	excluded		owned by subagents (isolation.md)
+permission-modes	Set plan mode as the default	excluded		only repeats permission-modes › Start in a different permission mode and permission-modes › Switch permission modes
+permission-modes	See also	excluded		only introduces or links
+auto-mode-config	Configure auto mode	excluded		only repeats permission-modes › What the classifier blocks by default and permission-modes › Auto mode on Bedrock, Agent Platform, or Foundry, or only introduces or links
+auto-mode-config	Fix repeated denials	excluded		only repeats auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry and auto-mode-config › Generate environment entries with `/auto-mode-setup`
+auto-mode-config	See also	excluded		only introduces or links
+permissions	Permission modes	excluded		only repeats permission-modes › Available modes, permission-modes › Allow only pre-approved tools with dontAsk mode, settings-reference › `permissions.disableBypassPermissionsMode` and settings-reference › `disableAutoMode`
+devcontainer	Run without permission prompts	excluded		only repeats permission-modes › Skip all checks with bypassPermissions mode and settings-reference › `permissions.disableBypassPermissionsMode`
+sandboxing	How sandboxing works	excluded		only introduces (no text of its own, its subsections are listed below)
+sandboxing	Configure the sandbox for your organization	excluded		only introduces (one sentence naming the subsections below)
+sandboxing	0-byte read-only files appear at `.claude` settings paths, and "Yes, and don't ask again" doesn't save	excluded		only repeats errors › Sandbox mask files left behind at write-deny paths
+sandboxing	See also	excluded		only introduces or links
+settings-reference	Sandbox settings	excluded		only introduces or links
+errors	`--sandbox` or `--no-sandbox` is not supported by claude remote-control	excluded		belongs to another tool type (remote control), the sentence on setting `sandbox.enabled` to `true` in a settings file repeats settings-reference › `sandbox.enabled`, the history sentence (removed in v2.1.300) is left out
+claude-apps-gateway	Deliver policy to Claude Desktop sessions	excluded		web or desktop app; its parent-settings sentence repeats managed-settings › Let an embedding host add policy
+network-config	Set network variables in settings, not the shell	included	configuring.md	the sentences on the supervisor inheriting the first shell's environment and on settings being the only configuration that reaches every background session
+network-config	Set network variables in settings, not the shell	excluded		the list of network variables belongs to another tool type (network configuration)
+network-config	Proxy configuration	excluded		belongs to another tool type (network configuration)
+env-vars	What the subprocess environment scrub removes	excluded		belongs to another tool type (environment variables); hooks takes part
+errors	crossSessionInbound must be one of accept, hold, refuse	excluded		belongs to another tool type (cross-session messaging)
+errors	MCP server name is reserved	excluded		belongs to another tool type (MCP)
+errors	Cloud gateway session expired	excluded		belongs to another tool type (authentication)
+managed-mcp	Servers that skip the allowlist check	excluded		belongs to another tool type (MCP)
+errors	Workspace not trusted when dispatching a background session	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Workspace not trusted when dispatching a background session	excluded		the Windows letter-case sentence is history
+monitoring-usage	Managed settings resolved event	included	configuring.md	the sentence on where to set `OTEL_LOG_MANAGED_SETTINGS`
+monitoring-usage	Managed settings resolved event	included	managed.md	the sentences on what the event shows and that server-managed settings can set `OTEL_LOG_MANAGED_SETTINGS` without the approval dialog
+monitoring-usage	Managed settings resolved event	excluded		the attribute catalogue belongs to another tool type (monitoring)
+claude-apps-gateway-config	What goes in `cli`	included	managed.md	the sentences that the document applies at the managed tier in place of server-managed settings and ignores OS-only keys
+claude-apps-gateway-config	What goes in `cli`	excluded		belongs to another tool type (Claude apps gateway: its boot-time schema validation, model rows, `managedMcpServers` row, `telemetry.forward_to` sentence and the `settings` alias); the `hooks` row and comment, the lead sentence with its `hooks` bullet, the decline paragraph and the non-interactive-run sentence are owned by hooks (placing.md); its sentence that the document ignores the settings restricted to OS-level policy sources such as `policyHelper` and `wslInheritsWindowsSettings` repeats server-managed-settings › Current limitations (the section itself links there), the approval-dialog bullets and the paragraph on delivered `env` variables repeat server-managed-settings › Security approval dialogs and › Environment variables and the approval dialog, and the `permissions.disableBypassPermissionsMode` and `allowManagedPermissionRulesOnly` rows repeat settings-reference › `permissions.disableBypassPermissionsMode` and › `allowManagedPermissionRulesOnly`
+monitoring-usage	Tool decision event	excluded		belongs to another tool type (telemetry); the `source` values and `rule_source` names only describe where a decision came from and state no settings behaviour
+best-practices	Change the permission mode	included	permissions.md	the sentence on `/fewer-permission-prompts`
+best-practices	Change the permission mode	excluded		compares or recommends tool types (guidance); its other facts repeat permission-modes › How auto mode evaluates actions, auto-mode-config › Where the classifier reads configuration and permissions › Manage permissions
+memory	Deploy organization-wide CLAUDE.md	excluded		owned by instructions (placing.md, including the `claudeMd` key's managed-only scope); the settings-versus-CLAUDE.md table is comparison owned by guidance
+monitoring-usage	How managed settings lock the OTLP destination	excluded		belongs to another tool type (telemetry); it states how a managed `OTEL_EXPORTER_OTLP_*` value removes developer-set variables, which is telemetry routing, and its cross-source sentence repeats server-managed-settings › Per-key exceptions across managed sources (the telemetry unit)
+plugins/mods/admin	Install your organization's mods and set the order	excluded		belongs to another tool type (mods); the `prependPlugins` and `appendPlugins` scope bullet repeats settings-reference › `prependPlugins` and `appendPlugins` (Scope lines, taken in keys.md)
+agent-view	Version history	excluded		release notes or history only
+best-practices	Limit access with permission rules and the sandbox	excluded		compares or recommends tool types (guidance); its facts repeat permissions › Manage permissions, › Read and Edit and sandboxing › Permission rules
+self-hosted-environments-configuration	Stop sessions that fail to fetch server-managed settings	included	managed.md	the sentence that a reply with no server-managed settings counts as a successful fetch
+self-hosted-environments-configuration	Stop sessions that fail to fetch server-managed settings	included	troubleshooting.md	the sentence on the fail-closed message
+self-hosted-environments-configuration	Stop sessions that fail to fetch server-managed settings	excluded		the rest: web or desktop app (self-hosted runners for cloud sessions)
+hooks-guide	Hooks and permission modes	excluded		owned by hooks (tool-events.md)
+claude-apps-gateway-config	Client-side managed settings	excluded		only repeats managed-settings › Which managed source supplies login keys, managed-settings › How Claude Code combines managed sources and settings-reference › `parentSettingsBehavior` (a plist or HKLM policy replaces the file by default, and all three keys follow the highest-priority-source rule); its `allowedProviders` and `claude gateway` sentences belong to another tool type (Claude apps gateway)
+hooks	Permission update entries	excluded		owned by hooks (tool-events.md)
+monitoring-usage	Safety event categories	excluded		belongs to another tool type (telemetry)
+best-practices	Run Claude from a script	excluded		compares or recommends tool types (guidance); its flag facts repeat cli-reference › CLI flags
+errors	headersHelper not run	excluded		belongs to another tool type (MCP); its trust facts repeat permissions › What runs before you trust a folder and errors › Workspace has not been trusted
+hooks-guide	Auto-approve specific permission prompts	excluded		owned by hooks (tool-events.md)
+managed-mcp	Policy-based control with allowlists and denylists	excluded		belongs to another tool type (MCP); its sentence that the allowlist lock applies from every admin-controlled managed source repeats managed-settings › Keys read from every admin source, and its note that `allowManagedMcpServersOnly` is separate from `allowManagedPermissionRulesOnly` repeats settings-reference › `allowManagedPermissionRulesOnly`
+managed-mcp	Configuration summary	excluded		belongs to another tool type (MCP); the Where it lives column repeats the Scope lines of settings-reference › `managedMcpServers`, `allowedMcpServers`, `deniedMcpServers`, `allowManagedMcpServersOnly` and `allowClaudeInChromeWithManagedMcp` (keys.md) and managed-settings › Keys only a managed source can set
+plugins/mods/admin	Stop user-installed mods from loading	excluded		belongs to another tool type (mods)
+agent-view	Permission mode	included	modes.md	the bullets on the mode kept on `/bg`, the shell and `--bg` dispatch, the `defaultMode` order and refusal, and the permissiveness order
+agent-view	Permission mode	excluded		the bypass notice sentence repeats permission-modes › Bypass permissions ignored in a background session
+agent-view	Dispatch defaults	included	modes.md	the sentences on `--permission-mode`, `--dangerously-skip-permissions`, `--allow-dangerously-skip-permissions` and `--restricted` for `claude agents`
+agent-view	Dispatch defaults	excluded		the `--model`, `--effort` and `--agent` defaults belong to another tool type (agent view); the disclaimer sentences repeat permission-modes › Skip all checks with bypassPermissions mode
+artifacts	Disable artifacts	excluded		belongs to another tool type (artifacts); its precedence sentences repeat settings › Exceptions to managed settings precedence (the `enableArtifact` row) and its `WebFetch(domain:claude.ai)` sentence repeats permissions › Allow or deny every fetch
+errors	Cloud sessions cannot be created from a `--restricted` session	excluded		web or desktop app (cloud sessions); the refusal repeats the cli-reference › CLI flags row `--restricted`
+errors	Cannot switch renderers in this session	excluded		belongs to another tool type (renderers); its list of launch flags and session-only permission rules that a restart can't carry is the `/tui` restart check, not settings behaviour
+vs-code	Use the prompt box	excluded		belongs to another tool type (VS Code extension)
+authentication	Restrict which API providers a machine may use	excluded		belongs to another tool type (authentication and providers); its managed-only list and server-managed reach repeat settings-reference › `allowedProviders` (Scope line, taken in keys.md) and server-managed-settings › Platform availability
+hooks	ConfigChange	excluded		owned by hooks (events.md) and skills (loading.md: the skill-file clause and `skills` matcher row)
+monitoring-usage	Safety event	excluded		belongs to another tool type (telemetry)
+plugins/mods/admin	Know what happens by default	excluded		belongs to another tool type (mods); its sentences that deny and ask rules beat a mod's approval and that a mod-approved call skips the classifier in auto mode repeat permissions › Precedence among rules, hooks, and mods (owned by hooks), and its managed `CLAUDE.md` sentence is owned by instructions
+plugins/org	Choose a delivery mechanism	excluded		only repeats managed-settings › Choose a delivery mechanism (it lists three of the four mechanisms and points to Where each mechanism stores the policy)
+self-hosted-environments-configuration	How each session's config is assembled	excluded		web or desktop app (the self-hosted runner for cloud sessions); its precedence pointer only links to settings › Settings precedence
+agent-teams	Permissions	included	permissions.md	the paragraph on in-process and split-pane teammates and `--allowedTools`
+agent-teams	Permissions	included	modes.md	the sentences on teammates' starting permission mode
+agent-teams	Permissions	excluded		the version clause is history; the plan-approval sentence belongs to another tool type (agent teams)
+agent-view	What carries over when you background	included	placing.md	the bullets on `--settings` and `--setting-sources` carrying through to the backgrounded session
+agent-view	What carries over when you background	excluded		the rest belongs to another tool type (agent view)
+best-practices	Choose who a rule applies to	excluded		compares or recommends tool types (guidance); its scope bullets repeat settings › Settings files and who they affect and permissions › Project allow rules and workspace trust
+errors	Teammate's agent definition was not restored	excluded		belongs to another tool type (agent teams); its `hasTrustDialogAccepted` fix repeats permissions › What runs before you trust a folder
+headless	Start faster with bare mode	excluded		owned in parts by instructions (excluding.md), skills (excluding.md, loading.md), hooks (excluding.md) and subagents (excluding.md); its sentences that a `-p` session shows no workspace trust dialog and runs project hooks and `.mcp.json` servers in an untrusted folder repeat permissions › What runs before you trust a folder and permissions › Project allow rules and workspace trust; the rest is the bare-mode feature (authentication, tools, system reminders)
+hooks-guide	Configure hook location	excluded		belongs to another tool type (hooks); the location table repeats settings › Settings files and who they affect and the `disableAllHooks` sentences repeat settings-reference › `disableAllHooks` (owned by hooks)
+mcp	Trust a folder before its headersHelper runs	excluded		belongs to another tool type (MCP); its trust facts (parent folder trust and the `-p` automatic trust don't count, `hasTrustDialogAccepted` in `~/.claude.json`) repeat permissions › What runs before you trust a folder
+plugins/security	Understand what a plugin can do	excluded		belongs to another tool type (plugins); its statement that hooks, monitors and servers run outside the sandbox and that permission rules cover only Claude's tool calls repeats sandboxing › What runs outside the sandbox
+remote-control	Start a Remote Control session	included	modes.md	the row on `--permission-mode <mode>`
+remote-control	Start a Remote Control session	excluded		the rest belongs to another tool type (Remote Control); its sentence that sandboxing for the sessions the server starts is turned on in a settings file repeats settings-reference › `sandbox.enabled`
+sub-agents	Choose the subagent scope	excluded		owned by subagents (placing.md) and hooks (placing.md); its managed-settings-directory sentence for managed subagents is subagents' (placing.md)
+sub-agents	Trust required for inline MCP servers	excluded		owned by subagents (tools.md)
+admin-setup	Set up Claude Code for your organization	excluded		only introduces or links (the page intro and decision table; its sentence that managed settings take precedence over local configuration and arrive from the admin console, MDM or a file repeats managed-settings › Choose a delivery mechanism)
+claude-apps-gateway-config	`managed`	excluded		belongs to another tool type (Claude apps gateway policy configuration)
+hipaa-setup	Deploy managed settings	included	managed.md	the sentence on the `Allowed providers` line in `/status`
+hipaa-setup	Deploy managed settings	excluded		the rest is a recommended sample of managed keys (guidance) belonging to HIPAA setup
+monitoring-usage	Administrator configuration	included	configuring.md	the sentence that Claude Code does not pass `OTEL_*` variables to the subprocesses it spawns, apart from its hooks clause (owned by hooks)
+monitoring-usage	Administrator configuration	excluded		only repeats settings-reference › Variables Claude Code ignores in `env` (the sentence that the OpenTelemetry exporter variables are ignored in project and local settings, and that `none` selectors still apply); the desktop sentence: desktop app
+monitoring-usage	Map egress paths to managed controls and events	excluded		only introduces or links (a table pairing paths with keys whose own sections state them; its `allowedHttpHookUrls` merge sentence is owned by hooks)
+plugins/relevance	Enable suggestions in managed settings	excluded		belongs to another tool type (plugins); its managed-only fact for `pluginSuggestionMarketplaces` repeats managed-settings › Keys only a managed source can set
+sandbox-environments	How isolation relates to permission modes	excluded		belongs to another tool type (sandbox environments); its sentence that Claude Code refuses `--dangerously-skip-permissions` as root repeats permission-modes › Skip all checks with bypassPermissions mode, its advice to run bypass sessions in a container is guidance, and the hooks clause is owned by hooks
+self-hosted-environments-configuration	Permissions and tool approval	excluded		web or desktop app (self-hosted runners for cloud sessions)
+self-hosted-environments-configuration	Repository-committed permission rules	excluded		web or desktop app (the self-hosted runner for cloud sessions); its sentences that a `defaultMode` of `auto` is honoured only from the image-wide or user-level file and that a single leading slash is relative to the project root repeat permission-modes › Which mode a session starts in and permissions › Where a pattern anchors
+tools-reference	Glob tool behavior	excluded		belongs to another tool type (tools); hooks takes the sentence that searches reach hooks as `Bash` calls and subagents takes its `Glob` or `Grep` subagent bullet; its sentences that naming `Glob` or `Grep` in `--tools` or `--allowedTools` restores them while an allow rule in a settings file doesn't, and that a bare Bash deny rule removes `Bash`, are tool availability
+tools-reference	Task-tracking tools in subagents and agent teams	included	configuring.md	the `CLAUDE_CODE_ENABLE_TODO_TOOLS` item's sentences on the fixed environment and `--settings` `env`
+tools-reference	Task-tracking tools in subagents and agent teams	included	placing.md	the sentence that a split-pane teammate also gets your `--settings` value
+tools-reference	Task-tracking tools in subagents and agent teams	excluded		the rest belongs to another tool type (task tools); its sentence on what a split-pane teammate inherits repeats agent-teams › Permissions (permissions.md)
+errors	Prompt is too long	excluded		belongs to another tool type (compaction); its sentence that the `/config` Auto-compact toggle writes `autoCompactEnabled` to user settings repeats settings › Use the /config menu
+errors	Not carried over to the sessions Remote Control starts	included	modes.md	the sentence on a `--permission-mode` before the verb and the `claude remote-control --permission-mode <mode>` bullet
+errors	Not carried over to the sessions Remote Control starts	excluded		the other refused flags and harmless-flag sentences belong to another tool type (Remote Control); the `unknown option` sentence is history
+headless	Create a commit	excluded		only repeats permissions › Wildcard patterns (the trailing ` *` and the space before it); the user-invoked skills bullet is owned by skills and the `/config key=value` bullet repeats commands › All commands (the `/config` row, taken in configuring.md)
+mcp	Project scope	included	modes.md	the sentence on `skipDangerousModePermissionPrompt` and the project MCP approval prompt
+mcp	Project scope	excluded		the rest belongs to another tool type (MCP)
+sub-agents	Built-in subagents	excluded		owned by subagents (invoking.md and excluding.md; its `permissions.deny` and `Agent` deny bullets are in excluding.md)
+sub-agents	Disable specific subagents	excluded		owned by subagents (excluding.md)
+worktrees	What worktrees share with the main checkout	excluded		belongs to another tool type (worktrees); its Permission approvals bullet repeats permissions › Permission system and settings › Where Claude Code keeps the local file in a git repository, its sandbox sentence repeats sandboxing › Filesystem isolation (the Git worktrees bullet), and skills, hooks and subagents take their clauses
+claude-apps-gateway	Allow a gateway on public address space you own	excluded		belongs to another tool type (Claude apps gateway sign-in); its scope sentence (added to the managed source that holds the login keys; ignored in user, project and server-managed settings) repeats settings-reference › `gatewayInternalNetworks` (Scope line, taken in keys.md)
+claude-apps-gateway	Set the opt-in	excluded		only repeats managed-settings › How Claude Code combines managed sources and settings-reference › `managedSourcesBehavior` (the `parentSettingsBehavior` row of its table: read from the highest-priority source only, so a source that outranks the file must carry it, and remote settings outrank plist, HKLM and file); its Agent SDK `resolveSettings()` step is Agent SDK
+claude-apps-gateway-config	Settings the gateway derives for Claude Desktop	excluded		web or desktop app
+costs	Report spend at your contracted rates	excluded		belongs to another tool type (costs); its managed-only delivery of `modelPricing` repeats settings-reference › `modelPricing` (Scope line, taken in keys.md)
+fullscreen	Enable fullscreen rendering	excluded		belongs to another tool type (renderers); the restart carries `--allowed-tools`, `--disallowed-tools` and the permission mode, and declines for `--setting-sources` or session-only rules, as the `/tui` restart check
+hooks	Defer a tool call for later	excluded		owned by hooks (tool-events.md)
+managed-mcp	Provide servers through managed settings	excluded		the rest belongs to another tool type (MCP); its list of managed sources repeats settings-reference › `managedMcpServers` (Scope line, taken in keys.md)
+model-config	Override model IDs per version	included	keys.md	the paragraph on `modelOverrides` when `availableModels` is set in managed settings
+model-config	Override model IDs per version	excluded		the rest belongs to another tool type (models); its `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` paragraph repeats settings › Exceptions to managed settings precedence
+monitoring-usage	Retention sweep event	excluded		belongs to another tool type (telemetry and session-data retention); its `cleanupPeriodDays` managed-pin and unreadable-settings sentences state retention behaviour only
+plugins/mods/admin	Allow only your organization's mods	excluded		belongs to another tool type (mods); its `disableSideloadFlags` mention repeats settings-reference › `disableSideloadFlags`
+plugins/org	Require plugins per repository	included	permissions.md	the sentences that `extraKnownMarketplaces` entries apply only in a trusted folder, interactively and in `-p` runs
+plugins/org	Require plugins per repository	excluded		the rest belongs to another tool type (plugins)
+plugins/org	Troubleshoot policy	excluded		only repeats managed-settings › Read the source in /status (the `Setting sources` line and `Enterprise managed settings`) and errors › Managed settings document could not be parsed; its last bullet repeats settings › Settings precedence
+plugins/troubleshooting	`Disabled in ~/.claude/settings.json but still loads`	excluded		belongs to another tool type (plugins); its precedence fact (project and local settings override a user `false`) repeats settings › Settings precedence
+sandbox-environments	Compare sandboxing approaches	excluded		compares or recommends tool types (guidance)
+sandbox-environments	Sandboxed Bash tool	excluded		only repeats sandboxing › What runs outside the sandbox
+sandbox-environments	Set up and launch the runtime	excluded		belongs to another tool type (sandbox runtime `srt`); its settings file `~/.srt-settings.json` and the allowed write paths and domains are the runtime's own configuration, not `sandbox` settings
+security	Built-in protections	included	permissions.md	the bullet on the working directory boundary in Manual mode
+security	Built-in protections	excluded		only introduces or links the other bullets (its Accept Edits bullet repeats permission-modes › Auto-approve file edits with acceptEdits mode)
+security	Related resources	excluded		only introduces or links
+best-practices	Deterministic and non-deterministic instructions	excluded		compares or recommends tool types (guidance)
+agent-teams	Context and communication	included	placing.md	the sentence that teammates load from the same `--setting-sources` list as the lead
+agent-teams	Context and communication	excluded		the rest belongs to another tool type (agent teams); the version sentence is history
+channels	Quickstart	excluded		belongs to another tool type (channels), the sentence that `--dangerously-skip-permissions` bypasses most prompts while the actions no mode auto-approves still apply repeats permission-modes › Skip all checks with bypassPermissions mode and permission-modes › Actions no mode auto-approves (owned by hooks, tool-events.md), the clause that an admin must enable channels in managed settings is the `channelsEnabled` key (settings-reference › `channelsEnabled`, excluded as channels)
+errors	MCP permission prompt tool not found	included	modes.md	the paragraph on the run exiting 1 on the first tool call and its error message
+errors	MCP permission prompt tool not found	excluded		the `MCP_TIMEOUT` wait sentence repeats cli-reference › CLI flags; the version sentence is history
+github-actions	Run a skill	excluded		owned by skills (invoking.md)
+github-actions	Run on a schedule	excluded		belongs to another tool type (GitHub Actions), its `--allowedTools` in `claude_args` and `permissions.allow` rule in the action's `settings` input are inputs of the action
+github-actions	Pass CLI arguments	excluded		belongs to another tool type (GitHub Actions)
+github-enterprise-server	Allowlist GHES marketplaces in managed settings	excluded		belongs to another tool type (plugin marketplaces), its `strictKnownMarketplaces` `hostPattern` entry is a marketplace key (settings-reference › Allowed source types) and its pointer to the managed file locations repeats managed-settings › Where each mechanism stores the policy
+gitlab-ci-cd	Quick setup	excluded		belongs to another tool type (GitLab CI/CD), `--permission-mode acceptEdits` and `--allowedTools` are example job arguments
+gitlab-ci-cd	Amazon Bedrock job example (OIDC)	excluded		belongs to another tool type (GitLab CI/CD)
+gitlab-ci-cd	Agent Platform job example (Workload Identity Federation)	excluded		belongs to another tool type (GitLab CI/CD)
+hooks-guide	Get notified when Claude needs input	excluded		owned by hooks (events.md)
+mcp	Require approval for a specific tool	included	modes.md	the sentences on the `--permission-prompt-tool` denial message, the Agent SDK `canUseTool` callback and the missing "don't ask again" option
+mcp	Require approval for a specific tool	excluded		the every-call prompt and `dontAsk` denial repeat permission-modes › Actions no mode auto-approves and Allow only pre-approved tools with dontAsk mode; the rest belongs to another tool type (MCP)
+memory	Load from additional directories	excluded		owned by instructions (sharing.md), its `env` block sentence only points to env-vars › Set variables in settings files
+skills	Load skills from a directory outside the project	excluded		owned by skills (loading.md, sharing.md), the sentence that `permissions.additionalDirectories` grants file access only and loads none of these repeats permissions › Additional directories grant file access, not configuration
+skills	Run a same-named skill from an added directory	excluded		owned by skills (placing.md)
+skills	Where synced skills load	excluded		owned by skills (excluding.md, sharing.md), its `syncClaudeAiSkills` sentences are the skills type's (settings › Exceptions to managed settings precedence also lists the key's row, owned by skills)
+skills	When only managed permission rules apply	excluded		owned by skills (permissions.md, dynamic-context.md), its `allowManagedPermissionRulesOnly` effect on `allowed-tools` is stated by the skills type
+sub-agents	Subagent output scanning	excluded		owned by subagents (running.md)
+claude-apps-gateway-config	Precedence with other managed sources	excluded		belongs to another tool type (Claude apps gateway); its ranking repeats managed-settings › How Claude Code combines managed sources
+claude-apps-gateway-deploy	Push the gateway URL to developer machines	excluded		belongs to another tool type (gateway sign-in and authentication), its `forceLoginMethod`, `forceLoginGatewayUrl` and `parentSettingsBehavior` push through MDM or `managed-settings.json` repeats managed-settings › Deploy a managed settings file and settings-reference › `parentSettingsBehavior`
+devcontainer	Next steps	excluded		only introduces or links
+feature-availability	Features available on every provider	included	sandbox.md	the clause that sandboxing works on every provider
+feature-availability	Features available on every provider	excluded		belongs to another tool type (provider availability)
+hooks	Disable or remove hooks	excluded		owned by hooks (excluding.md, placing.md)
+hooks	PermissionRequest	excluded		owned by hooks (tool-events.md)
+hooks	PermissionRequest input	excluded		owned by hooks (tool-events.md)
+hooks	PermissionRequest decision control	excluded		owned by hooks (tool-events.md)
+interactive-mode	Shell mode with `!` prefix	excluded		belongs to another tool type (shell mode), the sentence that commands typed in shell mode run outside the sandbox unless the session is listed under strict sandbox mode repeats sandboxing › What runs outside the sandbox and sandboxing › Turn off the retry with strict sandbox mode, the `respondToBashCommands` sentence is the interface type's (settings-reference › `respondToBashCommands`, excluded as interface)
+managed-mcp	Allow claude.ai connectors alongside the managed set	included	keys.md	the sentence on the sources `allowAllClaudeAiMcps` is read from
+managed-mcp	Allow claude.ai connectors alongside the managed set	excluded		the rest belongs to another tool type (MCP)
+model-config	Setting your model	excluded		belongs to another tool type (models), the paragraph on `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` repeats settings › Exceptions to managed settings precedence, the sentences that `/model` saves the `model` field to your user settings and that project and managed settings reapply on the next launch are the models type's (settings › A change you made in Claude Code is lost in new sessions states the file write), the PreModelSwitch paragraphs are owned by hooks (events.md)
+model-config	Set a default model for new sessions	excluded		belongs to another tool type (models)
+model-config	A new session starts on a different model than you picked	excluded		belongs to another tool type (models), the bullet that `/model` writes `model` to `~/.claude/settings.json` and a generated or read-only file loses the choice repeats settings › A change you made in Claude Code is lost in new sessions
+monitoring-usage	Calls without a safety event	excluded		belongs to another tool type (telemetry), the bullet on a call approved at a prompt only a `PreToolUse` hook required is owned by hooks (troubleshooting.md), the sentence that a `-p` run with neither `--permission-prompt-tool` nor `--permission-prompts none` refuses prompts repeats permission-modes › Tool calls denied in `claude -p` and Agent SDK runs
+plugins/loading	Disabled in user settings but still loads	excluded		belongs to another tool type (plugins), the sentences that a higher-precedence source overrides `~/.claude/settings.json` and that `.claude/settings.local.json` outranks the project file repeat settings › Settings precedence
+plugins/org	Manage Claude Code plugins for your organization	excluded		belongs to another tool type (plugins), its sentences that users can't override managed plugin keys and that the controls take effect only from managed settings are the plugins type's (managed delivery itself is in managed-settings › Choose a delivery mechanism)
+sandbox-environments	Choose an approach	excluded		compares or recommends (guidance)
+sandbox-environments	See also	excluded		only introduces or links
+security	Working with sensitive code	excluded		compares or recommends (guidance)
+self-hosted-environments-deploy	Harden your deployment	excluded		web or desktop app (self-hosted environments run cloud sessions), its repo-settings guard scans a repository's `additionalDirectories`, `permissions.allow` Edit and Write rules, `sandbox.filesystem.allowWrite`, `env` and `sandbox.enabled: false` for the runner and states nothing about how Claude Code treats those keys
+self-hosted-environments-reference	Runner CLI flags	excluded		web or desktop app (self-hosted environments), its `--trust-workspace`, `--confine-repo-settings` and `--server-auto-mode-lists` rows are runner flags
+self-hosted-environments-reference	Session startup timeout	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-reference	Auto mode rule lists	excluded		web or desktop app (self-hosted environments), the `environment`, `soft_deny` and `allow` lists it applies are the control plane's, not the `autoMode` settings (settings-reference › `autoMode` is in auto-mode.md)
+statusline	Status line not appearing	excluded		belongs to another tool type (status line), the bullets on `disableAllHooks` and `allowManagedHooksOnly` repeat settings-reference › `disableAllHooks` and settings-reference › What runs under `allowManagedHooksOnly` (owned by hooks, excluding.md)
+agent-view	Read session state	excluded		belongs to another tool type (agent view), the notification sentences are owned by hooks (events.md), the `preferredNotifChannel` sentence is the interface type's
+agent-view	Peek and reply	excluded		belongs to another tool type (agent view), the `hook output invalid:` sentences are owned by hooks (troubleshooting.md), the sentence that a permission prompt or sandbox prompt isn't answered from the peek panel is agent view's
+agent-view	Bring back a past session	excluded		belongs to another tool type (agent view), `/resume` failing when the view was opened with `--permission-mode` or `--settings` is agent view's
+claude-directory	What's not shown	excluded		only repeats settings › Settings precedence (the `managed-settings.json` row; its Location cell repeats managed-settings › Deploy a managed settings file), the `CLAUDE.local.md` and `AGENTS.md` rows are the instructions type's (the `AGENTS.md` row is owned by instructions, agents-md.md) and the plugins row is plugins'
+common-workflows	Plan before editing	excluded		only repeats permission-modes › Analyze before you edit with plan mode (and permission-modes › Switch permission modes for `Shift+Tab`)
+computer-use	Safety and the trust boundary	excluded		belongs to another tool type (computer use)
+computer-use	See also	excluded		only introduces or links
+cross-session-messaging	The session's inbox socket	excluded		belongs to another tool type (cross-session messaging), the sentences on hooks are owned by hooks (configuring.md), the sentence that `sandbox.network.allowAllUnixSockets` and `sandbox.network.allowUnixSockets` control whether a Bash command can reach the socket repeats settings-reference › `sandbox.network.allowUnixSockets` and settings-reference › `sandbox.network.allowAllUnixSockets`
+gitlab-ci-cd	Job can't write comments or open MRs	excluded		belongs to another tool type (GitLab CI/CD)
+goal	Requirements	excluded		belongs to another tool type (goal), the sentence that `/goal` follows the same workspace trust rule as hooks in settings files repeats the hooks-in-settings-files row of permissions › What runs before you trust a folder, the sentence that `/goal` is unavailable under `disableAllHooks` or `allowManagedHooksOnly` repeats settings-reference › `disableAllHooks` and › What runs under `allowManagedHooksOnly` (owned by hooks, excluding.md)
+headless	Run Claude Code programmatically	excluded		only introduces or links
+headless	Basic usage	excluded		only introduces or links (it names `--allowedTools` and points to headless › Auto-approve tools, on the sweep-1 list)
+headless	Background tasks at exit	excluded		belongs to another tool type (non-interactive runs), the sentences on background work are owned by subagents (running.md)
+headless	MCP work when a non-interactive run ends	excluded		belongs to another tool type (MCP)
+headless	Stop a run with SIGTERM	excluded		belongs to another tool type (non-interactive runs), the SessionEnd sentences are owned by hooks (events.md)
+headless	If the working directory is deleted	excluded		belongs to another tool type (non-interactive runs)
+large-codebases	Settings on this page	excluded		only introduces or links
+memory	Set up rules	excluded		owned by instructions (placing.md, loading.md, excluding.md), the sentence on excluding `project` from `--setting-sources` is owned by instructions (excluding.md)
+plugin-evals	Grant tools	excluded		belongs to another tool type (plugin evals), its `--allow-tools` grant and the sandbox it puts around a granted `Bash` apply to eval runs only
+plugin-evals	See also	excluded		only introduces or links
+plugins/components	Executables	excluded		belongs to another tool type (plugins), the sentence that a sandboxed PowerShell command doesn't find a plugin's `bin/` on its `PATH` is the plugin `bin/` feature's
+plugins/components	Monitors	excluded		belongs to another tool type (plugins), the sentence that a monitor runs with your full user permissions outside the sandbox repeats sandboxing › What runs outside the sandbox
+sessions	Resume a running background session	excluded		belongs to another tool type (sessions and agent view), its list of flags that stop `--resume` opening the session (`--permission-mode`, `--settings`) is session behaviour
+skills	How Claude Code handles the frontmatter of a synced skill	excluded		owned by skills (sharing.md)
+sub-agents	Restrict which tools a subagent can use	excluded		owned by subagents (tools.md), its sentence that a Bash deny rule in `permissions.deny` applies to the main conversation and to subagents is owned by subagents too
+sub-agents	MCP server names that contain a double underscore	excluded		owned by subagents (tools.md)
+sub-agents	Restrict which subagents can be spawned	excluded		owned by subagents (tools.md)
+sub-agents	Turn fork mode off	excluded		owned by subagents (forking.md), the `Agent(fork)` deny rule bullet is in the owned part
+troubleshooting	Troubleshooting	excluded		only introduces or links
+troubleshooting	Clipboard commands such as `pbcopy` fail inside the sandbox	excluded		only repeats sandboxing › `pbcopy`, `xclip`, or `wl-copy` doesn't update the clipboard (the `/copy` detail is the commands type's)
+workflows	Ask for a workflow in your prompt	included	permissions.md	the sentence that the agents' tool calls get the same permission checks and sandboxing
+workflows	Ask for a workflow in your prompt	excluded		the rest belongs to another tool type (workflows)
+workflows	Dismiss or turn off the keyword	excluded		belongs to another tool type (workflows)
+workflows	Where the keyword works	excluded		belongs to another tool type (workflows)
+worktrees	How Claude Code enforces isolation	excluded		owned by subagents (isolation.md)
+claude-apps-gateway	Which machines need the opt-in	excluded		web or desktop app (Claude Desktop embedded sessions)
+claude-apps-gateway-config	Export directly to your collector	excluded		belongs to another tool type (telemetry), the sentence that a changed endpoint in a managed policy waits for approval in the security approval dialog repeats server-managed-settings › Environment variables and the approval dialog (which lists `OTEL_EXPORTER_OTLP_ENDPOINT`)
+devcontainer	Development containers	excluded		belongs to another tool type (dev containers), its warning about `--dangerously-skip-permissions` in a container is a safety recommendation
+hipaa-setup	Anthropic credentials in commands, hooks, and MCP servers	excluded		belongs to another tool type (HIPAA configuration and environment scrub), the first two sentences are owned by hooks (input-output.md), the sentence that cloud provider and GitHub credentials are not removed is the scrub's (env-vars › What the subprocess environment scrub removes, excluded as environment variables)
+hooks	Persisted variables in PowerShell commands	excluded		owned by hooks (events.md)
+hooks	PreToolUse `ask` decisions in auto mode	excluded		owned by hooks (tool-events.md)
+hooks	Notification	excluded		owned by hooks (events.md)
+hooks	Notification input	excluded		owned by hooks (events.md)
+keybindings	Tabs actions	excluded		belongs to another tool type (keybindings)
+managed-mcp	Allow Claude in Chrome alongside the managed set	excluded		belongs to another tool type (MCP), the sentence that `allowClaudeInChromeWithManagedMcp` is read only from the device's MDM plist, HKLM key or system `managed-settings.json`, even when server-managed settings deliver the rest, repeats the Scope line of settings-reference › `allowClaudeInChromeWithManagedMcp` (taken by keys.md)
+plugins/loading	Sign-in requirements for terminal sync	excluded		belongs to another tool type (plugins), the clause that a `--setting-sources` list leaving out `user` stops the sync is plugin behaviour
+sandbox-environments	Choose a sandbox environment	excluded		only introduces or links
+sandbox-environments	Sandbox runtime	excluded		belongs to another tool type (the `@anthropic-ai/sandbox-runtime` package), the hooks sentence is owned by hooks (excluding.md)
+sandbox-environments	What the runtime blocks on its own	excluded		belongs to another tool type (the `@anthropic-ai/sandbox-runtime` package)
+sandbox-environments	After unattended runs	excluded		belongs to another tool type (the `@anthropic-ai/sandbox-runtime` package)
+sandbox-environments	Dev containers	excluded		compares or recommends (guidance)
+sandbox-environments	Custom container	excluded		compares or recommends (guidance), the sentence that unprivileged containers need `enableWeakerNestedSandbox` repeats sandboxing › Bubblewrap fails to start inside a container and settings-reference › `sandbox.enableWeakerNestedSandbox`
+sandbox-environments	Virtual machine	excluded		compares or recommends (guidance)
+sandbox-environments	Enforce isolation across an organization	included	sandbox.md	the sentences that the built-in Bash sandbox is the only approach Claude Code enforces and that a dev container is a convention, not an enforcement boundary
+sandbox-environments	Enforce isolation across an organization	excluded		the managed sandboxing sentence repeats sandboxing › Enforce sandboxing with managed settings; the dev container and VM bullets recommend (guidance)
+security	Core protections	included	permissions.md	the sentences that curl and wget aren't auto-approved and prompt in Manual mode
+security	Core protections	excluded		the deny-rule and sandbox sentences repeat permissions › What a Bash rule doesn't match; the rest repeats permissions › Read-only commands
+self-hosted-environments-configuration	Replace an earlier copy of the Stop hook script	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Troubleshooting	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	When the runner exits	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Recognize a failed start	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Restart with a wait that grows	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Check why the runner keeps exiting	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	A session is picked up, but Claude never answers its first message	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Confirm the cause in the runner's log	excluded		web or desktop app (self-hosted environments)
+self-hosted-environments-deploy	Stop the session from trying again	excluded		web or desktop app (self-hosted environments)
+setup	Set up on Windows	excluded		belongs to another tool type (installation), the Sandboxing column (native Windows not supported, WSL 2 supported, WSL 1 not supported) repeats sandboxing › Configure the sandboxed Bash tool and sandboxing › Set up Linux and WSL2
+setup	Install on native Windows	excluded		belongs to another tool type (installation), its `env` example for `CLAUDE_CODE_GIT_BASH_PATH` only shows the `env` key that settings-reference › `env` states
+setup	Install in WSL	excluded		belongs to another tool type (installation)
+tools-reference	Task tool availability	excluded		belongs to another tool type (task tools), its `--allowedTools` and `--tools` flags only make the task tools available
+tools-reference	Monitor tool	excluded		belongs to another tool type (Monitor tool); its Bash-rule sentence repeats permissions › Tool-specific permission rules and its auto-mode allow-rule clause repeats permission-modes › How auto mode evaluates actions
+claude-apps-gateway	CI pipelines and remote machines	excluded		belongs to another tool type (Claude apps gateway)
+devcontainer	Persist authentication and settings across rebuilds	included	placing.md	the sentences on where `.claude.json` lives with and without `CLAUDE_CONFIG_DIR`
+devcontainer	Persist authentication and settings across rebuilds	excluded		the rest belongs to another tool type (dev containers)
+security	Permission-based architecture	excluded		only repeats permission-modes › Available modes, permission-modes › Which mode a session starts in and permission-modes › How auto mode evaluates actions
+claude-apps-gateway	How hook and skill keys in parent settings take effect	excluded		Agent SDK (the `managedSettings` option)
+tools-reference	WebFetch availability	excluded		belongs to another tool type (WebFetch tool)
+cli-reference	System prompt flags	excluded		belongs to another tool type (system prompt)
+cli-reference	System prompt flags in resumed conversations	excluded		belongs to another tool type (system prompt)
+errors	Claude Code exited after an unrecoverable interface error	excluded		belongs to another tool type (interface)
+errors	Agent descriptions are over the 15.0k-token limit	excluded		owned by subagents
+errors	Hook needs quotes around a path with a space	excluded		owned by hooks
+errors	Instruction file not loaded	excluded		owned by instructions
+errors	A skill, command, or workflow wasn't loaded because its name is reserved	excluded		owned by skills
+errors	Skill or command name refused	excluded		owned by skills
+errors	otelHeadersHelper failed	excluded		belongs to another tool type (monitoring)
+errors	ANTHROPIC\_FOUNDRY\_RESOURCE must be a Foundry resource name	excluded		belongs to another tool type (providers)
+errors	The 200K limit isn't enforced	excluded		belongs to another tool type (models)
+errors	Unrecognized model ID on a request	excluded		owned by subagents in part; the rest belongs to another tool type (models)
+model-config	Surface coverage	excluded		belongs to another tool type (models)
+model-config	Default model behavior	excluded		belongs to another tool type (models)
+model-config	Enforce the allowlist for the Default model	excluded		belongs to another tool type (models)
+model-config	Control the model users run on	excluded		belongs to another tool type (models)
+model-config	Merge behavior	excluded		belongs to another tool type (models)
+model-config	Mantle model IDs	excluded		belongs to another tool type (models)
+model-config	Block specific models or versions	excluded		belongs to another tool type (models)
+model-config	Organization model restrictions	excluded		belongs to another tool type (models)
+settings-reference	Model and responses	excluded		only introduces or links
+settings-reference	`advisorModel`	excluded		belongs to another tool type (advisor)
+settings-reference	`alwaysThinkingEnabled`	excluded		belongs to another tool type (models)
+settings-reference	`availableModels`	excluded		belongs to another tool type (models)
+settings-reference	`effortLevel`	included	keys.md	the sentences on which models the key applies to in each file
+settings-reference	`effortLevel`	excluded		the rest belongs to another tool type (models)
+settings-reference	`enforceAvailableModels`	included	keys.md	the sentence that the key is read from the managed source alone when any managed settings are deployed
+settings-reference	`enforceAvailableModels`	excluded		the rest belongs to another tool type (models)
+settings-reference	`fallbackModel`	excluded		belongs to another tool type (models)
+settings-reference	`fastMode`	excluded		belongs to another tool type (fast mode)
+settings-reference	`fastModePerSessionOptIn`	excluded		belongs to another tool type (fast mode)
+settings-reference	`language`	excluded		belongs to another tool type (response language)
+settings-reference	`maxEffortLevel`	included	placing.md	the bullet on per-model caps in `modelSettings`
+settings-reference	`maxEffortLevel`	excluded		the rest belongs to another tool type (models) (other types already take part: subagents)
+settings-reference	`model`	included	placing.md	the sentence that an organization default model overrides `model` in user, project and local settings
+settings-reference	`model`	excluded		the rest belongs to another tool type (models)
+settings-reference	`modelOverrides`	excluded		belongs to another tool type (models)
+settings-reference	Fields for `modelPicker`	excluded		belongs to another tool type (models)
+settings-reference	Fields for `modelPricing`	excluded		belongs to another tool type (costs)
+settings-reference	Which models a `modelPricing` row applies to	excluded		belongs to another tool type (costs)
+settings-reference	`modelSettings`	included	placing.md	the sentences on `effortLevel` precedence within and across files
+settings-reference	`modelSettings`	excluded		the rest belongs to another tool type (models)
+settings-reference	`outputStyle`	excluded		belongs to another tool type (output styles)
+settings-reference	`promptCacheTtl`	excluded		belongs to another tool type (prompt caching)
+settings-reference	`showThinkingSummaries`	excluded		belongs to another tool type (models)
+settings-reference	`subagentPromptCacheTtl`	excluded		belongs to another tool type (prompt caching) (other types already take part: subagents)
+settings-reference	`switchModelsOnFlag`	excluded		belongs to another tool type (models)
+settings-reference	`ultracode`	excluded		belongs to another tool type (workflows)
+settings-reference	Memory and context	excluded		only introduces or links
+settings-reference	`autoCompactEnabled`	excluded		belongs to another tool type (compaction)
+settings-reference	`autoCompactWindow`	excluded		belongs to another tool type (compaction)
+settings-reference	`autoMemoryEnabled`	excluded		belongs to another tool type (auto memory)
+settings-reference	`bashOutputMaxChars`	excluded		belongs to another tool type (tools)
+settings-reference	`claudeMd`	excluded		owned by instructions
+settings-reference	`claudeMdExcludes`	excluded		owned by instructions
+settings-reference	`fileCheckpointingEnabled`	excluded		belongs to another tool type (checkpointing)
+settings-reference	`idleCompaction`	included	configuring.md	the sentences on the two causes of a missing **Idle compaction** row in `/config`
+settings-reference	`idleCompaction`	excluded		the version requirement is history; the rest belongs to another tool type (compaction)
+settings-reference	Change the idle compaction threshold	excluded		belongs to another tool type (compaction)
+settings-reference	Idle compaction in VS Code and the desktop app	excluded		belongs to another tool type (compaction)
+settings-reference	`plansDirectory`	excluded		belongs to another tool type (plan files)
+settings-reference	`skillListingBudgetFraction`	excluded		owned by skills
+settings-reference	`skillListingMaxDescChars`	excluded		owned by skills
+settings-reference	`taskOutputMaxChars`	included	keys.md	the sentence that setting it has no effect and that Claude reads the output file with Read
+settings-reference	`taskOutputMaxChars`	excluded		the rest is history
+settings-reference	Interface and terminal	excluded		only introduces or links
+settings-reference	`askUserQuestionTimeout`	included	configuring.md	the sentence that `/config` hides the row while managed settings or `--settings` set the key
+settings-reference	`askUserQuestionTimeout`	excluded		the rest belongs to another tool type (tools)
+settings-reference	`autoScrollEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`companyAnnouncements`	excluded		belongs to another tool type (interface)
+settings-reference	`defaultShell`	excluded		belongs to another tool type (PowerShell tool)
+settings-reference	`dialogExpiry`	included	configuring.md	the sentence that `/config` hides the row while managed settings or `--settings` set the key
+settings-reference	`dialogExpiry`	excluded		the rest belongs to another tool type (remote control)
+settings-reference	`editorMode`	excluded		belongs to another tool type (interface)
+settings-reference	`emojiCompletionEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`fileSuggestion`	excluded		belongs to another tool type (file suggestion)
+settings-reference	Command input and output	excluded		belongs to another tool type (file suggestion)
+settings-reference	`footerLinksRegexes`	excluded		belongs to another tool type (interface)
+settings-reference	Badge constraints	excluded		belongs to another tool type (interface)
+settings-reference	`keybindingFlavor`	included	keys.md	the sentence that Claude Code still accepts the key
+settings-reference	`keybindingFlavor`	excluded		the rest belongs to another tool type (interface)
+settings-reference	`maxProseWidth`	excluded		belongs to another tool type (interface)
+settings-reference	`prefersReducedMotion`	excluded		belongs to another tool type (interface)
+settings-reference	`promptSuggestionEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`respondToBashCommands`	excluded		belongs to another tool type (interface)
+settings-reference	`showClearContextOnPlanAccept`	included	modes.md	the sentences on the first plan-approval option, its label and its default
+settings-reference	`showClearContextOnPlanAccept`	excluded		the version clause is history
+settings-reference	`spinnerTipsEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`spinnerVerbs`	excluded		belongs to another tool type (interface)
+settings-reference	`statusLine`	excluded		belongs to another tool type (status line)
+settings-reference	`subagentStatusLine`	excluded		belongs to another tool type (status line)
+settings-reference	`syntaxHighlightingDisabled`	excluded		belongs to another tool type (interface)
+settings-reference	`terminalTitleFromRename`	excluded		belongs to another tool type (interface)
+settings-reference	`timeFormat`	excluded		belongs to another tool type (interface)
+settings-reference	`timeZone`	excluded		belongs to another tool type (interface)
+settings-reference	`tui`	excluded		belongs to another tool type (interface)
+settings-reference	`viewMode`	excluded		belongs to another tool type (interface)
+settings-reference	`voice`	excluded		belongs to another tool type (voice dictation)
+settings-reference	`voiceEnabled`	excluded		belongs to another tool type (voice dictation)
+settings-reference	`wheelScrollAccelerationEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	Git and attribution	excluded		only introduces or links
+settings-reference	`attribution`	excluded		belongs to another tool type (git attribution) (other types already take part: instructions)
+settings-reference	`includeCoAuthoredBy`	excluded		belongs to another tool type (git attribution)
+settings-reference	`includeGitInstructions`	excluded		belongs to another tool type (git attribution) (other types already take part: subagents; skills)
+settings-reference	`prUrlTemplate`	excluded		belongs to another tool type (git attribution)
+settings-reference	`attribution.commit`	excluded		belongs to another tool type (git attribution) (other types already take part: subagents)
+settings-reference	`attribution.pr`	excluded		belongs to another tool type (git attribution)
+settings-reference	`attribution.sessionUrl`	excluded		belongs to another tool type (git attribution)
+settings-reference	Hooks and automation	excluded		only introduces or links
+settings-reference	`allowedHttpHookUrls`	excluded		owned by hooks
+settings-reference	`allowManagedHooksOnly`	excluded		owned by hooks
+settings-reference	What runs under `allowManagedHooksOnly`	excluded		owned by hooks
+settings-reference	`disableAllHooks`	excluded		owned by hooks
+settings-reference	Status line and file suggestion gates	included	permissions.md	the clause that the status line and file suggestion are off when the folder isn't trusted, and what then happens
+settings-reference	Status line and file suggestion gates	excluded		the narrowing bullet and the managed-only paragraph: owned by hooks; the rest belongs to another tool type (status line)
+settings-reference	`disableWorkflows`	excluded		belongs to another tool type (workflows)
+settings-reference	`enableWorkflows`	excluded		belongs to another tool type (workflows)
+settings-reference	`hooks`	excluded		belongs to another tool type (hooks) (other types already take part: hooks; hooks)
+settings-reference	`httpHookAllowedEnvVars`	excluded		owned by hooks
+settings-reference	`workflowKeywordTriggerEnabled`	excluded		belongs to another tool type (workflows)
+settings-reference	Plugins and skills	excluded		only introduces or links
+settings-reference	`disableBundledSkills`	excluded		owned by skills
+settings-reference	`disableSkillShellExecution`	excluded		owned by skills
+settings-reference	`skillOverrides`	excluded		owned by skills
+settings-reference	`syncClaudeAiSkills`	excluded		owned by skills
+settings-reference	`syncClaudeAiPlugins`	excluded		belongs to another tool type (plugins); its Scope line repeats the `syncClaudeAiPlugins` row of settings › Exceptions to managed settings precedence
+settings-reference	`allowedChannelPlugins`	excluded		belongs to another tool type (channels)
+settings-reference	`blockedMarketplaces`	excluded		belongs to another tool type (plugins) (other types already take part: skills)
+settings-reference	`channelsEnabled`	excluded		belongs to another tool type (channels)
+settings-reference	`disableCommandPluginSources`	excluded		belongs to another tool type (plugins) (other types already take part: hooks)
+settings-reference	`pluginSuggestionMarketplaces`	excluded		belongs to another tool type (plugins)
+settings-reference	`pluginTrustMessage`	excluded		belongs to another tool type (plugins)
+settings-reference	`strictKnownMarketplaces`	excluded		belongs to another tool type (plugins)
+settings-reference	Allowed source types	excluded		belongs to another tool type (plugins) (other types already take part: skills)
+settings-reference	Owner wildcards	excluded		belongs to another tool type (plugins)
+settings-reference	Exact matching	excluded		belongs to another tool type (plugins)
+settings-reference	Allow only the official marketplace	excluded		belongs to another tool type (plugins)
+settings-reference	Combine with `extraKnownMarketplaces`	excluded		belongs to another tool type (plugins)
+settings-reference	`strictPluginOnlyCustomization`	excluded		belongs to another tool type (plugins) (other types already take part: subagents; skills)
+settings-reference	`strictPluginOnlyCustomization.skills`	excluded		owned by skills
+settings-reference	`strictPluginOnlyCustomization.agents`	excluded		owned by subagents
+settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		belongs to another tool type (plugins) (other types already take part: hooks; skills; skills)
+settings-reference	`strictPluginOnlyCustomization.mcp`	excluded		belongs to another tool type (plugins)
+settings-reference	`enabledPlugins`	excluded		belongs to another tool type (plugins)
+settings-reference	Marketplace source types	excluded		belongs to another tool type (plugins)
+settings-reference	Marketplace key aliases	excluded		belongs to another tool type (plugins)
+settings-reference	`pluginConfigs`	excluded		belongs to another tool type (plugins) (other types already take part: instructions)
+settings-reference	MCP	excluded		only introduces or links
+settings-reference	`allowAllClaudeAiMcps`	included	keys.md	the Scope line
+settings-reference	`allowAllClaudeAiMcps`	excluded		everything except the Scope line: owned by another type (MCP)
+settings-reference	`allowManagedMcpServersOnly`	excluded		belongs to another tool type (MCP)
+settings-reference	`disableClaudeAiConnectors`	excluded		belongs to another tool type (MCP)
+settings-reference	`disabledMcpjsonServers`	excluded		belongs to another tool type (MCP)
+settings-reference	Agents, sessions, and worktrees	excluded		only introduces or links
+settings-reference	`agent`	excluded		belongs to another tool type (agent view) (other types already take part: subagents)
+settings-reference	`crossSessionInbound`	included	troubleshooting.md	the sentences on an invalid value holding inbound messages
+settings-reference	`crossSessionInbound`	excluded		the rest belongs to another tool type (cross-session messaging)
+settings-reference	`disableAgentView`	excluded		belongs to another tool type (agent view)
+settings-reference	`isolatePeerMachines`	excluded		belongs to another tool type (cross-session messaging)
+settings-reference	`processWrapper`	excluded		belongs to another tool type (corporate launcher)
+settings-reference	`worktree`	excluded		belongs to another tool type (worktrees)
+settings-reference	`worktree.baseRef`	excluded		belongs to another tool type (worktrees)
+settings-reference	`worktree.symlinkDirectories`	excluded		belongs to another tool type (worktrees)
+settings-reference	`worktree.sparsePaths`	excluded		belongs to another tool type (worktrees)
+settings-reference	`worktree.bgIsolation`	excluded		belongs to another tool type (worktrees)
+settings-reference	`worktree.location`	excluded		belongs to another tool type (worktrees)
+settings-reference	Remote, desktop, and notifications	excluded		only introduces or links
+settings-reference	`awaySummaryEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`disableArtifact`	excluded		belongs to another tool type (artifacts)
+settings-reference	`disableDeepLinkRegistration`	excluded		belongs to another tool type (deep links)
+settings-reference	`disableDesktopLocalSessions`	excluded		web or desktop app
+settings-reference	`disableRemoteControl`	excluded		belongs to another tool type (remote control)
+settings-reference	`enableArtifact`	excluded		belongs to another tool type (artifacts)
+settings-reference	`sshConfigs`	excluded		web or desktop app
+settings-reference	`sshHostAllowlist`	excluded		web or desktop app
+settings-reference	`sshHostCommands`	excluded		web or desktop app
+settings-reference	Authentication and providers	excluded		only introduces or links
+settings-reference	Endpoints that need a pin in managed `env`	included	managed.md	
+settings-reference	`apiKeyHelper`	excluded		belongs to another tool type (authentication); its trust sentence repeats permissions › What runs before you trust a folder
+settings-reference	`awsAuthRefresh`	excluded		belongs to another tool type (authentication)
+settings-reference	`awsCredentialExport`	excluded		belongs to another tool type (authentication)
+settings-reference	`gcpAuthRefresh`	excluded		belongs to another tool type (authentication)
+settings-reference	`otelHeadersHelper`	excluded		belongs to another tool type (monitoring)
+settings-reference	Updates and versioning	excluded		only introduces or links
+settings-reference	`autoUpdatesChannel`	excluded		belongs to another tool type (updates)
+settings-reference	Tools	excluded		only introduces or links
+settings-reference	`browserExternalPageTools`	excluded		web or desktop app
+settings-reference	`disableBrowserExternalNavigation`	excluded		web or desktop app
+settings-reference	`disableMobileSimulatorTools`	excluded		web or desktop app
+settings-reference	Privacy and telemetry	included	configuring.md	the lead sentences that the telemetry switches are environment variables and that `feedbackDrafts` and `feedbackSurveyRate` turn off from a settings file
+settings-reference	Privacy and telemetry	excluded		the rest only introduces or links
+settings-reference	`cleanupPeriodDays`	included	troubleshooting.md	the sentences on the minimum, the default and `0` failing validation
+settings-reference	`cleanupPeriodDays`	excluded		the rest belongs to another tool type (session data)
+settings-reference	`desktopSessionCleanupPeriodDays`	included	keys.md	the Scope line
+settings-reference	`desktopSessionCleanupPeriodDays`	excluded		the rest: web or desktop app
+settings-reference	`feedbackDrafts`	excluded		belongs to another tool type (feedback)
+settings-reference	`feedbackSurveyRate`	excluded		belongs to another tool type (feedback)
+settings-reference	`skipWebFetchPreflight`	included	permissions.md	the sentence that WebFetch then consults no blocklist and should be paired with WebFetch rules
+settings-reference	`skipWebFetchPreflight`	excluded		the rest belongs to another tool type (WebFetch tool)
+settings-reference	`autoConnectIde`	excluded		belongs to another tool type (IDE integrations)
+settings-reference	`autoInstallIdeExtension`	excluded		belongs to another tool type (IDE integrations)
+settings-reference	`claudeInChromeDefaultEnabled`	excluded		belongs to another tool type (Claude in Chrome)
+settings-reference	`copyFullResponse`	excluded		belongs to another tool type (interface)
+settings-reference	`copyOnSelect`	excluded		belongs to another tool type (interface)
+settings-reference	`defaultToAgentsView`	excluded		belongs to another tool type (agent view)
+settings-reference	`diffTool`	excluded		belongs to another tool type (IDE integrations)
+settings-reference	`externalEditorContext`	excluded		belongs to another tool type (interface)
+settings-reference	`leftArrowOpensAgents`	excluded		belongs to another tool type (agent view)
+settings-reference	`permissionExplainerEnabled`	included	keys.md	the sentence that setting it has no effect
+settings-reference	`permissionExplainerEnabled`	excluded		the rest is history
+settings-reference	`prStatusFooterEnabled`	excluded		belongs to another tool type (interface)
+settings-reference	`teammateDefaultModel`	included	keys.md	the sentence that setting it has no effect
+settings-reference	`teammateDefaultModel`	excluded		the rest is history
+errors	Can't switch to the default model	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Can't switch to the default model	excluded		the version sentences are history
+errors	Model is restricted by your organization's settings	included	troubleshooting.md	the main-session clauses: the startup notice, the `/model` rejections, the family-alias paragraph and the fixes
+errors	Model is restricted by your organization's settings	excluded		the agent, skill and command prefix clause: owned by skills and subagents; the version sentences are history
+claude-directory	Explore the .claude directory	included	placing.md	the sentence on where `.claude.json` sits with `CLAUDE_CONFIG_DIR` set
+claude-directory	Explore the .claude directory	excluded		the rest belongs to another tool type (the `.claude` directory) or is owned by instructions
+model-config	Organization default model	included	placing.md	the sentences that an organization default set to override user selection outranks `model` and what still outranks it
+model-config	Organization default model	included	troubleshooting.md	the sentence that the first interactive launch after the admin changes the default clears the `model` key once
+model-config	Organization default model	excluded		the rest belongs to another tool type (models)
+remote-control	Enable Remote Control for all sessions	excluded		the managed and project or local rules repeat settings › Exceptions to managed settings precedence and the general precedence rule; the rest belongs to another tool type (Remote Control)
+errors	Refusing to read, write, or search a path	included	troubleshooting.md	the bullets on the Read deny rule symlink refusal and the ripgrep refusal, and what to do
+errors	Refusing to read, write, or search a path	excluded		the symlink bullets: owned by instructions or stated in permissions.md › Symlinks; the Windows and macOS upgrade bullets and version paragraphs are history
+errors	Administrator policy requires a Cloud gateway sign-in	included	troubleshooting.md	all but the parts the excluded row for this section names
+errors	Administrator policy requires a Cloud gateway sign-in	excluded		the version paragraphs are history
+managed-mcp	Where `managedMcpServers` applies	included	keys.md	the sentences on which sources `managedMcpServers` is and isn't read from
+managed-mcp	Where `managedMcpServers` applies	excluded		the Claude Desktop Code-tab and Cowork paragraph: web or desktop app

@@ -36,6 +36,7 @@ The reference in `reference/` covers these tool types, one directory each, with 
 | `skills` | Skills and custom commands |
 | `hooks` | Hooks in settings, plugins, skills and subagents |
 | `subagents` | Subagent definitions, built-in agents, forks, isolation and running in the background |
+| `settings` | Settings files and precedence, `env`, permission rules and modes, auto mode, the sandbox and managed settings |
 
 ## Install
 

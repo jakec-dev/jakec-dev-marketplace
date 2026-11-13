@@ -39,10 +39,11 @@ plugins/mods/overview	Mods built into Claude Code	included	agents-md.md	the `cc-
 memory	Share rules across projects with symlinks	included	sharing.md	
 memory	Load from additional directories	included	sharing.md	
 large-codebases	Grant access across packages or repositories	included	sharing.md	
-large-codebases	Check out only the directories you need	included	sharing.md	all but the sentences that `sparsePaths` is particularly useful for subagent worktree isolation and that each subagent that runs in a worktree gets a lightweight checkout, which the subagents reference takes
+large-codebases	Check out only the directories you need	included	sharing.md	all but the sentences that `sparsePaths` is particularly useful for subagent worktree isolation and that each subagent that runs in a worktree gets a lightweight checkout, which the subagents reference takes, and the NOTE's sentences on where project settings load inside a worktree, which the settings reference takes
 memory	Import additional files	included	sharing.md	the paragraph on importing a home-directory file across worktrees, and the external-import Warning
 memory	Exclude specific CLAUDE.md files	included	excluding.md	
-large-codebases	Exclude irrelevant CLAUDE.md files	included	excluding.md	
+large-codebases	Exclude irrelevant CLAUDE.md files	included	excluding.md	all but the parts the excluded row for this section names
+large-codebases	Exclude irrelevant CLAUDE.md files	excluded		the sentences that Claude Code adds `.claude/settings.local.json` to your global gitignore and that a hand-created file needs your own entry repeat settings › Keep personal settings out of a repository (settings)
 settings-reference	`claudeMdExcludes`	included	excluding.md	
 memory	Set up rules	included	excluding.md	the sentence that project rules are skipped if you exclude `project` from `--setting-sources`, and the "Before v2.1.211" sentence, for current behaviour only
 memory	Choose which instruction files load	included	excluding.md	the `managed-only` row
@@ -118,7 +119,7 @@ large-codebases	Choose where to start Claude	excluded		CLAUDE.md column repeats 
 large-codebases	The example monorepo	excluded		example layout of sections used elsewhere
 large-codebases	Centralize conventions when layering stops scaling	excluded		recommends other tool types (guidance)
 how-claude-code-works	Context Claude Code adds on its own	excluded		CLAUDE.md item repeats Claude isn't following my CLAUDE.md
-cli-reference	CLI flags	excluded		apart from the `--setting-sources` row, --add-dir, --bare and --safe-mode rows repeat sections used elsewhere; the rest is not about instruction files
+cli-reference	CLI flags	excluded		the `--setting-sources` row is owned by settings (placing.md); the --add-dir, --bare and --safe-mode rows repeat sections used elsewhere; the rest is not about instruction files
 errors	Refusing to read, write, or search a path	excluded		apart from the two symlink bullets, not about instruction files
 github-actions	Define project standards in CLAUDE.md	excluded		repeats Set up a project CLAUDE.md
 gitlab-ci-cd	CLAUDE.md configuration	excluded		repeats Set up a project CLAUDE.md
@@ -151,7 +152,6 @@ agent-teams	Context and communication	included	loading.md	the first paragraph: t
 agent-teams	Context and communication	excluded		apart from the first paragraph, about teammate messaging, not instruction files
 env-vars	Variables	included	excluding.md	the CLAUDE.md clause of the `CLAUDE_CODE_SIMPLE` row
 env-vars	Variables	included	troubleshooting.md	the `CLAUDE_CODE_SAFE_MODE` row
-cli-reference	CLI flags	included	excluding.md	the `--setting-sources` row, with the table header
 cli-reference	CLI commands	included	creating.md	the `claude import [source]` row
 cli-reference	CLI commands	excluded		apart from the `claude import` row, not about instruction files
 errors	Refusing to read, write, or search a path	included	agents-md.md	the bullet with the message `it is a symbolic link. Write to the link's target path instead`

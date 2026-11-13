@@ -39,23 +39,7 @@ can invoke.
   ---
   ```
 
-- A skill's `allowed-tools` frontmatter accepts the same rule format as permission rules, `ToolName(specifier)`. The
-  specifier depends on the tool, and several tools share a format:
-  [tools-reference › Configure tools with permission rules and hooks](https://code.claude.com/docs/en/tools-reference#configure-tools-with-permission-rules-and-hooks)
-
-  | Rule format | Applies to | Details |
-  | :- | :- | :- |
-  | `Bash(npm run *)` | Bash, Monitor | [Command pattern matching](https://code.claude.com/docs/en/permissions#bash) |
-  | `PowerShell(Get-ChildItem *)` | PowerShell | [Command pattern matching](https://code.claude.com/docs/en/permissions#powershell) |
-  | `Read(~/secrets/**)` | Read, Grep, Glob, LSP | [Path pattern matching](https://code.claude.com/docs/en/permissions#read-and-edit) |
-  | `Edit(/src/**)` | Edit, Write, NotebookEdit | [Path pattern matching](https://code.claude.com/docs/en/permissions#read-and-edit) |
-  | `Skill(deploy *)` | Skill | [Skill name matching](https://code.claude.com/docs/en/skills#restrict-claude’s-skill-access) |
-  | `Agent(Explore)` | Agent | [Subagent type matching](https://code.claude.com/docs/en/permissions#agent-subagents) |
-  | `WebFetch(domain:example.com)` | WebFetch | [Domain matching](https://code.claude.com/docs/en/permissions#webfetch) |
-  | `WebSearch` | WebSearch | No specifier; allow or deny the tool as a whole |
-
-- Tools not listed in that table, such as `ExitPlanMode` or `ShareOnboardingGuide`, accept only the bare tool name
-  with no specifier.
+- A skill's `allowed-tools` frontmatter accepts the same rule format as permission rules, `ToolName(specifier)`.
   [tools-reference › Configure tools with permission rules and hooks](https://code.claude.com/docs/en/tools-reference#configure-tools-with-permission-rules-and-hooks)
 - For a tool from a plugin-bundled MCP server, a skill's `allowed-tools` list uses the tool's full name,
   `mcp__plugin_<plugin-name>_<server-name>__<tool-name>`, where any character outside `A-Z`, `a-z`, `0-9`, `_`, and
@@ -82,12 +66,8 @@ can invoke.
 
 ## When only managed permission rules apply
 
-- When `allowManagedPermissionRulesOnly` is set, Claude Code ignores `allow`, `ask`, and `deny` rules in user,
-  project, local, and `--settings` files. `Skill(...)` rules are
-  [permission rules](https://code.claude.com/docs/en/skills#restrict-claude’s-skill-access), so those in
-  these files have no effect. It also ignores `--allowedTools`, hides the always-allow choices in permission
-  prompts, and stops saving new rules. `--disallowedTools` rules and the current session's `deny` and `ask` rules
-  still apply.
+- `Skill(...)` rules are [permission rules](https://code.claude.com/docs/en/skills#restrict-claude’s-skill-access), so while
+  `allowManagedPermissionRulesOnly` is set, those in user, project, local and `--settings` files have no effect.
   [settings-reference › `allowManagedPermissionRulesOnly`](https://code.claude.com/docs/en/settings-reference#allowmanagedpermissionrulesonly)
   [skills › Restrict Claude's skill access](https://code.claude.com/docs/en/skills#restrict-claude’s-skill-access)
 - When your organization sets `allowManagedPermissionRulesOnly` in managed settings, Claude Code ignores the
@@ -151,11 +131,6 @@ can invoke.
   | The plugin form of a synced skill | `Skill(deploy:deploy)` | The synced skill |
   | A skill in the [parameter form](https://code.claude.com/docs/en/permissions#match-by-input-parameter) | `Skill(skill:deploy)` | The skill whichever of its names Claude calls it by, including its alias and display name |
 
-- Deny and ask rules can match a top-level input parameter on any built-in tool with `Tool(param:value)`, such as the
-  parameter form `Skill(skill:deploy)`; allow rules continue to use each tool's own
-  specifier syntax. The value supports `*` as a wildcard that matches any sequence of characters; without `*` the
-  match is exact.
-  [permissions › Match by input parameter](https://code.claude.com/docs/en/permissions#match-by-input-parameter)
 - Claude Code matches an `allow` rule only against the skill's own name and the name in Claude's invocation. To
   approve a synced skill without a prompt, name it inside its reserved namespace:
   [skills › Restrict Claude's skill access](https://code.claude.com/docs/en/skills#restrict-claude’s-skill-access)

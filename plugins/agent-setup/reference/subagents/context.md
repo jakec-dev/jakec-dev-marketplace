@@ -83,11 +83,7 @@ What a subagent sees and keeps: startup context, memory, resuming, names, transc
   so the subagent can manage its memory files.
   [sub-agents › Enable persistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)
 - Markdown files in a subagent memory directory, such as `.claude/agent-memory/`, are an exception to the protected
-  `.claude` directory, in a session started without `--restricted`. Writes to protected paths are never auto-approved
-  except in `bypassPermissions` mode and, in interactive terminal sessions, in plan mode with bypass permissions
-  available: they are prompted in `default` and `acceptEdits`, routed to the classifier in `auto`, and denied in
-  `dontAsk`; in `plan` mode outside that exception they go to the classifier when auto mode is available during
-  planning and are prompted when it isn't.
+  `.claude` directory, in a session started without `--restricted`.
   [permission-modes › Protected paths](https://code.claude.com/docs/en/permission-modes#protected-paths)
 
 ## Resuming and SendMessage
