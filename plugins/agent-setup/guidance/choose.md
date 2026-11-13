@@ -7,6 +7,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - The instruction file the repository already uses
 - Must happen every time: a hook
 - Never-rules are deny rules or hooks, not auto mode
+- A standing checkpoint before an action: an ask rule
 - A preference stays an instruction, not a hook
 - A rule on a command's text: keep it, and add a PreToolUse hook
 - Every session needs it: CLAUDE.md
@@ -122,6 +123,30 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - Check: is every action that must never happen held by a deny rule or a hook, rather than left to the auto mode
   classifier or to a boundary stated in conversation, and, without managed settings or a Team or Enterprise `/login`,
   does no installed mod that handles `tool.check` approve it?
+
+## A standing checkpoint before an action: an ask rule
+
+- "The most direct mechanism is `permissions.ask`." Content-scoped ask rules like the ones below "always force a
+  permission prompt, even in auto mode, because an explicit ask rule is your stated intent to be prompted for that
+  action." Add the rules in your settings:
+
+  ```json
+  {
+    "permissions": {
+      "ask": [
+        "Bash(git push *)",
+        "Bash(gh pr create *)"
+      ]
+    }
+  }
+  ```
+
+  A boundary stated in conversation instead is one-off, as "Never-rules are deny rules or hooks, not auto mode" says,
+  and a push written another way isn't matched, as "A rule on a command's text" says.
+  [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
+- Check: is each action that needs a durable checkpoint, not one stated in conversation, held by a content-scoped
+  `permissions.ask` rule or, for a check on the full command text, a `PreToolUse` hook, with an ask rule backed as "A
+  rule on a command's text" asks where Claude could write the command another way?
 
 ## A preference stays an instruction, not a hook
 

@@ -22,7 +22,7 @@ memory	My CLAUDE.md is too large	included	discover.md	the paragraph on /doctor t
 memory	My CLAUDE.md is too large	included	write.md	the paragraph on length warnings
 large-codebases	Choose between per-directory CLAUDE.md and path-scoped rules	included	choose.md	
 large-codebases	Layer CLAUDE.md files by directory	included	maintain.md	the bullets on keeping files current
-auto-mode-config	Add a human checkpoint	included	choose.md	the boundaries table and the sentence on a durable guarantee
+auto-mode-config	Add a human checkpoint	included	choose.md	the first paragraph's `permissions.ask` sentences and example, used in A standing checkpoint before an action: an ask rule; the boundaries table's Never run the action row and the one-off row's sentence on a durable guarantee, used in Never-rules are deny rules or hooks, not auto mode
 permissions	Precedence among rules, hooks, and mods	included	choose.md	the lead-in and the deny-rule clause of the first paragraph's second sentence; the sentence that a mod answers after the `PreToolUse` hooks; the deny-rule and `PreToolUse`-block outcomes with managed settings or a Team or Enterprise `/login`; the first sentence of the paragraph on neither, and the sentence on an API key or `CLAUDE_CODE_OAUTH_TOKEN`; and the clause that a hook exiting with code 2 stops the call before permission rules are evaluated; used in Must happen every time, with a mention in Never-rules are deny rules or hooks, not auto mode
 permissions	Precedence among rules, hooks, and mods	excluded		the rest: the ask-rule clause, the plugin-hooks sentence, the prompt outcomes for ask rules, hooks and `blockReadsOutsideWorkingDirectories` in both setups, the prompt-tool outcomes, the outcomes by permission mode, the interaction-tool paragraph, the allow-rule consequence and allow-list example are reference facts (hooks tool-events.md); the version sentence is history
 memory	AGENTS.md	included	choose.md	the opening sentence and the table
@@ -125,7 +125,7 @@ skills	Skill descriptions are cut short	excluded		repeats reference loading.md
 skills	Personal skills disappeared	excluded		states no guideline
 agent-view	Dispatch an agent from agent view	excluded		already in guidance (discover.md); the rest is about agent view
 skills	Extend Claude with skills	excluded		already in guidance (discover.md, choose.md)
-claude-directory	Choose the right file	excluded		its settings rows belong to the settings guidance, not yet built; its skill, rule and hook rows repeat choose.md
+claude-directory	Choose the right file	excluded		its `settings.local.json` and `env` rows are settings reference facts (placing.md, configuring.md); its permissions-or-hooks row's point, that a deny rule or a hook stops a tool call, is choose.md's (Must happen every time: a hook); its CLAUDE.md, skills, agents and hooks rows are paths the instructions, skills, subagents and hooks references state; its workflows, `.mcp.json` and output-styles rows belong to other tool types
 costs	Move instructions from CLAUDE.md to skills	excluded		already in guidance (choose.md, write.md)
 plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers	excluded		about mods; its skill column repeats discover.md and its settings-hook column repeats choose.md
 platform.claude.com/agents-and-tools/agent-skills/best-practices	Create verifiable intermediate outputs	excluded		the worked example repeats the guideline
@@ -171,11 +171,11 @@ plugins/components	Skills	excluded		the rest; its hook-or-skill sentence repeats
 plugins/create	Decide when to use a plugin	excluded		repeats choose.md › The same setup in another repository: a plugin
 plugins/overview	Decide whether you need a plugin	excluded		repeats choose.md › The same setup in another repository: a plugin
 plugins/mods/overview	What a mod can do	excluded		about mods; states no hook guideline
-sandbox-environments	Compare sandboxing approaches	excluded		its hooks-run-on-host fact is in the hooks reference (excluding.md › The sandbox boundary)
+sandbox-environments	Compare sandboxing approaches	excluded		the rest: the table's isolation column for the sandboxed Bash tool and the runtime is stated in the sandboxed Bash tool paragraph, and its Requires Docker and Setup effort columns are facts the Choose an approach table already turns into a choice (write-settings.md); the Warning's pointer to the security limitations is followed in write-settings.md › A sandbox relied on as a control keeps its exceptions narrow; the hooks-run-on-host fact is also in the hooks reference (excluding.md › The sandbox boundary)
 security-guidance	Add guidance for the model-backed reviews	excluded		its hard-enforcement sentence repeats choose.md › Must happen every time
 hooks	Stop input	excluded		the rest states input fields, including what `background_tasks` and `session_crons` are for, with no advice; owned by the hooks reference
 hooks	Run tests after file changes	excluded		an example of an async hook; no advice on hook speed beyond Run hooks in the background
-skills	Check your setup with `/doctor`	excluded		the clause that `/doctor` flags slow hooks is a fact, not advice on hook speed, owned by the hooks reference; the rest of its Extensions bullet and its CLAUDE.md bullet are reference facts; its Installation health and Usage bullets and the `claude doctor` paragraph are facts with no tool advice; its Permissions bullet belongs to the settings guidance, not yet built; its prompt-audit sentence repeats memory › Audit your instruction files (maintain.md)
+skills	Check your setup with `/doctor`	excluded		the rest: the clause that `/doctor` flags slow hooks is a fact, not advice on hook speed, owned by the hooks reference; the rest of its Extensions bullet and its CLAUDE.md bullet are reference facts; its Installation health and Usage bullets and the `claude doctor` paragraph are facts with no tool advice; its prompt-audit sentence repeats memory › Audit your instruction files (maintain.md)
 hooks	Prompt-based hooks	included	write-hooks.md	a mention of the events without prompt hooks
 hooks	Configure an async hook	included	write-hooks.md	the sentence that `async` is only available on command hooks
 hooks	SessionStart	included	write-hooks.md	the sentence to keep SessionStart hooks fast
@@ -220,20 +220,20 @@ best-practices	Give Claude a check to run	excluded		the rest: its `/verify` tip 
 best-practices	Enforce the check with a Stop hook	excluded		the rest repeats hooks › Stop input (verify.md) and the hooks reference
 best-practices	Enforce the rules that can't have exceptions	excluded		the rest repeats the Tip
 best-practices	Enforce steps with hooks	excluded		the rest: its handler list repeats the hooks reference; its example and "works as a prompt" line are a tutorial
-best-practices	Limit access with permission rules and the sandbox	excluded		the rest: its example and strict sandbox mode sentences belong to the settings guidance, not yet built; its `WebFetch` edge repeats permissions › Read-only commands (choose.md)
-best-practices	Choose who a rule applies to	excluded		the rest: its scope bullets restate where settings apply, with their hooks clauses in the hooks reference (placing.md, excluding.md); belongs to the settings guidance, not yet built
+best-practices	Limit access with permission rules and the sandbox	excluded		the rest: its example shows rule syntax the settings reference states (permissions.md) and the `.env` deny rule choose.md › Never-rules states; its `WebFetch` edge repeats permissions › Read-only commands (choose.md)
+best-practices	Choose who a rule applies to	excluded		the rest: the hooks clauses of its scope bullets are in the hooks reference (placing.md, excluding.md)
 best-practices	Change a default	excluded		describes Claude Code's defaults; states no tool guideline
-best-practices	Change the permission mode	excluded		the rest: permission modes, `autoMode` configuration and when to use `/fewer-permission-prompts` belong to the settings guidance, not yet built; what the command does is in the settings reference
+best-practices	Change the permission mode	excluded		the rest: the sentence on the mode sessions start in (permission-modes › Which mode a session starts in states it exactly, write-settings.md), the classifier's block list, Recently denied, the three-block fallback, the sandbox-still-confines sentence, `Shift+Tab` and `--permission-mode manual` are settings reference facts (auto-mode.md, modes.md, sandbox.md)
 best-practices	Keep cost and context down	included	maintain.md	the sentences that `/usage` is the first place to look and breaks usage down by skill, subagent, plugin and MCP server
 best-practices	Keep cost and context down	excluded		the rest: `/clear`, `/compact`, the cost of background work and the cache Note are session habits, not a tool; the 10% flagging is a `/usage` fact with no tool advice
 best-practices	Steer the session	excluded		session habits, not a tool
 best-practices	Let Claude run without you	excluded		about unattended runs; belongs to the patterns guidance, not yet built
-best-practices	Run Claude from a script	excluded		CLI flags; states no tool guideline
+best-practices	Run Claude from a script	excluded		its `--allowedTools` and `dontAsk` bullet repeats permission-modes › Common setups (write-settings.md); the rest, auto mode with `-p` included, is about unattended runs and belongs to the patterns guidance, not yet built
 best-practices	Start runs on a schedule or an event	excluded		about scheduling runs; belongs to the patterns guidance, not yet built
 best-practices	Run sessions in parallel	excluded		worktree setup, including keeping the install command in CLAUDE.md; belongs to the patterns guidance, not yet built
 best-practices	What you can stop doing	excluded		the rest: its context-window and think-hard rows are about sessions and prompting; the rest of the IMPORTANT row repeats Keep CLAUDE.md short (maintain.md); its intro repeats large-codebases (maintain.md)
 best-practices	Related resources	excluded		links only
-best-practices	Deterministic and non-deterministic instructions	excluded		the rest: its definitions of the two kinds, its examples and the sentence that following a line is still Claude's call restate the request-versus-enforcement point choose.md › Must happen every time makes from features-overview; its "which skills only you can start" cell repeats choose.md › A skill with side effects is user-only; its table's spend and last-word rows belong to the patterns guidance, not yet built (see Let Claude run without you), its strict-sandbox cell to the settings guidance, not yet built, and its other rows repeat choose.md › Must happen every time and verify.md › Work the tool does has a check; the first half of its Tip repeats Keep CLAUDE.md short (maintain.md)
+best-practices	Deterministic and non-deterministic instructions	excluded		the rest: its definitions of the two kinds, its examples and the sentence that following a line is still Claude's call restate the request-versus-enforcement point choose.md › Must happen every time makes from features-overview; its "which skills only you can start" cell repeats choose.md › A skill with side effects is user-only; its table's spend and last-word rows belong to the patterns guidance, not yet built (see Let Claude run without you), its strict-sandbox cell is in write-settings.md, and its other rows repeat choose.md › Must happen every time and verify.md › Work the tool does has a check; the first half of its Tip repeats Keep CLAUDE.md short (maintain.md)
 best-practices	Tell Claude what it can't see	excluded		the rest: its list of what Claude can't find repeats Keep CLAUDE.md short (discover.md)
 output-styles	Output styles	excluded		its note repeats choose.md › Must happen every time and About the response, not the project
 memory	Organize rules with `.claude/rules/`	excluded		its note repeats choose.md › Needed sometimes, or a procedure: a skill
@@ -242,7 +242,7 @@ features-overview	Extend Claude Code	excluded		its "New to Claude Code?" line re
 third-party-integrations	Invest in documentation and memory	excluded		introduces and links only
 settings	Change a setting	excluded		its standing-instructions sentence repeats choose.md › Every session needs it: CLAUDE.md and the instructions reference (troubleshooting.md)
 code-review	Compare ways to get a review	excluded		compares review services; belongs to the patterns guidance, not yet built
-admin-setup	Decide what to enforce	excluded		its managed CLAUDE.md row repeats memory › Deploy organization-wide CLAUDE.md (choose.md); its table of managed-settings keys belongs to the settings guidance, not yet built; its WebFetch and `curl` sentence repeats choose.md › A rule on a command's text
+admin-setup	Decide what to enforce	excluded		the rest: its managed CLAUDE.md row repeats memory › Deploy organization-wide CLAUDE.md (choose.md); its other table rows, the claude.ai Enterprise model controls and the sentence on providers they don't reach belong to their features (MCP, plugins, claude.ai sync, login, providers, models, effort, versions, telemetry, agent view, the corporate launcher), as the settings ledger rules; its cloud sessions admin surfaces are the claude.ai admin console (web); its WebFetch and `curl` sentence repeats choose.md › A rule on a command's text
 memory	Claude isn't following my CLAUDE.md	excluded		the rest: the opening paragraph, the bullet on testing a subdirectory CLAUDE.md and the `--append-system-prompt` paragraph repeat the instructions reference (troubleshooting.md); the second sentence of the hook paragraph restates choose.md › Must happen every time; the specificity and conflict bullets repeat write.md; the other debugging bullets are reference facts
 memory	My CLAUDE.md is too large	excluded		its Note on the size limit for path-scoped rules repeats the instructions reference (writing.md)
 memory	When AGENTS.md support is unavailable	included	choose.md	the CLAUDE.md-only condition for the disabled built-in plugin and the first session after an upgrade, and the import sentence
@@ -310,3 +310,101 @@ sub-agents	Restrict which tools a subagent can use	included	write-subagents.md	t
 sub-agents	Subagent names	included	choose.md	the sentence that with agent teams enabled Claude can name a subagent, and the sentence that a named subagent launches as a teammate unless the call is a fork or passes `isolation`
 worktrees	Choose the base branch	included	write-subagents.md	the `"head"` value for subagents that need in-progress work
 worktrees	Copy gitignored files into worktrees	included	write-subagents.md	the sentences that a worktree is a fresh checkout and `.worktreeinclude` copies gitignored files
+permission-modes	Common setups	included	write-settings.md	
+permission-modes	Which mode a session starts in	included	write-settings.md	the order of flag, `defaultMode` and built-in default, and the paragraph on `"auto"` and `"bypassPermissions"` in the two project files
+permission-modes	Which mode a session starts in	excluded		the rest: the built-in default table, the notices and the version sentences are settings reference facts (modes.md) or history
+permission-modes	Available modes	included	write-settings.md	the table and the sentence that Manual mode appears under its config value
+permission-modes	Available modes	excluded		the rest: the Manual naming paragraph, protected paths and rule layering are settings reference facts (modes.md)
+permission-modes	Skip all checks with bypassPermissions mode	included	write-settings.md	the isolated-environments Warning, the root check and its skip inside a recognized sandbox, and the prompt-injection Warning
+permission-modes	Skip all checks with bypassPermissions mode	excluded		the rest: settings reference facts (modes.md); the managed key to block the mode is in write-settings.md › Organisation policy uses the managed control that covers it
+sandbox-environments	Choose a sandbox environment	included	write-settings.md	the sentence on what isolating limits and when it matters most
+sandbox-environments	Choose a sandbox environment	excluded		the rest only introduces or links
+sandbox-environments	Compare sandboxing approaches	included	write-settings.md	the sandboxed Bash tool paragraph and the first Warning's sentences on egress, writable mounts and what is sent to the model
+sandbox-environments	Choose an approach	included	write-settings.md	the table without its row on a device with no local setup
+sandbox-environments	Choose an approach	excluded		the row on using Claude Code from a device with no local setup is about cloud sessions (web); the untrusted-repository row keeps its cloud session clause as part of the copied row
+sandbox-environments	How isolation relates to permission modes	included	write-settings.md	the paragraphs on `--dangerously-skip-permissions`, auto mode and the sandboxed Bash tool
+sandbox-environments	How isolation relates to permission modes	excluded		the rest: what permission modes and isolation each decide, and that the actions no mode auto-approves still apply, are settings reference facts (sandbox.md, modes.md)
+sandbox-environments	Sandboxed Bash tool	excluded		only repeats sandboxing › What runs outside the sandbox (settings reference sandbox.md)
+sandbox-environments	Sandbox runtime	excluded		facts with no guideline (a beta research preview, its configuration may change); the Agent SDK pointer only links
+sandbox-environments	Set up and launch the runtime	included	write-settings.md	the "at least" list of write grants with the runtime-directory sub-bullets, the network domains list, the sentences that on Linux and WSL2 write grants apply only to paths that exist and to create the configuration paths first, and the sentence to install the runtime under a prefix outside every path you allow writes to
+sandbox-environments	Set up and launch the runtime	excluded		the rest: setup steps (packages, the settings file location, the commands to create paths, install and launch), facts with no guideline
+sandbox-environments	What the runtime blocks on its own	included	write-settings.md	the `denyWrite` precedence bullet, the bullet on Linux and WSL2 building the deny list at launch, the bullet on starting with no settings file, and the closing paragraph on denying other configuration paths with `denyWrite`
+sandbox-environments	What the runtime blocks on its own	excluded		the rest: the paths the runtime denies by itself and its refusals on a bad settings file, facts with no guideline
+sandbox-environments	After unattended runs	included	write-settings.md	
+sandbox-environments	Dev containers	included	write-settings.md	the sentence that the firewall makes a configuration like this support `--dangerously-skip-permissions`
+sandbox-environments	Dev containers	excluded		the rest describes the example dev container
+sandbox-environments	Custom container	included	write-settings.md	the checklist sentence
+sandbox-environments	Custom container	excluded		the rest: the layering sentence repeats How isolation relates to permission modes; `enableWeakerNestedSandbox` is a settings reference fact (sandbox.md)
+sandbox-environments	Virtual machine	included	write-settings.md	the sentence on when to use a VM
+sandbox-environments	Virtual machine	excluded		the rest describes VM options and Docker Sandboxes
+sandbox-environments	Cloud sessions	excluded		about cloud sessions (web)
+sandbox-environments	Enforce isolation across an organization	included	write-settings.md	the dev container bullet and the custom containers and VMs bullet
+sandbox-environments	Enforce isolation across an organization	excluded		the rest: the Bash sandbox bullet repeats sandboxing › Enforce sandboxing with managed settings (write-settings.md), and its clause that this is the only approach Claude Code enforces is in settings reference sandbox.md
+sandbox-environments	See also	excluded		only links
+best-practices	Limit access with permission rules and the sandbox	included	write-settings.md	the sentences on the retry outside the sandbox and strict sandbox mode
+best-practices	Deterministic and non-deterministic instructions	included	write-settings.md	the table cell listing the sandbox in strict mode as deterministic
+best-practices	Change the permission mode	included	write-settings.md	the Manual-mode and `bypassPermissions` bullets, the paragraph on `autoMode.allow`, `environment` and `/auto-mode-setup` with its example and Warning, and the `/fewer-permission-prompts` sentence
+best-practices	Choose who a rule applies to	included	write-settings.md	the lead sentence and the scope bullets' permission clauses
+devcontainer	Development containers	included	write-settings.md	the Warning's sentences on exfiltration with `--dangerously-skip-permissions`, trusted repositories and not mounting host secrets
+devcontainer	Development containers	excluded		the rest: the intro describes dev containers; the Warning's first sentence states no guideline
+devcontainer	Run without permission prompts	included	write-settings.md	the paragraph on what skipping prompts leaves open and the sentence to pair the flag with egress restrictions
+devcontainer	Run without permission prompts	excluded		the rest: the non-root sentence repeats permission-modes › Skip all checks with bypassPermissions mode; the auto mode and `disableBypassPermissionsMode` sentences repeat that section and admin-setup › Decide what to enforce (write-settings.md)
+devcontainer	Restrict network egress	included	write-settings.md	the clause that the firewall script and capabilities are not required and you can rely on your own network controls
+devcontainer	Restrict network egress	excluded		the rest describes the reference firewall and the domain lists
+devcontainer	Enforce organization policy	included	write-settings.md	the sentences that a Dockerfile step in the repository can be changed, and to deliver policy through server-managed settings or MDM instead
+devcontainer	Enforce organization policy	excluded		the rest: settings reference facts (managed.md), `containerEnv`, version pinning and MCP servers (not settings guidance)
+sandboxing	Turn off the retry with strict sandbox mode	included	write-settings.md	the first paragraph, the sentence that a `false` in user settings, `--settings` or managed settings holds against a project's `true`, and the paragraph on commands typed at `!`
+sandboxing	Turn off the retry with strict sandbox mode	excluded		the rest: the user-settings and admin-required sentences are settings reference facts (sandbox.md); history
+sandboxing	Enforce sandboxing with managed settings	included	write-settings.md	the lead sentence, the configuration as a mention, the two additions, and the native Windows sentence with its two options
+sandboxing	Enforce sandboxing with managed settings	excluded		the rest: the two-keys bullets repeat Turn off the retry with strict sandbox mode; the `!` paragraph repeats it too
+sandboxing	Keep developers from widening the policy	included	write-settings.md	the merge paragraph, the weakening keys, `allowManagedReadPathsOnly`, `allowManagedDomainsOnly` and the first sentence of the `filesystem.disabled` paragraph
+sandboxing	Keep developers from widening the policy	excluded		the rest: the proxy-port clause and the `mask` and pointer sentences of the `filesystem.disabled` paragraph are settings reference facts (sandbox.md)
+sandboxing	Security limitations	included	write-settings.md	the broad-domains Warning and the Unix sockets, filesystem write, `enableWeakerNestedSandbox`, Apple Events and user namespaces bullets
+sandboxing	Security limitations	excluded		the rest: the network filtering bullet is a settings reference fact (sandbox.md)
+sandboxing	Scope	included	write-settings.md	the closing Warning
+sandboxing	Scope	excluded		the rest: what the sandbox covers is a settings reference fact (sandbox.md)
+auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	included	write-settings.md	the sentence that a `Denied by auto mode classifier` line means the classifier judged the call unsafe, and the three fixes
+auto-mode-config	Fix a denial with an allow rule, an environment entry, or a retry	excluded		the rest: reading a denial is a settings reference fact (auto-mode.md); the hook bullet is the hooks reference
+auto-mode-config	Define trusted infrastructure	included	write-settings.md	the sentence that `environment` is the only field most organisations need, and the rollout sentence
+auto-mode-config	Define trusted infrastructure	excluded		the rest: how to write entries, the coverage list and Host containment are settings reference facts (auto-mode.md)
+auto-mode-config	Where the classifier reads configuration	included	write-settings.md	the CLAUDE.md sentence, the scope table, the sentence that neither project file is read, and the sentence that a developer `allow` can override an organisation `soft_deny`
+auto-mode-config	Where the classifier reads configuration	excluded		the rest: the Note on `permissions.deny` in managed settings repeats choose.md › Never-rules are deny rules or hooks, not auto mode; the sentence to move a local-file `autoMode` block and the sentence on combining scopes are settings reference facts (auto-mode.md)
+auto-mode-config	Override the block and allow rules	included	write-settings.md	the `hard_deny` bullet, and the sentences on omitting `"$defaults"` to take full ownership and how to do it safely
+auto-mode-config	Override the block and allow rules	excluded		the rest: the tighten sentence (`soft_deny` and `hard_deny`) is a settings reference fact (auto-mode.md), and a never-rule is a deny rule (choose.md › Never-rules are deny rules or hooks, not auto mode); the other rule facts are in auto-mode.md
+auto-mode-config	Review and save the draft	included	write-settings.md	the bullet that `/auto-mode-setup` writes `environment` without `"$defaults"`
+auto-mode-config	Review and save the draft	excluded		the rest: settings reference facts (auto-mode.md)
+skills	Check your setup with `/doctor`	included	write-settings.md	the Permissions bullet
+security	Additional safeguards	included	write-settings.md	list item 4 of the practices for untrusted content
+security	Additional safeguards	excluded		the rest: its other items are advice to the person; its trust, command-injection and WebDAV sentences are settings reference facts (permissions.md); its other protections are facts with no guideline
+security	Working with sensitive code	included	write-settings.md	the project-specific permission settings bullet and the isolation bullet
+security	Working with sensitive code	excluded		the rest: reviewing changes before approval, and regularly auditing permission settings with `/permissions`, are recurring practices for the person that no file in a setup captures
+security	Team security	included	write-settings.md	the bullet on sharing approved permission configurations through version control
+security	Team security	excluded		the rest: the managed settings bullet repeats best-practices › Choose who a rule applies to (write-settings.md); training and monitoring are not settings; the `ConfigChange` bullet is the hooks reference
+admin-setup	Decide what to enforce	included	write-settings.md	the lead sentence and the Permission rules, Permission lockdown, Starting permission mode, Sandboxing, Customization lockdown and Hook restrictions rows
+admin-setup	Connected GitHub accounts	excluded		the claude.ai admin console (web)
+admin-setup	Decide how settings reach devices	included	write-settings.md	the Teams-or-Enterprise and gateway sentences, the mixed-provider sentence, the plist, HKLM and HKCU sentences, and the WSL `wslInheritsWindowsSettings` sentence
+admin-setup	Decide how settings reach devices	excluded		the rest: the mechanism table and precedence are settings reference facts (managed.md), and list merging across sources too (placing.md › Lists merge instead of overriding)
+server-managed-settings	Choose between server-managed and endpoint-managed settings	included	write-settings.md	the "Best for" column, the stronger-guarantees sentence and the cloud sessions sentence
+server-managed-settings	Choose between server-managed and endpoint-managed settings	excluded		the rest: the definitions, the security model column and the self-hosted sentence are settings reference facts (managed.md)
+server-managed-settings	Security considerations	included	write-settings.md	the client-side control paragraph, the third-party provider row and the stronger-enforcement sentence
+server-managed-settings	Security considerations	excluded		the rest: the other bypass rows are settings reference facts (managed.md); the `ConfigChange` sentence is the hooks reference
+hipaa-setup	Deploy managed settings	included	write-settings.md	the lead paragraph, the recommended-sample paragraph and the sample
+hipaa-setup	Deploy managed settings	excluded		the rest: the pointer to the settings examples repository only links
+hipaa-setup	What each key does	included	write-settings.md	
+hipaa-setup	Confirm the settings loaded	excluded		a settings reference fact (managed.md)
+hipaa-setup	Sessions the managed settings keys don't block	included	write-settings.md	the bullets on Console and federation sign-ins and on server-managed settings
+hipaa-setup	Sessions the managed settings keys don't block	excluded		the rest: the older-versions bullet is history; the BAA pointer only links
+managed-mcp	Choose a pattern	excluded		compares MCP restriction patterns; MCP is not settings guidance
+auto-mode-config	Add a human checkpoint	excluded		the rest: the clause that ask rules are evaluated before the classifier repeats best-practices › Change the permission mode (choose.md › Never-rules are deny rules or hooks, not auto mode); the Prompt before the action row repeats the first paragraph
+permissions	Project allow rules and workspace trust	included	write-settings.md	the sentence that the trust dialog shows in interactive sessions only and never in a `claude -p` run or an SDK session
+managed-settings	When an admin document counts as present	included	write-settings.md	the sentence that on WSL `/etc/claude-code` is user-writable
+sandboxing	Repository settings under an admin-required sandbox	included	write-settings.md	the closing paragraph on adding approved tools' entries to managed settings, and the In a repository's files bullet
+sandboxing	Repository settings under an admin-required sandbox	excluded		the rest: when the sandbox is admin-required and what it ignores are settings reference facts (sandbox.md); history
+permissions	What runs before you trust a folder	included	write-settings.md	the table row on `permissions.allow` rules and `additionalDirectories`, its never-trusted cell
+sandboxing	Locks that apply without an admin-required sandbox	excluded		settings reference facts (sandbox.md)
+auto-mode-config	Route all shell commands through the classifier	excluded		a settings reference fact (auto-mode.md, `autoMode.classifyAllShell`)
+permissions	Project allow rules and workspace trust	excluded		the rest: when allow rules apply, how trust is keyed and background sessions are settings reference facts (permissions.md)
+managed-settings	When an admin document counts as present	excluded		the rest: when a document is present is a settings reference fact (managed.md)
+permissions	What runs before you trust a folder	excluded		the rest: the other table rows and the parent-folder column are settings reference facts (permissions.md) or another type's (hooks, subagents, MCP); trusting a folder by hand is in permissions.md; of the list before running `claude -p` in a repository you didn't write, the `--bare`, `disableAllHooks` and `--setting-sources user` items are the hooks and skills references' (hooks excluding.md and index.md, skills excluding.md), and the `disabledMcpjsonServers` item belongs to MCP, which has no reference yet
+permissions	When your local settings file needs trust	included	write-settings.md	the first paragraph, and the second paragraph with its Anywhere else bullet
+permissions	When your local settings file needs trust	excluded		the rest: the configuration-home bullet and the Note on `~/.claude/settings.local.json` are settings reference facts (permissions.md, placing.md)

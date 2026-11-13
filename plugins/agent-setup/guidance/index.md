@@ -53,6 +53,7 @@ follows and the auditor applies.
   - The instruction file the repository already uses
   - Must happen every time: a hook
   - Never-rules are deny rules or hooks, not auto mode
+  - A standing checkpoint before an action: an ask rule
   - A preference stays an instruction, not a hook
   - A rule on a command's text: keep it, and add a PreToolUse hook
   - Every session needs it: CLAUDE.md
@@ -132,6 +133,23 @@ follows and the auditor applies.
   - Hook scripts treat their input as untrusted
   - Long-running hooks run async when they needn't block
   - Hooks on every session, prompt or message stay fast
+
+- [write-settings.md](write-settings.md): writing settings: choosing the permission mode, permission rules, the sandbox
+  and other isolation, and what to enforce through managed settings
+  - The permission mode matches the goal
+  - bypassPermissions runs only inside a container, a VM or the sandbox runtime
+  - Isolation matches what the run is exposed to
+  - A container or sandbox runtime keeps secrets out and writes narrow
+  - A sandbox relied on as a control runs in strict mode and doesn't fall back
+  - A sandbox relied on as a control keeps its exceptions narrow
+  - Routine auto mode blocks are taught to the classifier, not approved each time
+  - Frequent read-only prompts in Manual mode go on an allowlist
+  - A permission rule lives in the scope of the people it applies to
+  - Sensitive repositories have project-specific permission settings
+  - Organisation policy uses the managed control that covers it
+  - Managed policy that must hold comes from an OS-protected source
+  - Required isolation is enforced, not only committed
+  - HIPAA-ready organisations using Claude Code (local mode) start managed settings from the recommended sample
 
 - [compose.md](compose.md): making several tools work together within Claude's context
   - Each tool does what it is best at

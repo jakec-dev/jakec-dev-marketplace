@@ -798,7 +798,7 @@ auto-mode-config	Configure auto mode	excluded		only repeats permission-modes ›
 auto-mode-config	Fix repeated denials	excluded		only repeats auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry and auto-mode-config › Generate environment entries with `/auto-mode-setup`
 auto-mode-config	See also	excluded		only introduces or links
 permissions	Permission modes	excluded		only repeats permission-modes › Available modes, permission-modes › Allow only pre-approved tools with dontAsk mode, settings-reference › `permissions.disableBypassPermissionsMode` and settings-reference › `disableAutoMode`
-devcontainer	Run without permission prompts	excluded		only repeats permission-modes › Skip all checks with bypassPermissions mode and settings-reference › `permissions.disableBypassPermissionsMode`
+devcontainer	Run without permission prompts	excluded		only repeats permission-modes › Skip all checks with bypassPermissions mode and settings-reference › `permissions.disableBypassPermissionsMode`; its advice to pair the flag with egress restrictions and to consider auto mode instead is guidance (write-settings.md)
 sandboxing	How sandboxing works	excluded		only introduces (no text of its own, its subsections are listed below)
 sandboxing	Configure the sandbox for your organization	excluded		only introduces (one sentence naming the subsections below)
 sandboxing	0-byte read-only files appear at `.claude` settings paths, and "Yes, and don't ask again" doesn't save	excluded		only repeats errors › Sandbox mask files left behind at write-deny paths
