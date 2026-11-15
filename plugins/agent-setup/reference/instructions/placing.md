@@ -31,8 +31,10 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
   | **Local instructions** | `./CLAUDE.local.md` | Personal project-specific preferences; add to `.gitignore` | Your sandbox URLs, preferred test data | Only you (current project) |
 
 - To include instructions in a plugin, write them as a skill: Claude Code doesn't load a `CLAUDE.md` at a plugin's
-  root, and `claude plugin validate` warns `CLAUDE.md at the plugin root is not loaded as project context`.
-  [plugins/components › Skills](https://code.claude.com/docs/en/plugins/components#skills)
+  root, and `claude plugin validate` warns `CLAUDE.md at the plugin root is not loaded as project context` in a
+  plugin run.
+  [plugins/components › Skills](https://code.claude.com/docs/en/plugins/components#skills),
+  [plugins/cli-reference › Validate a directory](https://code.claude.com/docs/en/plugins/cli-reference#validate-a-directory)
 - For large projects, you can break instructions into topic-specific files using project rules, which let you scope
   instructions to specific file types or subdirectories.
   [memory › Choose where to put CLAUDE.md files](https://code.claude.com/docs/en/memory#choose-where-to-put-claude-md-files)
@@ -133,12 +135,14 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
   permissions for the tools Claude uses while following those instructions.
   [server-managed-settings › Security approval dialogs](https://code.claude.com/docs/en/server-managed-settings#security-approval-dialogs)
 - A mod a user installs can't change your managed `CLAUDE.md` and other managed instructions. The built-in guard that
-  protects them, the `sec-default@builtin` mod, loads when the machine has managed settings, or when the session runs on
-  `/login` credentials for a Team or Enterprise plan. A user who authenticates with an API key, or through Amazon
-  Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry, gets the guard only on a machine that has managed
-  settings. A session that runs on a long-lived `CLAUDE_CODE_OAUTH_TOKEN` doesn't count as that login, even when a Team
-  or Enterprise login is stored on the machine.
-  [plugins/mods/admin › Know what happens by default](https://code.claude.com/docs/en/plugins/mods/admin#know-what-happens-by-default)
+  protects them, the `sec-default@builtin` mod, loads when the machine has managed settings or a `managed-mcp.json`
+  file, or when the session runs on `/login` credentials for a Team or Enterprise plan. A user with an API key, or on
+  Amazon Bedrock, Google Cloud's Agent Platform, or Microsoft Foundry, gets the guard only on a machine with managed
+  settings or `managed-mcp.json`. A session that runs on a long-lived `CLAUDE_CODE_OAUTH_TOKEN` doesn't count as
+  that login either, even when a Team or Enterprise login is stored on the machine. That is what users get with no
+  mod settings of your own: if managed `prependPlugins` is set, the guard loads only when that list names it.
+  [plugins/mods/admin › Know what happens by default](https://code.claude.com/docs/en/plugins/mods/admin#know-what-happens-by-default),
+  [plugins/mods/reference › Settings and environment variables](https://code.claude.com/docs/en/plugins/mods/reference#settings-and-environment-variables)
 
 ## Project rules
 
@@ -188,6 +192,12 @@ project, per-directory and local files, the managed `claudeMd` setting, and proj
 
 ## Not stated by the documentation
 
+- The guard that protects a managed `CLAUDE.md` loads on a machine with managed settings or a `managed-mcp.json`
+  file; the documentation does not say whether a managed `CLAUDE.md` file deployed alone at the managed policy path
+  counts, for a user with an API key or on Amazon Bedrock, Google Cloud's Agent Platform or
+  Microsoft Foundry.
+  [plugins/mods/admin › Know what happens by default](https://code.claude.com/docs/en/plugins/mods/admin#know-what-happens-by-default),
+  [memory › Deploy organization-wide CLAUDE.md](https://code.claude.com/docs/en/memory#deploy-organization-wide-claude-md)
 - Recursive discovery into subdirectories is stated for the project's `.claude/rules/`; the documentation does not
   say whether subdirectories of `~/.claude/rules/` are also discovered.
   [memory › User-level rules](https://code.claude.com/docs/en/memory#user-level-rules)

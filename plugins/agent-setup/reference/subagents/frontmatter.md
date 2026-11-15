@@ -101,9 +101,9 @@ Writing a subagent definition: the file format, every frontmatter field, plugin 
   the file, and its description reads `Agent from my-plugin plugin`. Run `claude plugin validate` in your shell to
   find these files.
   [plugins/components › Frontmatter fields in plugin agents](https://code.claude.com/docs/en/plugins/components#frontmatter-fields-in-plugin-agents)
-- In agent content, write a `${...}` reference anywhere in the Markdown body, and Claude Code substitutes the path
-  inline when it loads the content, because the variables aren't present in the environment of commands Claude runs
-  through the Bash tool, including in a subagent.
+- Plugin variables such as `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PLUGIN_DATA` aren't present in the environment of commands
+  Claude runs through the Bash tool, in the main session or in a subagent. In a plugin agent's content, write the
+  `${...}` reference in the Markdown body instead; Claude Code substitutes the path inline when it loads the content.
   [plugins/manifest-reference › Where each variable resolves](https://code.claude.com/docs/en/plugins/manifest-reference#where-each-variable-resolves)
 
 ## Preloaded skills

@@ -90,6 +90,9 @@ Stopping instruction files from loading: `claudeMdExcludes`, `--setting-sources`
 - Setting `CLAUDE_CODE_SIMPLE` to `1` is equivalent to passing `--bare`; it disables auto-discovery of CLAUDE.md,
   among others.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, which picks Claude Code's full or shorter system prompt, doesn't stop CLAUDE.md
+  discovery: either prompt keeps it.
+  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
 ## `CLAUDE_CODE_DISABLE_CLAUDE_MDS`
 
@@ -103,9 +106,11 @@ Stopping instruction files from loading: `claudeMdExcludes`, `--setting-sources`
   includes path-scoped rules in `~/.claude/rules/`, since the row names only `.claude/rules/` files.
   [memory › Choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load)
 - Stated for CLAUDE.md; the documentation does not say whether `--bare` or `CLAUDE_CODE_SIMPLE` also skips
-  `.claude/rules/` files, or whether the `cc-plugin-agents-md` built-in mod, which the flags that stop installed mods
-  don't stop, still finds and reads `AGENTS.md` when they have skipped CLAUDE.md discovery.
+  `.claude/rules/` files. The `cc-plugin-agents-md` built-in mod keeps running under them, since the flags that stop
+  installed mods don't stop built-in mods; it does not say whether skipping CLAUDE.md discovery changes the mod's
+  check that no `CLAUDE.md` sits in the working directory or above it.
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode),
+  [memory › Choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load),
   [plugins/mods/overview › Mods built into Claude Code](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code)
 - Stated for "any CLAUDE.md memory files"; the documentation does not say whether `CLAUDE_CODE_DISABLE_CLAUDE_MDS`
   also stops `.claude/rules/` files or `AGENTS.md`. An Agent SDK page lists it as the way to turn off "Every

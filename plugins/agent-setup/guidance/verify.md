@@ -19,7 +19,7 @@ Proving that a tool works before calling it done.
 
 ## It loaded
 
-- For a project CLAUDE.md: "To confirm the file loaded, run `/context` in a session and check the list under
+- For a project CLAUDE.md: "To confirm the file loaded, run `/context all` in a session and check the list under
   **Memory files**." The `InstructionsLoaded` hook logs "which `CLAUDE.md` and rules files are loaded, when they
   load, and why", which the documentation calls "useful for debugging path-specific rules or lazy-loaded files in
   subdirectories".

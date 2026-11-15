@@ -92,7 +92,8 @@ and gateway headers.
   [monitoring-usage › Tool result event](https://code.claude.com/docs/en/monitoring-usage#tool-result-event)
 - On the tool decision event, `tool_parameters` (when `OTEL_LOG_TOOL_DETAILS=1`) for the Agent tool or legacy Task
   tool includes `subagent_type`. A subagent call reports the subagent's permission mode in `permission_mode`
-  rather than the session's.
+  rather than the session's. If you lower `OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT` below the number of attributes on a
+  `tool_decision` event, the SDK drops `parent_agent_id` first and then `agent_id`, before any other attribute.
   [monitoring-usage › Tool decision event](https://code.claude.com/docs/en/monitoring-usage#tool-decision-event)
 - The subagent completed event, `claude_code.subagent_completed`, is logged when a subagent finishes and returns its
   result to the conversation that started it. Use it to roll up tool use and run time by subagent type; for token

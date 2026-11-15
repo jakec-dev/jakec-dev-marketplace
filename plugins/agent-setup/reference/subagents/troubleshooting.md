@@ -45,6 +45,9 @@ teammates launched instead, and what `/context` shows.
     reports an error and checks nothing in it. Name the real directory instead.
 
   [plugins/cli-reference › Validate a directory](https://code.claude.com/docs/en/plugins/cli-reference#validate-a-directory)
+- From a marketplace directory, `claude plugin validate` doesn't open the agent files of plugins the marketplace lists
+  in other directories. To find errors in those files, validate each plugin directory.
+  [plugins/cli-reference › Validate a directory](https://code.claude.com/docs/en/plugins/cli-reference#validate-a-directory)
 
 ## Launched as a teammate
 
@@ -158,6 +161,10 @@ teammates launched instead, and what `/context` shows.
     path or the quoting and run the command again.
 
   [errors › Invalid `--agents` configuration](https://code.claude.com/docs/en/errors#invalid-agents-configuration)
+- When you start `claude` with `--agents` and your administrator set `disableSideloadFlags` in managed settings,
+  Claude Code exits with an error and `Plugins, custom agents, and MCP servers can only be loaded from sources your
+  administrator has approved.` Ask your administrator to remove the setting.
+  [plugins/troubleshooting › `--plugin-dir is disabled by your organization's managed settings (disableSideloadFlags)`](https://code.claude.com/docs/en/plugins/troubleshooting#plugin-dir-is-disabled-by-your-organizations-managed-settings-disables)
 - Passing `--append-subagent-system-prompt` together with `--append-subagent-system-prompt-file` in one `claude`
   invocation makes `claude` exit with code 1 instead of starting the session. Keep one form of the flag and drop the
   other. To combine a fixed prompt file with per-run text, merge the text into the file before launching instead of
@@ -242,17 +249,18 @@ teammates launched instead, and what `/context` shows.
   doesn't recognize and found no `modelOverrides` entry mapping it. Claude Code still sends the request with the ID
   as configured, and doesn't exit or switch models. Claude Code writes it to stderr with `-p`, and to the debug log in
   an interactive or background session, at `~/.claude/debug/<session-id>.txt` when you run with `--debug`. It writes
-  the line once per model string per process.
+  the line once per model ID per process.
   [errors › Unrecognized model ID on a request](https://code.claude.com/docs/en/errors#unrecognized-model-id-on-a-request)
-- In that line, `query_source` is the request path that used the model: Claude Code reports a value that starts with
-  `agent:` for a subagent. Claude Code writes a separate line for each further unrecognized ID, such as one that a
+- After the prefix, the line holds a one-line JSON object with at least `model`, the model string as you configured
+  it, and `query_source`, the request path that used the model. For example, the value starts with `agent:`
+  for a subagent. Claude Code writes a separate line for each further unrecognized ID, such as one that a
   subagent or background functionality uses.
   [errors › Unrecognized model ID on a request](https://code.claude.com/docs/en/errors#unrecognized-model-id-on-a-request)
 - If the ID names a model newer than your Claude Code version, run `claude update`.
   [errors › Unrecognized model ID on a request](https://code.claude.com/docs/en/errors#unrecognized-model-id-on-a-request)
 - If you set the ID on purpose, such as an LLM gateway alias, add a `modelOverrides` entry to your settings file
   with the ID as its value. Use an Anthropic model ID as the key, not a family alias such as `opus`. For
-  `my-proxy-model`, add this entry:
+  a `model` value of `my-proxy-model`, add this entry:
 
   ```json
   {
@@ -271,7 +279,8 @@ teammates launched instead, and what `/context` shows.
 
 - When a separate API safety check blocked the auto mode classifier request because of earlier conversation content,
   a background subagent in a `-p` run without `--input-format stream-json` gets an error result containing
-  `Agent aborted: auto mode classifier request refused by the safety safeguard in headless mode`.
+  `Agent aborted: auto mode classifier request refused by the safety safeguard in headless mode`, and the run
+  continues.
   [errors › Auto mode cannot determine the safety of an action](https://code.claude.com/docs/en/errors#auto-mode-cannot-determine-the-safety-of-an-action)
 - When the conversation is too long for Claude Code's classifier request and Claude Code can't compact it on its
   own, a background subagent in a non-interactive `-p` run without `--input-format stream-json` gets an error result
@@ -284,5 +293,6 @@ teammates launched instead, and what `/context` shows.
 
 ## Seeing subagents in a session
 
-- `/context` lists custom subagents with the source each loaded from.
+- `/context` lists custom subagents with the source each loaded from. In fullscreen mode, `/context` collapses the
+  per-item breakdown, so run `/context all` to expand it.
   [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)

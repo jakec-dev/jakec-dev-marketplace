@@ -11,6 +11,7 @@ How Claude chooses a subagent and how to invoke one: descriptions, built-in suba
 - [Running the whole session as a subagent](#running-the-whole-session-as-a-subagent)
 - [Subagent names](#subagent-names)
 - [Agent team teammates](#agent-team-teammates)
+- [Resumed sessions](#resumed-sessions)
 - [Not stated by the documentation](#not-stated-by-the-documentation)
 
 ## How Claude chooses
@@ -150,26 +151,8 @@ How Claude chooses a subagent and how to invoke one: descriptions, built-in suba
 
 - The `agent` setting runs the main thread as a named subagent, so Claude Code applies that subagent's system prompt,
   tool restrictions and model to your session. It takes any file's scope, is a string naming a built-in or custom
-  agent, and defaults to unset, so the main thread runs as Claude Code's default agent. `--agent` takes precedence
-  over this key for one session.
+  agent, and defaults to unset. The same key sets the default agent for sessions you dispatch from `claude agents`.
   [settings-reference › `agent`](https://code.claude.com/docs/en/settings-reference#agent)
-- A plugin's own `settings.json` can supply the `agent` key. Two keys take effect, `agent` and `subagentStatusLine`,
-  and every other key is dropped. Set `agent` to run one of the plugin's own agents as the main thread: Claude then
-  answers in the main conversation with that agent's system prompt and model while the plugin is enabled. The same
-  object can go inline in the `settings` manifest key.
-  [plugins/components › Default settings](https://code.claude.com/docs/en/plugins/components#default-settings)
-
-  ```json
-  {
-    "agent": "security-reviewer"
-  }
-  ```
-
-- When the same key is set in more than one place, `settings.json` applies and the manifest's `settings` is ignored
-  if both exist and `settings.json` sets at least one supported key. Across settings sources, plugin defaults are
-  the lowest layer, so a user's own `agent` in `~/.claude/settings.json` overrides yours. If two plugins set the same
-  key, the value from the plugin loaded last applies, and `claude --debug` logs `overrides setting`.
-  [plugins/components › Default settings](https://code.claude.com/docs/en/plugins/components#default-settings)
 - The choice persists when you resume the session: a session started with `--agent` or the `agent` setting continues
   as that agent, keeping its tool restrictions and model. Pass `--agent` when resuming to pick a different one.
   [sub-agents › Invoke subagents explicitly](https://code.claude.com/docs/en/sub-agents#invoke-subagents-explicitly),
@@ -178,7 +161,8 @@ How Claude chooses a subagent and how to invoke one: descriptions, built-in suba
   trusted that workspace, and then the directory you resume from, so a project-scoped agent still loads when you
   resume from another directory. If it doesn't find the agent in either place, or the agent no longer exists, the
   session resumes with the default tools and shows a warning naming the agent.
-  [sessions › What a resumed session restores](https://code.claude.com/docs/en/sessions#what-a-resumed-session-restores)
+  [sessions › What a resumed session restores](https://code.claude.com/docs/en/sessions#what-a-resumed-session-restores),
+  [sub-agents › Invoke subagents explicitly](https://code.claude.com/docs/en/sub-agents#invoke-subagents-explicitly)
 
 ## Subagent names
 

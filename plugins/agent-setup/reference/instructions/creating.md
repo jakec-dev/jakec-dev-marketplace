@@ -105,8 +105,9 @@ appears for every user. Availability depends on your platform, plan, and environ
     [errors › claude import is not yet available in this build](https://code.claude.com/docs/en/errors#claude-import-is-not-yet-available-in-this-build),
     [feature-availability › Features available on every provider](https://code.claude.com/docs/en/feature-availability#features-available-on-every-provider),
     [env-vars › Features that need feature-flag fetching](https://code.claude.com/docs/en/env-vars#features-that-need-feature-flag-fetching)
-  - You set `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, `DISABLE_GROWTHBOOK`, or
-    [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/en/env-vars), which turn off
+  - You set `DISABLE_TELEMETRY`, `DO_NOT_TRACK`,
+    [`CLAUDE_CODE_DISABLE_FEATURE_FLAGS`](https://code.claude.com/docs/en/env-vars#variables), `DISABLE_GROWTHBOOK`,
+    or [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/en/env-vars), which turn off
     feature-flag fetching, so `claude import` stays unavailable.
 
   [errors › claude import is not yet available in this build](https://code.claude.com/docs/en/errors#claude-import-is-not-yet-available-in-this-build)

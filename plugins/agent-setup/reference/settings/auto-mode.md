@@ -111,7 +111,8 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
     connection, this happens when the response ends before the review results arrive or the results arrive in a form
     Claude Code can't read. An LLM gateway or proxy that cuts responses short or rewrites the results can cause either.
     On a direct connection to the Anthropic API, it also happens when the server's check fails for the action, for
-    example by timing out.
+    example by timing out. A hook or mod that changes an action's input after the server's review can also get the
+    action denied with no verdict.
 - To skip asking the server and always use Claude Code's own classifier requests, set `CLAUDE_CODE_AUTO_MODE_SERVER=0`.
   Setting it to `1` on a direct connection to the Anthropic API turns server review on in a session that doesn't have
   it yet, unless you've also set `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`. If you set
@@ -153,12 +154,16 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
 - In a session in auto mode, the **Auto mode server** row in `/status` reads `Enabled` while the server's checks decide
   the session's actions and `Disabled` once the session has fallen back.
   [auto-mode-classifier-billing › Why the notice appears](https://code.claude.com/docs/en/auto-mode-classifier-billing#why-the-notice-appears)
-- To make the session eligible when a gateway is the cause, ask your company's admin or your gateway provider to pass
-  requests and replies through unchanged: forward request headers and body fields as they are, including ones the
-  gateway doesn't recognize such as the `safeguards` request field, and return responses and streaming events without
-  dropping keys such as the `safeguard_results` field or rewriting tool-use IDs. New sessions then use the server's
-  checks again.
+- To make the session eligible when a gateway is the cause, ask your company's admin or your gateway provider to meet
+  these requirements. Where the upstream accepts the format that the gateway receives, Claude Code expects the gateway
+  to pass requests and responses through unchanged. Once the gateway does this, new sessions use the server's checks
+  again.
   [auto-mode-classifier-billing › Make the session eligible](https://code.claude.com/docs/en/auto-mode-classifier-billing#make-the-session-eligible)
+  - **Requests**: the gateway forwards both the `anthropic-beta` header and the `safeguards` body field unchanged,
+    because the two travel as a pair. On the Amazon Bedrock InvokeModel format, it forwards the `anthropic_beta` body
+    field in place of the header.
+  - **Responses**: the gateway returns responses and streaming events without dropping fields or rewriting tool-use
+    IDs, and keeps the `safeguard_results` field.
 - If you already know your gateway can't provide the server's checks, set `CLAUDE_CODE_AUTO_MODE_SERVER` to `0` before
   you start the session, in your shell or in the `env` settings key. Classifier requests are then always Claude Code's
   own, billed the same way, and the notice doesn't appear. `CLAUDE_CODE_AUTO_MODE_SERVER` is a temporary setting and
@@ -207,15 +212,15 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
   | In a session, `/status` shows `Auto mode server` as `Enabled` | The server reviews without your model | None needed |
 
 - To check which model the classifier used, start an auto mode session from your shell with
-  `claude --permission-mode auto --debug-file classifier-debug.log`, have Claude run a shell command that isn't
-  read-only, then search the log for `classifier_request_started`:
+  `claude --permission-mode auto --debug-file classifier-debug.log`. To give the classifier a command to review, have
+  Claude run `curl https://example.com`, then search the log for `classifier_request_started`:
   [permission-modes › Check which model the classifier used](https://code.claude.com/docs/en/permission-modes#classifier-model-check)
   - **Your model after `model=`**: the variable took effect.
   - **A different model after `model=`**: search the log for `ignoring CLAUDE_CODE_AUTO_MODE_MODEL`, which gives the
     reason and any step to take.
   - **No such line**: read `Auto mode server` in `/status` at the Claude Code prompt. `Enabled`: the server is set to
-    review this session's calls. `Disabled`: make sure the permission mode is auto, then have Claude run another
-    command that isn't read-only.
+    review this session's calls. `Disabled`: this check hasn't tested your model yet. Make sure the permission mode is
+    auto and no permission rule matches `curl`, then run the check again with the sandbox off.
 
 ## What the classifier blocks and allows by default
 
@@ -305,13 +310,12 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
     configured config directory, whether directly or through a shell command. The rule also covers the metadata lines
     Claude Code appends to each transcript entry for its own checks. Reading a transcript isn't blocked.
   - A recursive forced delete such as `rm -rf "$VAR"` or `Remove-Item -Recurse -Force $dir` whose target is a shell
-    variable that isn't assigned anywhere in the conversation the classifier sees, or a glob rooted at such a
-    variable. The value came only from earlier command output, which the classifier never receives, so the classifier
-    can't verify the deletion target against the other deletion rules. The block clears when you name the exact path
-    being deleted, or when Claude re-runs the delete with the resolved literal path written into the command. Deletes
-    whose target the classifier can resolve aren't affected. A glob directly under the variable, as in
-    `rm -rf "$VAR"/*`, is a critical path instead. `Remove-Item` targets that are a bare `*` or end in `/*` or `\*`
-    never reach the classifier: Claude Code denies them outright.
+    variable that isn't assigned in the conversation the classifier sees, or a glob rooted at such a variable.
+    Without that assignment, the classifier can't tell what the command would delete. The block clears when you name
+    the exact path being deleted, or when Claude re-runs the delete with the resolved literal path written into the
+    command. Deletes whose target the classifier can resolve aren't affected. A glob directly under the variable, as
+    in `rm -rf "$VAR"/*`, is a critical path instead. For a `Remove-Item` target that is a bare `*` or ends in `/*` or
+    `\*`, Claude Code denies that command outright.
   - Requesting credentials from the cloud instance-metadata endpoint, such as `169.254.169.254`, or explicitly
     authenticating a cloud, cluster, or registry call with the machine's own service-account or node identity.
   - Reaching a public host by a route other than a direct request, such as a tunnel, a reverse shell, or a resolver or
@@ -373,7 +377,8 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
 
 ## When auto mode falls back
 
-- A blocked action: Claude Code shows a notification and lists the action in `/permissions`.
+- A blocked action: Claude Code shows a notification and lists the action in `/permissions` under the
+  **Recently blocked** tab, where you can approve the action so Claude may retry.
   [permission-modes › When auto mode falls back](https://code.claude.com/docs/en/permission-modes#when-auto-mode-falls-back)
 - Repeated blocks: if the classifier blocks an action 3 times in a row or 20 times total, auto mode pauses and Claude
   Code resumes prompting. Approving the prompted action resumes auto mode.
@@ -652,8 +657,9 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
   `~/.claude/settings.json` afterwards to adjust single entries. When you accept, Claude Code writes the draft and
   reconciles it with the settings you already have:
   [auto-mode-config › Review and save the draft](https://code.claude.com/docs/en/auto-mode-config#review-and-save-the-draft)
-  - Claude Code writes the `environment` list without `"$defaults"`, because the draft spells out the built-in entries
-    it left unchanged.
+  - If you chose to add to the `environment` list in `~/.claude/settings.json`, you keep any `"$defaults"` entry in
+    it. If you chose to replace that list, you lose that entry, so add `"$defaults"` back if you want the default
+    entries.
   - Claude Code includes `"$defaults"` in each of the `allow`, `soft_deny`, and `hard_deny` lists the draft adds
     entries to, unless you already wrote an `allow` list without it, so the built-in rules you haven't replaced stay
     in effect.
@@ -689,9 +695,10 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
 
 ## Override the block and allow rules
 
-- Three additional fields let you replace the classifier's built-in rule lists: `autoMode.hard_deny` (unconditional
-  security boundaries), `autoMode.soft_deny` (destructive actions that user intent can clear) and `autoMode.allow`
-  (exceptions to soft block rules). Each is an array of prose descriptions, read as natural-language rules.
+- Three additional fields let you replace the classifier's built-in rule lists: `autoMode.hard_deny` (actions to
+  block even when the user asks for them), `autoMode.soft_deny` (destructive actions that user intent can clear) and
+  `autoMode.allow` (exceptions to soft block rules). Each is an array of prose descriptions, read as natural-language
+  rules.
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
 - Inside the classifier, precedence works in four tiers:
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
@@ -705,7 +712,7 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
 - To loosen, add to `allow` when the classifier repeatedly flags a routine pattern the default exceptions don't cover.
   To tighten, add to `soft_deny` for destructive risks specific to your environment that the defaults miss, or to
-  `hard_deny` for security boundaries that must never be crossed.
+  `hard_deny` for actions to block even when the user asks for them.
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
 - This example keeps the defaults in all four lists and adds organization-specific rules to each:
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
@@ -725,7 +732,7 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
       "soft_deny": [
         "$defaults",
         "Never run database migrations outside the migrations CLI, even against dev databases",
-        "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow"
+        "Running terraform apply in infra/terraform/prod/ needs an explicit request: production infrastructure changes go through the review workflow"
       ],
       "hard_deny": [
         "$defaults",
@@ -782,7 +789,8 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
   mode. Appears in `/config` as **Use auto mode during plan**.
   [settings-reference › `useAutoModeDuringPlan`](https://code.claude.com/docs/en/settings-reference#useautomodeduringplan)
 - `useAutoModeDuringPlan`: scope is user, local, or managed; a repository can't turn it off for you. Type: Boolean;
-  `true` is the same as unset, and a `false` in any of these files still turns it off. Default: `true`.
+  `true` is the same as unset, and a `false` in any of these files or in `--settings` turns it off, unless you leave
+  that user or local file out with an option such as `--setting-sources`. Default: `true`.
   [settings-reference › `useAutoModeDuringPlan`](https://code.claude.com/docs/en/settings-reference#useautomodeduringplan)
 
   ```json
@@ -828,22 +836,46 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
 
 ## Review and fix denials
 
-- To review and retry actions the auto mode classifier denied, open `/permissions` and select the **Recently denied**
-  tab, where Claude Code records each denial. Press `r` on a denied action to retry it with a manual approval: when you
-  exit the dialog, Claude Code sends a message telling the model it may retry that tool call and resumes the
-  conversation.
-  [permission-modes › When auto mode falls back](https://code.claude.com/docs/en/permission-modes#when-auto-mode-falls-back)
+- To let Claude retry a blocked action, run `/permissions` in your session to open the permissions dialog, then select
+  the **Recently blocked** tab.
   [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+- Highlight the action's row and read its command or input below the list. Go by the command or input, not the row's
+  description, which Claude or the tool wrote.
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+- Press `r` on the row to approve the action and let Claude retry it.
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+- Press `Esc` to close the dialog and apply your approval. If Claude was working when you opened `/permissions`, send a
+  message once Claude finishes to let Claude retry the action. Otherwise, you don't need to send anything: Claude
+  continues now and may retry it. If it doesn't, name the action in your next message.
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+- Approving an action doesn't add a permission rule. In auto mode, a retried action goes through the check again, so it
+  can be blocked again. To let a command through from now on, add an `allow` rule.
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+- If you don't want Claude to retry right away, you can approve an action for later, take back an approval, or close the
+  dialog and discard your approvals:
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+  - **Approve for later**: press `Enter` on the row, then `Esc`. The row leaves the tab, and Claude may retry the
+    action after your next message once Claude finishes. If you also pressed `r` on another row, the row where you
+    pressed `Enter` stays on the tab and Claude isn't told about that action. Approve that row on your next visit, or
+    press `r` on both.
+  - **Take back an approval**: before you press `Esc`, press `Enter` on the row, whether you approved it with `Enter`
+    or `r`.
+  - **Close the dialog and discard your approvals**: press `Ctrl+C` twice.
+- You can't approve an action from the tab when its row can't show all of its command or input, or when the action has
+  no row:
+  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
+  - **The row reads `This row can't be approved here`**: if you intended the action, tell Claude in your next message
+    and Claude may try it again.
+  - **No row, and `Not run` or a classifier error in the conversation**: auto mode's classifier gave no verdict.
 - When the classifier produces no verdict on the action, because a safety check separate from auto mode refused the
-  classifier's own request or its response didn't parse, Claude Code denies the action without the notification or the
-  **Recently denied** entry.
+  classifier's own request or its response didn't parse, Claude Code blocks the action without the notification or the
+  **Recently blocked** entry.
   [permission-modes › When auto mode falls back](https://code.claude.com/docs/en/permission-modes#when-auto-mode-falls-back)
-  [auto-mode-config › Review denials](https://code.claude.com/docs/en/auto-mode-config#review-denials)
-- To read the command or URL behind a notice such as `bash denied by auto mode · [Data Exfiltration] · /permissions`,
-  use the **Recently denied** tab or the conversation:
+- Notices read like `bash blocked by auto mode · /permissions · Auto mode: [Data Exfiltration]`. To read the command
+  or URL behind one, use the **Recently blocked** tab or the conversation:
   [auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry](https://code.claude.com/docs/en/auto-mode-config#fix-a-denial-with-an-allow-rule-an-environment-entry-or-a-retry)
-  - **Recently denied tab**: in the `/permissions` dialog, highlight a denied Bash or PowerShell action to read its
-    command below the list. In screen reader mode, all the commands appear before the list instead.
+  - **Recently blocked tab**: highlight the action's row. In screen reader mode, every command and input appears before
+    the list.
   - **Conversation**: find the tool call. If the call appears shortened or folded into a summary line such as
     `Ran 3 shell commands`, press `Ctrl+O` to open the transcript viewer, which expands it.
 - The text beneath the call tells you whether there is anything to fix. A dim
@@ -851,9 +883,8 @@ Configuring auto mode: the classifier and its model, what it blocks by default, 
   such as `Auto mode could not evaluate this action`, means Claude Code blocked the call without a verdict from the
   classifier. For a `Not run` row, press `Ctrl+O` to read the full message.
   [auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry](https://code.claude.com/docs/en/auto-mode-config#fix-a-denial-with-an-allow-rule-an-environment-entry-or-a-retry)
-- A line reading `Denied by auto mode classifier` with a reason such as `[Production Deploy]` or
-  `Blocked by classifier` means the classifier judged the call unsafe, so pick the fix from what the call was trying to
-  reach or do:
+- Otherwise, a `Blocked by auto mode` line means the classifier judged the call unsafe. To let the call through, take
+  the step that matches what Claude was trying to reach or do:
   [auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry](https://code.claude.com/docs/en/auto-mode-config#fix-a-denial-with-an-allow-rule-an-environment-entry-or-a-retry)
   - A destination Claude needs throughout the task, such as a package registry, an internal domain, or a repository
     host: add it to `autoMode.environment`.

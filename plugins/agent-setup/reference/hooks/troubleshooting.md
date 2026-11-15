@@ -11,13 +11,13 @@ OpenTelemetry hook events.
 - Hook error notices
 - Hooks failing on Windows
 - Hook JSON has no effect
+- PostToolUse after an interrupt
 - Stop hook hits the block cap
 - Limitations
 - Plugin hooks
 - Hooks and worktrees
 - Trust and skipped hooks
 - OpenTelemetry hook events and spans
-- Not stated by the documentation
 
 ## Check that a hook loaded
 
@@ -204,6 +204,24 @@ OpenTelemetry hook events.
   The message tells Claude to issue the call once more as recorded. If that's denied too, the hook changes the input
   every time, so turn off the mod or hook, or leave auto mode and approve the call yourself.
   [plugins/mods/troubleshoot › `a hook changed this call's input after the model wrote it`](https://code.claude.com/docs/en/plugins/mods/troubleshoot#a-hook-changed-this-calls-input-after-the-model-wrote-it)
+- In auto mode, a denial with the reason `a hook changed this call's input after auto mode reviewed it` means a hook or
+  mod changed the call's input after the server reviewed it, so the review doesn't cover what would run. It isn't a
+  judgment that the action is unsafe.
+  [errors › `a hook changed this call's input after auto mode reviewed it`](https://code.claude.com/docs/en/errors#hook-changed-input-after-review)
+- Later calls in the same Claude response can be denied with the reason `another call in this response was changed
+  after auto mode reviewed it, or could not be confirmed unchanged`.
+  [errors › `a hook changed this call's input after auto mode reviewed it`](https://code.claude.com/docs/en/errors#hook-changed-input-after-review)
+- If Claude says in its reply that auto mode couldn't check the call, turn off the hook or mod that changed the call
+  or an earlier call in the same Claude response, or ask your administrator to, or switch to Manual mode and approve
+  the call yourself, then ask Claude to try the call again. To look for a hook, run `/hooks` at the Claude Code
+  prompt.
+  [errors › `a hook changed this call's input after auto mode reviewed it`](https://code.claude.com/docs/en/errors#hook-changed-input-after-review)
+- Claude Code doesn't allow one-step artifact updates while your session has a `PreToolUse` hook or mod on `Edit` or
+  `Write`. A publish with one then fails in the Artifact tool result with `Refusing to apply edits to <path>: a hook is
+  configured for file edits in this session, so a publish can't apply edits here. Edit the file, then publish it
+  without edits. Nothing was published.` If the message comes back even after you quit and relaunch Claude Code, turn
+  off one-step updates.
+  [errors › Refusing to apply edits: a hook is configured for file edits in this session](https://code.claude.com/docs/en/errors#a-hook-is-configured-for-file-edits)
 
 ## Hooks failing on Windows
 
@@ -275,6 +293,24 @@ OpenTelemetry hook events.
   error. To see which fields it ignored, start Claude Code with `claude --debug` and search the debug log for
   `Hook JSON output had unrecognized keys`.
   [hooks-guide › Fields at the wrong level](https://code.claude.com/docs/en/hooks-guide#fields-at-the-wrong-level)
+
+## PostToolUse after an interrupt
+
+- If a `PostToolUse` hook stops early after you send a message or interrupt during a tool call, check whether you
+  pressed `Ctrl+Enter`, `Enter`, or `Esc`.
+  [hooks › PostToolUse after an interrupt](https://code.claude.com/docs/en/hooks#posttooluse-after-an-interrupt)
+- `Ctrl+Enter`: if pressing it ends the turn while a tool is running and the tool finishes, your `PostToolUse` hooks
+  run on its result and have 10 seconds to finish. The key acts as `Esc` if you queued a `!` command ahead of your
+  messages or background tasks are disabled, for example with `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`.
+  [hooks › PostToolUse after an interrupt](https://code.claude.com/docs/en/hooks#posttooluse-after-an-interrupt)
+- `Enter`: a message you queue with `Enter` doesn't interrupt the turn, so the hooks keep their usual `timeout`.
+  [hooks › PostToolUse after an interrupt](https://code.claude.com/docs/en/hooks#posttooluse-after-an-interrupt)
+- `Esc`: you cancel the hooks at once, so send the message with `Enter` or `Ctrl+Enter` when the hooks have to run.
+  [hooks › PostToolUse after an interrupt](https://code.claude.com/docs/en/hooks#posttooluse-after-an-interrupt)
+- After `Ctrl+Enter`, when the 10 seconds are up, Claude Code kills a command hook that is still running, whatever its
+  `timeout`. To let a longer command hook finish, run it with `async: true`, which means the hook can't block or rewrite
+  the result.
+  [hooks › PostToolUse after an interrupt](https://code.claude.com/docs/en/hooks#posttooluse-after-an-interrupt)
 
 ## Stop hook hits the block cap
 
@@ -465,23 +501,12 @@ OpenTelemetry hook events.
   - `plugin_id`: plugin identifier in `<name>@<marketplace>` form
   - `hook_event`: hook event type that emitted the metrics
   - Up to 20 plugin-emitted metric keys. Names match `^[a-z][a-z0-9_]{0,39}$`. Values are Boolean or number.
-- To find which tool call a hook refused, query `safety_event` where `category` is `"hook"` and `decision` is
-  `"reject"`; for a blocked result or turn end, query `category` `"hook_review"`.
+- A policy hook that blocked an action is recorded as `hook_execution_complete`, with the attributes `hook_event` and
+  `num_blocking`. That event isn't tied to a call or to `tool_use_id`.
   [monitoring-usage › Map security questions to events](https://code.claude.com/docs/en/monitoring-usage#map-security-questions-to-events)
-- `claude_code.safety_event` is also logged when a hook blocks a result. Its `decision` is `"sent_back"` when a hook
-  blocked a result or turn end, its `reason_code` can be `"hook:PreToolUse"`, its `reason_type` can be `"hook"`, and
-  its `hook_event` is `"pre_tool_use"` for a `PreToolUse` hook, or `"post_tool_use"`, `"post_tool_use_failure"`,
-  `"stop"`, or `"subagent_stop"` on `"hook_review"` events.
+- Claude Code doesn't send `claude_code.safety_event`, and no setting turns it on. To see refused tool calls, query
+  `tool_decision` events, which show that a call was refused but not always which check refused it.
   [monitoring-usage › Safety event](https://code.claude.com/docs/en/monitoring-usage#safety-event)
-- In the safety event's `category`, `"hook"` means a hook, such as `PreToolUse` or `PermissionRequest`, with the detail
-  attributes `hook_event` and `reason_code`. `"hook_review"` means a hook blocked the call's result or the end of a
-  turn, with the detail attribute `hook_event`. `"user_rejected"` covers someone declining or dismissing a prompt
-  that only a hook required, among other cases, with the detail attribute `decision_source`.
-  [monitoring-usage › Safety event categories](https://code.claude.com/docs/en/monitoring-usage#safety-event-categories)
-- A call that a `canUseTool` callback or `--permission-prompt-tool` tool approved at a prompt only a `PreToolUse` hook
-  required has no safety event apart from `"hook_review"`, `"sandbox_network"` and `"sandbox_other"` events, which
-  are sent after the call runs, so check it for a `tool_decision` event.
-  [monitoring-usage › Calls without a safety event](https://code.claude.com/docs/en/monitoring-usage#calls-without-a-safety-event)
 - Each user prompt starts a `claude_code.interaction` root span, and hook executions are recorded as its children.
   The `claude_code.hook` span sits beside `claude_code.llm_request` and `claude_code.tool`.
   [monitoring-usage › Span hierarchy](https://code.claude.com/docs/en/monitoring-usage#span-hierarchy)
@@ -521,17 +546,12 @@ OpenTelemetry hook events.
   [monitoring-usage › Span attributes](https://code.claude.com/docs/en/monitoring-usage#span-attributes)
 - In the `tool_decision` event, `tool_use_id` is the unique identifier for the tool invocation and matches the
   `tool_use_id` passed to hooks, allowing correlation between OTel events and hook-captured data. Its `source`
-  attribute is `"hook"` when a `PreToolUse` or `PermissionRequest` hook returned the decision.
-  [monitoring-usage › Tool decision event](https://code.claude.com/docs/en/monitoring-usage#tool-decision-event)
+  attribute is `"hook"` when a `PreToolUse` or `PermissionRequest` hook returned the decision. To find a tool call a
+  hook refused, query `tool_decision` events where `decision` is `"reject"` and `source` is `"hook"`.
+  [monitoring-usage › Tool decision event](https://code.claude.com/docs/en/monitoring-usage#tool-decision-event),
+  [monitoring-usage › Map security questions to events](https://code.claude.com/docs/en/monitoring-usage#map-security-questions-to-events)
 - In the `managed_settings.settings` attribute of the managed settings resolved event (set when
   `OTEL_LOG_MANAGED_SETTINGS=1`), hooks follow the same redaction rules as other settings: fixed-option and numeric
   fields such as `type` and `timeout` show, while each command, URL, `matcher`, and `if` condition is exported as
   `"[REDACTED]"`.
   [monitoring-usage › Managed settings resolved event](https://code.claude.com/docs/en/monitoring-usage#managed-settings-resolved-event)
-
-## Not stated by the documentation
-
-- The `hook_event` value of a safety event for a `PermissionRequest` hook: the `"hook"` category lists `hook_event`
-  as a detail attribute for hooks such as `PermissionRequest`, but the attribute's values name only `"pre_tool_use"`
-  for a hook and the four `"hook_review"` values.
-  [monitoring-usage › Safety event](https://code.claude.com/docs/en/monitoring-usage#safety-event)

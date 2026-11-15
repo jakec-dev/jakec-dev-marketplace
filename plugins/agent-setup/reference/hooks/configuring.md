@@ -54,7 +54,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
       "PostToolUse": [
         {
           "matcher": "Edit|Write",
-          "hooks": [{ "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write" }]
+          "hooks": [{ "type": "command", "command": "f=$(jq -r '.tool_input.file_path') && npx prettier --write --ignore-unknown \"$f\"" }]
         }
       ],
       "Notification": [
@@ -77,9 +77,12 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   it. A Bash script that parses the JSON input with `jq` needs `jq` installed and on
   your `PATH`.
   [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
-- This `PreToolUse` hook spawns `block-rm.sh` only when the matcher matches a Bash call and the `if` condition matches
-  a Bash subcommand `rm *`. `"args": []` makes it exec form.
-  [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
+- This `PreToolUse` hook's `matcher` narrows to Bash tool calls and
+  [Monitor commands](https://code.claude.com/docs/en/hooks#match-monitor-commands), and the `if` condition narrows
+  further to Bash subcommands matching `rm *`, so `block-rm.sh` only spawns when both filters match. `"args": []`
+  makes it exec form.
+  [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves),
+  [hooks › Exec form and shell form](https://code.claude.com/docs/en/hooks#exec-form-and-shell-form)
 
   ```json
   {
@@ -101,8 +104,8 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   }
   ```
 
-- On Windows, the matcher `Bash|PowerShell` covers the PowerShell tool as well as Bash. A single `if` rule matches only
-  one tool's calls, so each tool gets its own handler: one with `"if": "Bash(rm *)"` and one with
+- On Windows, the matcher `Bash|PowerShell` covers the PowerShell tool as well as Bash. A single `if` rule names one
+  tool, so each tool gets its own handler: one with `"if": "Bash(rm *)"` and one with
   `"if": "PowerShell(Remove-Item *)"`, both running the script through `powershell.exe`. In its `args`, `-NoProfile`
   skips loading your PowerShell profile so the hook starts fast, and `-ExecutionPolicy Bypass` lets PowerShell run the
   local script file. [hooks › How a hook resolves](https://code.claude.com/docs/en/hooks#how-a-hook-resolves)
@@ -141,7 +144,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | Matcher value | Evaluated as | Example |
   | :- | :- | :- |
   | `"*"`, `""`, or omitted | Match all | fires on every occurrence of the event |
-  | Only letters, digits, `_`, `-`, spaces, `,`, and `\|` | Exact string, or list of exact strings separated by `\|` or `,` with optional surrounding whitespace | `Bash` matches only the Bash tool; `Edit\|Write` and `Edit, Write` each match either tool exactly; `code-reviewer` matches only that agent type |
+  | Only letters, digits, `_`, `-`, spaces, `,`, and `\|` | Exact string, or list of exact strings separated by `\|` or `,` with optional surrounding whitespace | `Bash` matches the Bash tool, and on `PreToolUse` and `PermissionRequest` also [Monitor commands](https://code.claude.com/docs/en/hooks#match-monitor-commands); `Edit\|Write` and `Edit, Write` each match either tool exactly; `code-reviewer` matches only that agent type |
   | Contains any other character | JavaScript regular expression, unanchored | `^Notebook` matches any tool whose name starts with `Notebook`; `mcp__memory__.*` matches every tool from the `memory` server |
 
 - A matcher on the regular-expression path is tested with JavaScript's `RegExp.prototype.test`, which succeeds on a
@@ -164,7 +167,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   | `SessionStart` | how the session started | `startup`, `resume`, `clear`, `compact`, `fork` |
   | `Setup` | which CLI flag triggered setup | `init`, `maintenance` |
   | `SessionEnd` | why the session ended | `clear`, `resume`, `logout`, `prompt_input_exit`, `other` |
-  | `Notification` | notification type | `permission_prompt`, `idle_prompt`, `auth_success`, `elicitation_dialog`, `elicitation_url_dialog`, `elicitation_complete`, `elicitation_response`, `agent_needs_input`, `agent_completed`, `quota_auto_resume_fired`, `quota_auto_resume_stale`, `quota_auto_resume_disabled`, `plugin_notification` |
+  | `Notification` | notification type | `permission_prompt`, `idle_prompt`, `auth_success`, `auth_storage_failure`, `elicitation_dialog`, `elicitation_url_dialog`, `elicitation_complete`, `elicitation_response`, `agent_needs_input`, `agent_completed`, `quota_auto_resume_fired`, `quota_auto_resume_stale`, `quota_auto_resume_disabled`, `plugin_notification` |
   | `SubagentStart` | agent type | `general-purpose`, `Explore`, `Plan`, custom agent names, or plugin-scoped names like `^my-plugin:reviewer$` |
   | `PreCompact`, `PostCompact` | what triggered compaction | `manual`, `auto` |
   | `PreModelSwitch`, `PostModelSwitch` | canonical name of the model the session switches to, as described under [PreModelSwitch](https://code.claude.com/docs/en/hooks#premodelswitch) | `claude-opus-5`, `claude-opus-4-6\|claude-opus-5`, `.*opus.*` |
@@ -414,8 +417,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   into each `args` element as a plain string, so no shell re-parses it.
   [hooks › Exec form and shell form](https://code.claude.com/docs/en/hooks#exec-form-and-shell-form)
 - The manifest reference lists the places `${user_config.KEY}` is substituted as MCP server config, LSP server config,
-  exec-form hook `args`, and skill and agent content; it names hook `args`, not `command`, so the two pages differ on
-  `command`.
+  exec-form hook `args`, and skill and agent content.
   [plugins/manifest-reference › Reference a saved value](https://code.claude.com/docs/en/plugins/manifest-reference#reference-a-saved-value)
 - `CLAUDE_PLUGIN_OPTION_<KEY>` is exported to hook processes for every option, with `<KEY>` uppercased. A shell-form
   hook reads `$CLAUDE_PLUGIN_OPTION_API_TOKEN` for `api_token`, or `$CLAUDE_PLUGIN_OPTION_WEBHOOK_URL` for a
@@ -428,8 +430,7 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   hook to exec form.
   [plugins/manifest-reference › Fields that run through a shell](https://code.claude.com/docs/en/plugins/manifest-reference#fields-that-run-through-a-shell)
   and [hooks › Exec form and shell form](https://code.claude.com/docs/en/hooks#exec-form-and-shell-form)
-- Claude Code refuses to start a plugin hook that references a `${user_config.KEY}` plugin option in a shell command,
-  because a configured value containing `$(...)`, backticks or `;` would run as code there. The check runs on the
+- A configured value containing `$(...)`, backticks or `;` would run as code in a shell command. The check runs on the
   command template, so the error appears even when no value is configured yet. A shell-form hook reports:
   [errors › Plugin command references user_config in a shell command](https://code.claude.com/docs/en/errors#plugin-command-references-user-config)
 
@@ -437,10 +438,6 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   Hook from plugin formatter@acme-tools references ${user_config.*} in a shell-form command. The substituted value would be re-parsed by the shell. Use exec form instead — {"command": "<executable>", "args": ["${user_config.KEY}", ...]} — or read $CLAUDE_PLUGIN_OPTION_<KEY> from the hook's environment. Command: ./scripts/notify.sh ${user_config.webhook_url}
   ```
 
-- To fix it, add an `args` array so the hook runs in exec form, where each `${user_config.KEY}` becomes one argument
-  with no shell in between; or drop the reference and read the `$CLAUDE_PLUGIN_OPTION_<KEY>` environment variable
-  inside the script.
-  [errors › Plugin command references user_config in a shell command](https://code.claude.com/docs/en/errors#plugin-command-references-user-config)
 
 ## PowerShell hooks
 
@@ -542,7 +539,20 @@ PowerShell, timeouts, async hooks, the environment hook processes get and securi
   passes the edited file's path.
 - Claude Code reads the tool's text content the same way it reads command-hook stdout, following the parsing rule
   under exit code 0. If the tool returns `isError: true`, the hook produces a non-blocking error and execution
-  continues. [hooks › MCP tool hook fields](https://code.claude.com/docs/en/hooks#mcp-tool-hook-fields)
+  continues. [hooks › How the tool's result is read](https://code.claude.com/docs/en/hooks#how-the-tools-result-is-read)
+- If a hook error contains one of these messages, Claude Code couldn't read the tool's answer, so the hook gave no
+  verdict. On `PreToolUse`, Claude Code refuses the tool call the hook was checking; on other events such as
+  `UserPromptSubmit`, `PostToolUse`, and `Stop`, the error is non-blocking.
+  [hooks › How the tool's result is read](https://code.claude.com/docs/en/hooks#how-the-tools-result-is-read)
+
+  ```text
+  MCP tool "security_scan" on server "my_server" gave no answer that could be read, because a message from the server was too large, so this hook gave no verdict. If this keeps happening, the tool must send a smaller answer.
+  MCP tool "security_scan" on server "my_server" answered without its text, which happens when a result is too large, so this hook gave no verdict. If this keeps happening, the tool must send a smaller answer.
+  ```
+
+- If that error keeps appearing, return less data from the tool, or change the hook's `tool` or `input` so the
+  answer is smaller.
+  [hooks › How the tool's result is read](https://code.claude.com/docs/en/hooks#how-the-tools-result-is-read)
 - On events where a hook can block or change the result, such as `PreToolUse` or `Stop`, Claude Code waits for a
   connecting server before it calls the tool, for at most `MCP_TIMEOUT` and within the hook's own `timeout`. On
   observational events, such as `Notification` or `SessionEnd`, it doesn't wait.

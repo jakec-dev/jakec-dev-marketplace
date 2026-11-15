@@ -60,7 +60,7 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
 - To run a skill directly, put its name at the start of your message. After plain text, the name gives Claude
   permission to run the skill but doesn't run it. To write about the skill without permitting a run, leave off the
   slash.
-  [skills › Where you write the skill's name](https://code.claude.com/docs/en/skills#where-you-write-the-skill’s-name)
+  [skills › Where you write the skill's name](https://code.claude.com/docs/en/skills#where-you-write-the-skills-name)
 
   | Where | Example | What happens |
   | :- | :- | :- |
@@ -159,6 +159,7 @@ Controlling who can invoke a skill and invoking one: the invocation fields, wher
   | `managed-agents-secure [<agent-id>]` | Read the settings of one Managed Agent and report where they match the [Secure your Managed Agents deployment](https://platform.claude.com/docs/en/managed-agents/secure-deployment) guide or differ from it. Requires the [`ant` CLI](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart) |
   | `prompt-audit` | Flag instructions written for older models in your prompts, skills, and tool descriptions and propose fixes as a diff |
   | `cost-optimize` | Profile where your project's Claude API spend goes and propose savings from options such as prompt caching, trimming unneeded input and output tokens, batch processing, effort, and model choice, one change at a time |
+  | `latency-optimize` | Find where the time goes in your existing Claude API code and propose changes that reduce how long people wait |
   | `build-eval` | Build an eval set for your Claude-powered app |
   | `hillclimb` | Iteratively improve your app against an existing eval |
   | `preserved-thinking-migration` | Find the edits your integration makes to earlier turns, its system prompt, or its tool list that invalidate [preserved thinking](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking) blocks, measure how much reasoning each one drops, and propose fixes one at a time, re-measuring after each change |

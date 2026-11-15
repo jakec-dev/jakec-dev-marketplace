@@ -75,8 +75,9 @@ directories and sparse worktrees.
 - The `--add-dir` flag gives Claude access to additional directories outside your main working directory.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
 - For a directory added with `--add-dir` or `/add-dir`, setting the `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`
-  environment variable loads `CLAUDE.md`, `.claude/CLAUDE.md`, `.claude/rules/*.md`, and `CLAUDE.local.md` from it.
-  `CLAUDE.local.md` is skipped if you exclude `local` from `--setting-sources`.
+  environment variable loads its `CLAUDE.md`, `.claude/CLAUDE.md`, `CLAUDE.local.md`, and `.claude/rules/*.md` files
+  except rules that set a `paths` field. `CLAUDE.local.md` is skipped if you exclude `local` from
+  `--setting-sources`.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories),
   [large-codebases › Grant access across packages or repositories](https://code.claude.com/docs/en/large-codebases#grant-access-across-packages-or-repositories)
 
@@ -87,10 +88,13 @@ directories and sparse worktrees.
 - The inline form sets the variable for that one launch in Bash or Zsh. To keep it on for every session, add it to
   the `env` block in `~/.claude/settings.json`.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
+- Granting access to other directories applies when you start Claude from a subdirectory, or when a task spans
+  multiple checkouts; started from the repository root in a single large tree, Claude already has access to every
+  file. The same mechanism grants access to a separately checked-out repository.
+  [large-codebases › Grant access across packages or repositories](https://code.claude.com/docs/en/large-codebases#grant-access-across-packages-or-repositories)
 - The `permissions.additionalDirectories` setting in `.claude/settings.json` gives Claude access to directories
-  outside the working directory. Relative paths resolve against the directory you start Claude from. This
-  example is `packages/api/.claude/settings.json`, granting access to the sibling packages `packages/shared/` and
-  `packages/web/` while working from `packages/api/`.
+  outside the working directory. This example is `packages/api/.claude/settings.json`, granting access to the sibling
+  packages `packages/shared/` and `packages/web/` while working from `packages/api/`.
   [large-codebases › Grant access across packages or repositories](https://code.claude.com/docs/en/large-codebases#grant-access-across-packages-or-repositories)
 
   ```json
@@ -138,8 +142,7 @@ directories and sparse worktrees.
   ```
 
 - Paths in `sparsePaths` are relative to the repository root, regardless of which subdirectory you start Claude
-  from. All worktrees in a session share the same `sparsePaths`, so if one subagent needs `packages/api/` and
-  another needs `packages/web/`, list both.
+  from. Any directory paths work, not only package roots.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 - If everyone working in this directory needs the same paths, commit the setting to `.claude/settings.json`. The
   lists merge across scopes, so `.claude/settings.local.json` can add paths to the committed list but not remove
@@ -165,15 +168,11 @@ directories and sparse worktrees.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 - Sparse checkout requires git to enable `extensions.worktreeConfig` in the repository's shared `.git/config` while a
   sparse worktree exists. Claude Code removes that entry after the last worktree is removed, but only if Claude Code
-  added it. It never removes a value you set yourself.
+  added it.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 
 ## Not stated by the documentation
 
-- The documentation does not say whether a rule loaded from an additional directory counts as a project rule when
-  its `paths` pattern is matched, which would make the base directory the one containing the rule's `.claude`
-  folder, or whether it is matched against the working directory.
-  [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)
 - For an additional directory the documentation names `.claude/rules/*.md`; it does not say whether rules in
   subdirectories of that directory's `.claude/rules/` load.
   [memory › Load from additional directories](https://code.claude.com/docs/en/memory#load-from-additional-directories)

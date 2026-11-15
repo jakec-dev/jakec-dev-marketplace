@@ -29,9 +29,12 @@ organisation delivers managed settings, and how to find out why a setting doesn'
 - A `.claudeignore` file has no effect: block files with `Read` deny rules, which still don't cover subprocesses or
   commands that read files without naming them.
   See [permissions.md › Read and Edit rules](permissions.md).
-- Path rules for `Write`, `NotebookEdit` and `Glob` are accepted but never match; file access is checked against
-  `Edit(path)` and `Read(path)` rules only.
+- Path rules for `Write`, `NotebookEdit`, `Glob` and `Grep` with a path other than `*` are accepted but never match;
+  file permissions are checked against `Edit(path)` and `Read(path)` rules.
   See [permissions.md › Read and Edit rules](permissions.md).
+- An MCP allow rule with a specifier, added to allow only some of a tool's calls, matches no call; write MCP allow
+  rules without a specifier.
+  See [permissions.md › MCP rules](permissions.md).
 - A `/path` rule anchors at a directory tied to the settings file that defines it: in user settings,
   `Read(/secrets/**)` blocks `~/.claude/secrets/**`, not a directory in your project.
   See [permissions.md › Read and Edit rules](permissions.md).
@@ -86,8 +89,9 @@ organisation delivers managed settings, and how to find out why a setting doesn'
 
 - [permissions.md](permissions.md): writing permission rules (the permission system, `permissions` and
   `allow`/`ask`/`deny`, rule syntax and wildcards, tool-specific rules for Bash, PowerShell, Read and Edit, WebFetch,
-  MCP and Cd, working directories and `additionalDirectories`, `blockReadsOutsideWorkingDirectories`, project allow
-  rules and workspace trust, managed-only permission rules, how permission rules meet the sandbox)
+  MCP and Cd, working directories and `additionalDirectories`, `blockReadsOutsideWorkingDirectories` and
+  `blockWritesOutsideWorkingDirectories`, which tools need permission, WebSocket watches, project allow rules and
+  workspace trust, managed-only permission rules, how permission rules meet the sandbox)
   - How prompts, saved rules and rule order work
   - The `permissions` key and its arrays
   - Rule syntax and wildcards
@@ -105,12 +109,13 @@ organisation delivers managed settings, and how to find out why a setting doesn'
   - Project allow rules and workspace trust
   - Managed-only permission rules
   - How permissions meet the sandbox
-  - Blocking reads outside the working directories
+  - Blocking file-tool reads and writes outside the working directories
   - Command-line flags
+  - Not stated by the documentation
 
 - [modes.md](modes.md): choosing and setting a permission mode (the modes, `defaultMode`, which mode a session starts
-  in, switching, acceptEdits, plan, dontAsk, bypassPermissions and the keys that disable it or skip its prompts,
-  protected paths, critical paths and their prompts)
+  in, switching, acceptEdits, plan, dontAsk, `denyInsteadOfPrompting`, bypassPermissions and the keys that disable it or
+  skip its prompts, protected paths, critical paths and their prompts)
   - The modes
   - Which mode a session starts in
   - Setting the starting mode
@@ -155,6 +160,7 @@ organisation delivers managed settings, and how to find out why a setting doesn'
   - What the sandbox covers
   - Turning it on
   - Linux and WSL2 setup
+  - AppArmor profile for bubblewrap
   - Sandbox modes
   - The unsandboxed retry and strict sandbox mode
   - Temporary directories
@@ -184,9 +190,9 @@ organisation delivers managed settings, and how to find out why a setting doesn'
   - Invalid entries in managed settings
 
 - [managed.md](managed.md): delivering organisation-managed settings (managed files and delivery mechanisms,
-  server-managed settings, how managed sources combine, keys only a managed source can set, `policyHelper`,
-  `managedSourcesBehavior`, `parentSettingsBehavior`, approval dialogs, fail-closed startup, checking a policy is in
-  force, enterprise keys)
+  server-managed settings and group configurations, how managed sources combine, keys only a managed source can set,
+  `policyHelper`, `managedSourcesBehavior`, `parentSettingsBehavior`, approval dialogs, fail-closed startup, checking a
+  policy is in force, enterprise keys)
   - Deploy a managed settings file
   - Choose a delivery mechanism
   - Where and when a policy applies
@@ -213,8 +219,9 @@ organisation delivers managed settings, and how to find out why a setting doesn'
   - Dev containers
 
 - [troubleshooting.md](troubleshooting.md): checking why a setting doesn't apply (confirming what loaded and resolved
-  settings, broken files and size limits, ignored values, lost changes, invalid or dropped entries, settings, permission
-  and managed error messages, sandbox failures and their fixes)
+  settings, broken files and size limits, `~/.claude.json` errors, Remote Control `--settings` errors, ignored values,
+  lost changes, invalid or dropped entries, settings, permission and managed error messages, sandbox failures and their
+  fixes)
   - Confirm what loaded
   - Settings file errors and warnings
   - A value you set is ignored

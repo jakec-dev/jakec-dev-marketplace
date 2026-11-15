@@ -8,6 +8,7 @@ its Write tool call, or the file content it gave in its reply.
 
 PASS if Claude wrote a Markdown file in the project's .claude/rules/ directory with frontmatter whose paths field covers
 both .ts and .tsx files in any directory, either as one brace pattern such as "**/*.{ts,tsx}" or as two patterns, and
-whose body states the type-alias guidance.
+whose body states the type-alias guidance. A pattern without a slash, such as "*.{ts,tsx}", matches files at any depth,
+so it covers every directory; one starting with a slash, such as "/*.ts", matches only the project root.
 
 FAIL if the rule has no paths field, covers only one extension, or matches only the project root.

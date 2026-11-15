@@ -41,8 +41,8 @@ boundary, and reviewing a plugin's hooks before installing.
   [hooks › Disable or remove hooks](https://code.claude.com/docs/en/hooks#disable-or-remove-hooks),
   [permissions › What runs before you trust a folder](https://code.claude.com/docs/en/permissions#what-runs-before-you-trust-a-folder)
 - The key also turns off any custom status line and any custom file suggestion command; `false` lets hooks, the status
-  line and the file suggestion command run. When managed settings set it, `statusLine`, `fileSuggestion` and
-  `subagentStatusLine` are off entirely. When it is `true` outside managed settings after settings precedence applies,
+  line and the file suggestion command run. When managed settings set it, `statusLine` and `fileSuggestion`
+  are off entirely. When it is `true` outside managed settings after settings precedence applies,
   they narrow to managed settings: Claude Code runs a managed value if one is deployed, and otherwise skips your value
   without warning. The `/goal` command can't run while hooks are disabled, and the `/hooks` menu shows a notice instead
   of your hooks.
@@ -98,12 +98,11 @@ boundary, and reviewing a plugin's hooks before installing.
   [settings-reference › What runs under `allowManagedHooksOnly`](https://code.claude.com/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly),
   [plugins/mods/admin › Choose how much to allow](https://code.claude.com/docs/en/plugins/mods/admin#choose-how-much-to-allow),
   [plugins/mods/reference › Settings and environment variables](https://code.claude.com/docs/en/plugins/mods/reference#settings-and-environment-variables)
-- Claude Code also reads `statusLine`, `fileSuggestion` and `subagentStatusLine` from managed settings only: it runs a
-  managed value if one is deployed, and otherwise skips your value without warning. It disables plugins with a
-  `command` source, including plugins force-enabled in managed `enabledPlugins`, unless
-  `disableCommandPluginSources` is explicitly set to `false`. It blocks marketplace `headersHelper` commands unless
-  `disableCommandPluginSources` is explicitly set to `false`, except for a marketplace that managed settings themselves
-  declare.
+- Claude Code also reads `statusLine` and `fileSuggestion` from managed settings only, following the status line and
+  file suggestion gates. It disables plugins with a `command` source, including plugins force-enabled in managed
+  `enabledPlugins`, unless `disableCommandPluginSources` is explicitly set to `false`. It blocks marketplace
+  `headersHelper` commands unless `disableCommandPluginSources` is explicitly set to `false`, except for a marketplace
+  that managed settings themselves declare.
   [settings-reference › What runs under `allowManagedHooksOnly`](https://code.claude.com/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly),
   [settings-reference › Status line and file suggestion gates](https://code.claude.com/docs/en/settings-reference#status-line-and-file-suggestion-gates),
   [hooks › Hook locations](https://code.claude.com/docs/en/hooks#hook-locations)
@@ -162,6 +161,10 @@ boundary, and reviewing a plugin's hooks before installing.
     "httpHookAllowedEnvVars": ["MY_TOKEN", "HOOK_SECRET"]
   }
   ```
+
+- In a Claude apps gateway `managed` block with `policy_mode: layered`, the gateway refuses to start on
+  `disableAllHooks`, `allowedHttpHookUrls` or `httpHookAllowedEnvVars` in any policy other than `match: {}`.
+  [claude-apps-gateway-config › Apply every matching policy](https://code.claude.com/docs/en/claude-apps-gateway-config#apply-every-matching-policy)
 
 - When a managed source sets `allowedHttpHookUrls` or `httpHookAllowedEnvVars` to a value Claude Code can't read, it
   enforces an empty managed allowlist until you fix the value. An HTTP hook then runs only if another settings file
@@ -227,6 +230,9 @@ boundary, and reviewing a plugin's hooks before installing.
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode),
   [cli-reference › CLI flags](https://code.claude.com/docs/en/cli-reference#cli-flags),
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- Hooks still don't run in bare mode when you pass them with `--settings`, or in the `hooks/hooks.json` or `hooks`
+  manifest key of a plugin you load with a flag.
+  [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - `--safe-mode` starts with all customizations disabled, and hooks do not load. Managed settings policy still applies,
   including policy-configured hooks, but managed plugins do not load. `CLAUDE_CODE_SAFE_MODE=1` is equivalent: hooks do
   not load, policy-configured hooks still apply, and managed plugins do not load.
@@ -268,6 +274,10 @@ boundary, and reviewing a plugin's hooks before installing.
   your full access. To put them behind one boundary, run the Claude Code process itself in a container, virtual
   machine, or the sandbox runtime.
   [sandboxing › What runs outside the sandbox](https://code.claude.com/docs/en/sandboxing#what-runs-outside-the-sandbox)
+- The `permissions.blockWritesOutsideWorkingDirectories` key makes the `Write`, `Edit`, and `NotebookEdit` tools refuse
+  paths outside the working directories, apart from some of Claude Code's own files; it doesn't limit the programs
+  hooks run.
+  [settings-reference › `permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockwritesoutsideworkingdirectories)
 - Running Claude Code through the sandbox runtime constrains the session's tools, hooks and MCP servers as well as shell
   commands.
   [sandbox-environments › Sandbox runtime](https://code.claude.com/docs/en/sandbox-environments#sandbox-runtime)
@@ -303,7 +313,8 @@ boundary, and reviewing a plugin's hooks before installing.
   settings.
   [settings-reference › `disableAllHooks`](https://code.claude.com/docs/en/settings-reference#disableallhooks)
 - Whether `--bare` or `CLAUDE_CODE_SIMPLE` skips hooks from managed settings: the documentation says only that they skip
-  auto-discovery of hooks, and states that `--safe-mode` still applies managed hooks.
+  auto-discovery of hooks and that hooks passed with `--settings` or in a plugin loaded with a flag don't run, and
+  states that `--safe-mode` still applies managed hooks.
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - Whether `allowManagedHooksOnly` blocks hooks supplied by `--settings`, `--plugin-dir` or definitions passed with
   `--agents`: the documentation names user, project and local hooks, other installed plugins, and hooks declared in

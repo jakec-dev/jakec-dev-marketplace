@@ -118,8 +118,7 @@ a session, invoked content, compaction, changes on disk and teammates.
   everything before it from the cache.
   [prompt-caching › Plugin components that keep the cache](https://code.claude.com/docs/en/prompt-caching#plugin-components-that-keep-the-cache)
 - In a mod, the `skill.prompt` event fires when a skill's text is expanded for Claude, and a hook can return `{ text }`
-  to rewrite it. Text from `prompt.section`, `prompt.context` or `skill.prompt` hooks that changes between
-  requests invalidates the prompt cache.
+  to rewrite it.
   [mods reference › Prompts and what Claude reads](https://code.claude.com/docs/en/plugins/mods/reference#prompts-and-what-claude-reads),
   [mods events › Rewrite or add to a prompt](https://code.claude.com/docs/en/plugins/mods/events#rewrite-or-add-to-a-prompt)
 - In a `skill.prompt` hook, you can read these fields along with the skill's name in `e.skill` and the text Claude
@@ -226,6 +225,9 @@ a session, invoked content, compaction, changes on disk and teammates.
 
 ## Not stated by the documentation
 
+- The documentation does not say whether text a `skill.prompt` hook changes between requests invalidates the prompt
+  cache; it states `breakPromptCache` only for `prompt.section` and `tool.describe`.
+  [mods reference › Prompts and what Claude reads](https://code.claude.com/docs/en/plugins/mods/reference#prompts-and-what-claude-reads)
 - The documentation does not say whether a nested `.claude/skills/` directory, loaded because Claude read or edited a
   file there, is watched for later changes or needs `/reload-skills`.
   [skills › Edit a skill during a session](https://code.claude.com/docs/en/skills#live-change-detection)

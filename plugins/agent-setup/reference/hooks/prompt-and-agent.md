@@ -72,7 +72,7 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
   | :- | :- | :- |
   | `type` | yes | Must be `"prompt"` |
   | `prompt` | yes | The prompt text to send to the LLM. Use `$ARGUMENTS` as a placeholder for the hook input JSON. If `$ARGUMENTS` is not present, input JSON is appended to the prompt |
-  | `model` | no | Model to use for evaluation. Defaults to the model Claude Code uses for [background functionality](https://code.claude.com/docs/en/costs#background-token-usage) |
+  | `model` | no | Model to use for evaluation. Defaults to the model Claude Code uses for [background functionality](https://code.claude.com/docs/en/model-config#environment-variables) |
   | `timeout` | no | Timeout in seconds. Default: 30 |
   | `continueOnBlock` | no | On the events it applies to, `true` feeds an `ok: false` reason back to Claude and continues instead of ending the turn. Default: `false`. See [Response schema](https://code.claude.com/docs/en/hooks#response-schema) for per-event behavior |
 
@@ -90,8 +90,8 @@ Writing a `type: "prompt"` or `type: "agent"` hook: supported events, configurat
   }
   ```
 
-- If a hook's `model` names a model that the managed setting `deniedModels` blocks, such as an agent hook's `model`
-  field, that request runs on the session's model instead.
+- If a hook names a model that the managed setting `deniedModels` blocks, such as in an agent hook's `model` field,
+  that request runs on the session's model instead.
   [model-config › Block specific models or versions](https://code.claude.com/docs/en/model-config#block-specific-models-or-versions)
 - Use prompt hooks when the hook input data alone is enough to make a decision.
   [hooks-guide › Agent-based hooks](https://code.claude.com/docs/en/hooks-guide#agent-based-hooks)

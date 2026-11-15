@@ -18,7 +18,7 @@
   `strictPluginOnlyCustomization.hooks`, workspace trust, `--bare`, `--safe-mode`, the sandbox boundary, reviewing
   plugins)
 - `troubleshooting.md`: checking whether a hook runs and why not (`/hooks`, the debug log, error notices, validation,
-  plugin hook errors, OpenTelemetry hook and safety events)
+  plugin hook errors, OpenTelemetry hook events)
 
 Hooks in skill frontmatter are split between types: skills owns the `once` field, a skill's own copy of a handler and
 the trust rule as it applies to a project skill (`skills/frontmatter.md`); hooks owns the rest. The InstructionsLoaded

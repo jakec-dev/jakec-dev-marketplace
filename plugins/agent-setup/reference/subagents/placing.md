@@ -88,8 +88,8 @@ Where a subagent definition lives and how it is identified.
   [`.mcp.json`](https://code.claude.com/docs/en/plugins/components#mcp-servers) instead; they apply whenever the
   plugin is enabled rather than only inside the subagent.
   [sub-agents › Choose the subagent scope](https://code.claude.com/docs/en/sub-agents#choose-the-subagent-scope)
-- When you convert a `.claude/` setup into a plugin, the originals stay loaded alongside the plugin's copies, and
-  Claude sees `reviewer` and `my-plugin:reviewer` as two subagents.
+- While the originals of a converted `.claude/` setup are still under `.claude/`, they stay loaded alongside the
+  plugin's copies, and Claude sees `reviewer` and `my-plugin:reviewer` as two subagents.
   [plugins/create › Convert an existing `.claude/` setup](https://code.claude.com/docs/en/plugins/create#convert-an-existing-claude-setup)
 
 ## The `--agents` flag
@@ -160,8 +160,8 @@ Where a subagent definition lives and how it is identified.
 
 ## Worktrees and `/cd`
 
-- When the worktree checkout has no `.claude/skills` directory at its root, for example because it is gitignored,
-  the read-through that loads the main checkout's project skills in the worktree session also covers
+- When the worktree checkout has no `.claude/skills` directory at its root, for example because your `.claude/skills` is
+  gitignored, the read-through that loads the main checkout's project skills in the worktree session also covers
   `.claude/agents`. In a worktree with its own `.claude/skills` directory, only that copy loads for skills.
   [worktrees › What worktrees share with the main checkout](https://code.claude.com/docs/en/worktrees#what-worktrees-share-with-the-main-checkout)
 - `/cd <path>` moves the session to a different primary working directory, and as soon as you move, Claude Code

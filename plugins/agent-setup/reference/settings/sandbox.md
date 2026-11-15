@@ -7,6 +7,7 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
 - What the sandbox covers
 - Turning it on
 - Linux and WSL2 setup
+- AppArmor profile for bubblewrap
 - Sandbox modes
 - The unsandboxed retry and strict sandbox mode
 - Temporary directories
@@ -64,10 +65,9 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
   network allowlist limited to the hosts you approve, or in the dev container with its firewall script.
   [sandboxing › What runs outside the sandbox](https://code.claude.com/docs/en/sandboxing#what-runs-outside-the-sandbox),
   [sandboxing › Scope](https://code.claude.com/docs/en/sandboxing#scope)
-- A mod is a plugin that runs its own code inside Claude Code, and a process that a mod starts runs outside the sandbox.
-  The sandbox isolates the Bash commands Claude runs.
-  [sandboxing › Scope](https://code.claude.com/docs/en/sandboxing#scope),
-  [plugins/mods/overview › What a mod can reach](https://code.claude.com/docs/en/plugins/mods/overview#what-a-mod-can-reach)
+- A mod runs its own code inside Claude Code, so its file access, network requests, and programs started with
+  `$.process` aren't sandboxed.
+  [sandboxing › What runs outside the sandbox](https://code.claude.com/docs/en/sandboxing#what-runs-outside-the-sandbox)
 - When Claude controls your screen with computer use, it runs on your actual desktop rather than in an isolated
   environment, and per-app permission prompts gate each application.
   [sandboxing › Scope](https://code.claude.com/docs/en/sandboxing#scope)
@@ -100,9 +100,10 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
   }
   ```
 
-- By default, if the sandbox can't start because a dependency is missing or the platform is unsupported, Claude Code
-  runs commands without sandboxing. `sandbox.failIfUnavailable` is a Boolean, `false` by default; set it to `true` to
-  make Claude Code exit with an error at startup when `sandbox.enabled` is `true` but the sandbox can't start. Managed
+- By default, if the platform doesn't support the sandbox or the dependency check at startup fails, Claude Code runs
+  commands without sandboxing. `sandbox.failIfUnavailable` is a Boolean, `false` by default; set it to `true` to make
+  Claude Code exit with an error at startup when `sandbox.enabled` is `true` but the sandbox can't start because the
+  platform doesn't support it or the dependency check fails. Managed
   deployments that require sandboxing as a security gate can use it. It can be set in any file, with limits on project
   and local settings.
   [settings-reference › `sandbox.failIfUnavailable`](https://code.claude.com/docs/en/settings-reference#sandbox-failifunavailable),
@@ -110,12 +111,11 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
 - Run `/sandbox` in a session to open the sandbox panel. It has a **Mode** tab (choose how sandboxed commands are
   approved), an **Overrides** tab (choose whether commands that fail under the sandbox can fall back to running
   unsandboxed, which is the `allowUnsandboxedCommands` setting), and a **Config** tab (view the resolved sandbox
-  settings). On Linux it also has a Dependencies tab when the optional seccomp filter is missing.
+  settings).
   [sandboxing › Get started](https://code.claude.com/docs/en/sandboxing#get-started)
 - On macOS, sandboxing uses the built-in Seatbelt framework, so nothing needs installing. On Linux and WSL2 the sandbox
   relies on `bubblewrap` and `socat`; you can start with `/sandbox` before installing them, because its panel shows
-  whether anything is missing. If the panel shows only a Dependencies tab, a required package is missing: install it,
-  restart Claude Code, and run `/sandbox` again.
+  whether anything is missing.
   [sandboxing › Get started](https://code.claude.com/docs/en/sandboxing#get-started)
 - On the Mode tab, select auto-allow or regular permissions.
   [sandboxing › Get started](https://code.claude.com/docs/en/sandboxing#get-started)
@@ -158,29 +158,14 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
 - Ripgrep is bundled with the native Claude Code binary. The seccomp filter is optional and adds Unix domain socket
   blocking; install it with `npm install -g @anthropic-ai/sandbox-runtime` if it is missing.
   [sandboxing › Set up Linux and WSL2](https://code.claude.com/docs/en/sandboxing#set-up-linux-and-wsl2)
-- When a required dependency is missing, the Dependencies tab is the only tab shown until you install it. When only the
-  optional seccomp filter is missing, the Dependencies tab appears alongside the other tabs. The dependency check runs
-  at startup, so restart Claude Code after installing packages for `/sandbox` to detect them.
+- When the Dependencies tab is the only tab, the sandbox can't start. Install what the tab lists as missing, or add an
+  AppArmor profile for bubblewrap if the tab reports Ubuntu's AppArmor restriction.
   [sandboxing › Set up Linux and WSL2](https://code.claude.com/docs/en/sandboxing#set-up-linux-and-wsl2)
-- On Ubuntu 24.04 and later, the default AppArmor policy prevents bubblewrap from creating the user namespaces it needs.
-  Run `sysctl kernel.apparmor_restrict_unprivileged_userns` (this also works inside WSL2): if it returns `0`, or prints
-  a `No such file or directory` error because the key doesn't exist, skip this step. If it returns `1`, add an AppArmor
-  profile that grants `bwrap` the capability, then reload AppArmor with `sudo systemctl reload apparmor`. The profile
-  applies only to `bwrap` itself, not to the commands it runs inside the sandbox.
+- When the Dependencies tab appears beside the other tabs, it lists a missing optional item, such as the seccomp filter.
+  The sandbox can start without it, so install it only if you want what it adds.
   [sandboxing › Set up Linux and WSL2](https://code.claude.com/docs/en/sandboxing#set-up-linux-and-wsl2)
-
-  ```bash
-  sudo tee /etc/apparmor.d/bwrap > /dev/null <<'EOF'
-  abi <abi/4.0>,
-  include <tunables/global>
-
-  profile bwrap /usr/bin/bwrap flags=(unconfined) {
-    userns,
-    include if exists <local/bwrap>
-  }
-  EOF
-  ```
-
+- The dependency check runs at startup, so restart Claude Code after installing packages for `/sandbox` to detect them.
+  [sandboxing › Set up Linux and WSL2](https://code.claude.com/docs/en/sandboxing#set-up-linux-and-wsl2)
 - Check your WSL version with `wsl -l -v` from PowerShell. If you see `Sandboxing requires WSL2`, your distribution is
   running WSL1: upgrade it to WSL2 or run Claude Code without sandboxing.
   [sandboxing › Set up Linux and WSL2](https://code.claude.com/docs/en/sandboxing#set-up-linux-and-wsl2)
@@ -209,6 +194,38 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
       "socatPath": "/opt/admin/socat"
     }
   }
+  ```
+
+## AppArmor profile for bubblewrap
+
+- Add the profile if Claude Code runs `/usr/bin/bwrap` and Claude Code reports Ubuntu's AppArmor restriction on user
+  namespaces, or sandboxed commands fail with `bwrap: setting up uid map: Permission denied` or
+  `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` while that restriction is on.
+  [sandboxing › Add an AppArmor profile for bubblewrap](https://code.claude.com/docs/en/sandboxing#add-an-apparmor-profile-for-bubblewrap)
+- Claude Code runs the first `bwrap` on `PATH`, unless managed settings name one in `sandbox.bwrapPath`. To see which
+  `bwrap` is first, run `which bwrap` in the shell you start Claude Code from. If Claude Code runs any path other than
+  `/usr/bin/bwrap`, lift the restriction with `sysctl` instead.
+  [sandboxing › Add an AppArmor profile for bubblewrap](https://code.claude.com/docs/en/sandboxing#add-an-apparmor-profile-for-bubblewrap)
+- To add the profile for `/usr/bin/bwrap`, run this command:
+  [sandboxing › Add an AppArmor profile for bubblewrap](https://code.claude.com/docs/en/sandboxing#add-an-apparmor-profile-for-bubblewrap)
+
+  ```bash
+  sudo tee /etc/apparmor.d/bwrap > /dev/null <<'EOF'
+  abi <abi/4.0>,
+  include <tunables/global>
+
+  profile bwrap /usr/bin/bwrap flags=(unconfined) {
+    userns,
+    include if exists <local/bwrap>
+  }
+  EOF
+  ```
+
+- Reload AppArmor to apply it, then restart Claude Code and confirm the sandbox works.
+  [sandboxing › Add an AppArmor profile for bubblewrap](https://code.claude.com/docs/en/sandboxing#add-an-apparmor-profile-for-bubblewrap)
+
+  ```bash
+  sudo systemctl reload apparmor
   ```
 
 ## Sandbox modes
@@ -369,6 +386,9 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
   `permissions.additionalDirectories`. Use it when a subprocess such as `kubectl` or a build tool needs to write outside
   the project. It is an array of path strings that can be set in any file, with limits on project and local settings,
   and is unset by default.
+  [settings-reference › `sandbox.filesystem.allowWrite`](https://code.claude.com/docs/en/settings-reference#sandbox-filesystem-allowwrite)
+- On Linux and WSL2, an `allowWrite` entry for a path that doesn't exist yet has no effect, so create the path first.
+  [sandboxing › Configure sandboxing](https://code.claude.com/docs/en/sandboxing#configure-sandboxing),
   [settings-reference › `sandbox.filesystem.allowWrite`](https://code.claude.com/docs/en/settings-reference#sandbox-filesystem-allowwrite)
 - Claude Code merges `allowWrite` entries and the paths from your `Edit(...)` allow permission rules across the settings
   scopes the session loads, leaving out the ones from repository settings while
@@ -632,15 +652,15 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
   [sandboxing › Disable filesystem isolation](https://code.claude.com/docs/en/sandboxing#disable-filesystem-isolation)
 - Scope of `filesystem.disabled`: user or managed settings. Claude Code honors it from user settings, managed settings,
   and the `--settings` CLI flag; project settings in `.claude/settings.json` and `.claude/settings.local.json` can't set
-  it, so a checked-out project can't switch filesystem isolation off.
+  it.
   [settings-reference › `sandbox.filesystem.disabled`](https://code.claude.com/docs/en/settings-reference#sandbox-filesystem-disabled),
   [sandboxing › Which settings can disable it](https://code.claude.com/docs/en/sandboxing#which-settings-can-disable-it)
 - When managed settings configure `sandbox.filesystem` at all, or list any `sandbox.credentials.files` entry with
-  `"mode": "deny"`, only managed settings can set `filesystem.disabled`. This keeps developers from turning filesystem
-  isolation off in such a deployment; to turn it off for everyone, set `"disabled": true` in managed settings.
+  `"mode": "deny"`, only managed settings can set `filesystem.disabled`. To turn filesystem isolation off for everyone,
+  set `"disabled": true` in managed settings.
   [sandboxing › Which settings can disable it](https://code.claude.com/docs/en/sandboxing#which-settings-can-disable-it)
 - When `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` is set, Claude Code ignores `filesystem.disabled` from every source, including
-  managed settings, and keeps filesystem isolation on.
+  managed settings.
   [sandboxing › Which settings can disable it](https://code.claude.com/docs/en/sandboxing#which-settings-can-disable-it)
 - Setting `filesystem.disabled` lifts the protections the filesystem layer itself enforces; protections that other
   layers enforce keep applying.
@@ -882,7 +902,7 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
 - For the Monitor tool's WebSocket watch, Claude Code denies a host listed in `sandbox.network.deniedDomains` and, when
   `sandbox.network.allowManagedDomainsOnly` is set in managed settings, any host outside the managed allowlist. The
   `deniedDomains` list itself applies to sandboxed commands.
-  [tools-reference › WebSocket source](https://code.claude.com/docs/en/tools-reference#websocket-source),
+  [tools-reference › Addresses and hosts denied to WebSocket watches](https://code.claude.com/docs/en/tools-reference#addresses-and-hosts-denied-to-websocket-watches),
   [settings-reference › `sandbox.network.deniedDomains`](https://code.claude.com/docs/en/settings-reference#sandbox-network-denieddomains)
 - `sandbox.network.strictAllowlist` denies sandboxed commands access to hosts outside the allowlist instead of prompting
   for approval. The allowlist is `allowedDomains` plus domains from `WebFetch(domain:...)` allow rules, or only the
@@ -1121,7 +1141,7 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
 - On a platform the sandbox doesn't support, Claude Code doesn't start with `failIfUnavailable` on. The sandbox doesn't
   run on native Windows, so with `failIfUnavailable` set, Claude Code exits at startup on those machines. If your fleet
   includes Windows hosts, deliver the configuration by operating system, through your MDM or as a managed settings file
-  on macOS and Linux machines only (server-managed settings apply to all users in the organization), or move Windows
+  on macOS and Linux machines only (server-managed settings follow the member, not the device), or move Windows
   users into a supported environment by having them run Claude Code inside WSL2 or a container.
   [sandboxing › Enforce sandboxing with managed settings](https://code.claude.com/docs/en/sandboxing#enforce-sandboxing-with-managed-settings)
 - When managed settings set a Boolean key such as `enabled` or `failIfUnavailable`, Claude Code uses the managed value
@@ -1255,3 +1275,7 @@ Configuring the sandbox: what it restricts, how to turn it on, and the filesyste
   configuration files such as `.bashrc` or `.zshrc` can lead to code execution in different security contexts when other
   users or system processes access these files.
   [sandboxing › Security limitations](https://code.claude.com/docs/en/sandboxing#security-limitations)
+- On macOS, sandboxed commands can reach outside the sandbox to each Mach and XPC service that you list in
+  `network.allowMachLookup`, and the sandbox doesn't confine what those services do for those commands.
+  [sandboxing › Security limitations](https://code.claude.com/docs/en/sandboxing#security-limitations),
+  [settings-reference › `sandbox.network.allowMachLookup`](https://code.claude.com/docs/en/settings-reference#sandbox-network-allowmachlookup)

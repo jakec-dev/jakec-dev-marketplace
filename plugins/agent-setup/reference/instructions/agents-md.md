@@ -23,7 +23,7 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
   | :- | :- |
   | An `AGENTS.md`, and no `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `AGENTS.md` |
   | An `AGENTS.md` and a `CLAUDE.md` or `CLAUDE.local.md` in your working directory or above it | Your `CLAUDE.md` files only |
-  | A `CLAUDE.md` that already imports `AGENTS.md` | Your `CLAUDE.md`, with `AGENTS.md` included through the import |
+  | A `CLAUDE.md` that already [imports `AGENTS.md`](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools) | Your `CLAUDE.md`, with `AGENTS.md` included through the import |
 
 - An `AGENTS.md` can live in the project root, `.claude/`, or any directory.
   [claude-directory › What's not shown](https://code.claude.com/docs/en/claude-directory#what’s-not-shown)
@@ -92,12 +92,14 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
 - Some sessions, such as those on Amazon Bedrock or with telemetry disabled, aren't limited to `CLAUDE.md`
   files.
   [memory › When AGENTS.md support is unavailable](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)
-- The built-in mod that reads `AGENTS.md`, by the name `/plugin` shows:
+- `/plugin` lists built-in mods under **Built-in** on its **Installed** tab. You can't update or uninstall a
+  built-in mod, and the `mods active` line omits built-in mods. The one that reads `AGENTS.md`, by the name
+  `/plugin` shows:
   [plugins/mods/overview › Mods built into Claude Code](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code)
 
   | Name in `/plugin` | What it does | Where it's on | How to turn it off |
   | :- | :- | :- | :- |
-  | `cc-plugin-agents-md` | Loads `AGENTS.md` as project instructions | Every session, apart from the ones that can't read `AGENTS.md` | Disable it in `/plugin`, or choose which instruction files load |
+  | `cc-plugin-agents-md` | Loads `AGENTS.md` as project instructions | Every session, apart from [the ones that can't read `AGENTS.md`](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable) | Disable it in `/plugin`, or [choose which instruction files load](https://code.claude.com/docs/en/memory#choose-which-instruction-files-load) |
 
 - The settings and flags that stop installed mods, such as `disableAllHooks`, `--bare`, and `--safe-mode`, don't stop
   built-in mods.
@@ -112,8 +114,8 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
   | | `CLAUDE.md` | `AGENTS.md` read through the setting |
   | :- | :- | :- |
   | [`InstructionsLoaded` hooks](https://code.claude.com/docs/en/hooks#instructionsloaded) | Fire | Don't fire. They fire as usual for an `AGENTS.md` that a `CLAUDE.md` imports or symlinks to |
-  | Directories you add with `--add-dir` while `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` is set | Their `CLAUDE.md` loads | Their `AGENTS.md` doesn't load |
-  | An `@path` import of a file outside your working directory | Claude Code asks you to approve external imports | Loads only if you already approved external imports for this project, with no prompt |
+  | Directories you add with `--add-dir` while [`CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD`](https://code.claude.com/docs/en/memory#load-from-additional-directories) is set | Their `CLAUDE.md` loads | Their `AGENTS.md` doesn't load |
+  | An `@path` import of a file outside your working directory | Claude Code asks you to approve [external imports](https://code.claude.com/docs/en/memory#import-additional-files) | Loads only if you already approved external imports for this project, with no prompt |
 
 ## Earlier workarounds
 
@@ -159,12 +161,18 @@ unavailable, how it differs from CLAUDE.md, earlier workarounds, and the import 
     out as a plain text file unless `core.symlinks` is enabled, which leaves that clone with a one-line `CLAUDE.md`
     in place of your instructions.
     [memory › Share one file with other coding tools](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools)
-- With either the import or the symlink, run `/context` in your next session and confirm `CLAUDE.md` appears under
+- With either the import or the symlink, run `/context all` in your next session and confirm `CLAUDE.md` appears under
   **Memory files**.
   [memory › Share one file with other coding tools](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools)
 
 ## Not stated by the documentation
 
+- A flag-gated feature can be missing in the first session after an install or upgrade, and every run in a clean
+  environment such as a CI container, or with a gateway token and no API key, starts without freshly fetched flags;
+  the documentation does not say whether such runs leave `AGENTS.md` unread, as it says for the first session after
+  an upgrade.
+  [env-vars › First session after an install or upgrade](https://code.claude.com/docs/en/env-vars#first-session-after-an-install-or-upgrade),
+  [memory › When AGENTS.md support is unavailable](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable)
 - The documentation names a subdirectory's `AGENTS.md` as read when Claude opens a file there, but does not say
   whether a subdirectory's `.claude/AGENTS.md` is read the same way.
   [memory › When Claude Code reads AGENTS.md](https://code.claude.com/docs/en/memory#when-claude-code-reads-agents-md)

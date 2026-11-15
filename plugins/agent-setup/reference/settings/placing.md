@@ -64,7 +64,8 @@ Knowing the settings files, which sources load and how they combine.
   [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/en/env-vars); Claude Code then stores your settings, session
   history, and plugins there instead.
   [settings › Find or create your settings files](https://code.claude.com/docs/en/settings#find-or-create-your-settings-files)
-- Commit `.claude/settings.json` so everyone who clones the repository gets the same permissions, hooks, and plugins.
+- Commit `.claude/settings.json` so everyone who clones the repository gets the same permissions, hooks, and
+  plugin settings.
   [settings › Share settings with your team](https://code.claude.com/docs/en/settings#share-settings-with-your-team)
 - Some of what you commit waits until each teammate
   [trusts the folder](https://code.claude.com/docs/en/permissions#project-allow-rules-and-workspace-trust), and a few
@@ -134,6 +135,10 @@ Knowing the settings files, which sources load and how they combine.
 - A session you background carries `--settings` and `--setting-sources` from the original launch, so its settings stay
   in effect.
   [agent-view › What carries over when you background](https://code.claude.com/docs/en/agent-view#what-carries-over-when-you-background)
+- A background session reads its settings from the directory it runs in, as if you had started `claude` there with the
+  configuration flags it carried over. This includes `env` values in project settings, so an `ANTHROPIC_MODEL` or
+  provider variable set there applies to every background session in that directory.
+  [agent-view › Settings and provider](https://code.claude.com/docs/en/agent-view#settings-and-provider)
 - `claude agents` accepts `--settings` like the top-level `claude` command. Agent view applies `--settings` and
   `--setting-sources` to itself and passes them to every session you dispatch from it: `--settings` overrides settings
   for agent view and dispatched sessions, and `--setting-sources` loads only the named sources in both.
@@ -239,10 +244,12 @@ Each example assumes you set
   | [`enableArtifact`](https://code.claude.com/docs/en/settings-reference#enableartifact) | `false` from any scope, and `disableArtifact: true` from any scope | Honored even when a managed source sets `true`; nothing turns the [Artifact tool](https://code.claude.com/docs/en/artifacts#disable-artifacts) back on |
   | [`isolatePeerMachines`](https://code.claude.com/docs/en/settings-reference#isolatepeermachines) | `true` from any scope | Honored even when a managed source sets `false` |
   | [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockreadsoutsideworkingdirectories) | `true` from any scope | Honored even when a managed source sets `false` |
+  | [`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockwritesoutsideworkingdirectories) | `true` from any scope | Honored even when a managed source sets `false` |
+  | [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#permissions-denyinsteadofprompting) | `true` from `~/.claude/settings.json` or `--settings` | Honored even when a managed source sets `false` |
   | [`autoMode.classifyAllShell`](https://code.claude.com/docs/en/settings-reference#automode-classifyallshell) | `true` from `~/.claude/settings.json` or `--settings` | Honored even when a managed source sets `false` |
   | [`remoteControlAtStartup`](https://code.claude.com/docs/en/settings-reference#remotecontrolatstartup) | `false` from `.claude/settings.json` or `.claude/settings.local.json` | Honored even when a managed source sets `true`; a project or local `true` is ignored |
   | [`crossSessionInbound`](https://code.claude.com/docs/en/settings-reference#crosssessioninbound) | A stricter value from `.claude/settings.json` or `.claude/settings.local.json`, on the `accept` \< `hold` \< `refuse` ladder | Honored over managed, `--settings`, and user values; a project or local value that isn't stricter is ignored |
-  | [`useAutoModeDuringPlan`](https://code.claude.com/docs/en/settings-reference#useautomodeduringplan) | `false` from any managed source, `--settings`, `~/.claude/settings.json`, or `.claude/settings.local.json` | Honored even when the winning managed source sets `true`; a `false` in `.claude/settings.json` is ignored |
+  | [`useAutoModeDuringPlan`](https://code.claude.com/docs/en/settings-reference#useautomodeduringplan) | `false` from any managed source, `--settings`, `~/.claude/settings.json`, or `.claude/settings.local.json` | Honored even when the winning managed source sets `true`; a `false` in `.claude/settings.json` is ignored. See [the key's entry](https://code.claude.com/docs/en/settings-reference#useautomodeduringplan) for a file you leave out at launch |
   | [`syncClaudeAiPlugins`](https://code.claude.com/docs/en/settings-reference#syncclaudeaiplugins) | `false` from any managed source, `--settings`, `~/.claude/settings.json`, or `.claude/settings.local.json` | Honored even when the winning managed source sets `true`; a `false` in `.claude/settings.json` is ignored |
   | [`maxEffortLevel`](https://code.claude.com/docs/en/settings-reference#maxeffortlevel) | A lower cap from any scope, including `--settings` | Honored even when the managed settings Claude Code applies set a higher cap; the lowest cap applies |
 
@@ -261,6 +268,9 @@ Each example assumes you set
 - When `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` is set, Claude Code ignores provider-selection, endpoint, and
   authentication variables in settings files.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- When `CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST` is set, `CLAUDE_CODE_PROXY_RESOLVES_HOSTS` (`1` lets the proxy, not the
+  caller, resolve hostnames) goes in the environment of the process that starts Claude Code.
+  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
 ## Additional directories and worktrees
 
@@ -278,6 +288,13 @@ Each example assumes you set
   | :- | :- |
   | [Settings](https://code.claude.com/docs/en/settings) in `.claude/settings.json` and `.claude/settings.local.json` | `enabledPlugins` and [`extraKnownMarketplaces`](https://code.claude.com/docs/en/settings-reference#extraknownmarketplaces) keys only |
   | [CLAUDE.md](https://code.claude.com/docs/en/memory) files, `.claude/rules/`, and `CLAUDE.local.md` | Only when `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` is set. `CLAUDE.local.md` additionally requires the `local` setting source, which is enabled by default |
+
+- Claude Code reads an `enabledPlugins` entry of `true` in an added directory's `.claude/settings.json` only when the
+  `project` setting source is on, and in its `.claude/settings.local.json` only when `project` and `local` are on. For
+  example, `claude --setting-sources user --add-dir ./shared` reads neither file in `./shared`; pass
+  `--setting-sources user,project` for `settings.json` or `--setting-sources user,project,local` for
+  `settings.local.json`.
+  [plugins/loading › Enabled in an `--add-dir` directory but not loaded](https://code.claude.com/docs/en/plugins/loading#enabled-in-an-add-dir-directory-but-not-loaded)
 
 ## The global config file
 

@@ -76,7 +76,7 @@ Deciding where a hook is defined and what it applies to.
 
 - Server-managed settings support every setting available in `settings.json` except those restricted to OS-level
   policy delivery, and that includes hooks, which use the same format as in `settings.json`. This example runs an
-  audit script after every file edit across the organization:
+  audit script after `Edit` and `Write` tool calls across the organization:
   [server-managed-settings › Configure server-managed settings](https://code.claude.com/docs/en/server-managed-settings#configure-server-managed-settings)
 
   ```json
@@ -103,10 +103,11 @@ Deciding where a hook is defined and what it applies to.
 - With `managedSourcesBehavior` set to `"merge"` in the highest-ranked source you deploy, Claude Code adds a lower
   source's hooks to the policy, combining the entries from every source.
   [managed-settings › Compose every managed source](https://code.claude.com/docs/en/managed-settings#compose-every-managed-source)
-- In a Claude apps gateway `managed` block, the first matching policy is merged onto the `match: {}` catch-all base,
-  and every `hooks` event-type array takes the union of the base and the matching policy, so an org-wide audit hook
-  can't be accidentally dropped by a per-role override.
+- In a Claude apps gateway `managed` block, by default the first matching policy is merged onto the `match: {}`
+  catch-all base, and every `hooks` event-type array takes the union of the base and the matching policy.
   [claude-apps-gateway-config › `managed`](https://code.claude.com/docs/en/claude-apps-gateway-config#managed)
+- Under `policy_mode: layered`, hook arrays add up across every matching policy.
+  [claude-apps-gateway-config › Apply every matching policy](https://code.claude.com/docs/en/claude-apps-gateway-config#apply-every-matching-policy)
 - A Claude apps gateway policy's `cli` key takes `hooks` as org-wide hooks, in the same format as settings. The CLI
   applies the delivered document at the managed tier, above user and project settings. Hook
   commands run on developer machines, not the gateway, so the path must exist on every client OS in the policy.

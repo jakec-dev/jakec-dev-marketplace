@@ -24,15 +24,15 @@ check() {
   fi
 }
 
-# The stub records its arguments and what git status shows, writes styled.txt when the style rule is present, and
-# calls the hello skill when that skill is present.
+# The stub records its arguments and what git status shows, writes styled.txt when the style rule is present, reads
+# src/a.ts or the file STUB_READ names, and calls the hello skill when that skill is present.
 mkdir -p "$root/bin"
 cat >"$root/bin/claude" <<'SH'
 #!/usr/bin/env bash
 printf '%s\n' "$@" >stub-args.txt
 git status --porcelain >stub-status.txt
 if [ -f .claude/rules/style.md ]; then echo styled >styled.txt; fi
-read="{\"type\":\"tool_use\",\"name\":\"Read\",\"input\":{\"file_path\":\"$PWD/src/a.ts\"}}"
+read="{\"type\":\"tool_use\",\"name\":\"Read\",\"input\":{\"file_path\":\"$PWD/${STUB_READ:-src/a.ts}\"}}"
 echo "{\"type\":\"assistant\",\"message\":{\"content\":[$read]}}"
 if [ -f .claude/skills/hello/SKILL.md ]; then
   echo '{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Skill","input":{"skill":"hello"}}]}}'
@@ -150,6 +150,24 @@ echo 'true' >"$spec/check.sh"
 run -n 1 --no-hooks "$spec" "$root/out-inline"
 check 'no-hooks: an inline paths list with braces matches the file Claude read' \
   [ "$(column "$root/out-inline/results.tsv" with 4)" = touched ]
+
+loaded_for() {
+  local pattern=$1 read=$2 spec="$root/pattern-spec"
+  rm -rf "$spec" "$root/out-pattern"
+  mkdir -p "$spec"
+  printf -- '---\npaths:\n  - "%s"\n---\n\nUse the style.\n' "$pattern" >"$spec/pattern.md"
+  echo 'pattern.md .claude/rules/pattern.md' >"$spec/add.txt"
+  echo 'Add a file.' >"$spec/prompt.txt"
+  echo 'true' >"$spec/check.sh"
+  STUB_READ=$read run -n 1 --no-hooks "$spec" "$root/out-pattern"
+  column "$root/out-pattern/results.tsv" with 4
+}
+check 'no-hooks: a pattern without a slash matches at any depth' [ "$(loaded_for '*.ts' src/deep/a.ts)" = touched ]
+check 'no-hooks: a leading slash keeps a pattern to the root' [ "$(loaded_for '/*.ts' src/a.ts)" = no ]
+check 'no-hooks: a leading-slash pattern matches a file at the root' [ "$(loaded_for '/*.ts' a.ts)" = touched ]
+check 'no-hooks: a star stays within one folder' [ "$(loaded_for 'src/*.ts' src/deep/a.ts)" = no ]
+check 'no-hooks: a double star spans folders' [ "$(loaded_for 'src/**/*.ts' src/deep/a.ts)" = touched ]
+check 'no-hooks: a dot in a pattern is literal' [ "$(loaded_for 'src/a.ts' src/axts)" = no ]
 
 spec="$root/agents-spec"
 mkdir -p "$spec"

@@ -219,5 +219,9 @@ What a subagent sees and keeps: startup context, memory, resuming, names, transc
 - How `autoCompactWindow` and `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` combine for one subagent: the documentation states
   each separately and doesn't say how the percentage applies to a subagent's own window.
   [sub-agents › Auto-compaction](https://code.claude.com/docs/en/sub-agents#auto-compaction)
+- Whether a subagent's memory directory outside the working directories, such as `~/.claude/agent-memory/` for
+  `memory: user`, stays writable while `permissions.blockWritesOutsideWorkingDirectories` is on. The documentation
+  lists some of Claude Code's own files that stay writable, with "such as", and doesn't name it.
+  [settings-reference › What the write block refuses and what stays writable](https://code.claude.com/docs/en/settings-reference#what-the-write-block-refuses-and-what-stays-writable)
 - Whether a fork has persistent memory of its own.
   [sub-agents › Enable persistent memory](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory)

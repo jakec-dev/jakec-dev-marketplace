@@ -30,7 +30,8 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   [frontmatter that didn't parse](https://code.claude.com/docs/en/skills#skill-not-triggering) or one of the
   [limits on skill hooks](https://code.claude.com/docs/en/hooks#limits-on-skill-hooks).
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
-- Run `/context` first to confirm whether skill descriptions are present at all. Its skills section also includes
+- Run `/context` first to confirm whether skill descriptions are present at all; in fullscreen mode, run `/context all`
+  to expand its per-item breakdown. Its skills section also includes
   [bundled skills](https://code.claude.com/docs/en/skills#bundled-skills), which `/skills` doesn't list.
   [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)
 - `/skills` shows available skills from project, user, and plugin sources.
@@ -74,8 +75,9 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   `commands path escapes plugin directory: ./../shared.md`, and in `claude plugin` command output
   `Path escapes plugin directory: ./../shared.md (commands)`. Move the referenced file inside the plugin directory
   and point the path at it with a `./` relative path. If you installed the plugin and don't maintain it, report the
-  message to its author. If the path, or a folder above it inside the plugin, is a symlink leading outside the plugin,
-  replace the symlink with a copy of what it points to. For a symlink, the message adds where the path resolves, for
+  message to its author. A symlink leading outside the plugin is rejected unless the marketplace symlink rules allow
+  it; if the path, or a folder above it inside the plugin, is such a symlink, replace it with a copy of what it
+  points to. For a symlink, the message adds where the path resolves, for
   example:
 
   ```text
@@ -99,6 +101,21 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   run `claude doctor` in your terminal and check that the Search line shows the path of your system ripgrep
   instead of `OK (bundled)`.
   [troubleshooting › Search and discovery issues](https://code.claude.com/docs/en/troubleshooting#search-and-discovery-issues)
+- In an interactive terminal session, a `/` name that matches no command in the session gets
+  `Unknown command: /<name>`, with the closest command name or alias when one is close. Causes include a typo, a
+  command whose requirement this session doesn't meet, and a command from a plugin or MCP server that isn't installed
+  or connected. Some commands answer with their own message when your organization's policy disables them. In every
+  other session, including `-p` runs, Agent SDK applications, the Desktop app's Code tab, the VS Code extension's
+  chat panel, and cloud sessions and cloud scheduled tasks, Claude Code instead sends the prompt to Claude as a normal
+  message, with a note that the command didn't run and a list of commands Claude can run; for a built-in command that
+  can't run there, it still answers that the command isn't available. A prompt whose first word after the `/` starts
+  with punctuation, or is a path such as `/var/log/syslog`, isn't treated as a command. If Claude Code reports a
+  documented command as unknown, check its row in the commands reference for the requirement it names.
+  [errors › Unknown command](https://code.claude.com/docs/en/errors#unknown-command)
+- Some bundled skills have their own requirement in the commands reference: `/batch` requires a git repository or a
+  `WorktreeCreate` hook that creates the worktrees, and `/claude-in-chrome` is available when Chrome integration is
+  enabled for the session.
+  [commands › All commands](https://code.claude.com/docs/en/commands#all-commands)
 
 ## Validate skill files
 
@@ -408,6 +425,9 @@ For checking whether a skill loads, triggers and works, and finding out why not.
   [project and local settings](https://code.claude.com/docs/en/settings-reference#variables-claude-code-ignores-in-env),
   apart from the off values that section describes.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- `claude_code.user_prompt` events carry `command_name` when the prompt invokes a command. Custom, plugin, and MCP
+  command names collapse to `custom` or `mcp` unless `OTEL_LOG_TOOL_DETAILS=1`.
+  [monitoring-usage › User prompt event](https://code.claude.com/docs/en/monitoring-usage#user-prompt-event)
 
 ## Not stated by the documentation
 

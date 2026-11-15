@@ -107,6 +107,7 @@ return, how to turn hooks off, and how to find out why one didn't run.
   - JSON output
   - Add context for Claude
   - Terminal notifications
+  - Get terminal notifications inside tmux or GNU screen
   - HTTP hooks
   - Decision control
   - Combining results from several hooks
@@ -173,17 +174,17 @@ return, how to turn hooks off, and how to find out why one didn't run.
   - Not stated by the documentation
 
 - [troubleshooting.md](troubleshooting.md): checking whether a hook runs and why not (`/hooks`, the debug log, error
-  notices, validation, plugin hook errors, OpenTelemetry hook and safety events)
+  notices, validation, plugin hook errors, OpenTelemetry hook events)
   - Check that a hook loaded
   - See what a hook did
   - A hook never fires
   - Hook error notices
   - Hooks failing on Windows
   - Hook JSON has no effect
+  - PostToolUse after an interrupt
   - Stop hook hits the block cap
   - Limitations
   - Plugin hooks
   - Hooks and worktrees
   - Trust and skipped hooks
   - OpenTelemetry hook events and spans
-  - Not stated by the documentation

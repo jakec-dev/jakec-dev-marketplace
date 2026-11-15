@@ -104,10 +104,11 @@ synced from claude.ai.
   - A session that doesn't fetch feature flags. Claude Code skips the feature-flag fetch in these sessions, and with
     fetching off you can't sync the skills enabled for your claude.ai account into your terminal sessions:
     [env-vars › Features that need feature-flag fetching](https://code.claude.com/docs/en/env-vars#features-that-need-feature-flag-fetching)
-    - A session where you set `DISABLE_GROWTHBOOK`, `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, or
+    - A session where you set `CLAUDE_CODE_DISABLE_FEATURE_FLAGS`, `DISABLE_TELEMETRY`, `DO_NOT_TRACK`, or
       `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`. What each variable's row says about fetching:
       [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-      - `DISABLE_GROWTHBOOK`: `1` or `true` disables fetching; `0` or `false` leaves fetching on.
+      - `CLAUDE_CODE_DISABLE_FEATURE_FLAGS`: set to `1`, it turns off feature-flag fetching. The older name,
+        `DISABLE_GROWTHBOOK`, still works.
       - `DISABLE_TELEMETRY`: setting it to `0` or `false` still opts out; it also disables feature-flag fetching.
       - `DO_NOT_TRACK`: set to `1`, it has the same effect as `DISABLE_TELEMETRY`, including on fetching. Claude Code
         reads it as a standard boolean, so `0` leaves telemetry on.
