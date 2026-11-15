@@ -73,8 +73,8 @@ what they can do and see, and how to turn them off or find out why one isn't wor
   - Not stated by the documentation
 
 - [invoking.md](invoking.md): how Claude chooses a subagent and how to invoke one (descriptions and their token budget,
-  built-in subagents, natural language, @-mentions, `--agent` and the `agent` setting including plugin defaults and
-  resume, subagent names, reusing a definition for an agent team teammate)
+  built-in subagents, natural language, @-mentions, `--agent` and the `agent` setting and resume, subagent names,
+  reusing a definition for an agent team teammate)
   - How Claude chooses
   - Built-in subagents
   - Invoking one yourself
@@ -147,7 +147,7 @@ what they can do and see, and how to turn them off or find out why one isn't wor
 
 - [isolation.md](isolation.md): isolating a subagent's edits (working directory, `isolation: worktree`, enforcement
   checks and the messages for blocked commands and paths, `worktree.baseRef`, `.worktreeinclude`, sparse paths, cleanup
-  and locks, refused worktrees, `EnterWorktree` and `ExitWorktree`, `/rewind`)
+  and locks, refused worktrees, the write block, `EnterWorktree` and `ExitWorktree`, `/rewind`)
   - Working directory
   - Run a subagent in a worktree
   - Enforcement checks

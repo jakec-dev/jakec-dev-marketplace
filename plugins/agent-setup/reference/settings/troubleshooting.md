@@ -62,16 +62,15 @@ and the warnings, errors and sandbox failures that name a fix.
   - **Settings Warning**: only individual entries fail, such as a malformed permission rule. Claude Code skips those
     values and keeps the rest of the file in effect.
   - **Configuration error**: `~/.claude.json` can't be parsed. Claude Code copies the broken file to
-    `~/.claude/backups/.claude.json.corrupted.<timestamp>` and asks whether to exit and fix it by hand or reset to the
-    default configuration; a `-p` run prints the error and exits. To recover your previous state, copy back one of the
-    five most recent `.claude.json.backup.<timestamp>` files in `~/.claude/backups/`, which Claude Code saves before
-    it writes the file.
+    `~/.claude/backups/.claude.json.corrupted.<timestamp>`, and in an interactive session asks whether to exit and fix
+    it or reset to the default configuration. To restore an earlier copy, see the bullet on `Configuration error in
+    ~/.claude.json` below.
 - After you continue past the dialog, run `/status` to see the affected files and `claude doctor` for the details of
   each error.
   [settings › Fix a broken settings file](https://code.claude.com/docs/en/settings#fix-a-broken-settings-file)
-- A `-p` run shows no dialog. Unless a managed settings document can't be parsed, Claude Code skips the broken file
-  or values and continues with the rest, so after a `-p` run that ignores a setting, run `claude doctor` to see what
-  it dropped.
+- A `-p` run shows no dialog. Unless a managed settings document can't be parsed, Claude Code skips a broken user,
+  project, or local file or its broken values and continues with the rest. After a `-p` run that ignores a setting,
+  run `claude doctor` from your terminal to see what it dropped.
   [settings › Fix a broken settings file](https://code.claude.com/docs/en/settings#fix-a-broken-settings-file)
 - To find a warning that Claude Code gave at startup in an interactive session, look below the startup banner first,
   then in the debug log. The row below the banner shows some warnings about permission rules, such as
@@ -108,6 +107,81 @@ and the warnings, errors and sandbox failures that name a fix.
   `outputStyle` key in a settings file the session does load, such as `.claude/settings.json` in the project or
   `~/.claude/settings.json`.
   [errors › Output styles are saved to local settings which this session doesn't load](https://code.claude.com/docs/en/errors#output-styles-are-saved-to-local-settings-which-this-session-doesnt-load)
+- `~/.claude.json`, the file that holds your account details, MCP servers, and per-project state, can't be parsed. A
+  non-interactive start such as `claude -p` exits with code 1. When Claude Code finds a backup, the output names it and
+  prints a `cp` line that copies it back:
+  [errors › Configuration error in ~/.claude.json](https://code.claude.com/docs/en/errors#configuration-error-in-claude-json)
+
+  ```text
+  Claude configuration file at /home/user/.claude.json is corrupted: <JSON parser's message>
+  The corrupted file has been backed up to: /home/user/.claude/backups/.claude.json.corrupted.1793664000000
+  A backup file exists at: /home/user/.claude/backups/.claude.json.backup.1793660400000
+  You can manually restore it by running: cp -f "/home/user/.claude/backups/.claude.json.backup.1793660400000" "/home/user/.claude.json"
+
+  Configuration error in /home/user/.claude.json: <JSON parser's message>
+  ```
+
+  - **The output has a `cp` line**: run that line in your terminal. On Windows, run it in PowerShell.
+  - **The output has no `cp` line, or the error returns after you run it**: if `~/.claude.json` still has your
+    configuration, fix its JSON. If you can't, copy another `.claude.json.backup.<timestamp>` file from
+    `~/.claude/backups/` over it if there is one, or rename it. With no file at `~/.claude.json`, Claude Code starts
+    with default settings and none of what the file held.
+  - **`~/.claude.json` no longer has your configuration**: find a `.claude.json.corrupted.<timestamp>` file that still
+    has it, in `~/.claude/backups/` or your home directory. Fix its JSON, then copy it over `~/.claude.json`. If you
+    can't find or fix one, try the same steps with a `.claude.json.backup.<timestamp>` file that has your
+    configuration. If none does, rename `~/.claude.json` and add your MCP servers again with `claude mcp add`.
+- The startup message `Claude configuration file at /home/user/.claude.json was empty and no backup holds anything:
+  starting with defaults.` means the file it names was blank and none of the file's `.backup` copies holds anything.
+  Claude Code started with defaults for what that file holds, and your `settings.json` files and `.mcp.json` are
+  separate files. Set up again what you had configured in that file, such as your `user` and `local` scope MCP servers
+  with `claude mcp add` from your terminal, and sign in again if Claude Code asks you to.
+  [errors › Claude configuration file was empty and no backup holds anything](https://code.claude.com/docs/en/errors#claude-configuration-file-was-empty)
+- The message `Two Claude Code config files exist` means Claude Code is using the first file it names, so what's in
+  the second file isn't in effect. The first is `.config.json`, an older name for `.claude.json`. The message includes
+  a check for which file holds your setup:
+  [errors › Two Claude Code config files exist](https://code.claude.com/docs/en/errors#two-claude-code-config-files-exist)
+
+  ```text
+  Two Claude Code config files exist: this run uses /home/you/.claude/.config.json, not /home/you/.claude.json. The file with the higher count here is usually yours, and this prints nothing else from them: grep -c -E '"(hasCompletedOnboarding|mcpServers)"' "/home/you/.claude/.config.json" "/home/you/.claude.json". To end this: if several hosts share this home, first get every host to version 2.1.319 or later, since an older one can write a moved .config.json back. Then stop your Claude processes on every host, move aside the one you do not want, and start none until no host lists it.
+  ```
+
+  - On Windows, `The one with hasCompletedOnboarding or mcpServers in it is usually yours.` replaces the sentence with
+    the `grep` command.
+  - Find the file that holds your setup. On Windows, open both files and see which one has `hasCompletedOnboarding` or
+    `mcpServers` in it. On other platforms, run the `grep` command from the message in your shell and see which file
+    has the higher count.
+  - If several hosts share this home directory, first update Claude Code on every host to the version the message
+    names or later. Then stop your Claude Code processes on every host.
+  - Move the file you don't want out of its folder. Move it rather than delete it, so you can put it back.
+  - Don't start Claude Code on any host until no host still lists the moved file at its old path. The message stops
+    once one of the two files is gone.
+- The notice `Make this change again later: /home/user/.claude.json could not be updated, so it applies to this
+  session only.` on stderr means a change to `~/.claude.json`, such as a sign-in or an answer to a trust prompt, wasn't
+  saved to the file. Make the change again in a later session, for example by running `/login` again or answering the
+  trust prompt again.
+  [errors › Make this change again later](https://code.claude.com/docs/en/errors#make-this-change-again-later)
+- When the file you passed to `claude remote-control --settings` has a problem, Claude Code prints
+  `Error: Remote Control did not start, because sessions would skip part or all of the --settings file
+  ./rc-settings.json: Invalid or malformed JSON`. Fix the problem the message names, then run your
+  `claude remote-control` command again.
+  [errors › Remote Control did not start because of the `--settings` file](https://code.claude.com/docs/en/errors#remote-control-did-not-start-because-of-the-settings-file)
+- This message in the terminal running `claude remote-control` means that sessions won't start from the file you
+  passed to `--settings` as it is now: `Session failed: Error: The settings file /path/to/settings.json has changed
+  since Remote Control started, so this session did not start. Restart `claude remote-control` to use it as it is
+  now.` To use the file as it is now, stop `claude remote-control` and run the same command again. To keep the settings
+  Remote Control started with, put the file's contents back as they were, then run the command again if
+  `claude remote-control` has exited.
+  [errors › The settings file has changed since Remote Control started](https://code.claude.com/docs/en/errors#settings-file-changed-since-remote-control-started)
+- After `claude plugin install`, `enable`, `disable`, or `claude plugin marketplace add` succeeds in your shell, the
+  warning `<path> does not load (<cause>), so Claude Code ignores the whole file, including anything this command wrote
+  there` means the command worked but the settings file the warning names has an error, so Claude Code ignores the
+  whole file until you fix it. Fix the error the warning names, then run the command again if its change is no longer
+  in the file. The cause in parentheses is one of two:
+  [plugins/troubleshooting › `does not load (...), so Claude Code ignores the whole file`](https://code.claude.com/docs/en/plugins/troubleshooting#does-not-load-so-claude-code-ignores-the-whole-file)
+  - **`its "<key>" is not valid`**: the quoted setting holds a value Claude Code doesn't accept. When more than one
+    value fails, the text names the first setting and counts the others, as in
+    `its "permissions" and 1 other value are not valid`.
+  - **`it is not a JSON object`**: the file's top level isn't a JSON object, such as a file whose top level is an array.
 
 ## A value you set is ignored
 
@@ -310,6 +384,86 @@ and the warnings, errors and sandbox failures that name a fix.
   Claude receives the message. If a symlink refusal repeats on one path, find what keeps rewriting the link, such as a
   build tool or file watcher, or ask Claude to use the file's resolved path.
   [errors › Refusing to read, write, or search a path](https://code.claude.com/docs/en/errors#refusing-after-a-symlink-changed)
+- Each of the other path refusals names its reason:
+  [errors › Refusing to read, write, or search a path](https://code.claude.com/docs/en/errors#refusing-after-a-symlink-changed)
+  - `its symlink resolution changed after permission was checked`: a symlink along the path, or at a Grep or Glob
+    search root, was replaced between the permission check and the operation. In a read refusal, the parenthesized
+    phrase names which comparison failed.
+  - `its parent-directory symlink resolution changed after permission was checked`: a directory the write path passes
+    through no longer resolves to the approved location.
+  - `where it leads on disk could not be determined (a link on the way could not be examined, or the links do not
+    resolve)`: Claude Code couldn't follow the path to a final location on disk, for example because symlinks on it
+    form a loop.
+  - `Refusing to write through symlink: <path>. Resolve the symlink and pass the real target path explicitly.`: a
+    symbolic link sits at the requested write location, caught when another writer opens the file, such as a write to
+    a symlinked `.mcp.json`.
+  - `it could not be opened (EACCES) — it is unreadable, or is being replaced concurrently.`: the search root exists
+    but couldn't be opened; the parenthesized code is the operating system error.
+  - `its permission check expired before it ran (too many concurrent file operations). Retry.`: Claude Code evicted
+    the approval record under many simultaneous file operations before the tool used it; retrying runs a fresh
+    permission check.
+- When `permissions.blockWritesOutsideWorkingDirectories` is on and the path Claude tries to write is outside the
+  session's working directories, Claude Code refuses the write in every permission mode:
+  [errors › Setting blocks writes outside the working directories](https://code.claude.com/docs/en/errors#setting-blocks-writes-outside-the-working-directories)
+
+  ```text
+  <path> is outside <dirs>; the permissions.blockWritesOutsideWorkingDirectories setting blocks writes outside the working directories. Ask the user to add the directory with /add-dir, or to remove that setting.
+  ```
+
+  - The refusal can also read: `<path>: Writes outside the working directories are blocked
+    (permissions.blockWritesOutsideWorkingDirectories). Add the directory with /add-dir, or remove that setting.`
+  - If Claude shouldn't write there, do nothing.
+  - To let Claude write to an existing directory that contains the path, run `/add-dir <directory>` at the Claude Code
+    prompt, or pass `--add-dir <directory>` when you start Claude Code. To keep a directory writable in every session,
+    list it under `permissions.additionalDirectories` in your user or managed settings.
+  - If the path is a Claude Code settings file, such as `~/.claude/settings.json`, edit it yourself. Adding its
+    directory with `/add-dir` doesn't help, because Claude Code then refuses the write as a settings file.
+  - To turn `permissions.blockWritesOutsideWorkingDirectories` off, remove it from every settings file that sets it,
+    then restart Claude Code.
+  - If none of your settings files has `permissions.blockWritesOutsideWorkingDirectories`, it can come from
+    `--settings` or from a host application. Claude Code also refuses these writes while it can't read `permissions` in
+    your managed settings. Ask whoever launches or manages the session.
+- When `permissions.blockWritesOutsideWorkingDirectories` is on and Claude Code treats the file Claude tries to write
+  as one of its settings files, the tool call fails:
+  [errors › Writes to Claude Code settings files are blocked](https://code.claude.com/docs/en/errors#writes-to-claude-code-settings-files-are-blocked)
+
+  ```text
+  <path>: Writes to Claude Code settings files are blocked while permissions.blockWritesOutsideWorkingDirectories is on, because a settings file can lift that block. While a managed settings folder cannot be resolved, any .json file counts as one.
+  ```
+
+  - To change a setting, edit the settings file yourself.
+  - To let Claude edit settings files again, remove `permissions.blockWritesOutsideWorkingDirectories` from every
+    settings file that sets it, then restart Claude Code.
+  - If the file isn't one of your settings files, find it among the other files Claude Code treats as settings files.
+    For a file you passed to `--agents` or `--mcp-config`, edit it yourself.
+  - For the stored copy of server-managed settings and the files kept with it, ask an Owner to change the setting in
+    server-managed settings.
+  - For any `.json` file, while Claude Code can't work out where the `managed-settings.d/` folder leads, ask your
+    administrator to check that folder.
+- If Claude has no `EnterWorktree` or `ExitWorktree` tool when you ask it to work in a worktree, check whether
+  `permissions.blockWritesOutsideWorkingDirectories` is on. Once the key is on, Claude Code removes both worktree tools
+  or refuses calls to them.
+  [worktrees › Claude has no `EnterWorktree` tool](https://code.claude.com/docs/en/worktrees#claude-has-no-enterworktree-tool)
+  - You can keep working in worktrees while the key is on. In an interactive session, start the session in a worktree
+    with `claude --worktree`.
+  - Claude Code refuses a background session's edits in your main checkout until the session calls `EnterWorktree`,
+    which it doesn't have. Any of these lets the session edit: start it with `claude --bg --worktree`; set
+    `worktree.bgIsolation` to `"none"`; or have Claude edit in a worktree made with `git worktree add` under the
+    directory the session started in.
+  - To get the tools back, run `/status` in the session to list the setting sources it loaded, and remove the key from
+    every file that sets it. Then restart Claude Code. If managed settings set the key, ask your administrator whether
+    the policy should change.
+- The tool you passed to `--permission-prompt-tool` returned an answer Claude Code couldn't read, so the tool call
+  waiting on it didn't run, even if the answer allowed the call: `Permission prompt tool returned an invalid result.
+  Expected a single text block param with type="text" and a string text value.`
+  [errors › Permission prompt tool returned an invalid result](https://code.claude.com/docs/en/errors#permission-prompt-tool-returned-an-invalid-result)
+  - Return one text block whose text is `{"behavior": "allow"}` or `{"behavior": "deny", "message": "<reason>"}`. To
+    change the input, add `updatedInput` to the `allow` object.
+  - Return no `structuredContent`, which your MCP SDK may add on its own. For example, register the tool with
+    `structured_output=False` for `FastMCP` or `MCPServer` from `mcp.server`; with `output_schema=None` and return a
+    string for `FastMCP` from `fastmcp`; without `outputSchema` in the MCP TypeScript SDK.
+  - If the error comes only with inputs of about 40 KB or more, don't copy the input into `updatedInput` or a deny's
+    `message`. To change an input that large, raise your prompt tool's output limit.
 
 ## Managed settings: dropped entries and errors
 
@@ -459,7 +613,9 @@ and the warnings, errors and sandbox failures that name a fix.
     retention keys. The startup notice, `/status`, and `claude doctor` then report the failed load with the cause
     `no setting in the server response could be applied as written`, which means the server answered but none of the
     settings it returned passed validation; ask your administrator to correct the settings on the server. That entry
-    says which policy the session runs on. Clients that enforce fail-closed startup exit at startup instead.
+    says which policy the session runs on. Clients that enforce fail-closed startup exit at startup instead. If startup
+    stops with a message that your organization requires its settings `before a session can start`, see the
+    `Claude Code couldn't load your organization's settings` bullet below.
     [errors › Remote managed settings failed to load](https://code.claude.com/docs/en/errors#remote-managed-settings-failed-to-load),
     [server-managed-settings › Invalid entries in delivered settings](https://code.claude.com/docs/en/server-managed-settings#invalid-entries-in-delivered-settings)
   - The security approval dialog evaluates the salvaged payload, so a stripped invalid entry is never presented for
@@ -473,10 +629,10 @@ and the warnings, errors and sandbox failures that name a fix.
 - When `forceRemoteSettingsRefresh` is `true` and the server-managed settings fetch fails, the session's last output
   includes `Your organization requires remote managed settings to load, but they could not be loaded.`
   [self-hosted-environments-configuration › Stop sessions that fail to fetch server-managed settings](https://code.claude.com/docs/en/self-hosted-environments-configuration#stop-sessions-that-fail-to-fetch-server-managed-settings)
-- Claude Code shows `Remote managed settings failed to load` in interactive sessions when your session is eligible for
-  server-managed settings but Claude Code couldn't fetch them or couldn't apply what the server returned. The
-  parenthesized cause names what failed, such as `network error`, `request timed out`, or
-  `authentication rejected (401)`. The rest of the line says which policy the
+- Claude Code shows `Remote managed settings failed to load` in interactive sessions and in Claude Desktop's Code tab
+  when your session is eligible for server-managed settings but Claude Code couldn't fetch them or couldn't apply
+  what the server returned. The parenthesized cause names what failed, such as `network error`,
+  `request timed out`, or `authentication rejected (401)`. The rest of the line says which policy the
   session runs on: with settings cached from an earlier successful fetch, Claude Code runs the session on that cached
   policy, except the withheld environment variables, and the line reads `using cached policy`; with no cache, Claude
   Code runs the session without server-managed settings, and the line reads `no remote policy applied`.
@@ -484,6 +640,36 @@ and the warnings, errors and sandbox failures that name a fix.
   - Act on the cause the message names: for a network cause, check that this machine can reach `api.anthropic.com`;
     for an authentication cause, check your sign-in with `/status`.
   - Run `/status` or `claude doctor` for the full diagnostic.
+  - In Claude Desktop's Code tab, the warning appears as a line in the conversation when you send a message, and a new
+    line appears when the state of the fetch changes. Three related messages appear the same way:
+    - `Remote managed settings are still loading`: the fetch was still running when the session went ahead.
+    - `Remote managed settings did not load`: the fetch ended without an answer.
+    - `Remote managed settings have now loaded`: the settings loaded after one of these warnings, and the rest of the
+      line says whether a remote policy applies.
+- Claude Code shows this in place of a session when your organization's settings, including its server-managed
+  settings, have to load first and Claude Code couldn't load them. For example:
+  [errors › Claude Code couldn't load your organization's settings](https://code.claude.com/docs/en/errors#couldnt-load-your-organizations-settings)
+
+  ```text
+  Claude Code couldn't reach Anthropic to load your organization's settings (could not connect). <Organization name> requires them before a session can start.
+  ```
+
+  - If the message is in a dialog titled `Claude Code can't start this session yet`, the dialog closes and the session
+    starts as soon as the settings load. In non-interactive mode and in background sessions, Claude Code prints the
+    message and exits with status 1 instead.
+  - **`could not connect`, or `the reply came from a network proxy, not Anthropic`**: check your network connection,
+    and on a corporate network ask IT to allow HTTPS to `api.anthropic.com/api/claude_code/policy_limits` and
+    `api.anthropic.com/api/claude_code/settings`. Then select **Retry now**, or run your command again.
+  - **`timed out`, `Anthropic returned an error`, or `Anthropic asked it to retry shortly`**: let the dialog retry, or
+    run your command again later. Check status.anthropic.com if it keeps happening.
+  - **`still loading`, or `couldn't verify your sign-in with Anthropic yet`**: let the dialog retry, or run your
+    command again. If the sign-in message keeps coming back, sign in again by running `claude auth login` in your
+    shell.
+  - **`Your Claude session has expired`**: the sign-in stored on this machine is no longer valid, so retrying won't
+    help. In the dialog, select **Sign in again** to close Claude Code; then, in your shell, run `claude auth login`,
+    which works even while sessions can't start.
+  - **`none of the settings the server returned could be applied as written`**: ask your administrator to correct the
+    organization's server-managed settings, then retry.
 - Declining the security approval dialog for server-managed settings that need your approval makes Claude Code exit
   without applying them, with `Managed settings were not approved; exiting without applying them.` Start Claude Code
   again and approve the dialog to continue under your organization's settings. A declined dialog isn't remembered, so
@@ -578,8 +764,8 @@ and the warnings, errors and sandbox failures that name a fix.
   cannot determine the safety of <tool> right now. Wait a moment and then try this action again.`
   [errors › Auto mode cannot determine the safety of an action](https://code.claude.com/docs/en/errors#auto-mode-cannot-determine-the-safety-of-an-action)
   - In an interactive session, a dim `Not run · auto mode's check had no usable answer` row appears under the tool
-    call instead. Press `Ctrl+O` to read the message in the transcript viewer. The `gave no verdict` denials show the
-    same row.
+    call instead. Press `Ctrl+O` to read the message in the transcript viewer. The row can also replace a message
+    saying the server gave no verdict or, outside a remote session, one starting `Auto mode could not evaluate`.
   - When Claude Code can determine the failure category, it names the category in parentheses after
     `temporarily unavailable`: `(rate-limited)`, `(overloaded)`, `(server error)`, `(timed out)`, or
     `(connection failed)`. If `(timed out)` or `(connection failed)` repeats, check your connection.
@@ -633,8 +819,7 @@ and the warnings, errors and sandbox failures that name a fix.
   returned no safety verdict for the last 10 responses, so Claude stopped. Send a message to try again, or switch out
   of auto mode.` In an interactive session, the message appears as a warning in the transcript and the turn ends. In a
   non-interactive `-p` run, the run ends and reports an execution error; with the default text output, the message
-  prints on stderr. When a subagent hit the limit, the subagent stops before finishing, and Claude receives whatever it
-  produced with a note that auto mode stopped it.
+  prints on stderr.
   [errors › The server returned no safety verdict](https://code.claude.com/docs/en/errors#the-server-returned-no-safety-verdict)
   - In an interactive session, press `Ctrl+O` to read the denial text in the transcript viewer.
   - If the denial names `(the conversation is too long for the check)`, run `/compact` at the Claude Code prompt to
@@ -647,6 +832,9 @@ and the warnings, errors and sandbox failures that name a fix.
   - To approve the actions yourself instead, switch out of auto mode.
   - On a direct connection to the Anthropic API, Claude Code compacts a conversation that has grown too long for the
     server's check.
+- Some denials don't count toward the ten responses in a row with no verdict, such as one from a hook or mod's
+  change.
+  [errors › The server returned no safety verdict](https://code.claude.com/docs/en/errors#the-server-returned-no-safety-verdict)
 - A `was not reviewed and did not run` denial means the conversation is too long for the auto mode classifier to check
   the action, so the action didn't run. Claude Code returns `<tool> was not reviewed and did not run: the conversation
   is too long for auto mode's classifier. Claude Code will try to compact the conversation before the next request; if
@@ -726,12 +914,34 @@ and the warnings, errors and sandbox failures that name a fix.
   Claude, or you created it. To keep a folder, leave something in it. If a `HEAD` file or symlink has been at the
   top level during the session, move it away, then restart every Claude Code session open there.
   [sandboxing › A folder named `objects` or `refs` disappears after a command](https://code.claude.com/docs/en/sandboxing#a-folder-named-objects-or-refs-disappears-after-a-command)
+- **A git command fails with `Unable to create '…/index.lock'`**: if you started Claude Code in a repository's
+  subdirectory, this error can mean `.git` is outside what sandboxed commands can write to. Start Claude Code from the
+  repository root instead, or from the worktree's root in a linked worktree.
+  [sandboxing › A git command fails with `Unable to create '…/index.lock'`](https://code.claude.com/docs/en/sandboxing#git-index-lock)
 - **Bubblewrap fails to start inside a container**: in an unprivileged container, bubblewrap can't mount a fresh
   `/proc` filesystem, so sandboxed commands fail with a `bwrap` error such as
   `Can't mount proc on /newroot/proc: Operation not permitted`. Setting `enableWeakerNestedSandbox` to `true` makes the
   sandbox bind-mount the container's existing `/proc` instead; use it only when the outer container already provides
   the isolation boundary you need.
   [sandboxing › Bubblewrap fails to start inside a container](https://code.claude.com/docs/en/sandboxing#bubblewrap-fails-to-start-inside-a-container)
+- On Linux and WSL2, the message `Ubuntu's AppArmor restriction on user namespaces stops bubblewrap here` means that
+  Ubuntu's AppArmor restriction keeps the sandbox from starting. Until you lift the restriction, commands run without
+  the sandbox under the regular permission flow, or Claude Code refuses to start if `sandbox.failIfUnavailable` is
+  `true`.
+  [sandboxing › Ubuntu's AppArmor restriction stops bubblewrap](https://code.claude.com/docs/en/sandboxing#apparmor-restriction-stops-bubblewrap)
+  - To get the sandbox to start, add an AppArmor profile for bubblewrap if Claude Code runs `/usr/bin/bwrap`, or in
+    your shell run `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0`, which lifts the restriction for
+    every program on the machine and lasts until you reboot.
+  - Then restart Claude Code and confirm the sandbox works.
+- On Linux and WSL2, `bwrap: setting up uid map: Permission denied` or `bwrap: loopback: Failed RTM_NEWADDR: Operation
+  not permitted` can mean that Ubuntu's AppArmor restriction on user namespaces is stopping bubblewrap. To check, run
+  `sysctl kernel.apparmor_restrict_unprivileged_userns` in your shell.
+  [sandboxing › Sandboxed commands fail with `bwrap: setting up uid map: Permission denied`](https://code.claude.com/docs/en/sandboxing#bwrap-uid-map-permission-denied)
+  - `kernel.apparmor_restrict_unprivileged_userns = 1`: the restriction is on. Add an AppArmor profile if Claude Code
+    runs `/usr/bin/bwrap`, or run `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0`, which lifts it for
+    every program until you reboot. Then restart Claude Code and confirm the sandbox works.
+  - Any other output: the restriction isn't the cause. To report the failure, run `/feedback` at the Claude Code
+    prompt.
 - **`git` over SSH fails with the sandbox on**: on macOS, `git fetch`, `git pull`, and `git push` against an SSH remote
   fail inside the sandbox even when the host is allowed. On Linux and WSL2, they work once the host is allowed. Claude
   Code tunnels git's SSH connection through the sandbox proxy, and the macOS tunnel can't authenticate to that proxy.

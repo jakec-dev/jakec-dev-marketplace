@@ -35,6 +35,9 @@ key facts first; they are what models most often get wrong. Then read only the s
 - A literal `[` in a `paths` pattern must be escaped, as in `photos \[2024/**`; a `[` that can't be read as a
   bracket expression makes the pattern invalid, so it matches nothing.
   See [scoping.md › Invalid patterns](scoping.md).
+- A `paths` pattern is relative to the rule's base directory: `*.md` matches `.md` files anywhere under it, `/*.md`
+  only those directly in it, and `src/components/*.tsx` only files directly in that folder, not in subfolders.
+  See [scoping.md › Glob patterns](scoping.md).
 - `paths` is the only frontmatter field a rule reads, and any other field is ignored without an error. The opening
   `---` must be the file's first line; if the YAML doesn't parse, the rule loads as if it had no `paths`.
   See [scoping.md › The frontmatter](scoping.md).
@@ -67,7 +70,8 @@ key facts first; they are what models most often get wrong. Then read only the s
   branch.
   See [loading.md › In subagents](loading.md).
 - CLAUDE.md files and rules in a directory added with `--add-dir` load only with
-  `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` set; the `additionalDirectories` setting never loads them.
+  `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD` set, and even then the directory's rules that set `paths` don't
+  load; the `additionalDirectories` setting never loads them.
   See [sharing.md › Additional directories](sharing.md).
 - Root-level directories are not checked out in a sparse worktree, so include `.claude` in `worktree.sparsePaths` if
   you want the repository root's `.claude/settings.json` or `.claude/rules/` available inside the worktree.

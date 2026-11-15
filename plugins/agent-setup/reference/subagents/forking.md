@@ -43,11 +43,12 @@ Running a forked subagent: what it inherits, how to start, watch and steer it, a
   | `x` | Stop the selected fork if it's running, or dismiss its row if it's no longer running. On the main session row, or on the row of the fork whose transcript you opened with `Enter`, `x` types into the prompt instead |
   | `Esc` | Return focus to the prompt input |
 
-- With a fork's or subagent's transcript open, follow-up messages go to that agent, and built-in commands go to your main conversation, with these safeguards: [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks)
+- With a fork's or subagent's transcript open, follow-up messages go to that agent, and built-in commands other than `/btw` go to your main conversation, with these safeguards: [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks)
   - `/compact`, `/clear`, and `/rewind` act on the main conversation, so Claude Code asks you to confirm before
     running one of them from this view.
   - `/model` and `/fast` set the main conversation's model and fast mode, not the viewed agent's, so they don't run
     from this view. A notice tells you why.
+- With a fork's or subagent's transcript open, `/btw` answers from that transcript instead of the main conversation, so you can ask what the subagent did. A later `/btw` from that transcript sees only the side questions you asked from it. [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks), [interactive-mode › Ask /btw about a subagent](https://code.claude.com/docs/en/interactive-mode#ask-btw-about-a-subagent)
 - To have the viewed agent read your message before the work it's waiting on finishes, send it with [`Ctrl+Enter` or `Ctrl+X Ctrl+S`](https://code.claude.com/docs/en/keybindings#chat-actions). Any shell command or subagent the agent is waiting on that can move to the [background](https://code.claude.com/docs/en/tools-reference#background-commands) moves there and keeps running. When the agent is writing a response, or waiting on work that can't move to the background, it keeps going and reads your message once that finishes. [sub-agents › Observe and steer running forks](https://code.claude.com/docs/en/sub-agents#observe-and-steer-running-forks)
 
 ## How forks differ from other subagents

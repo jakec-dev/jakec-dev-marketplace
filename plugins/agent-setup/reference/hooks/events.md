@@ -1007,6 +1007,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   | `permission_prompt` | Claude needs you to approve a tool use or a sandboxed command's [network request](https://code.claude.com/docs/en/sandboxing#network-isolation), and the prompt has waited about six seconds |
   | `idle_prompt` | Claude finished responding about 60 seconds ago and you haven't typed since |
   | `auth_success` | Authentication completes |
+  | `auth_storage_failure` | Your sign-in completes, but Claude Code can't save the new credentials to its [credential storage](https://code.claude.com/docs/en/authentication#credential-management). Fires in place of `auth_success` |
   | `elicitation_dialog` | An MCP server opens an elicitation form and you haven't typed for about six seconds |
   | `elicitation_url_dialog` | An MCP server asks you to open a browser URL and you haven't typed for about six seconds |
   | `elicitation_complete` | An MCP server reports that a [URL-mode elicitation](https://code.claude.com/docs/en/hooks#elicitation-input) is complete |
@@ -1169,16 +1170,23 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   block unauthorized modifications to configuration files.
   [hooks › ConfigChange](https://code.claude.com/docs/en/hooks#configchange)
   [hooks-guide › Audit configuration changes](https://code.claude.com/docs/en/hooks-guide#audit-configuration-changes)
-- Claude Code runs ConfigChange hooks when a settings file or a managed policy file changes, for each settings-file
-  change it detects. For managed policy, it runs them only when `managed-settings.json` or a file in
-  `managed-settings.d/` changes. It applies server-managed settings and changes to macOS managed preferences or Windows
-  registry policy without running them, so it doesn't run them for managed settings that arrive from MDM or the
-  claude.ai console, or when server-managed settings arrive or refresh. On WSL with `wslInheritsWindowsSettings`, it
-  also applies a changed Windows-side managed settings file on its policy poll without running them. To log edits to
-  local settings files, including `managed-settings.json`, use ConfigChange hooks.
+- Claude Code runs ConfigChange hooks when a settings file or a managed policy file changes, for direct edits to
+  settings files; a skill file changing also runs them, with the matcher value `skills`. For managed policy, it runs
+  them only when `managed-settings.json` or a file in `managed-settings.d/` changes. To log edits to local settings
+  files, including `managed-settings.json`, use ConfigChange hooks.
   [hooks › ConfigChange](https://code.claude.com/docs/en/hooks#configchange)
   [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)
   [server-managed-settings › Security considerations](https://code.claude.com/docs/en/server-managed-settings#security-considerations)
+- Changes such as these take effect without running the hooks:
+  [hooks › ConfigChange](https://code.claude.com/docs/en/hooks#configchange),
+  [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)
+  - Rules and settings you save with **Yes, and don't ask again**, `/permissions`, or `/model`, in the session you saved
+    them from. If another open session loads the same file, the hooks run there.
+  - Managed settings that arrive from MDM or the claude.ai console, and updates to
+    [server-managed settings](https://code.claude.com/docs/en/server-managed-settings), macOS managed preferences, or
+    Windows registry policy
+  - On WSL with [`wslInheritsWindowsSettings`](https://code.claude.com/docs/en/settings-reference#wslinheritswindowssettings),
+    a changed Windows-side managed settings file, which Claude Code picks up on its policy poll
 
 ### Matcher
 
@@ -1673,7 +1681,7 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
           "hooks": [
             {
               "type": "command",
-              "command": "bash -c 'jq -r .worktree_path | xargs rm -rf'"
+              "command": "bash -c 'p=$(jq -er .worktree_path) && rm -rf -- \"$p\"'"
             }
           ]
         }
@@ -1726,6 +1734,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
   [hooks › PreCompact](https://code.claude.com/docs/en/hooks#precompact)
 - Claude Code discards a PreCompact hook's `systemMessage` and `continue` fields.
   [hooks › PreCompact](https://code.claude.com/docs/en/hooks#precompact)
+- When a PreCompact hook exits 0 and doesn't block, keep its stdout under 10,000 characters per hook. Claude Code cuts
+  longer output at the cap and appends a marker.
+  [hooks › PreCompact output](https://code.claude.com/docs/en/hooks#precompact-output)
 - Input: in addition to the common input fields, PreCompact hooks receive `trigger` and `custom_instructions`. For
   `manual`, `custom_instructions` contains what the user passes into `/compact` and is `null` when they pass nothing.
   For `auto`, `custom_instructions` is `null`.
@@ -1922,17 +1933,21 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
     request has no way to show the confirmation prompt. A `/model` command in a `-p` run reports the same condition
     with `(run /model interactively to confirm)` after the reason. Make the switch from an interactive session, or
     change the hook's decision for this model.
-  - **`so organization-managed PreModelSwitch hooks could not be checked`**: Claude Code couldn't tell which
-    PreModelSwitch hooks your organization's managed plugins deliver, for example because a managed plugin failed to
-    load. One of those hooks might block the switch, so Claude Code refuses rather than apply the switch unchecked.
-    The start of the reason names what failed. Claude Code re-checks on every switch attempt, so a failure that has
-    since cleared stops blocking; if it keeps failing, run `claude --debug` and switch again to capture the details,
-    then fix the plugin or ask your admin to fix it.
-    [errors › Model switch was blocked by a PreModelSwitch hook](https://code.claude.com/docs/en/errors#model-switch-was-blocked-by-a-premodelswitch-hook)
-    [model-config › Setting your model](https://code.claude.com/docs/en/model-config#setting-your-model)
   - **`a PreModelSwitch hook failed before answering`** or **`PreModelSwitch hooks were cancelled (the control
     stream closed) before answering`**: the hook run ended without a verdict, and Claude Code doesn't treat that as
     approval. Run `claude --debug` to see what failed, then switch again.
+- If a [managed plugin](https://code.claude.com/docs/en/settings-reference#enabledplugins) or its hooks fail to load,
+  you can still switch models. The plugin's PreModelSwitch hooks don't run, so a switch that one of them would have
+  blocked can go ahead. Other PreModelSwitch hooks that loaded still run and can block it.
+  [errors › Model switch was blocked by a PreModelSwitch hook](https://code.claude.com/docs/en/errors#model-switch-was-blocked-by-a-premodelswitch-hook)
+  [model-config › Setting your model](https://code.claude.com/docs/en/model-config#setting-your-model)
+- To see what failed, run `/plugin` in your session and open the
+  [**Errors** tab](https://code.claude.com/docs/en/plugins/troubleshooting#failed-to-load-hooks-from-and-hooks-that-dont-fire).
+  If nothing is listed there, start a new session with `claude --debug` from your shell and switch to a different
+  model, then read the [debug log](https://code.claude.com/docs/en/hooks#debug-hooks). After you fix the plugin, or a
+  plugin update brings your admin's fix to your machine, run `/reload-plugins` in your session to get its hooks
+  running.
+  [model-config › Setting your model](https://code.claude.com/docs/en/model-config#setting-your-model)
 
 ## PostModelSwitch
 
@@ -2056,6 +2071,9 @@ Hooking the lifecycle and every event that is not a tool event: when each fires,
 - With `--permission-prompts none` in a `-p` run, any MCP elicitation request that no `Elicitation` hook answers is
   cancelled.
   [headless › Turn off permission prompts in unattended runs](https://code.claude.com/docs/en/headless#turn-off-permission-prompts-in-unattended-runs)
+- With `permissions.denyInsteadOfPrompting` on, Claude Code cancels an MCP elicitation request unless an `Elicitation`
+  hook answers it.
+  [settings-reference › What else `denyInsteadOfPrompting` stops](https://code.claude.com/docs/en/settings-reference#what-else-denyinsteadofprompting-stops)
 - In a [non-interactive](https://code.claude.com/docs/en/headless) session, Claude Code asks the MCP server to cancel a
   task that requests input, without running your `Elicitation` hooks.
   [mcp › Answer a question from an MCP task](https://code.claude.com/docs/en/mcp#answer-a-question-from-an-mcp-task)

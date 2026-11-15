@@ -14,6 +14,7 @@ context, terminal notifications, HTTP responses and combined results.
 - JSON output
 - Add context for Claude
 - Terminal notifications
+- Get terminal notifications inside tmux or GNU screen
 - HTTP hooks
 - Decision control
 - Combining results from several hooks
@@ -224,13 +225,19 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 ## Hooks that start a background process
 
+- A hook can start a long-running program, such as a dev server, and leave it running while the session continues.
+  In the hook's script or [shell form](https://code.claude.com/docs/en/hooks#exec-form-and-shell-form) command, run the
+  program in the background and redirect its stdout and stderr, for example the Bash command
+  `npm run dev > dev-server.log 2>&1 &`. If you don't redirect them, a hook that isn't async takes up to 10 seconds
+  to finish after its own process exits.
+  [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
 - If a command hook makes its decision in a background process and exits, a deny that process prints after Claude Code
   has stopped reading doesn't block the tool call. For a hook that isn't async, Claude Code finishes reading the hook's
   output shortly after the hook's own process exits.
   [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
 - Print the decision before you start a background process, and redirect that process's stdout and stderr. If the
   script prints an allow, then starts a background process without redirecting its stdout and stderr, Claude Code
-  blocks the tool call, and the hook error includes `refusing to honor the suspect capture`.
+  blocks the tool call, and the hook error includes `stdio went quiet` and `refusing to honor the suspect capture`.
   [hooks › Hooks that start a background process](https://code.claude.com/docs/en/hooks#hooks-that-start-a-background-process)
 - This `PreToolUse` hook script prints the decision with `policy-check.sh`, then uploads metrics in the background.
   `|| exit $?` makes the check's exit code the hook's own, so a check that exits 2 to deny still blocks; otherwise the
@@ -360,6 +367,8 @@ already happened or can't be prevented.
   plain-text stdout as context that Claude can see and act on. On those events, Claude Code doesn't add stdout it
   failed to parse.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
+- On `PreCompact`, a hook's stdout becomes instructions for the compaction summary.
+  [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
 - For a hook that isn't async, stdout counts as JSON output only when the hook prints one JSON object, on one line or
   several, with nothing around it but whitespace. Claude Code reads any other stdout as plain text or a parse failure.
   [hooks › Exit code 0](https://code.claude.com/docs/en/hooks#exit-code-0)
@@ -394,10 +403,10 @@ already happened or can't be prevented.
   10,000 characters. Claude Code measures each string on its own, even when several hooks run for the same event: for
   JSON output each field is measured separately, and plain stdout is measured whole.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output)
-- Over the limit, Claude Code saves the output to a file in the session directory and replaces it with the file path
-  and a preview of up to the first 2,000 characters. This cap has no setting or environment variable to raise it.
-  Claude Code doesn't ask Claude to read the file, so keep anything Claude must always see within the cap. For
-  `additionalContext`, Claude can read the file; Claude Code doesn't ask it to.
+- Over the limit, except for `PreCompact` stdout, Claude Code saves the output to a file in the session directory and
+  replaces it with the file path and a preview of up to the first 2,000 characters. This cap has no setting or
+  environment variable to raise it. Claude Code doesn't ask Claude to read the file, so keep anything Claude must
+  always see within the cap. For `additionalContext`, Claude can read the file; Claude Code doesn't ask it to.
   [hooks › JSON output](https://code.claude.com/docs/en/hooks#json-output), [hooks › Add context for Claude](https://code.claude.com/docs/en/hooks#add-context-for-claude)
 - The JSON object supports three kinds of fields. Universal fields like `continue` are accepted by every event, but
   some events discard them or deliver `systemMessage` somewhere other than the transcript; each event's section says
@@ -491,7 +500,7 @@ already happened or can't be prevented.
 ## Terminal notifications
 
 - Return the escape sequence in the `terminalSequence` field and Claude Code emits it through its own terminal write
-  path, which is race-free, works inside tmux and GNU screen, and works on Windows.
+  path, which is race-free and works on Windows.
   [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
   and [hooks › Hook input and output](https://code.claude.com/docs/en/hooks#hook-input-and-output)
 - The field accepts a string of one or more allowlisted escape sequences: OSC `0`, `1`, `2` (window and icon titles);
@@ -505,16 +514,18 @@ already happened or can't be prevented.
 - Claude Code writes the sequence itself when it processes your hook's output, so the field works on events that
   discard `systemMessage` and `continue`, such as `Notification` and `StopFailure`.
   [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
-- Claude Code writes the sequence only in an interactive session, and only while its interface is on screen. In
+- Claude Code writes the sequence only in an interactive session, and only while its interface is open. In
   non-interactive mode with the `-p` flag and in the Agent SDK, it ignores the field.
+  [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
+- The field works only from a hook that doesn't run in the background, so leave `async` and `asyncRewake` off.
   [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
 - A `WorktreeCreate` command hook can't return JSON, because Claude Code reads its stdout as the worktree path. An HTTP
   `WorktreeCreate` hook returns JSON and can include the field.
   [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
-- This `Notification` hook fires a desktop notification. It builds the escape sequence with `printf` octal escapes so
-  the control bytes never appear on the shell command line, and `jq -n --arg` builds the JSON so quotes, backslashes
-  and newlines in the message are escaped correctly. The `{ "terminalSequence": "..." }` shape is the same from any
-  shell or language.
+- If you use tmux or GNU screen, complete the setup under Get terminal notifications inside tmux or GNU screen first.
+  This `Notification` hook fires a desktop notification in a terminal that reads OSC `777`, such as Ghostty or Warp.
+  The script's `jq -nc --arg` call builds the JSON output and escapes any quotes, backslashes, and newlines in the
+  notification message. The `{ "terminalSequence": "..." }` shape is the same from any shell or language.
   [hooks › Emit terminal notifications](https://code.claude.com/docs/en/hooks#emit-terminal-notifications)
 
 ```bash
@@ -526,6 +537,19 @@ body=$(jq -r '.message // "Needs your attention"' <<<"$input")
 seq=$(printf '\033]777;notify;%s;%s\007' "$title" "$body")
 jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 ```
+
+## Get terminal notifications inside tmux or GNU screen
+
+- In tmux 3.3 or later, add `set -g allow-passthrough on` to `~/.tmux.conf`, then run
+  `tmux source-file ~/.tmux.conf` from a shell so OSC sequences reach your terminal application. The option applies
+  to every program in those panes, not only Claude Code.
+  [hooks › Get terminal notifications inside tmux or GNU screen](https://code.claude.com/docs/en/hooks#get-terminal-notifications-inside-tmux-or-gnu-screen)
+- With `on`, only panes tmux is showing can send OSC sequences. To let other panes in a session you're attached to
+  send them too, use `all` in place of `on`, on tmux 3.4 or later.
+  [hooks › Get terminal notifications inside tmux or GNU screen](https://code.claude.com/docs/en/hooks#get-terminal-notifications-inside-tmux-or-gnu-screen)
+- In GNU screen, keep Claude Code's window showing, because sequences from a background window don't reach your
+  terminal application.
+  [hooks › Get terminal notifications inside tmux or GNU screen](https://code.claude.com/docs/en/hooks#get-terminal-notifications-inside-tmux-or-gnu-screen)
 
 ## HTTP hooks
 
@@ -570,8 +594,11 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 - A few events can also rewrite content rather than only allow or block it: `PreToolUse` with `updatedInput` directly
   under `hookSpecificOutput`, which replaces a tool's arguments before it runs; `PermissionRequest` with
   `updatedInput` inside the `decision` object; `PostToolUse` with `updatedToolOutput`, which replaces the tool's
-  result. `UserPromptSubmit` can't replace the prompt; it only injects `additionalContext` alongside it. For redaction
-  or transformation, intercept at `PreToolUse` for outbound tool inputs and `PostToolUse` for inbound tool results.
+  result. In a Cowork cloud session, Claude Code ignores `updatedToolOutput` when the tool is `AskUserQuestion` or
+  `ExitPlanMode`, and Claude reads the original answer or plan.
+  `UserPromptSubmit` can't replace the prompt; it only injects `additionalContext` alongside it.
+  For redaction or transformation, intercept at `PreToolUse` for outbound tool inputs and `PostToolUse` for inbound
+  tool results.
   [hooks › Decision control](https://code.claude.com/docs/en/hooks#decision-control)
 - The only value for top-level `decision` is `"block"`. To allow the action to proceed, omit `decision` from your JSON,
   or exit 0 without any JSON at all.

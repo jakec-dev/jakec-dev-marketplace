@@ -122,6 +122,10 @@ limits, background commands, `-p` runs, VS Code, compaction, resume and branch, 
 
 ## Moving to the background and stopping
 
+- If you exit a session while subagents are running, a `Background work is running` dialog warns that the work
+  stops. Choose `Move to background and exit` to background the session the same way `/background` does and return
+  to your shell. The option isn't shown when agent view is turned off.
+  [agent-view › Send the session to the background](https://code.claude.com/docs/en/agent-view#send-the-session-to-the-background)
 - In VS Code, when a command or a subagent keeps Claude waiting longer than you want, click **Run in background**
   below its tool call in the conversation.
   [vs-code › Move a running command or subagent to the background](https://code.claude.com/docs/en/vs-code#move-a-running-command-or-subagent-to-the-background)

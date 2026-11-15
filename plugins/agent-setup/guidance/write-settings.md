@@ -106,7 +106,7 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
 ## Isolation matches what the run is exposed to
 
 - Isolating Claude Code "limits what a session can read, write, and reach on the network. This matters most when you
-  let Claude work with fewer permission prompts, run it unattended, or point it at code you do not fully trust."
+  let Claude work with fewer permission prompts or run it unattended."
   [sandbox-environments › Choose a sandbox environment](https://code.claude.com/docs/en/sandbox-environments#page-title)
 - "Match your goal to a row below, then read the detail section that follows."
 
@@ -115,7 +115,6 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   | Reduce permission prompts during everyday work on your own machine | The [sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing), configured with `/sandbox` |
   | Let Claude work unattended with `--dangerously-skip-permissions` or auto mode | The preconfigured [dev container](https://code.claude.com/docs/en/devcontainer), any container or VM, or the [sandbox runtime](https://code.claude.com/docs/en/sandbox-environments#sandbox-runtime) |
   | Isolate MCP servers and hooks as well as Bash, without Docker | The sandbox runtime |
-  | Work on an untrusted repository | A dedicated virtual machine, or a [cloud session](https://code.claude.com/docs/en/claude-code-on-the-web) if you have a Claude subscription; GitHub is not required when you launch with `claude --cloud` |
   | Standardize a sandboxed environment across a team | The preconfigured [dev container](https://code.claude.com/docs/en/devcontainer), copied into your repository |
   | Require isolation for every developer in your organization | [Enforce isolation across an organization](https://code.claude.com/docs/en/sandbox-environments#enforce-isolation-across-an-organization) |
   | Work on a native Windows host | A container or VM, or run the Bash sandbox inside WSL2 |
@@ -132,9 +131,8 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   file tools, MCP servers, and hooks still run directly on your host. Every other approach in the table puts the whole
   Claude Code process inside the isolation boundary, so file tools, MCP servers, and hooks are restricted too."
   [sandbox-environments › Compare sandboxing approaches](https://code.claude.com/docs/en/sandbox-environments#compare-sandboxing-approaches)
-- A virtual machine: "Use this approach when you are evaluating untrusted code, when your security policy requires
-  kernel-level separation between the agent and the host, or when no host-level approach meets your compliance
-  requirements."
+- A virtual machine: "Use this approach when your security policy requires kernel-level separation between the agent
+  and the host, or when no host-level approach meets your compliance requirements."
   [sandbox-environments › Virtual machine](https://code.claude.com/docs/en/sandbox-environments#virtual-machine)
 - For working with untrusted content: "Use virtual machines (VMs) to run scripts and make tool calls, especially when
   interacting with external web services".
@@ -244,15 +242,23 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   `allowNestedUserNamespaces` to `true` "turn[s] off a security boundary: code from a sandboxed command can end up
   running outside the sandbox."
   [sandboxing › Security limitations](https://code.claude.com/docs/en/sandboxing#security-limitations)
+- On macOS, "sandboxed commands can reach outside the sandbox to each service that you list in
+  `network.allowMachLookup`, and the sandbox doesn't confine what those services do for those commands."
+  [sandboxing › Security limitations](https://code.claude.com/docs/en/sandboxing#security-limitations)
+- For a tool such as `kubectl`, `terraform` or `npm` that needs to write outside the default directories,
+  `sandbox.filesystem.allowWrite` "is the recommended approach when a tool needs write access to a specific location,
+  rather than excluding the tool from the sandbox entirely with `excludedCommands`."
+  [sandboxing › Configure sandboxing](https://code.claude.com/docs/en/sandboxing#configure-sandboxing)
 - "Effective sandboxing requires both filesystem and network isolation." When you widen the defaults, "check that an
   `allowWrite` path, a broad `allowedDomains` entry, or an `excludedCommands` exception does not undo a restriction on
   the other side."
   [sandboxing › Scope](https://code.claude.com/docs/en/sandboxing#scope)
 - Check: does the sandbox keep both filesystem and network isolation, with no `allowWrite` path, broad
-  `allowedDomains` entry or `excludedCommands` exception that undoes a restriction on the other side, no broad domain,
-  socket, `$PATH` or shell configuration write that the limitations name, and none of `enableWeakerNestedSandbox`,
-  `allowAppleEvents` and `allowNestedUserNamespaces` set, except `enableWeakerNestedSandbox` where isolation is
-  enforced outside the sandbox?
+  `allowedDomains` entry or `excludedCommands` exception that undoes a restriction on the other side, an `allowWrite`
+  path rather than an `excludedCommands` entry where a tool needs only write access to a specific location, no broad
+  domain, socket, `$PATH` or shell configuration write that the limitations name, `network.allowMachLookup` entries only
+  for the services of tools that communicate over XPC, and none of `enableWeakerNestedSandbox`, `allowAppleEvents` and
+  `allowNestedUserNamespaces` set, except `enableWeakerNestedSandbox` where isolation is enforced outside the sandbox?
 
 ## Routine auto mode blocks are taught to the classifier, not approved each time
 
@@ -282,11 +288,11 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   production deploys." "The `autoMode` block also has to live in
   `~/.claude/settings.json` rather than the project, because the classifier ignores `autoMode` in project settings."
   [best-practices › Change the permission mode](https://code.claude.com/docs/en/best-practices#change-the-permission-mode)
-- For a call the classifier judged unsafe, shown as `Denied by auto mode classifier` with a reason, pick the fix from
-  what the call was trying to reach or do: a destination Claude needs throughout the
-  task, such as a package registry, an internal domain, or a repository host, goes in `autoMode.environment`; a
-  command you want to run without review from now on is an `allow` rule; for a one-off action you did intend, state
-  that intent in your next message and let Claude retry.
+- For a call the classifier judged unsafe, shown by a `Blocked by auto mode` line, take the step that matches what
+  Claude was trying to reach or do: a destination Claude needs throughout the task, such as a package registry, an
+  internal domain, or a repository host, goes in `autoMode.environment`; a command you want to run without review from
+  now on is an `allow` rule; for a one-off action you did intend, state that intent in your next message and let
+  Claude retry.
   [auto-mode-config › Fix a denial with an allow rule, an environment entry, or a retry](https://code.claude.com/docs/en/auto-mode-config#fix-a-denial-with-an-allow-rule-an-environment-entry-or-a-retry)
 - "For most organizations, `autoMode.environment` is the only field you need to set." A reasonable rollout: "start
   with the defaults and add your source control org and key internal services, which resolves the most common false
@@ -313,8 +319,9 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   your own pipeline and risk tolerance." "`hard_deny` rules block
   unconditionally. User intent and `allow` exceptions don't apply."
   [auto-mode-config › Override the block and allow rules](https://code.claude.com/docs/en/auto-mode-config#override-the-block-and-allow-rules)
-- When you accept the `/auto-mode-setup` draft, Claude Code "writes the `environment` list without `"$defaults"`,
-  because the draft spells out the built-in entries it left unchanged".
+- When you accept an `/auto-mode-setup` draft: "If you chose to add to the `environment` list in
+  `~/.claude/settings.json`, you keep any `"$defaults"` entry in it. If you chose to replace that list, you lose that
+  entry, so add `"$defaults"` back if you want the default entries".
   [auto-mode-config › Review and save the draft](https://code.claude.com/docs/en/auto-mode-config#review-and-save-the-draft)
 - Check: is a destination the classifier keeps blocking in `autoMode.environment` and a command to run without review
   in `autoMode.allow`, in `~/.claude/settings.json`, managed settings or a `--settings` file and not the project's
@@ -379,7 +386,7 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   | [Permission lockdown](https://code.claude.com/docs/en/permissions#managed-only-settings) | Make managed settings the [only settings source of permission rules](https://code.claude.com/docs/en/settings-reference#allowmanagedpermissionrulesonly). Disable `--dangerously-skip-permissions` | `allowManagedPermissionRulesOnly`, `permissions.disableBypassPermissionsMode` |
   | [Starting permission mode](https://code.claude.com/docs/en/permission-modes#which-mode-a-session-starts-in) | Choose the permission mode your developers' terminal sessions start in instead of the built-in starting permission mode, or remove auto mode. [Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes) lists when the VS Code extension reads a `defaultMode` you set | `permissions.defaultMode`, `permissions.disableAutoMode` |
   | [Sandboxing](https://code.claude.com/docs/en/sandboxing) | OS-level filesystem and network isolation with domain allowlists | `sandbox.enabled`, `sandbox.network.allowedDomains` |
-  | [Customization lockdown](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization) | Block skills, agents, hooks, and MCP servers from user and project sources, so they can only come from plugins or managed settings. Locking skills also stops the [skills your developers enable on claude.ai](https://code.claude.com/docs/en/skills#where-synced-skills-load) from syncing | `strictPluginOnlyCustomization` |
+  | [Customization lockdown](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization) | Block skills, agents, hooks, and MCP servers from user and project sources. Locking skills also stops the [skills your developers enable on claude.ai](https://code.claude.com/docs/en/skills#where-synced-skills-load) from syncing | `strictPluginOnlyCustomization` |
   | [Hook restrictions](https://code.claude.com/docs/en/settings-reference#allowmanagedhooksonly) | Restrict which hooks run and restrict HTTP hook URLs; see [what runs under `allowManagedHooksOnly`](https://code.claude.com/docs/en/settings-reference#what-runs-under-allowmanagedhooksonly) for the full effect list | `allowManagedHooksOnly`, `allowedHttpHookUrls` |
 
   [admin-setup › Decide what to enforce](https://code.claude.com/docs/en/admin-setup#decide-what-to-enforce)
@@ -451,8 +458,8 @@ server-managed settings and HIPAA setup pages for what an organisation enforces.
   changing it."
   [sandboxing › Repository settings under an admin-required sandbox](https://code.claude.com/docs/en/sandboxing#repository-settings-under-an-admin-required-sandbox)
 - If your fleet includes Windows hosts, you can deliver the configuration by operating system, through your MDM or as a
-  managed settings file on macOS and Linux machines only (server-managed settings apply to all users in the
-  organization); or move Windows users into a supported environment by having them run Claude Code inside WSL2 or a
+  managed settings file on macOS and Linux machines only ("Server-managed settings follow the member, not the
+  device"); or move Windows users into a supported environment by having them run Claude Code inside WSL2 or a
   container.
   [sandboxing › Enforce sandboxing with managed settings](https://code.claude.com/docs/en/sandboxing#enforce-sandboxing-with-managed-settings)
 - "When managed settings set a Boolean key such as `enabled` or `failIfUnavailable`, Claude Code uses the managed value

@@ -68,6 +68,9 @@ per-mode behaviour, protected paths and critical paths.
     retry that needs approval to run outside the sandbox. A command the shell parser can't trace, such as one that
     changes directory more than once or runs a subshell, prompts the same way even when it names no outside path. This
     prompt doesn't apply when the command runs in the sandbox and the sandbox enforces the block.
+  - `Write`, `Edit` and `NotebookEdit` calls outside the working directories while
+    `permissions.blockWritesOutsideWorkingDirectories` is on: Claude Code refuses them, apart from some of its own
+    files (the key doesn't limit shell commands).
 
 ## Which mode a session starts in
 
@@ -143,10 +146,25 @@ per-mode behaviour, protected paths and critical paths.
   sessions, so Claude Code refuses to start, naming the flag.
   [remote-control › Start a Remote Control session](https://code.claude.com/docs/en/remote-control#start-a-remote-control-session)
   and [errors › Not carried over to the sessions Remote Control starts](https://code.claude.com/docs/en/errors#not-carried-over-to-the-sessions-remote-control-starts)
-- Agent teams: teammates start with the lead's permission mode, except `dontAsk`, which they don't inherit. If the lead
-  runs with `--dangerously-skip-permissions`, all teammates do too. After spawning, you can change an individual
-  teammate's permission mode, but you can't set per-teammate modes at spawn time.
+- Agent teams: you can't set per-teammate permission modes at spawn time. A new teammate starts with the lead's mode,
+  including `bypassPermissions` mode, which `--dangerously-skip-permissions` turns on. If the lead is in `dontAsk`
+  mode, the teammate starts in Manual mode instead.
   [agent-teams › Permissions](https://code.claude.com/docs/en/agent-teams#permissions)
+- Agent teams: to cycle a running teammate's permission mode, press `Shift+Tab`, though an in-process teammate can run
+  in the lead's mode instead. For a split-pane teammate, press it in its pane. For an in-process teammate, press it
+  while viewing its session, and the teammate checks its mode when it starts its next turn.
+  [agent-teams › Permissions](https://code.claude.com/docs/en/agent-teams#permissions)
+- Agent teams: an in-process teammate that isn't in plan mode runs in the lead's mode while the lead is in
+  `acceptEdits`, `auto`, or `bypassPermissions` mode. Switching the teammate to Manual doesn't change that, even if its
+  status bar shows Manual. To have it ask before it edits, press Enter on the `main` row in the agent panel and switch
+  the lead to Manual mode too; the lead then asks too, as does any other teammate in Manual mode.
+  [agent-teams › Permissions](https://code.claude.com/docs/en/agent-teams#permissions)
+- Agent teams: teammate permission prompts appear in the lead session, so approve them there yourself.
+  [agent-teams › Permissions](https://code.claude.com/docs/en/agent-teams#permissions)
+- Agent teams: a teammate that Claude spawns while the lead is in plan mode also works in plan mode until its plan is
+  ready. Once the plan is approved, the teammate exits plan mode and Claude Code passes it the lead's current permission
+  mode, or Manual if that's plan mode.
+  [agent-teams › Have teammates plan before implementing](https://code.claude.com/docs/en/agent-teams#have-teammates-plan-before-implementing)
 - Agent view: a session you background with `/bg` or `←` keeps the permission mode it was in. A session dispatched
   from `claude agents` started in a shell, or with `claude --bg`, starts the way a new `claude` session in that
   directory would, unless you dispatched it from an agent view you opened with dispatch defaults. For a session you
@@ -167,10 +185,10 @@ per-mode behaviour, protected paths and critical paths.
   in each dispatched session's `Shift+Tab` cycle without starting in it, and `--restricted` to start every dispatched
   session in restricted mode.
   [agent-view › Dispatch defaults](https://code.claude.com/docs/en/agent-view#dispatch-defaults)
-- `permissions.defaultMode` is valid in any settings file, though `auto` and `bypassPermissions` don't take effect from
-  project or local settings. Its default is unset. For conversations the VS Code extension starts, Claude Code reads
-  only user, managed and `--settings` values. In cloud sessions, Claude Code
-  honors only `acceptEdits`, `plan`, `default` and `auto` from this key.
+- `permissions.defaultMode` sets the default permission mode for new sessions. It is valid in any settings file,
+  though `auto` and `bypassPermissions` don't take effect from project or local settings. Its default is unset. For
+  conversations the VS Code extension starts, Claude Code reads only user, managed and `--settings` values. In cloud
+  sessions, Claude Code honors only `acceptEdits`, `plan`, `default` and `auto` from this key.
   [settings-reference › `permissions.defaultMode`](https://code.claude.com/docs/en/settings-reference#permissions-defaultmode)
 - A `permissions.defaultMode` value is one of `"default"`, `"acceptEdits"`, `"plan"`, `"auto"`, `"dontAsk"`,
   `"bypassPermissions"` or `"manual"` (an alias for `"default"`).
@@ -197,7 +215,9 @@ per-mode behaviour, protected paths and critical paths.
   auto mode. PowerShell tool prompts don't offer the option.
   [permission-modes › Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)
 - In the CLI, `Shift+Tab` cycles permission modes. From `auto`, the first press switches to `default`, and the cycle
-  then runs `default` → `acceptEdits` → `plan`. Optional modes slot in after `plan`.
+  then runs `default` → `acceptEdits` → `plan`. Optional modes slot in after `plan`. The status bar shows the active
+  mode as a gray `⏸ manual mode on` for `default`, or as `⏵⏵ accept edits on`, `⏸ plan mode on`,
+  `⏵⏵ auto mode on`, `⏵⏵ don't ask on`, or `⏵⏵ bypass permissions on`.
   [permission-modes › Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)
 - Not every mode is in the default CLI cycle:
   [permission-modes › Switch permission modes](https://code.claude.com/docs/en/permission-modes#switch-permission-modes)
@@ -280,7 +300,8 @@ per-mode behaviour, protected paths and critical paths.
     approval, including when the sandbox's auto-allow mode is enabled.
   [permission-modes › Analyze before you edit with plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode)
 - Enter plan mode by pressing `Shift+Tab` or prefixing a single prompt with `/plan`, or start with
-  `claude --permission-mode plan`. Press `Shift+Tab` again to leave plan mode without approving a plan.
+  `claude --permission-mode plan`. With no approval prompt open, press `Shift+Tab` again to leave plan mode. At the
+  approval prompt, press `Esc` first, since pressing `Shift+Tab` there approves the plan.
   [permission-modes › Analyze before you edit with plan mode](https://code.claude.com/docs/en/permission-modes#analyze-before-you-edit-with-plan-mode)
 - When the plan is ready, Claude presents it and asks how to proceed:
   [permission-modes › Review and approve a plan](https://code.claude.com/docs/en/permission-modes#review-and-approve-a-plan)
@@ -325,6 +346,9 @@ per-mode behaviour, protected paths and critical paths.
   organization's public artifact needs your approval, which this mode doesn't ask for, so Claude can't read one. The
   Remove-Item in PowerShell denies also apply in this mode.
   [permission-modes › Skip all checks with bypassPermissions mode](https://code.claude.com/docs/en/permission-modes#skip-all-checks-with-bypasspermissions-mode)
+- With `isolatePeerMachines` set, Claude Code asks for approval before Claude's message to a session beyond this
+  machine leaves, even in `bypassPermissions` mode.
+  [cross-session-messaging › Require approval for cross-machine messages](https://code.claude.com/docs/en/cross-session-messaging#require-approval-for-cross-machine-messages)
 - In interactive terminal sessions with bypass permissions available, Claude Code doesn't enforce plan mode's blocks:
   Claude is still instructed to plan without editing, but a file edit or shell command it attempts during planning runs
   without prompting. Explicit ask rules and recognized `rm` and `rmdir` critical-path removals still prompt. Plan mode
@@ -342,9 +366,13 @@ per-mode behaviour, protected paths and critical paths.
   dialog; to see it again, remove the key from that file or set it to `false`. If you decline, Claude Code exits. In
   non-interactive mode no dialog is shown.
   [permission-modes › Skip all checks with bypassPermissions mode](https://code.claude.com/docs/en/permission-modes#skip-all-checks-with-bypasspermissions-mode)
+- If you pass `--setting-sources` without `user`, the dialog can appear again although you accepted it earlier. To skip
+  it, add `user`, as in `--setting-sources user,project`.
+  [permission-modes › Skip all checks with bypassPermissions mode](https://code.claude.com/docs/en/permission-modes#skip-all-checks-with-bypasspermissions-mode)
 - `skipDangerousModePermissionPrompt` skips the confirmation dialog before a session enters `bypassPermissions` mode,
   whether from `--dangerously-skip-permissions` or `defaultMode: "bypassPermissions"`. Its scope is user, local or
-  managed; an untrusted repository can't skip the dialog for you. `false` is the same as unset: the dialog appears
+  managed, and files passed with `--settings`. An untrusted
+  repository can't skip the dialog for you. `false` is the same as unset: the dialog appears
   unless another of these files sets `true`. Default: unset, so the dialog appears. With the key set in user or managed
   settings, a session you start in `bypassPermissions` mode also skips the approval prompt for project-scoped MCP
   servers.
@@ -413,10 +441,57 @@ per-mode behaviour, protected paths and critical paths.
   claude -p "Update the dependency pins and run the tests" --permission-mode auto --permission-prompts none
   ```
 
+- Set `permissions.denyInsteadOfPrompting` to `true` to keep a session running when nobody is there to answer a
+  permission prompt. Claude Code denies a tool call that would otherwise wait on a prompt, and the turn continues. A
+  call goes ahead if an allow rule, your permission mode, or auto mode's classifier approves it.
+  [settings-reference › `permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#permissions-denyinsteadofprompting)
+- `permissions.denyInsteadOfPrompting` is valid in user or managed settings, and `--settings`; a repository can't set
+  it for you. `false` is the same as unset: calls are still denied if another of these sources sets `true`. Default:
+  unset, so a call that needs approval prompts you.
+  [settings-reference › `permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#permissions-denyinsteadofprompting)
+
+  ```json
+  {
+    "permissions": {
+      "defaultMode": "auto",
+      "denyInsteadOfPrompting": true
+    }
+  }
+  ```
+
+  In `~/.claude/settings.json`, this example starts sessions in auto mode and denies whatever would still fall back to
+  a prompt.
+- `permissions.denyInsteadOfPrompting` applies in `-p` runs, interactive terminal sessions, the VS Code extension,
+  local sessions in the Desktop app, and agent teams. To deny what would prompt in a single non-interactive run
+  instead, pass `--permission-prompts none` with `-p`.
+  [settings-reference › `permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#permissions-denyinsteadofprompting)
+- With `denyInsteadOfPrompting` on, Claude Code leaves out `AskUserQuestion`, `EnterPlanMode`, and `ExitPlanMode`, so a
+  session in plan mode can't leave it on its own. A teammate in an agent team keeps `EnterPlanMode` and
+  `ExitPlanMode`.
+  [settings-reference › What else `denyInsteadOfPrompting` stops](https://code.claude.com/docs/en/settings-reference#what-else-denyinsteadofprompting-stops)
+- With `denyInsteadOfPrompting` on, Claude Code doesn't ask your `canUseTool` callback or `--permission-prompt-tool`.
+  [settings-reference › What else `denyInsteadOfPrompting` stops](https://code.claude.com/docs/en/settings-reference#what-else-denyinsteadofprompting-stops)
+- With `denyInsteadOfPrompting` on, where the notice about billed classifier requests would open a dialog, Claude Code
+  doesn't show it and denies the actions that need those requests.
+  [settings-reference › What else `denyInsteadOfPrompting` stops](https://code.claude.com/docs/en/settings-reference#what-else-denyinsteadofprompting-stops)
+- A session can still wait on the workspace trust dialog and on project MCP server approval with
+  `denyInsteadOfPrompting` on. Answer both before you leave the session running.
+  [settings-reference › What else `denyInsteadOfPrompting` stops](https://code.claude.com/docs/en/settings-reference#what-else-denyinsteadofprompting-stops)
+- The messages from `denyInsteadOfPrompting` report refused calls; they aren't prompts, so nothing waits for your
+  answer. The denial Claude reads can open with `Permission for this tool use was denied. It requires approval, and
+  this session has no approval surface`. In `stream-json` output, the runs that emit a `permission_denied` message
+  report the `decision_reason` `no approval surface in this session; permission request denied automatically`.
+  [settings-reference › Messages from `denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#messages-from-denyinsteadofprompting)
+- In auto mode with `denyInsteadOfPrompting` on, the turn ends after 20 calls in a row that the classifier blocked or a
+  safety check refused, with the message `20 actions were refused and no work went ahead in between, so Claude
+  stopped.` A `-p` run reports that turn as `error_during_execution`.
+  [settings-reference › Messages from `denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#messages-from-denyinsteadofprompting)
+
 - `--permission-prompt-tool` specifies an MCP tool to handle permission prompts in non-interactive mode. Pass the full
   name, such as `mcp__<server>__<tool>`, of a tool on an MCP server that the run loads. Claude Code waits for that
   tool's MCP server to connect before running the first turn, up to the `MCP_TIMEOUT` startup timeout, 30 seconds by
-  default. The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an
+  default. See [what the tool must return](https://code.claude.com/docs/en/errors#permission-prompt-tool-returned-an-invalid-result).
+  The prompt tool can't approve an MCP tool marked as requiring user interaction: Claude Code converts an
   `allow` result for one to a deny.
   [cli-reference › CLI flags](https://code.claude.com/docs/en/cli-reference#cli-flags)
 
@@ -486,16 +561,15 @@ per-mode behaviour, protected paths and critical paths.
 
 ## Protected paths
 
-- Writes to a small set of paths are never auto-approved, except in `bypassPermissions` mode and in interactive
-  terminal sessions in plan mode with bypass permissions available. This prevents accidental corruption of repository
-  state and Claude's own configuration.
+- A small set of paths holds repository state and Claude's own configuration, so each mode has its own rule for writes
+  to them:
   [permission-modes › Protected paths](https://code.claude.com/docs/en/permission-modes#protected-paths)
 
   | Mode | Protected-path writes |
   | :- | :- |
   | `default`, `acceptEdits` | Prompted |
   | `plan` | Allowed in interactive terminal sessions with [bypass permissions](https://code.claude.com/docs/en/permission-modes#skip-all-checks-with-bypasspermissions-mode) available. Otherwise, routed to the classifier when [auto mode](https://code.claude.com/docs/en/permission-modes#eliminate-prompts-with-auto-mode) is available during planning, and prompted when it isn't |
-  | `auto` | Routed to the classifier |
+  | `auto` | Routed to the classifier, which decides |
   | `dontAsk` | Denied |
   | `bypassPermissions` | Allowed |
 
@@ -532,6 +606,8 @@ per-mode behaviour, protected paths and critical paths.
   - `.devcontainer.json`
   - `.ripgreprc`, `pyrightconfig.json`
   - `.mcp.json`, `.claude.json`
+  - `remote-settings.json`, the stored copy of your organization's server-managed settings, and the signature, sync,
+    and consent files Claude Code keeps with it, in `~/.claude` or the directory `CLAUDE_CONFIG_DIR` points to
   - A file you passed to `--settings`, `--mcp-config` or `--agents` when you started the session
   - The file that your user, project or local settings file points to when the settings file is itself a symbolic
     link, for example into a dotfiles repository. In the modes that route protected-path writes to the classifier, a

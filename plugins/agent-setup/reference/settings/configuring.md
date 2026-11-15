@@ -38,14 +38,17 @@ effect and example files.
   [settings › Use the /config menu](https://code.claude.com/docs/en/settings#use-the-/config-menu)
 
 - A few keys have a `/config` row that Claude Code hides while managed settings or the `--settings` flag set the key:
-  `idleCompaction`, `askUserQuestionTimeout`, `autoContinueAtUsageLimit`, and `dialogExpiry`. For `idleCompaction`, a
-  missing **Idle compaction** row has two causes: a value in managed settings, the `--settings` flag, or a project or
-  local settings file overrides your user settings, so change the key in that source; or Claude Code can't fetch
-  feature flags, so idle compaction doesn't run and there is nothing to turn off.
+  `askUserQuestionTimeout`, `autoContinueAtUsageLimit`, and `dialogExpiry`. A missing **Idle compaction** row can mean
+  that a value in managed settings, the `--settings` flag, or a project or local settings file overrides your user
+  settings; change the key in that source.
   [settings-reference › `idleCompaction`](https://code.claude.com/docs/en/settings-reference#idlecompaction),
   [settings-reference › `askUserQuestionTimeout`](https://code.claude.com/docs/en/settings-reference#askuserquestiontimeout),
   [settings-reference › `autoContinueAtUsageLimit`](https://code.claude.com/docs/en/settings-reference#autocontinueatusagelimit),
   [settings-reference › `dialogExpiry`](https://code.claude.com/docs/en/settings-reference#dialogexpiry)
+- Selecting a value in the `/config` row **Messages from your other sessions** writes it to your user settings. The row
+  doesn't appear while managed settings or the `--settings` flag set `crossSessionInbound`, and Claude Code rejects the
+  `/config crossSessionInbound=value` shorthand for this key.
+  [cross-session-messaging › Control inbound messages](https://code.claude.com/docs/en/cross-session-messaging#control-inbound-messages)
 
 ## Editing a settings file
 
@@ -104,13 +107,24 @@ effect and example files.
   ```bash
   claude --settings '{"model": "claude-opus-5-5"}'
   ```
+- In bare mode (`--bare`), pass the settings a run needs with `--settings <file-or-json>`.
+  [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
+- `claude remote-control --settings <file>` applies a JSON settings file to the server's sessions, at the same
+  precedence as `claude --settings`. Give a file path, not a JSON string. Put `--settings` after `remote-control`: a
+  `--settings` or `--setting-sources` flag placed before the `remote-control` verb makes Claude Code refuse to start,
+  with this error, here for `--settings`:
+  [remote-control › Start a Remote Control session](https://code.claude.com/docs/en/remote-control#start-a-remote-control-session),
+  [errors › Not carried over to the sessions Remote Control starts](https://code.claude.com/docs/en/errors#not-carried-over-to-the-sessions-remote-control-starts)
+
+  ```text
+  Error: `--settings` before `remote-control` is not carried over to the sessions Remote Control starts, so Remote Control refuses to start rather than drop it — remove it, and give Remote Control's own options after the verb (see `claude remote-control --help`). Pass settings with `claude remote-control --settings <file>`.
+  ```
 
 ## When edits take effect
 
 - Claude Code watches your settings files and reloads them when they change, so it applies most edits to the running
   session without a restart, after a brief file-stability delay, including edits to `permissions` and credential
-  helpers such as `apiKeyHelper`. The reload covers user, project, local, and managed settings. Managed settings from
-  MDM or the claude.ai console reach a running session on a schedule rather than on save.
+  helpers such as `apiKeyHelper`. The reload covers user, project, local, and managed settings.
   [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect),
   [debug-your-config › Check hooks](https://code.claude.com/docs/en/debug-your-config#check-hooks)
 - Claude Code also loads a settings file you create mid-session if its folder existed when the session started. For
@@ -121,6 +135,9 @@ effect and example files.
   [where and when a policy applies](https://code.claude.com/docs/en/managed-settings#where-and-when-a-policy-applies).
   The ones you're most likely to edit mid-session are `model` (use `/model` to switch mid-session) and `effortLevel`
   and `modelSettings` (use `/effort` to change effort mid-session).
+  [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)
+- If you remove `permissions.blockReadsOutsideWorkingDirectories` mid-session, the file tools keep the block in the
+  running session until you remove the key from every settings file that sets it and restart each running session.
   [settings › When edits take effect](https://code.claude.com/docs/en/settings#when-edits-take-effect)
 
 ## The env key
@@ -149,8 +166,9 @@ effect and example files.
   or `$HOME` stays as typed. For a variable that takes a path, such as `CLAUDE_CONFIG_DIR`, write the absolute path:
   `"CLAUDE_CONFIG_DIR": "/home/you/.claude-work"`.
   [env-vars › Set variables in settings files](https://code.claude.com/docs/en/env-vars#set-variables-in-settings-files)
-- A feature that reads its variables once at startup, such as OpenTelemetry monitoring, keeps its startup values
-  until you relaunch.
+- A running session applies new and changed `env` values to its environment when you save the file, but a feature
+  that reads its variables once at startup, such as OpenTelemetry monitoring, keeps its startup values until you
+  relaunch.
   Removing a variable from the file doesn't unset it in a running session; the removal takes effect the next time you
   launch `claude`.
   [env-vars › Set variables in settings files](https://code.claude.com/docs/en/env-vars#set-variables-in-settings-files)
@@ -181,6 +199,10 @@ effect and example files.
   supervisor, and silently doesn't when a different shell did. Settings are the only configuration that reaches every
   background session: put those variables in the `env` block of `~/.claude/settings.json` or managed settings.
   [network-config › Set network variables in settings, not the shell](https://code.claude.com/docs/en/network-config#set-network-variables-in-settings-not-the-shell)
+- A background session runs with the `PATH` of the shell you dispatched it from. It keeps that shell's cloud provider
+  selection too, such as `CLAUDE_CODE_USE_BEDROCK` or `CLAUDE_CODE_USE_VERTEX`, along with its
+  `ANTHROPIC_DEFAULT_*_MODEL` aliases and any `CLAUDE_CODE_EXTRA_BODY` override you exported there.
+  [agent-view › Settings and provider](https://code.claude.com/docs/en/agent-view#settings-and-provider)
 - A split-pane agent team teammate gets a fixed set of environment variables that doesn't include
   `CLAUDE_CODE_ENABLE_TODO_TOOLS` exported in your shell. To set it for the teammate too, start the lead session with
   `claude --settings '{"env":{"CLAUDE_CODE_ENABLE_TODO_TOOLS":"1"}}'`.
@@ -220,6 +242,8 @@ effect and example files.
   - Variables that change how Claude Code starts or syncs, such as `CLAUDE_CODE_PROCESS_WRAPPER`,
     `CLAUDE_CODE_SYNC_SKILLS`, `CLAUDE_CODE_SYNC_PLUGINS`, `CLAUDE_CODE_PLUGIN_CACHE_DIR`, and
     `CLAUDE_CODE_PLUGIN_SEED_DIR`.
+  - Variables that set your claude.ai sign-in, such as `CLAUDE_CODE_OAUTH_TOKEN`, `CLAUDE_CODE_OAUTH_REFRESH_TOKEN`,
+    and `CLAUDE_CODE_OAUTH_SCOPES`.
   - The screen reader mode variable `CLAUDE_AX_SCREEN_READER` and the other variables whose names start with
     `CLAUDE_AX_`, such as `CLAUDE_AX_STARTUP_QUIET_MS`.
   - `CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`, which sets the timer on an unanswered dialog.
@@ -237,6 +261,19 @@ effect and example files.
 - Set `CLAUDE_CODE_PROCESS_WRAPPER` in the `env` block of user or managed settings, not as a shell export, so the
   detached background service inherits it.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- Set `CLAUDE_CODE_DISABLE_BG_STABLE_PATH`, the variable that runs each background session's host process from the
+  installed binary on macOS with the native installer, in the `env` block of user settings, a managed settings file,
+  or an MDM policy, not your shell.
+  [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
+- A project's `.claude/settings.json` or `.claude/settings.local.json` that sets `CLAUDE_CODE_ENABLE_CFC` to `1` in its
+  `env` block doesn't turn Chrome integration on: Claude Code doesn't apply the setting and shows this warning.
+  [chrome › Project settings can't turn on Chrome](https://code.claude.com/docs/en/chrome#project-settings-can’t-turn-on-chrome)
+
+  ```text
+  Claude Code ignored CLAUDE_CODE_ENABLE_CFC in this project's settings: a project can't turn on Claude in Chrome. To turn it on yourself, run /chrome or start with --chrome.
+  ```
+- Project and local settings can't set `CLAUDE_CODE_PLUGIN_DIRS`.
+  [plugins/create › Load plugins from an environment variable](https://code.claude.com/docs/en/plugins/create#load-plugins-from-an-environment-variable)
 - `OTEL_LOG_MANAGED_SETTINGS=1` adds the redacted managed settings to `managed_settings_resolved` log events. Set it
   in your shell, user settings, `--settings`, or managed settings; a value in project or local settings doesn't turn it
   on, because a cloned repository can write them.

@@ -36,8 +36,7 @@ brace expansion and its budget, and invalid patterns.
 ## Scoping with `paths`
 
 - Rules can be scoped to specific files using YAML frontmatter with the `paths` field. These conditional rules only
-  apply when Claude is working with files matching the specified patterns; rules without a `paths` field are loaded
-  unconditionally and apply to all files.
+  apply when Claude is working with files matching the specified patterns.
   [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)
 
   ```markdown
@@ -67,10 +66,11 @@ brace expansion and its budget, and invalid patterns.
 
   | Pattern | Matches |
   | - | - |
-  | `**/*.ts` | All TypeScript files in any directory |
-  | `src/**/*` | All files under `src/` directory |
-  | `*.md` | Markdown files in the project root |
-  | `src/components/*.tsx` | React components in a specific directory |
+  | `**/*.ts` | `.ts` files anywhere under the base directory |
+  | `src/**/*` | All files under the base directory's `src/` |
+  | `*.md` | `.md` files anywhere under the base directory |
+  | `/*.md` | `.md` files directly in the base directory, not in subfolders |
+  | `src/components/*.tsx` | `.tsx` files directly in the base directory's `src/components/`, not in subfolders |
 
 - You can specify multiple patterns and use brace expansion to match multiple extensions in one pattern.
   [memory › Path-specific rules](https://code.claude.com/docs/en/memory#path-specific-rules)

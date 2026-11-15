@@ -91,11 +91,12 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
 - A deny rule and a `PreToolUse` hook work together: "Claude Code evaluates deny and ask rules regardless of what a
   PreToolUse hook returns: a matching deny rule blocks the call", and "A hook that exits with code 2 stops the tool
   call before permission rules are evaluated". A mod that handles `tool.check` answers after the `PreToolUse` hooks
-  have run. With managed settings on the machine, or a Team or Enterprise `/login` as the session's credential, by
-  default "A call that a deny rule refuses stays refused, and your organization can change that", and "A call that a
-  `PreToolUse` hook blocked stays blocked, whichever settings file the hook comes from." With neither, the mod can
-  approve a call that a deny rule refuses or a `PreToolUse` hook blocked; a session that runs on an API key or a
-  long-lived `CLAUDE_CODE_OAUTH_TOKEN` isn't using that login, even when that login is stored.
+  have run. With managed settings or a `managed-mcp.json` file, or a Team or Enterprise `/login` as the session's
+  credential, by default "A call that a deny rule refuses stays refused", and "A call that a `PreToolUse` hook blocked
+  stays blocked, whichever settings file the hook comes from." Without managed settings, a `managed-mcp.json` file and
+  a Team or Enterprise `/login`, the mod can approve a call that a deny rule refuses or a `PreToolUse` hook blocked; a
+  session that runs on an API key or a long-lived `CLAUDE_CODE_OAUTH_TOKEN` isn't using that login, even when that
+  login is stored.
   [permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)
 - Check: no instruction in CLAUDE.md, a rule or a skill is something that must hold every time or run at a fixed
   point; each such requirement is a hook, or, to stop a tool call, a permission deny rule, backed as "A rule on a
@@ -108,8 +109,8 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   at that, but like any judgment call it can be wrong. You can also tune what it treats as risky, and your org can
   turn it off entirely, so your "never" rules belong in deny rules or hooks."
   [best-practices › Limit access with permission rules and the sandbox](https://code.claude.com/docs/en/best-practices#limit-access-with-permission-rules-and-the-sandbox)
-  Without managed settings or a Team or Enterprise `/login`, an installed mod that handles `tool.check` can still
-  approve a call that a deny rule refuses or a `PreToolUse` hook blocked
+  Without managed settings, a `managed-mcp.json` file and a Team or Enterprise `/login`, an installed mod that handles
+  `tool.check` can still approve a call that a deny rule refuses or a `PreToolUse` hook blocked
   ([permissions › Precedence among rules, hooks, and mods](https://code.claude.com/docs/en/permissions#precedence-among-rules-hooks-and-mods)).
 - "Deny and ask rules and `PreToolUse` hooks apply before the classifier sees anything, so a deny rule blocks in auto
   mode exactly like it does everywhere else." A boundary you state in conversation, such as `don't push until I've
@@ -121,8 +122,8 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   an ask or deny rule for a durable guarantee."
   [auto-mode-config › Add a human checkpoint](https://code.claude.com/docs/en/auto-mode-config#add-a-human-checkpoint)
 - Check: is every action that must never happen held by a deny rule or a hook, rather than left to the auto mode
-  classifier or to a boundary stated in conversation, and, without managed settings or a Team or Enterprise `/login`,
-  does no installed mod that handles `tool.check` approve it?
+  classifier or to a boundary stated in conversation, and, without managed settings, a `managed-mcp.json` file and a
+  Team or Enterprise `/login`, does no installed mod that handles `tool.check` approve it?
 
 ## A standing checkpoint before an action: an ask rule
 
@@ -173,7 +174,7 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   | :- | :- | :- |
   | `Bash(curl *)` | `curl https://example.com` | `/usr/bin/curl https://example.com`, `sh -c 'curl https://example.com'` |
   | `Bash(rm *)` | `rm -rf build/` | `/bin/rm -rf build/`, `bash -c 'rm -rf build/'` |
-  | `Bash(git push *)` | `git push origin main` | `git -C . push origin main`, `git -c push.default=current push origin main`, `git 'push' origin main` |
+  | `Bash(git push *)` | `git push origin main` | `git -C . push origin main`, `git -c push.default=current push origin main` |
 
   "Your other rules and the permission mode decide the commands in the last column." "For filesystem and network
   enforcement that doesn't depend on the command text, use sandboxing. To inspect the full command text with your own
@@ -353,9 +354,12 @@ Picking the kind of Claude tool that fits a goal, before writing anything.
   context". "Consider Skills instead when you want reusable prompts or workflows that run in the main conversation
   context rather than isolated subagent context."
   [sub-agents › Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)
-- For a question about something already in your conversation, use `/btw` instead of a subagent: it "sees your full
-  context but has no tool access, and the answer isn't added to history."
+- For a question about something already in your conversation, use `/btw` instead of a subagent: it "has no tool
+  access, and the answer isn't added to history."
   [sub-agents › Choose between subagents and main conversation](https://code.claude.com/docs/en/sub-agents#choose-between-subagents-and-main-conversation)
+  "`/btw` sees your full conversation, or the subagent transcript you have open". "Use `/btw` to ask about what Claude
+  already knows from this session; use a subagent to go find out something new."
+  [interactive-mode › Side questions with /btw](https://code.claude.com/docs/en/interactive-mode#side-questions-with-/btw)
 - Check: does a task that needs frequent back-and-forth, or shares significant context across phases, stay in the main
   conversation?
 

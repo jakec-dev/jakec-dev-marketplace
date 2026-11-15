@@ -91,22 +91,39 @@ touched_files() {
     sed -E -e 's/.*"file_path":"//' -e 's/"$//' -e "s#^($checkout|$(cd "$checkout" && pwd -P))/##"
 }
 
-# A rule's `paths` patterns, one per line, with each {a,b} expanded, and each `**/` also given dropped, since it
-# matches no directory as well as any, which a shell pattern's `*` doesn't.
+# A rule's `paths` patterns as extended regular expressions over repository paths, one per line, with each {a,b}
+# expanded. They follow the pattern table under memory › Path-specific rules: a pattern holding a `/` is anchored at
+# the rule's base directory, the repository root here, and one without matches at any depth; `*` and `?` stay within
+# one folder, and `**/` spans any number of folders, including none.
 rule_paths() {
   awk '
     function expand(p, i, j, n, k, parts) {
       i = index(p, "{")
-      if (!i) { emit(p); return }
+      if (!i) { print regex(p); return }
       j = i + index(substr(p, i), "}") - 1
       n = split(substr(p, i + 1, j - i - 1), parts, ",")
       for (k = 1; k <= n; k++) expand(substr(p, 1, i - 1) parts[k] substr(p, j + 1))
     }
-    function emit(p, q) {
-      print p
-      q = p
-      gsub(/\*\*\//, "", q)
-      if (q != p) print q
+    function literal(c) {
+      if (c ~ /[A-Za-z0-9_\/-]/) return c
+      if (c == "^") return "\\^"
+      if (c == "\\") return "\\\\"
+      return "[" c "]"
+    }
+    function regex(p, anchored, out, i, c) {
+      anchored = index(p, "/") > 0
+      if (substr(p, 1, 1) == "/") p = substr(p, 2)
+      out = ""
+      for (i = 1; i <= length(p); i++) {
+        c = substr(p, i, 1)
+        if (substr(p, i, 3) == "**/") { out = out "(.*/)?"; i += 2 }
+        else if (substr(p, i, 2) == "**") { out = out ".*"; i++ }
+        else if (c == "*") out = out "[^/]*"
+        else if (c == "?") out = out "[^/]"
+        else if (c == "\\" && i < length(p)) { i++; out = out literal(substr(p, i, 1)) }
+        else out = out literal(c)
+      }
+      return (anchored ? "^" : "^(.*/)?") out "$"
     }
     # Splits a line of patterns at commas and spaces outside braces.
     function items(line, c, i, depth, item) {
@@ -160,8 +177,7 @@ loaded_without_hooks() {
   if [ -z "$patterns" ]; then echo launch && return 0; fi
   while IFS= read -r file; do
     while IFS= read -r pattern; do
-      # shellcheck disable=SC2254 # the pattern is meant to match as a glob.
-      case $file in $pattern) echo touched && return 0 ;; esac
+      if [[ $file =~ $pattern ]]; then echo touched && return 0; fi
     done <<<"$patterns"
   done < <(touched_files "$checkout" "$transcript")
   echo no

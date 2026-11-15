@@ -63,6 +63,7 @@ Choosing a subagent's model, effort and prompt cache lifetime.
 
 - To run a subagent at its own [effort level](https://code.claude.com/docs/en/model-config#adjust-effort-level), set the `effort` field in its definition. [sub-agents › Choose an effort level](https://code.claude.com/docs/en/sub-agents#choose-an-effort-level)
 - When you ask Claude to run a non-fork subagent at a specific effort level, it can also pass an `effort` parameter for that invocation. The parameter overrides the `effort` field and stays in effect when the subagent is resumed. The [`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/en/env-vars#variables) environment variable takes precedence over both. [sub-agents › Choose an effort level](https://code.claude.com/docs/en/sub-agents#choose-an-effort-level)
+- On the main conversation's model, a subagent with no `effort` field or parameter runs at the level you pick in the session, such as with `/effort`, or set with `--effort`. On another model, that level doesn't apply; to choose its level, set the `effort` field. [sub-agents › When a subagent has no `effort` field or parameter](https://code.claude.com/docs/en/sub-agents#when-a-subagent-has-no-effort-field-or-parameter)
 - The `maxEffortLevel` setting caps the effort level, and any higher level runs at the cap instead, including one from a subagent's `effort` frontmatter; when your organization also sets an effort limit for a model, the lower of the two caps applies. [settings-reference › `maxEffortLevel`](https://code.claude.com/docs/en/settings-reference#maxeffortlevel)
 
 ## Thinking and the advisor
@@ -74,7 +75,11 @@ Choosing a subagent's model, effort and prompt cache lifetime.
 ## Model switches
 
 - If you switch models with `/model`, the switch also reaches [subagents that inherit the main conversation's model](https://code.claude.com/docs/en/sub-agents#choose-a-model), because Claude Code resolves their model from the one your session is using when Claude starts them. To keep a custom subagent on a smaller model, set `model` in its definition. [model-config › Setting your model](https://code.claude.com/docs/en/model-config#setting-your-model)
-- When a request is flagged and would switch models, in a subagent Claude Code doesn't show the prompt that **Ask each time** gives (the `/config` "Switch models when a message is flagged" choice, or `switchModelsOnFlag` set to `false`), and the flagged request re-runs on the fallback model. [model-config › Ask before switching](https://code.claude.com/docs/en/model-config#ask-before-switching)
+- In a built-in or custom subagent that Claude starts with the [Agent tool](https://code.claude.com/docs/en/tools-reference#agent-tool-behavior), Claude Code doesn't pause to ask at a flagged request. If a fallback model is available, the request re-runs on it or the subagent fails, according to your **Switch models when a message is flagged** choice in `/config`. [model-config › Subagents switch or fail without asking](https://code.claude.com/docs/en/model-config#subagents-switch-or-fail-without-asking)
+  - **Switch automatically**, or no choice yet: the request re-runs on the fallback model, and your session's model
+    is unchanged.
+  - **Ask each time**, or `switchModelsOnFlag` set to `false`: the subagent fails with [`Agent terminated early due to an API error`](https://code.claude.com/docs/en/errors#agent-terminated-early-due-to-an-api-error) and the refusal message. Claude receives that error and decides what to do about the unfinished task. To let subagents switch models, choose **Switch automatically**; your main conversation then switches without asking too. [model-config › Subagents switch or fail without asking](https://code.claude.com/docs/en/model-config#subagents-switch-or-fail-without-asking), [model-config › Ask before switching](https://code.claude.com/docs/en/model-config#ask-before-switching)
+  - When no fallback model is available, the subagent fails the same way with either choice.
 
 ## Prompt cache lifetime
 

@@ -130,7 +130,7 @@ agent-sdk/user-input	Handle approvals and user input	excluded		Agent SDK
 agent-sdk/user-input	Handle tool approval requests	excluded		Agent SDK
 agent-sdk/user-input	Related resources	excluded		Agent SDK
 agent-teams	Enforce quality gates with hooks	excluded		repeats TeammateIdle, TaskCreated and TaskCompleted
-agent-teams	Specify teammates and models	excluded		belongs to another tool type (mods)
+agent-teams	Specify teammates and models	excluded		belongs to another tool type (agent teams); it names a mod's `agent.spawn` hook only in passing
 agent-view	Copy the session with /fork	excluded		not about hooks
 agent-view	How file edits are isolated	included	events.md	the WorktreeCreate sentences and the sentence after the failure case, on a session that hasn't moved into its worktree
 agent-view	How file edits are isolated	excluded		the rest is not about hooks
@@ -173,7 +173,7 @@ claude-apps-gateway-config	Claude Desktop overlay	excluded		web and desktop
 claude-apps-gateway-config	Settings the gateway derives for Claude Desktop	excluded		web and desktop
 claude-apps-gateway-config	What goes in `cli`	included	placing.md	the `hooks` row, the YAML comment that hook commands run on developer machines, the lead sentence with its `hooks` bullet, the decline paragraph, the clause that the CLI applies the document at the managed tier, and the sentence that a non-interactive run applies it for that run only
 claude-apps-gateway-config	What goes in `cli`	excluded		the rest is not about hooks
-claude-apps-gateway-config	`managed`	included	placing.md	the clause that `hooks` arrays take the union
+claude-apps-gateway-config	`managed`	included	placing.md	the clause that by default the first matching policy is merged onto the `match: {}` base, and the clause that `hooks` event-type arrays take the union of base and policy
 claude-apps-gateway-config	`managed`	excluded		the rest is not about hooks
 claude-apps-gateway-deploy	Claude apps gateway deployment and operations	excluded		web and desktop
 claude-apps-gateway-deploy	Troubleshooting	excluded		names hooks only in passing
@@ -239,19 +239,21 @@ env-vars	Variables	included	events.md	the `CLAUDE_ENV_FILE`, `CLAUDE_CODE_SESSIO
 env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` row, the hooks clauses of `CLAUDE_CODE_SIMPLE`, `CLAUDE_CODE_SAFE_MODE` and `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT`, and the clause that managed plugins don't load in safe mode
 env-vars	Variables	included	tool-events.md	the `CLAUDE_CODE_RESUME_PROMPT` row
 env-vars	Variables	included	troubleshooting.md	the `CLAUDE_CODE_PROPAGATE_TRACEPARENT` and `ENABLE_BETA_TRACING_DETAILED` rows
-env-vars	Variables	excluded		the rest is not about hooks
+env-vars	Variables	excluded		the `CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL` row repeats hooks › Resume when a deferred tool is unavailable; the rest is not about hooks
 env-vars	What the subprocess environment scrub removes	included	excluding.md	the opening paragraph, the sentence on recognising a credential by name or value shape, the table, and the sentence to leave the scrub unset if a subprocess needs one of the removed variables
 env-vars	What the subprocess environment scrub removes	excluded		the rest is not about hooks
 errors	Cannot switch renderers in this session	excluded		belongs to another tool type (renderers)
-errors	Find your error	excluded		repeats Model switch was blocked by a PreModelSwitch hook
+errors	Find your error	excluded		an index whose hook rows repeat Model switch was blocked by a PreModelSwitch hook, hooks › How the tool's result is read and Refusing to apply edits
 errors	Hook needs quotes around a path with a space	included	troubleshooting.md	
 errors	MCP tool call timed out with the server's question unanswered	excluded		its Elicitation hook bullet repeats Elicitation; the rest is not about hooks
 errors	MCP tool name over 128 characters	excluded		names hooks only in passing
 errors	Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded	included	troubleshooting.md	
-errors	Model switch was blocked by a PreModelSwitch hook	included	events.md	
+errors	Model switch was blocked by a PreModelSwitch hook	included	events.md	all but the `so organization-managed PreModelSwitch hooks could not be checked` bullet and the version paragraph
+errors	Model switch was blocked by a PreModelSwitch hook	excluded		the `so organization-managed PreModelSwitch hooks could not be checked` bullet and the version paragraph are history
 errors	Path escapes plugin directory	included	troubleshooting.md	the sentences on a dropped `hooks` path and a skipped `hooks/hooks.json` with the `hooks` mapping and its example, the backslash sentence, and the What to do steps that apply to a `hooks` path
 errors	Path escapes plugin directory	excluded		the rest is not about hooks
-errors	Plugin command references user\_config in a shell command	included	configuring.md	
+errors	Plugin command references user_config in a shell command	included	configuring.md	the hook paragraph, the hook message and the reason, with the template-check sentence
+errors	Plugin command references user_config in a shell command	excluded		the monitor and `headersHelper` parts belong to other tool types (plugins); the fix repeats plugins/manifest-reference › Fields that run through a shell; the version sentence is history
 errors	Report an error	excluded		only introduces or links
 feature-availability	Features available on every provider	included	placing.md	the hooks clause
 feature-availability	Features available on every provider	excluded		the rest is not about hooks
@@ -311,7 +313,7 @@ hooks	Common fields	excluded		skills owns the `once` row
 hooks	Common input fields	included	input-output.md	all but the clause of the `effort` row on a skill's level and `$CLAUDE_EFFORT`
 hooks	Common input fields	excluded		skills owns the clause of the `effort` row on a skill's level and `$CLAUDE_EFFORT`
 hooks	ConfigChange	included	events.md	all but the clause that it runs when a skill file changes and the `skills` matcher row
-hooks	ConfigChange	excluded		skills owns the clause that it runs when a skill file changes and the `skills` matcher row
+hooks	ConfigChange	excluded		skills owns the clause that it runs when a skill file changes and the `skills` matcher row; events.md mentions the skill-file trigger and the `skills` matcher value in a clause
 hooks	ConfigChange decision control	included	events.md	all but the sentences that ConfigChange hooks can block a change and that a blocked change is not applied
 hooks	ConfigChange decision control	excluded		skills owns the sentences that ConfigChange hooks can block a change and that a blocked change is not applied
 hooks	ConfigChange input	included	events.md	
@@ -527,7 +529,7 @@ hooks-guide	Shell profile output before the JSON	included	troubleshooting.md
 hooks-guide	Stop hook hits the block cap	included	troubleshooting.md	
 hooks-guide	Structured JSON output	included	events.md	the PreModelSwitch paragraph
 hooks-guide	Structured JSON output	included	input-output.md	all but the PreToolUse `permissionDecision` values, the `defer` paragraph and the PreModelSwitch paragraph
-hooks-guide	Structured JSON output	included	tool-events.md	the sentence on `"ask"` and `"allow"` on `PreToolUse`
+hooks-guide	Structured JSON output	included	tool-events.md	the sentence on `"ask"` and `"allow"` on `PreToolUse`, with the list of prompts that still apply under `"allow"`
 hooks-guide	Structured JSON output	excluded		the `defer` paragraph repeats Defer a tool call for later
 hooks-guide	What you can automate	excluded		only introduces and links
 hooks-guide	`/hooks` shows no hooks configured	included	troubleshooting.md	
@@ -574,8 +576,7 @@ model-config	Setting your model	excluded		the rest is not about hooks
 monitoring-usage	Administrator configuration	included	configuring.md	the clause that hooks don't get `OTEL_*` variables
 monitoring-usage	Administrator configuration	excluded		the rest is not about hooks
 monitoring-usage	Audit MCP activity	excluded		repeats Tool decision event and Hook execution complete event
-monitoring-usage	Calls without a safety event	included	troubleshooting.md	the bullet on a call approved at a prompt only a `PreToolUse` hook required, and the clause that `hook_review` events come after the call runs
-monitoring-usage	Calls without a safety event	excluded		the rest is not about hooks
+monitoring-usage	Calls without a safety event	excluded		describes the safety event, which is no longer sent (past versions)
 monitoring-usage	Code edit tool decision counter	excluded		repeats Tool decision event and Hook execution complete event
 monitoring-usage	Compaction event	excluded		belongs to another tool type (compaction telemetry)
 monitoring-usage	Hook execution complete event	included	troubleshooting.md	
@@ -585,27 +586,26 @@ monitoring-usage	Hook registered event	included	troubleshooting.md
 monitoring-usage	Managed settings resolved event	included	troubleshooting.md	the hooks redaction sentence
 monitoring-usage	Managed settings resolved event	excluded		the rest is not about hooks
 monitoring-usage	Map egress paths to managed controls and events	excluded		its Hooks row and hook events bullet repeat Hook execution start event and Hook execution complete event; the rest is not about hooks
-monitoring-usage	Map security questions to events	included	troubleshooting.md	the row on which tool call a hook refused and which result or turn end a hook blocked
-monitoring-usage	Map security questions to events	excluded		the rest repeats Tool decision event, Hook execution complete event and Safety event
+monitoring-usage	Map security questions to events	included	troubleshooting.md	the rows "Policy hook blocked an action" and "Tool call a hook refused"
+monitoring-usage	Map security questions to events	excluded		the `safety_event` rows describe an event that is no longer sent; the rest repeats Tool decision event and Hook execution complete event
 monitoring-usage	Plugin loaded event	excluded		belongs to another tool type (plugins)
-monitoring-usage	Safety event	included	troubleshooting.md	the clause that it's logged when a hook blocks a result, and the hook values of `decision`, `reason_code`, `reason_type` and `hook_event`
-monitoring-usage	Safety event	excluded		the rest is not about hooks
-monitoring-usage	Safety event categories	included	troubleshooting.md	the `"hook"` and `"hook_review"` rows and the `"user_rejected"` clause on a prompt only a hook required
-monitoring-usage	Safety event categories	excluded		the rest is not about hooks
+monitoring-usage	Safety event	included	troubleshooting.md	the sentences that the event isn't sent and no setting turns it on, and that refused tool calls are queried in `tool_decision` events, which don't always say which check refused
+monitoring-usage	Safety event	excluded		the version details and the event description describe past versions
+monitoring-usage	Safety event categories	excluded		describes the safety event, which is no longer sent (past versions)
 monitoring-usage	Span attributes	included	troubleshooting.md	the `claude_code.hook` span table with the paragraphs that introduce it, and the `ERROR` status clause
 monitoring-usage	Span attributes	excluded		the rest is not about hooks
 monitoring-usage	Span hierarchy	included	troubleshooting.md	the hook clauses
 monitoring-usage	Span hierarchy	excluded		the rest is not about hooks
 monitoring-usage	Subagent completed event	included	prompt-and-agent.md	the sentence that the "subagent" category also counts requests from agent-based hooks, which emit no subagent event
 monitoring-usage	Subagent completed event	excluded		the rest is not about hooks
-monitoring-usage	Tool decision event	included	troubleshooting.md	the `tool_use_id` sentence and the `"hook"` sentence
+monitoring-usage	Tool decision event	included	troubleshooting.md	the `tool_use_id` sentence and the `"hook"` source value
 monitoring-usage	Tool decision event	excluded		the rest is not about hooks
 monitoring-usage	Tool result event	excluded		repeats Tool decision event and Hook execution complete event
 output-styles	Choose between an output style and other features	excluded		compares or recommends tool types (guidance)
 output-styles	Output styles	excluded		compares or recommends tool types (guidance)
 overview	Use Claude Code everywhere	excluded		only introduces or links
 overview	What you can do	excluded		names hooks only in passing
-permission-modes	Actions no mode auto-approves	excluded		owned by settings (modes.md); its PreToolUse clause repeats permission-modes › Critical paths
+permission-modes	Actions no mode auto-approves	excluded		owned by settings (modes.md); its PreToolUse clause repeats permission-modes › Critical paths, and its write-block clause repeats `permissions.blockWritesOutsideWorkingDirectories`
 permission-modes	Allow only pre-approved tools with dontAsk mode	included	tool-events.md	the PreToolUse clauses
 permission-modes	Allow only pre-approved tools with dontAsk mode	excluded		the rest is not about hooks
 permission-modes	Available modes	excluded		repeats Common input fields
@@ -637,7 +637,7 @@ permissions	Move the session to another directory	included	placing.md	the clause
 permissions	Move the session to another directory	excluded		the rest is not about hooks
 permissions	Network paths	excluded		its PreToolUse bullet repeats Precedence among rules, hooks, and mods; the rest is not about hooks
 permissions	Precedence among rules, hooks, and mods	included	tool-events.md	
-permissions	Read-only commands	excluded		compares or recommends tool types (guidance)
+permissions	Read-only commands	excluded		belongs to another tool type (settings); its PreToolUse warning bullet repeats hooks facts stated elsewhere
 permissions	See also	excluded		only introduces or links
 permissions	Settings precedence	excluded		names hooks only in passing
 permissions	Tool name wildcards	excluded		not about hooks
@@ -838,7 +838,7 @@ plugins/mods/troubleshoot	Refusal messages	excluded		belongs to another tool typ
 plugins/mods/troubleshoot	The `mods active` line doesn't name the mod	excluded		belongs to another tool type (mods)
 plugins/mods/troubleshoot	`$.agent.register refused: the hooks module that made the call is no longer loaded`	excluded		belongs to another tool type (mods)
 plugins/mods/troubleshoot	`a hook changed this call's input after the model wrote it`	included	troubleshooting.md	the `PreToolUse` settings-hook clause with the mod-hooks parenthesis, and the second paragraph's fix
-plugins/mods/troubleshoot	`a hook changed this call's input after the model wrote it`	excluded		the rest belongs to another tool type (mods)
+plugins/mods/troubleshoot	`a hook changed this call's input after the model wrote it`	excluded		the NOTE repeats hooks › PreToolUse `updatedInput` in auto mode (tool-events.md); the rest belongs to another tool type (mods)
 plugins/mods/troubleshoot	`code nested too deep to scan: more than 2000 scopes`	excluded		belongs to another tool type (mods)
 plugins/mods/troubleshoot	`its session.start ran again in a fresh copy`	excluded		belongs to another tool type (mods)
 plugins/mods/troubleshoot	`needs a key`, `is drawn twice`, or `key each once`	excluded		belongs to another tool type (mods)
@@ -852,7 +852,7 @@ plugins/overview	Get plugins from a marketplace	excluded		names hooks only in pa
 plugins/overview	Plugins overview	excluded		names hooks only in passing
 plugins/overview	Understand what a plugin is	excluded		repeats Hooks (plugins/components)
 plugins/overview	What an enabled plugin adds to your sessions	excluded		repeats Hooks (plugins/components)
-plugins/publish	Prepare your plugin for release	excluded		repeats Hooks (plugins/components)
+plugins/publish	Prepare your plugin for release	excluded		its `${CLAUDE_PLUGIN_ROOT}` sentence repeats plugins/components › Reference plugin paths and store data
 plugins/security	Enforce plugin controls for your organization	excluded		repeats the settings-reference sections on the hook settings
 plugins/security	Review a plugin before you install	included	excluding.md	the hook sentences
 plugins/security	Review a plugin before you install	excluded		the rest is not about hooks
@@ -982,7 +982,6 @@ settings-reference	`statusLine`	excluded		belongs to another tool type (status l
 settings-reference	`strictPluginOnlyCustomization.hooks`	included	excluding.md	all but the parts the skills ledger takes: the Stops running bullet's clause on frontmatter hooks in skills and custom commands, the skills and custom commands clause of the still-load sentence, and the `allowed-tools` paragraph
 settings-reference	`strictPluginOnlyCustomization.hooks`	excluded		skills owns the Stops running bullet and sentence on frontmatter hooks in skills and custom commands, and the `allowed-tools` paragraph
 settings-reference	`strictPluginOnlyCustomization`	excluded		skills owns the Scope, Type and Default lines and the unrecognised-names sentence
-settings-reference	`subagentStatusLine`	excluded		belongs to another tool type (status line)
 settings-reference	`verbose`	excluded		belongs to another tool type (settings and plugins); mentions hooks in passing
 settings-reference	`worktree.bgIsolation`	excluded		its hook sentence repeats agent-view › How file edits are isolated; the rest is not about hooks
 skills	Available string substitutions	excluded		skills owns the hook parts
@@ -997,8 +996,6 @@ skills	When an injected command fails	excluded		names hooks only in passing
 skills	When managed settings lock hooks to plugins	excluded		skills owns its hook parts
 statusline	Available data	excluded		belongs to another tool type (status line)
 statusline	Status line not appearing	excluded		belongs to another tool type (status line)
-statusline	Subagent status lines	excluded		belongs to another tool type (status line)
-statusline	Task fields	excluded		belongs to another tool type (status line)
 statusline	Troubleshooting	excluded		belongs to another tool type (status line)
 statusline	Workspace trust required	excluded		belongs to another tool type (status line)
 sub-agents	Built-in subagents	excluded		names hooks only in passing
@@ -1037,31 +1034,12 @@ troubleshoot-install	Troubleshoot installation and login	excluded		only introduc
 troubleshooting	High CPU or memory usage	excluded		names hooks only in passing
 troubleshooting	Troubleshooting	excluded		only introduces or links
 vs-code	Configure settings	excluded		repeats Hook locations
-vs-code	The built-in IDE MCP server	included	tool-events.md	the sentences on the `ide` server and `PreToolUse` allowlists, the tool-name table with its Read-only column, the chat-panel `mcp__claude-vscode__getDiagnostics` sentences and the Quick Pick note
+vs-code	The built-in IDE MCP server	included	tool-events.md	the sentences on the `ide` server and `PreToolUse` allowlists, the tool-name table with its Read-only column, the hook clauses of the chat-panel `mcp__claude-vscode__getDiagnostics` sentences, with the permission-rule clauses as a mention and the Quick Pick note
 vs-code	The built-in IDE MCP server	excluded		the rest is not about hooks
 vs-code	Use a screen reader	excluded		names hooks only in passing
 vs-code	Use the prompt box	included	troubleshooting.md	the Hooks sentences of the Customize section
 vs-code	Use the prompt box	excluded		the rest is not about hooks
 web-quickstart	New sessions hang or time out during setup	excluded		web and desktop
-whats-new/2026-w13	Week 13 · March 23–27, 2026	excluded		release notes
-whats-new/2026-w14	Week 14 · March 30 – April 3, 2026	excluded		release notes
-whats-new/2026-w15	Week 15 · April 6–10, 2026	excluded		release notes
-whats-new/2026-w16	Week 16 · April 13–17, 2026	excluded		release notes
-whats-new/2026-w17	Week 17 · April 20–24, 2026	excluded		release notes
-whats-new/2026-w18	Week 18 · April 27 – May 1, 2026	excluded		release notes
-whats-new/2026-w19	Week 19 · May 4–8, 2026	excluded		release notes
-whats-new/2026-w20	Week 20 · May 11–15, 2026	excluded		release notes
-whats-new/2026-w21	Week 21 · May 18–22, 2026	excluded		release notes
-whats-new/2026-w22	Week 22 · May 25–29, 2026	excluded		release notes
-whats-new/2026-w23	Week 23 · June 1–5, 2026	excluded		release notes
-whats-new/2026-w24	Week 24 · June 8–12, 2026	excluded		release notes
-whats-new/2026-w27	Week 27 · June 29 – July 3, 2026	excluded		release notes
-whats-new/2026-w28	Week 28 · July 6–10, 2026	excluded		release notes
-whats-new/2026-w32	Week 32 · August 3–7, 2026	excluded		release notes
-whats-new/2026-w35	Week 35 · August 24–28, 2026	excluded		release notes
-whats-new/2026-w36	Week 36 · August 31 – September 4, 2026	excluded		release notes
-whats-new/2026-w37	Week 37 · September 7–11, 2026	excluded		release notes
-whats-new/index	What's new	excluded		release notes
 workflows	Approve the plan before it runs	excluded		belongs to another tool type (workflows); its plan mode sentence repeats permissions › Hook approvals in plan mode
 worktrees	Ask Claude to create a worktree	excluded		repeats Reference scripts by path
 worktrees	Claude Code can't enter the worktree at startup	included	troubleshooting.md	
@@ -1081,3 +1059,31 @@ worktrees	Run parallel sessions with worktrees	excluded		repeats WorktreeCreate 
 worktrees	What worktrees share with the main checkout	included	placing.md	the sentences on hooks in a worktree session started from the desktop app
 worktrees	What worktrees share with the main checkout	excluded		the rest is not about hooks
 worktrees	`Can only use --worktree in a git repository`	included	troubleshooting.md	
+hooks	Match Monitor commands	included	tool-events.md	
+hooks	PreToolUse `updatedInput` in auto mode	included	tool-events.md	
+hooks	Resume when a deferred tool is unavailable	included	tool-events.md	
+hooks	PostToolUse after an interrupt	included	troubleshooting.md	
+hooks	PreCompact output	included	events.md	the 10,000-character cap per hook, cut with a marker
+hooks	PreCompact output	excluded		the sentence that stdout becomes instructions for the compaction summary repeats Exit code 0 (input-output.md)
+hooks	Get terminal notifications inside tmux or GNU screen	included	input-output.md	
+settings-reference	`permissions.denyInsteadOfPrompting`	included	tool-events.md	the sentence that a `PermissionRequest` hook can allow most calls that would otherwise prompt
+settings-reference	`permissions.denyInsteadOfPrompting`	excluded		the rest belongs to another tool type (settings); its subsections are recorded separately
+settings-reference	What else `denyInsteadOfPrompting` stops	included	tool-events.md	the Permission hosts bullet's `PermissionRequest` hook sentences
+settings-reference	What else `denyInsteadOfPrompting` stops	included	events.md	the clause that Claude Code cancels an MCP elicitation request unless an `Elicitation` hook answers it
+settings-reference	What else `denyInsteadOfPrompting` stops	excluded		the rest belongs to another tool type (settings)
+settings-reference	Messages from `denyInsteadOfPrompting`	excluded		belongs to another tool type (settings)
+tools-reference	Bash rules that deny or prompt for WebSocket watches	included	tool-events.md	the Ask rule bullet's `PreToolUse` and `PermissionRequest` hook sentences
+tools-reference	Bash rules that deny or prompt for WebSocket watches	excluded		the rest belongs to another tool type (settings)
+errors	The server returned no safety verdict	included	tool-events.md	the hook clause of the sentence that some denials, including one from a hook or mod's change, don't count toward the ten
+errors	The server returned no safety verdict	excluded		the rest belongs to another tool type (settings: auto mode)
+errors	`a hook changed this call's input after auto mode reviewed it`	included	troubleshooting.md	the meaning of the denial, the later-calls reason, the fixes and the `/hooks` sentence
+errors	`a hook changed this call's input after auto mode reviewed it`	excluded		the reissue sentences repeat hooks › PreToolUse `updatedInput` in auto mode (tool-events.md); the `/plugin` mods sentence belongs to another tool type (mods)
+errors	Refusing to apply edits: a hook is configured for file edits in this session	included	troubleshooting.md	the sentence that one-step updates aren't allowed while the session has a `PreToolUse` hook or mod on `Edit` or `Write`, and the message, the sentence that nothing is published and the file is unchanged, and the last What to do item on turning off one-step updates
+errors	Refusing to apply edits: a hook is configured for file edits in this session	excluded		the artifact explanation and the other What to do items belong to another tool type (artifacts)
+settings-reference	`permissions.blockWritesOutsideWorkingDirectories`	included	excluding.md	the clause that the key doesn't limit the programs hooks run, with the key's effect as a mention
+settings-reference	`permissions.blockWritesOutsideWorkingDirectories`	excluded		the rest belongs to another tool type (settings)
+claude-apps-gateway-config	Apply every matching policy	included	excluding.md	the bullet that with `policy_mode: layered` the gateway refuses to start on `disableAllHooks`, `allowedHttpHookUrls` or `httpHookAllowedEnvVars` outside `match: {}`
+claude-apps-gateway-config	Apply every matching policy	included	placing.md	the clause that under `layered` hook arrays add up across every matching policy
+claude-apps-gateway-config	Apply every matching policy	excluded		the rest is about gateway policy configuration and states nothing about hooks
+permission-modes	Server-side classifier review	excluded		its hook sentence repeats hooks › PreToolUse `updatedInput` in auto mode; the rest is not about hooks
+permissions	MCP	excluded		its `ruleContent` sentence repeats hooks › Permission update entries; the rest is not about hooks

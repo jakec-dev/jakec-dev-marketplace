@@ -100,8 +100,8 @@ handler enforces a rule.
 
 - "Custom hooks can preprocess data before Claude sees it. Instead of Claude reading a 10,000-line log file to find
   errors, a hook can grep for `ERROR` and return only matching lines, reducing context from tens of thousands of
-  tokens to hundreds." The page's example is a `PreToolUse` hook on `Bash` that rewrites a test command to show only
-  failures; it shows the filtering only, and its `~` path is the page's own:
+  tokens to hundreds." The page's example is a `PreToolUse` hook on `Bash` that rewrites a test command to keep only
+  the last 100 lines of its output; it shows the filtering only, and its `~` path is the page's own:
   [costs › Offload processing to hooks and skills](https://code.claude.com/docs/en/costs#offload-processing-to-hooks-and-skills)
 
   ```json
@@ -122,10 +122,10 @@ handler enforces a rule.
   input=$(cat)
   cmd=$(echo "$input" | jq -r '.tool_input.command')
 
-  # If running tests, filter to show only failures
+  # If running tests, keep only the last 100 lines
   pattern='^(npm test|pytest|go test)( [^;&|<>`$#\\[:cntrl:]]*)?$'
   if [[ "$cmd" =~ $pattern ]]; then
-    filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
+    filtered_cmd="$cmd 2>&1 | tail -n 100"
     echo "$input" | jq --arg filtered "$filtered_cmd" \
       '{hookSpecificOutput: {hookEventName: "PreToolUse", updatedInput: (.tool_input + {command: $filtered})}}'
   else
@@ -138,7 +138,7 @@ handler enforces a rule.
   proceed on a false assumption."
   [hooks › PostToolUse decision control](https://code.claude.com/docs/en/hooks#posttooluse-decision-control)
 - Check: does each hook that puts text in front of Claude, through its own output or by rewriting a command, cut it to
-  what Claude acts on, such as failures, and does each hook that replaces a tool's output keep the error details
+  what Claude acts on, and does each hook that replaces a tool's output keep the error details
   Claude needs?
 
 ## Hook context is written as facts

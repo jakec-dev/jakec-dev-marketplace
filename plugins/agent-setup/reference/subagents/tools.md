@@ -34,7 +34,7 @@ Controlling what a subagent can do: its tools, MCP servers, permission mode, san
 - `ListAgents` follows these filters like any built-in tool: a foreground subagent inherits it in sessions where cross-session messaging is enabled, and a background subagent doesn't keep it. [sub-agents › Available tools](https://code.claude.com/docs/en/sub-agents#available-tools)
 - Teammates in agent teams additionally keep the task tools and cron tools: `TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `CronCreate`, `CronDelete`, and `CronList`. In a session without the Task tools, Claude Code doesn't provide the task tools to subagents either, even when the subagent runs a different model. An in-process teammate follows your session the same way. [sub-agents › Available tools](https://code.claude.com/docs/en/sub-agents#available-tools)
 - On macOS, Linux, and WSL, Claude Code leaves Glob and Grep out of the default tool set. A subagent that lists `Glob` or `Grep` in its `tools` field and leaves out `Bash` gets the listed tools back for that subagent only, or for the whole session when it runs as the main session agent through `--agent` or the `agent` setting. [tools-reference › Glob tool behavior](https://code.claude.com/docs/en/tools-reference#glob-tool-behavior)
-- The `SubagentHandback` tool delivers a subagent's final report to whichever conversation receives that subagent's result. It needs no permission. It is provided only in auto mode, to subagents that the Agent tool runs locally other than forks, and is available in the terminal CLI, IDE extensions, cloud sessions, and the Agent SDK; the classifier reviews the report before it's delivered. [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference#page-title)
+- The `SubagentHandback` tool delivers a subagent's final report to whichever conversation receives that subagent's result. It doesn't prompt in Manual mode. It is provided only in auto mode, to subagents that the Agent tool runs locally other than forks, and is available in the terminal CLI, IDE extensions, cloud sessions, and the Agent SDK; the classifier reviews the report before it's delivered. [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference#page-title)
 - Tool names are the exact strings that subagent tool lists use. [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference#page-title)
 
 ## Restricting tools
@@ -175,6 +175,8 @@ Controlling what a subagent can do: its tools, MCP servers, permission mode, san
 - The main conversation's permission mode decides whether Claude Code uses the value you set: [sub-agents › Permission modes](https://code.claude.com/docs/en/sub-agents#permission-modes)
   - When the main conversation is in `bypassPermissions`, `acceptEdits`, or auto mode, the subagent runs in that same
     mode and Claude Code ignores the `permissionMode` you set.
+    - If a subagent asks for permission while the main conversation is in `bypassPermissions`, check whether its
+      tool call is one of the [actions no mode auto-approves](https://code.claude.com/docs/en/permission-modes#actions-no-mode-auto-approves).
   - When the main conversation is in `plan` mode, the subagent stays in plan mode whichever `permissionMode` you set,
     unless it runs as an agent team teammate under the agent teams rules. If you set `dontAsk`, the subagent also
     doesn't prompt you: an action that plan mode would ask you to approve is denied instead.
@@ -190,7 +192,8 @@ Controlling what a subagent can do: its tools, MCP servers, permission mode, san
   | `bypassPermissions` | [Skip permission prompts](https://code.claude.com/docs/en/permission-modes#skip-all-checks-with-bypasspermissions-mode). A subagent runs in this mode only when the main conversation does |
   | `plan` | Plan mode (read-only exploration) |
 
-- `permissions.disableBypassPermissionsMode` ignores an agent definition's `permissionMode: bypassPermissions`, so the subagent runs with the parent session's permission mode. [settings-reference › `permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/en/settings-reference#permissions-disablebypasspermissionsmode)
+- Set to `"disable"`, `permissions.disableBypassPermissionsMode` makes Claude Code ignore an agent definition's `permissionMode: bypassPermissions`, so the subagent runs with the parent session's permission mode. [settings-reference › `permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/en/settings-reference#permissions-disablebypasspermissionsmode)
+- The `permissions.denyInsteadOfPrompting` setting applies in subagents: set to `true`, it makes Claude Code deny a tool call that would otherwise wait on a prompt. [settings-reference › `permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/en/settings-reference#permissions-denyinsteadofprompting)
 
 ## Auto mode
 

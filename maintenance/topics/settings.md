@@ -12,11 +12,12 @@
   than the index shows)
 - `permissions.md`: writing permission rules (the permission system, `permissions` and `allow`/`ask`/`deny`, rule
   syntax and wildcards, tool-specific rules for Bash, PowerShell, Read and Edit, WebFetch, MCP and Cd,
-  working directories and `additionalDirectories`, `blockReadsOutsideWorkingDirectories`, project allow rules and
+  working directories and `additionalDirectories`, `blockReadsOutsideWorkingDirectories` and
+  `blockWritesOutsideWorkingDirectories`, which tools need permission, WebSocket watches, project allow rules and
   workspace trust, managed-only permission rules, how permission rules meet the sandbox)
 - `modes.md`: choosing and setting a permission mode (the modes, `defaultMode`, which mode a session starts in,
-  switching, acceptEdits, plan, dontAsk, bypassPermissions and the keys that disable it or skip its prompts,
-  protected paths, critical paths and their prompts)
+  switching, acceptEdits, plan, dontAsk, `denyInsteadOfPrompting`, bypassPermissions and the keys that disable it or
+  skip its prompts, protected paths, critical paths and their prompts)
 - `auto-mode.md`: configuring auto mode (the classifier and its model, what it blocks by default, `autoMode` and its
   environment, block and allow entries, `/auto-mode-setup`, `classifyAllShell`, `disableAutoMode`,
   `useAutoModeDuringPlan`, fallback, reviewing and fixing denials)
@@ -27,12 +28,12 @@
 - `credentials.md`: protecting credentials from sandboxed commands (`sandbox.credentials`, masking environment
   variables and files, AWS re-signing, plaintext injection)
 - `managed.md`: delivering organisation-managed settings (managed files and delivery mechanisms, server-managed
-  settings, how managed sources combine, keys only a managed source can set, `policyHelper`,
+  settings and group configurations, how managed sources combine, keys only a managed source can set, `policyHelper`,
   `managedSourcesBehavior`, `parentSettingsBehavior`, approval dialogs, fail-closed startup, checking a policy is in
   force, enterprise keys)
 - `troubleshooting.md`: checking why a setting doesn't apply (confirming what loaded and resolved settings, broken
-  files and size limits, ignored values, lost changes, invalid or dropped entries, settings, permission and managed
-  error messages, sandbox failures and their fixes)
+  files and size limits, `~/.claude.json` errors, Remote Control `--settings` errors, ignored values, lost changes,
+  invalid or dropped entries, settings, permission and managed error messages, sandbox failures and their fixes)
 
 Settings are split between types: settings owns the settings files, permission rules, permission modes, auto mode,
 the sandbox, the `env` key and managed delivery; a key whose subject is another feature belongs to that feature's

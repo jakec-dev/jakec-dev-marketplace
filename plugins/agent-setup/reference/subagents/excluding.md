@@ -70,7 +70,7 @@ Disabling or restricting subagents: deny rules, built-in agents, `--bare`, and m
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 - For a directory named with `--add-dir`, bare mode still skips its `.claude/agents/` folder.
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
-- In bare mode Claude has access to the Bash, file read, and file edit tools. Pass any context you need with a flag:
+- In bare mode Claude has access to the Bash, file read, and file edit tools. Pass the context you need with a flag:
   [headless › Start faster with bare mode](https://code.claude.com/docs/en/headless#start-faster-with-bare-mode)
 
   | To load | Use |
@@ -88,9 +88,11 @@ Disabling or restricting subagents: deny rules, built-in agents, `--bare`, and m
 
 ## Managed settings
 
-- `strictPluginOnlyCustomization` is a managed setting that can block agents from user and project sources, so they
-  come only from plugins or managed settings. Set to `true`, it locks all four kinds, agents included.
+- `strictPluginOnlyCustomization` is a managed setting that can block agents from user and project sources. Set to
+  `true`, it locks agents along with skills, hooks and MCP servers.
   [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization)
+- `strictPluginOnlyCustomization` doesn't reject the CLI flags that sideload plugins, agents, and MCP servers.
+  [plugins/org › Control matrix](https://code.claude.com/docs/en/plugins/org#control-matrix)
 - Locking the `agents` surface, with the string `"agents"` in the `strictPluginOnlyCustomization` array (scope
   `Managed`, default not locked), stops Claude Code loading agents from `~/.claude/agents/`, `.claude/agents/`, and
   `--add-dir` directories. It keeps loading built-in agents, agents in the managed policy directory, and agents from
@@ -104,14 +106,16 @@ Disabling or restricting subagents: deny rules, built-in agents, `--bare`, and m
   ```
 
 - `disableSideloadFlags` (scope `Managed`, Boolean, default `false`) set to `true` makes Claude Code reject the
-  `--agents` flag at startup, along with `--plugin-dir`, `--plugin-url` and `--mcp-config`, and exit with an error
-  naming the rejected flags. Users could otherwise pass these flags to bypass `strictKnownMarketplaces` for a single
-  run. With `false`, Claude Code accepts those flags.
+  `--agents` flag at startup, along with `--plugin-dir`, `--plugin-url` and `--mcp-config` (unless every server in it is
+  an in-process `type: "sdk"` entry), and exit with an error naming the rejected flags. Users could otherwise pass these
+  flags to bypass `strictKnownMarketplaces` for a single run. With `false`, Claude Code accepts those flags.
   [settings-reference › `disableSideloadFlags`](https://code.claude.com/docs/en/settings-reference#disablesideloadflags)
 
 ## Not stated by the documentation
 
-- Whether `--agents` definitions still load when `strictPluginOnlyCustomization` locks `agents`.
+- Whether agents passed with `--agents` load when `strictPluginOnlyCustomization` locks `agents` and
+  `disableSideloadFlags` isn't set. The setting doesn't reject the flag, but its `agents` entry names `--agents`
+  neither among the sources it stops loading nor among those it keeps.
   [settings-reference › `strictPluginOnlyCustomization.agents`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization-agents)
 - Whether an `Agent(name)` deny rule matches a plugin-scoped name such as `my-plugin:reviewer`.
   [sub-agents › Disable specific subagents](https://code.claude.com/docs/en/sub-agents#disable-specific-subagents)

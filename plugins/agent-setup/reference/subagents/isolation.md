@@ -54,6 +54,11 @@ clear them, and what rewinding restores.
   [worktrees › Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees)
 - Subagent worktrees use the same base branch as `--worktree`.
   [worktrees › Isolate subagents with worktrees](https://code.claude.com/docs/en/worktrees#isolate-subagents-with-worktrees)
+- While [`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockwritesoutsideworkingdirectories)
+  is on, an `isolation: worktree` subagent's file edits are refused when its worktree sits outside the working
+  directories. To let them through, add a working directory; `/add-dir` needs a directory that exists, so name the
+  `.claude/worktrees` directory at the repository root for subagent worktrees.
+  [settings-reference › What the write block refuses and what stays writable](https://code.claude.com/docs/en/settings-reference#what-the-write-block-refuses-and-what-stays-writable)
 
 ## Enforcement checks
 
@@ -63,7 +68,8 @@ clear them, and what rewinding restores.
   applies whether the session is interactive or runs in the background. Subagents that run in their own worktree carry
   the same checks.
   [worktrees › How Claude Code enforces isolation](https://code.claude.com/docs/en/worktrees#how-claude-code-enforces-isolation)
-- **File edits**: Claude Code blocks an `Edit`, `Write`, or `NotebookEdit` that targets a path in the main checkout.
+- **File edits**: Claude Code blocks an `Edit`, `Write`, or `NotebookEdit` that targets a path in the main checkout. To
+  change a file in the main checkout, edit it yourself or start an interactive session there.
   [worktrees › How Claude Code enforces isolation](https://code.claude.com/docs/en/worktrees#how-claude-code-enforces-isolation)
 - **Command working directory**: Claude Code blocks a Bash, PowerShell, or Monitor command whose working directory
   resolves to the main checkout, or whose working directory it can't verify stays outside it.
@@ -199,7 +205,8 @@ clear them, and what rewinding restores.
 - `.worktreeinclude` applies to every worktree Claude Code creates with git, including subagent worktrees.
   [worktrees › Copy gitignored files into worktrees](https://code.claude.com/docs/en/worktrees#copy-gitignored-files-into-worktrees)
 - The `worktree.sparsePaths` setting is particularly useful for subagent worktree isolation: each subagent that runs in
-  a worktree gets a lightweight checkout instead of the full tree.
+  a worktree gets a lightweight checkout instead of the full tree. All worktrees in a session share the same
+  `sparsePaths`, so if one subagent needs `packages/api/` and another needs `packages/web/`, list both.
   [large-codebases › Check out only the directories you need](https://code.claude.com/docs/en/large-codebases#check-out-only-the-directories-you-need)
 
 ## Cleanup
@@ -275,9 +282,10 @@ clear them, and what rewinding restores.
 
 ## Entering and leaving worktrees
 
-- `EnterWorktree`: from a subagent with a pinned working directory such as `isolation: worktree`, only the `path` form
-  is available and the target must be under `.claude/worktrees/` of the session's repository.
-  [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference#page-title)
+- `EnterWorktree`: from within a worktree session, only the `path` form is available and the target must be under
+  `.claude/worktrees/` of the session's repository. The same holds for a subagent with a pinned working directory,
+  such as `isolation: worktree`.
+  [tools-reference › EnterWorktree tool behavior](https://code.claude.com/docs/en/tools-reference#enterworktree-tool-behavior)
 - `ExitWorktree` is not available to subagents that already run in their own working directory, such as with
   `isolation: worktree`.
   [tools-reference › Tools reference](https://code.claude.com/docs/en/tools-reference#page-title)

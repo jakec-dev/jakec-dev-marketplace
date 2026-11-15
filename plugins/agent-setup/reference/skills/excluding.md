@@ -69,9 +69,14 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 - `/auto-mode-setup` is a built-in command rather than a bundled skill, so a `skillOverrides` entry such as
   `"auto-mode-setup": "off"` still applies to it, but `disableBundledSkills` doesn't turn it off.
   [auto-mode-config › Turn off `/auto-mode-setup`](https://code.claude.com/docs/en/auto-mode-config#turn-off-auto-mode-setup)
-- In a Claude apps gateway's `managed` policies, `skillOverrides` is a record-typed key: a matched policy's block
-  shallow-merges onto the `match: {}` catch-all base, overriding the keys it sets and inheriting the rest.
+- In a Claude apps gateway's `managed` policies, by default a user who matches several role policies gets only the
+  first, merged onto the `match: {}` catch-all base. `skillOverrides` is a record-typed key: a matched policy's block
+  shallow-merges onto that base, overriding the keys it sets and inheriting the rest.
   [claude-apps-gateway-config › `managed`](https://code.claude.com/docs/en/claude-apps-gateway-config#managed)
+- In a Claude apps gateway with `policy_mode: layered` set beside `policies` in `managed`, every policy that matches a
+  user applies, down to the first `match: {}` policy. `skillOverrides` entries then merge by name across the matching
+  policies, and the first-listed matching policy that sets a name supplies its value.
+  [claude-apps-gateway-config › Apply every matching policy](https://code.claude.com/docs/en/claude-apps-gateway-config#apply-every-matching-policy)
 
 ## Bundled skills
 
@@ -113,11 +118,13 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
   invoke them. Most bundled skills are available in every session, but `/workflow-authoring`, for example, is
   available only when dynamic workflows are enabled.
   [skills › Bundled skills](https://code.claude.com/docs/en/skills#bundled-skills)
-- `CLAUDE_CODE_DISABLE_CFC_PROMPT` set to `1` keeps the Claude in Chrome browser tools available while omitting the
-  Chrome section of the system prompt and the `/claude-in-chrome` bundled skill.
+- For hosts that embed Claude Code and supply their own browser guidance, `CLAUDE_CODE_DISABLE_CFC_PROMPT` set to
+  `1` keeps the Claude in Chrome browser tools available while omitting the Chrome section of the system prompt and
+  the `/claude-in-chrome` bundled skill.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- `CLAUDE_CODE_DISABLE_CRON` set to `1` disables session-scoped scheduled tasks: the `/loop` skill and cron tools become
-  unavailable and any already-scheduled tasks stop firing, including tasks that are already running mid-session.
+- `CLAUDE_CODE_DISABLE_CRON` set to `1` disables session-scoped scheduled tasks: the `/loop` skill and `CronCreate`
+  become unavailable and any already-scheduled tasks stop firing, including tasks that are already running
+  mid-session.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
 
 ## Managed policy skills
@@ -128,8 +135,8 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 
 ## `strictPluginOnlyCustomization`
 
-- `strictPluginOnlyCustomization` has scope managed. Its type is `true`, to lock all four kinds of customization, or
-  an array naming the kinds to lock, from `"skills"`, `"agents"`, `"hooks"`, and `"mcp"`. Default: unset, so nothing
+- `strictPluginOnlyCustomization` has scope managed. Its type is `true`, to lock all four surfaces, or an array
+  naming the ones to lock, from `"skills"`, `"agents"`, `"hooks"`, and `"mcp"`. Default: unset, so nothing
   is locked. Claude Code ignores surface names it doesn't recognize rather than failing the settings
   file.
   [settings-reference › `strictPluginOnlyCustomization`](https://code.claude.com/docs/en/settings-reference#strictpluginonlycustomization)
@@ -279,6 +286,10 @@ Stopping skills from loading or being seen: `skillOverrides`, `disableBundledSki
 
 ## Not stated by the documentation
 
+- For `useAutoModeDuringPlan`, a `false` in a user or local file left out with an option such as `--setting-sources`
+  doesn't count; the documentation does not say whether the same holds for `syncClaudeAiSkills`, which the same list
+  says can only deny.
+  [managed-settings › Keys read from every admin source](https://code.claude.com/docs/en/managed-settings#keys-read-from-every-admin-source)
 - Stated for `/auto-mode-setup`; the documentation does not say whether `skillOverrides` applies to other built-in
   commands.
   [auto-mode-config › Turn off `/auto-mode-setup`](https://code.claude.com/docs/en/auto-mode-config#turn-off-auto-mode-setup)

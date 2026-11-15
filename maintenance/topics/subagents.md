@@ -6,7 +6,7 @@
 - `frontmatter.md`: writing a definition (file format, the body as system prompt, every frontmatter field, the
   plugin-agent subset, the `skills` field, `--append-subagent-system-prompt`, `${...}` in plugin agents, colours)
 - `invoking.md`: how Claude chooses a subagent and how to invoke one (descriptions and their token budget, built-in
-  subagents, natural language, @-mentions, `--agent` and the `agent` setting including plugin defaults and resume,
+  subagents, natural language, @-mentions, `--agent` and the `agent` setting and resume,
   subagent names, reusing a definition for an agent team teammate)
 - `tools.md`: controlling what a subagent can do (available tools and their filters, `tools` and `disallowedTools`,
   MCP entries, inline `mcpServers` and their trust rule, `Agent(type)` allowlists, Agent tool resolution, permission
@@ -23,7 +23,7 @@
   panel, how forks differ, turning fork mode off)
 - `isolation.md`: isolating a subagent's edits (working directory, `isolation: worktree`, enforcement checks and the
   messages for blocked commands and paths, `worktree.baseRef`, `.worktreeinclude`, sparse paths, cleanup and locks,
-  refused worktrees, `EnterWorktree` and `ExitWorktree`, `/rewind`)
+  refused worktrees, the write block, `EnterWorktree` and `ExitWorktree`, `/rewind`)
 - `excluding.md`: disabling or restricting subagents (`Agent(...)` deny rules, input-parameter rules, removing built-in
   agents, `--bare`, `CLAUDE_CODE_SIMPLE`, `--safe-mode`, `strictPluginOnlyCustomization.agents`, `disableSideloadFlags`)
 - `troubleshooting.md`: checking why a subagent doesn't load, launch or behave (skipped files, `claude plugin

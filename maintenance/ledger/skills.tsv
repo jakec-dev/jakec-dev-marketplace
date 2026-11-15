@@ -17,11 +17,13 @@ settings-reference	`syncClaudeAiSkills`	included	excluding.md
 settings-reference	`strictPluginOnlyCustomization`	included	excluding.md	the Scope, Type and Default lines and the sentence that Claude Code ignores surface names it doesn't recognize, and the paragraph that locking any surface also stops skills-directory plugins loading
 skills	Where synced skills load	included	excluding.md	the paragraph on setting `syncClaudeAiSkills` to `false`, and the paragraph on your organization turning Skills off on claude.ai, without the clause that the files can be recovered until the retention sweep deletes them
 auto-mode-config	Turn off `/auto-mode-setup`	included	excluding.md	the sentences that the `skillOverrides` entry applies to this built-in command and `disableBundledSkills` doesn't turn it off
-claude-apps-gateway-config	`managed`	included	excluding.md	the clause that `skillOverrides` is a record-typed key that shallow-merges
+claude-apps-gateway-config	`managed`	included	excluding.md	the sentences that a user who matches two role policies gets only the first and that by default the first matching policy is selected and merged onto the `match: {}` catch-all base, and the clause that `skillOverrides` is a record-typed key that shallow-merges
+claude-apps-gateway-config	Apply every matching policy	included	excluding.md	the sentence that `policy_mode: layered` goes beside `policies` and that with it every matching policy applies down to the first `match: {}` policy, and the `skillOverrides` part of the bullet on `env`, `modelOverrides` and `skillOverrides`
+claude-apps-gateway-config	Apply every matching policy	excluded		the rest is about gateway policy configuration and states nothing about skills
 cli-reference	CLI flags	included	excluding.md	the `--disable-slash-commands` row; in the `--bare` row, the clauses that it skips skills and custom commands, that skills in an `--add-dir` directory still load, and that it sets `CLAUDE_CODE_SIMPLE`; in the `--safe-mode` row, the clauses that skills and custom commands do not load, that while managed settings policy still applies managed skills do not load, and that it sets `CLAUDE_CODE_SAFE_MODE`
 headless	Start faster with bare mode	included	excluding.md	the clause that bare mode loads skills from an `--add-dir` folder's `.claude/skills/` but skips its `.claude/commands/`
 env-vars	Variables	included	excluding.md	the `CLAUDE_CODE_DISABLE_POLICY_SKILLS`, `DISABLE_DOCTOR_COMMAND`, `CLAUDE_CODE_DISABLE_CFC_PROMPT` and `CLAUDE_CODE_DISABLE_CRON` rows, and in the `CLAUDE_CODE_SIMPLE` and `CLAUDE_CODE_SAFE_MODE` rows the clauses that it is equivalent to `--bare` or `--safe-mode`, that skills and custom commands do not load, that skills in a directory you pass with `--add-dir` still load, and that managed skills do not load while managed settings policy still applies
-managed-settings	Keys read from every admin source	included	excluding.md	the clause on `syncClaudeAiSkills`
+managed-settings	Keys read from every admin source	included	excluding.md	the clause on `syncClaudeAiSkills`, and the `useAutoModeDuringPlan` sub-bullet on left-out files as the premise of a Not-stated question (the settings reference states it)
 managed-settings	Keys that fail closed	included	excluding.md	the `strictPluginOnlyCustomization` row, with the lead-in "These keys have their own fallback:"
 settings	Exceptions to managed settings precedence	included	excluding.md	the `syncClaudeAiSkills` row
 vs-code	Use the prompt box	included	excluding.md	the sentences on the skills dialog and changing a skill's visibility
@@ -35,6 +37,8 @@ checkpointing	Subagent edits not restored	included	forking.md	the Foreground for
 headless	Follow subagent messages	included	forking.md	the forked-skill clauses and sentences, including the `forked-command-` value, the forked-skill clause of the nesting paragraph, the Skill-tool and `/<skill-name>` table rows with the rest of the lead-in, the default that a run's `tool_use` and `tool_result` blocks appear, and the sentence that messages from the main conversation carry `null` in `parent_tool_use_id`
 sub-agents	Run every subagent on one model	included	frontmatter.md	the bullet on a skill that runs in a subagent with `model: inherit`
 skills	Frontmatter reference	included	frontmatter.md	
+model-config	Effort level of subagents and teammates	included	frontmatter.md	the sentence that on a model other than the main conversation's the session's level doesn't apply to a subagent with no `effort` of its own, as the linked detail of the `effort` row, which with the `effort` row's `context: fork` sentence supports the clause that such a skill sets `effort` to pick the fork's level
+model-config	Effort level of subagents and teammates	excluded		the clause on the main conversation's model repeats sub-agents › When a subagent has no `effort` field or parameter (subagents reference); the teammate subject and the sentence on setting `effort` in a subagent's definition belong to other tool types (agent teams, subagents)
 skills	Using skill frontmatter outside Claude Code	included	frontmatter.md	
 errors	Model is restricted by your organization's settings	included	frontmatter.md	the skill and command clauses of the sentence on a notice prefixed with an agent, skill, or command name, and of the bullet on removing or updating the `model` frontmatter
 hooks	Common fields	included	frontmatter.md	the `once` row
@@ -114,7 +118,7 @@ skills	How Claude Code handles the frontmatter of a synced skill	included	sharin
 skills	How Claude Code handles the body of a synced skill	included	sharing.md	
 skills	Share skills	included	sharing.md	
 errors	Directory couldn't be resolved to a real location	included	sharing.md	
-env-vars	Variables	included	sharing.md	the `CLAUDE_CODE_SYNC_SKILLS` and `CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS` rows; the clauses of the `DISABLE_GROWTHBOOK`, `DISABLE_TELEMETRY`, `DO_NOT_TRACK` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` rows on what each does to feature-flag fetching, and the `DISABLE_TELEMETRY` row's sentence that `0` or `false` still opts out; the `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` row's sentence that `0` or `false` still disables this traffic; the `DO_NOT_TRACK` row's sentence that `0` leaves telemetry on
+env-vars	Variables	included	sharing.md	the `CLAUDE_CODE_SYNC_SKILLS` and `CLAUDE_CODE_SYNC_SKILLS_WAIT_TIMEOUT_MS` rows; the `CLAUDE_CODE_DISABLE_FEATURE_FLAGS` row's sentences that `1` turns off feature-flag fetching and that the older name `DISABLE_GROWTHBOOK` still works; the clauses of the `DISABLE_TELEMETRY`, `DO_NOT_TRACK` and `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` rows on what each does to feature-flag fetching, and the `DISABLE_TELEMETRY` row's sentence that `0` or `false` still opts out; the `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` row's sentence that `0` or `false` still disables this traffic; the `DO_NOT_TRACK` row's sentence that `0` leaves telemetry on
 env-vars	Features that need feature-flag fetching	included	sharing.md	the list of sessions that skip the fetch, and the item that such sessions can't sync the skills enabled for your claude.ai account into terminal sessions
 permissions	Additional directories grant file access, not configuration	included	sharing.md	the sentence limiting the exceptions to directories added with `--add-dir` or `/add-dir`; the clause that skills and commands from a flag-added directory load through the `project` setting source, so they don't load when `--setting-sources` excludes it; the rows on skills in `.claude/skills/` and command files in `.claude/commands/`; the paragraph that `/add-dir` on a subdirectory of the primary working directory loads its skills and commands for the session without a prompt or a new working directory
 settings-reference	Variables Claude Code ignores in `env`	included	sharing.md	the clause that `CLAUDE_CODE_SYNC_SKILLS` is among the variables ignored in an `env` block, with the list's lead sentence
@@ -179,8 +183,8 @@ sub-agents	Preload skills into subagents	included	loading.md	the clause that eac
 context-window	What survives compaction	included	loading.md	the Skill descriptions row, and the paragraph that large skills are truncated to the per-skill cap and truncation keeps the start of the file
 agent-teams	Context and communication	included	loading.md	the sentences that a teammate loads the same project context as a regular session, including skills, and that under the lead's `--setting-sources` teammates load from the same restricted list
 prompt-caching	Plugin components that keep the cache	included	loading.md	the plugin-skills part: Claude Code never invalidates the cache for a plugin's skills and appends their content after the existing conversation
-plugins/mods/events	Rewrite or add to a prompt	included	loading.md	the clause that `skill.prompt` covers a skill's text, and the sentence that text from these hooks that changes between requests invalidates the prompt cache
-plugins/mods/reference	Prompts and what Claude reads	included	loading.md	the `skill.prompt` row and the sentence introducing the table
+plugins/mods/events	Rewrite or add to a prompt	included	loading.md	the clause that `skill.prompt` covers a skill's text
+plugins/mods/reference	Prompts and what Claude reads	included	loading.md	the `skill.prompt` row
 hooks	ConfigChange decision control	included	loading.md	the sentences that ConfigChange hooks can block configuration changes from taking effect and that when blocked the new settings are not applied to the running session
 monitoring-usage	Common configuration variables	included	troubleshooting.md	the `OTEL_LOG_TOOL_DETAILS` row, except that the cost and token counters carry real names, which the Cost counter bullet states
 monitoring-usage	Span attributes	included	troubleshooting.md	the `skill_name` row of the `claude_code.tool` span table
@@ -204,7 +208,7 @@ claude-apps-gateway-config	`managed`	excluded		the rest is not about skills
 claude-directory	Cleaned up automatically	excluded		the rest is not about skills
 claude-directory	File reference	excluded		the rest is not about skills
 cli-reference	CLI flags	excluded		the `--forward-subagent-text` row repeats headless › Follow subagent messages; the rest is not about skills
-commands	All commands	excluded		the `/skill-doctor` row repeats Find unused skills; the Skill preamble repeats Bundled skills; the rows marked **Skill** name the bundled skills, which Bundled skills introduces with examples and a pointer to this table; the rest is not about skills
+commands	All commands	excluded		the `/skill-doctor` row repeats Find unused skills; the Skill preamble repeats Bundled skills; the `/batch` and `/claude-in-chrome` rows' requirements are taken by troubleshooting.md; the rest of the rows marked **Skill** describe what each bundled skill does, which belongs to another tool type (Claude Code's built-in features), and Bundled skills introduces them with examples and a pointer to this table; the rest is not about skills
 costs	Plan usage breakdown	excluded		the rest is not about skills
 debug-your-config	Check common causes	excluded		the rest is not about skills
 debug-your-config	See what loaded into context	excluded		the rest belongs to another tool type (instructions)
@@ -333,7 +337,7 @@ monitoring-usage	API error event	excluded		repeats Cost counter and Skill activa
 monitoring-usage	API refusal event	excluded		repeats Cost counter and Skill activated event
 monitoring-usage	Usage monitoring	excluded		repeats Cost counter and Skill activated event
 monitoring-usage	Cost monitoring	excluded		repeats Cost counter and Skill activated event
-monitoring-usage	Security and privacy	excluded		the counters bullet repeats Cost counter; the rest is about telemetry in general
+monitoring-usage	Security and privacy	excluded		the counters bullet repeats Cost counter; the `user_prompt` `command_name` bullet repeats User prompt event; the rest is about telemetry in general
 permissions	Move the session to another directory	excluded		its skills mention repeats Load skills in monorepos and subdirectories
 plugins/create	The plugin loads but its skills are missing	excluded		repeats plugins/troubleshooting › Plugin loads but its skills are missing
 plugins/measure	Usage share in `/usage`	excluded		repeats costs › Plan usage breakdown
@@ -464,22 +468,6 @@ agent-sdk/typescript	Methods	excluded		Agent SDK
 agent-sdk/typescript	Return type: `SessionMessage`	excluded		Agent SDK
 agent-view	Version history	excluded		release notes
 changelog	Claude Code changelog	excluded		release notes
-whats-new/2026-w14	Week 14 · March 30 – April 3, 2026	excluded		release notes
-whats-new/2026-w16	Week 16 · April 13–17, 2026	excluded		release notes
-whats-new/2026-w18	Week 18 · April 27 – May 1, 2026	excluded		release notes
-whats-new/2026-w20	Week 20 · May 11–15, 2026	excluded		release notes
-whats-new/2026-w21	Week 21 · May 18–22, 2026	excluded		release notes
-whats-new/2026-w22	Week 22 · May 25–29, 2026	excluded		release notes
-whats-new/2026-w24	Week 24 · June 8–12, 2026	excluded		release notes
-whats-new/2026-w25	Week 25 · June 15–19, 2026	excluded		release notes
-whats-new/2026-w27	Week 27 · June 29 – July 3, 2026	excluded		release notes
-whats-new/2026-w28	Week 28 · July 6–10, 2026	excluded		release notes
-whats-new/2026-w30	Week 30 · July 20–24, 2026	excluded		release notes
-whats-new/2026-w34	Week 34 · August 17–21, 2026	excluded		release notes
-whats-new/2026-w35	Week 35 · August 24–28, 2026	excluded		release notes
-whats-new/2026-w36	Week 36 · August 31 – September 4, 2026	excluded		release notes
-whats-new/2026-w37	Week 37 · September 7–11, 2026	excluded		release notes
-whats-new/index	What's new	excluded		release notes
 code-review-local	Let Claude start the review	excluded		the `skillOverrides` sentence and example repeat Override skill visibility from settings; the version paragraph is history
 plugin-evals	The baseline arm shows no plugin, or delta is zero	excluded		its skill paragraph repeats Create your first eval suite
 plugins/troubleshooting	Plugin doesn't appear or its skills don't show up	excluded		the rest belongs to another tool type (plugins); its skills case repeats Plugin loads but its skills are missing
@@ -558,7 +546,7 @@ best-practices	Keep cost and context down	excluded		its skills breakdown repeats
 best-practices	Run Claude from a script	excluded		its `--bare` clause repeats Start faster with bare mode
 hooks-guide	Hook not firing	excluded		its skill bullet repeats debug-your-config › Check hooks; the rest belongs to another tool type (hooks)
 managed-mcp	Choose a pattern	excluded		its skills-directory clause repeats Skills-directory plugins blocked by managed settings; the rest is not about skills
-plugins/org	Control matrix	excluded		its skills-directory sentence repeats Skills-directory plugins blocked by managed settings; the rest belongs to another tool type (plugins)
+plugins/org	Control matrix	excluded		its `strictPluginOnlyCustomization` row repeats `strictPluginOnlyCustomization.skills` and Skills-directory plugins blocked by managed settings; the rest belongs to another tool type (plugins)
 plugins/publish	Share a plugin without a marketplace	excluded		repeats Skills-directory plugins blocked by managed settings and Choose where skills load
 plugins/marketplace-reference	Source values valid only in policy lists	excluded		repeats Skills-directory plugins blocked by managed settings
 settings-reference	`strictPluginOnlyCustomization.agents`	excluded		its skills-directory clause repeats Skills-directory plugins blocked by managed settings; the rest is not about skills
@@ -568,7 +556,7 @@ monitoring-usage	Retention sweep event	excluded		about telemetry in general
 monitoring-usage	Safety event	excluded		about telemetry in general
 monitoring-usage	Check the retention sweep	excluded		about telemetry in general
 monitoring-usage	Map egress paths to managed controls and events	excluded		its `syncClaudeAiSkills` row repeats `syncClaudeAiSkills`; the rest is about telemetry in general
-errors	Path escapes plugin directory	excluded		the hooks, monitors and settings items, the `EACCES` fix and the rest belong to another tool type (plugins)
+errors	Path escapes plugin directory	excluded		the hooks and monitors items, the `EACCES` fix and the rest belong to another tool type (plugins)
 errors	Command contains an invisible character	excluded		belongs to another tool type (PowerShell tool); its skill-file bullet repeats No shell command in a skill or command was run
 hooks	Reference scripts by path in PowerShell hooks	excluded		belongs to another tool type (hooks): how a PowerShell hook resolves a script path holds wherever the hook is defined
 hooks	Common input fields	excluded		the rest belongs to another tool type (hooks)
@@ -576,11 +564,11 @@ hooks	Annotate a result for the auto mode classifier	excluded		belongs to anothe
 skills	When managed settings lock hooks to plugins	excluded		the `/status` check and the move-to-a-plugin option repeat hooks › Limits on skill hooks
 tools-reference	Shell selection in settings, hooks, and skills	included	dynamic-context.md	the sentence of the `shell: powershell` bullet that it requires the PowerShell tool to be enabled
 code-review-local	Change or build on the review	included	excluding.md	the sentence that `/code-review` is a bundled skill whose instructions are built into Claude Code, with no `SKILL.md` file on disk
-errors	Path escapes plugin directory	included	troubleshooting.md	the `SKILL.md` at the plugin root item and the sentences on a `commands` path that leads outside the plugin being dropped, with its message, and the backslash rule, the symlink form of the message and the symlink fix, as they apply to a declared `commands` or `skills` path
+errors	Path escapes plugin directory	included	troubleshooting.md	the `SKILL.md` at the plugin root item and the sentences on a `commands` path that leads outside the plugin being dropped, with its message, and the backslash rule, the sentence that a symlink leading outside the plugin is rejected unless the marketplace symlink rules allow it, the symlink form of the message and the symlink fix, as they apply to a declared `commands` or `skills` path
 hooks	Common input fields	included	frontmatter.md	the clause of the `effort` row that it includes a skill's level, and that `$CLAUDE_EFFORT` holds the same level
 plugins/cli-reference	Advice on the README	excluded		belongs to another tool type (plugins)
 skills	Where synced skills load	excluded		the clause that the files can be recovered until the retention sweep deletes them repeats claude-directory › Cleaned up automatically
-code-review-local	Review locally with /code-review	excluded		about the bundled `/code-review` command's use; its background-subagent sentence repeats Run skills in a subagent; the `/review` alias repeats Resolve skills that share a name; the version sentence is history
+code-review-local	Review locally with /code-review	excluded		about the bundled `/code-review` command's use; its background-subagent sentence repeats Run skills in a subagent; the `/review` alias repeats Resolve skills that share a name
 code-review-local	Choose what to review	excluded		about the bundled review's targets, not skills
 code-review-local	What the review reads and edits	excluded		its rewind sentence repeats checkpointing › Subagent edits not restored; the rest is about the bundled review
 code-review-local	Tune effort and arguments	excluded		about the bundled review's flags and effort, not skills
@@ -612,3 +600,8 @@ plugins/mods/overview	Compare mods, settings hooks, skills, and MCP servers (2)	
 plugins/mods/overview	Mods built into Claude Code (2)	excluded		repeats the first copy of the section, which appears twice in the export
 plugins/mods/overview	Turn mods on or off (2)	excluded		repeats the first copy of the section, which appears twice in the export
 plugins/mods/overview	What a mod can do (2)	excluded		repeats the first copy of the section, which appears twice in the export
+errors	Unknown command	included	troubleshooting.md	all but the version-history sentences and the What to do list's first bullet
+errors	Unknown command	excluded		the version-history sentences are history; the What to do list's first bullet repeats the causes and the command menu
+monitoring-usage	User prompt event	included	troubleshooting.md	the `command_name` attribute's sentence that custom, plugin and MCP command names collapse to `custom` or `mcp` unless `OTEL_LOG_TOOL_DETAILS=1`, with its lead clause
+monitoring-usage	User prompt event	excluded		the rest is about telemetry in general
+commands	All commands	included	troubleshooting.md	the requirement sentences of the `/batch` and `/claude-in-chrome` rows

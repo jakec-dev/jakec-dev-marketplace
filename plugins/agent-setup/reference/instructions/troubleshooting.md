@@ -20,19 +20,20 @@ sound.
 
 ## Check whether it loaded
 
-- `/context` shows everything occupying the context window for the current session, broken down by category: system
-  prompt, system tools, MCP tools, custom subagents with the source each loaded from, memory files, skills, and
-  conversation messages. Run it first to confirm whether your `CLAUDE.md`, rules, or skill descriptions are present at
-  all. `/context` checks which `CLAUDE.md` and rules files loaded at launch.
-  [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context),
-  [memory › View and edit with `/memory`](https://code.claude.com/docs/en/memory#view-and-edit-with-/memory)
-- To confirm a project CLAUDE.md loaded, run `/context` in a session and check the list under **Memory files**. That
-  list verifies the CLAUDE.md and CLAUDE.local.md files that should load at launch. If one is missing there, Claude
-  can't see it. Use `/memory` to open and edit the files.
+- `/context` shows everything occupying the context window for the current session. It breaks this down by category,
+  including system prompt, system tools, MCP tools, memory files, skills, and conversation messages. Run it first to
+  confirm whether your `CLAUDE.md` or rules are present at all.
+  [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)
+- To confirm a project CLAUDE.md loaded, run `/context all` in a session and check the list under **Memory files**.
+  That list verifies the CLAUDE.md and CLAUDE.local.md files that should load at launch. If one is missing there,
+  Claude can't see it. Use `/memory` to open and edit the files.
   [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md),
   [large-codebases › Layer CLAUDE.md files by directory](https://code.claude.com/docs/en/large-codebases#layer-claude-md-files-by-directory),
-  [memory › View and edit with `/memory`](https://code.claude.com/docs/en/memory#view-and-edit-with-/memory),
   [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)
+- In fullscreen mode, `/context` alone collapses the per-item breakdown and the **Memory files** list; run
+  `/context all` to expand it.
+  [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md),
+  [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context)
 - A `CLAUDE.md` in a subdirectory of your working directory doesn't appear under **Memory files**, because it loads on
   demand rather than at launch. When it loads, a `Loaded` line with its path appears in the terminal. To test a new
   one, create it from your shell rather than asking Claude to write it, then ask Claude to read a file in that
@@ -73,7 +74,9 @@ sound.
   [errors › Instruction file not loaded](https://code.claude.com/docs/en/errors#instruction-file-not-loaded)
   - `a Read deny rule covers it`: a `Read` deny rule matches the file's path as written or where a link on it leads.
   - `it's read from outside your working directories, where reads are blocked`: the file resolves outside the working
-    directories while `permissions.blockReadsOutsideWorkingDirectories` is on.
+    directories while `permissions.blockReadsOutsideWorkingDirectories` is on. Under that block, files Claude Code
+    itself needs stay readable, such as your rules and the `CLAUDE.md` memory file under `~/.claude/`
+    ([settings-reference › `permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/en/settings-reference#permissions-blockreadsoutsideworkingdirectories)).
   - `where it leads couldn't be worked out`: for example, the file is a link that leads back to itself, directly or
     through other links.
 - When a subdirectory's own memory file can't be loaded as Claude works with files there, the same lines appear in the
@@ -106,7 +109,8 @@ sound.
   2. Type `/config` in your session to open the settings panel and confirm **Project instructions** isn't set to
      `claude-md` or `managed-only`. If you don't see the setting there at all, your session is one that
      [can't load `AGENTS.md`](https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable).
-- To check whether Claude read your `AGENTS.md`, run `/memory` and look for its path in the list.
+- To check whether Claude read your `AGENTS.md`, run `/memory` and look for its path in the list. `/context`
+  lists it too.
   [memory › My AGENTS.md isn't loading](https://code.claude.com/docs/en/memory#my-agents-md-isn’t-loading)
 - If you want to keep the `CLAUDE.md` you found, or your session can't load `AGENTS.md`,
   [add a `CLAUDE.md` next to your `AGENTS.md` that imports it](https://code.claude.com/docs/en/memory#share-one-file-with-other-coding-tools).
@@ -257,17 +261,17 @@ sound.
 ## Test against a clean configuration
 
 - Start with `claude --safe-mode`, which launches a session with your customizations disabled, including `CLAUDE.md`,
-  skills, plugins, and hooks, MCP servers, custom commands and agents, custom output styles, and custom keybindings.
+  skills, plugins, MCP servers, custom commands, custom output styles, and custom keybindings.
   Authentication, model selection, built-in tools, and permissions work normally. If the problem disappears in safe
   mode, you've narrowed the cause to one of the items you turned off.
   [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration)
-- Setting `CLAUDE_CODE_SAFE_MODE` to `1` starts in safe mode, equivalent to passing `--safe-mode`: CLAUDE.md, skills,
-  plugins, hooks, MCP servers, custom commands and agents, output styles, workflows, custom themes, custom keybindings,
-  status line and file-suggestion commands, LSP servers, and auto memory do not load. Directly spawned child processes
-  inherit the variable.
+- Setting `CLAUDE_CODE_SAFE_MODE` to `1` starts in safe mode, equivalent to passing `--safe-mode`. What does not load
+  includes CLAUDE.md, plugins, MCP servers, output styles, workflows, custom themes, custom keybindings, status
+  line and file-suggestion commands, LSP servers, and auto memory. Directly spawned child processes inherit the
+  variable.
   [env-vars › Variables](https://code.claude.com/docs/en/env-vars#variables)
-- Safe mode still applies managed hooks and settings policy from your organization. Managed plugins, skills,
-  `CLAUDE.md`, and MCP servers are turned off.
+- Safe mode still applies settings policy from your organization. Managed plugins, skills, `CLAUDE.md`, and MCP
+  servers are turned off.
   [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration)
 - If the problem persists in safe mode, or your settings themselves are suspect, start a session with none of your own
   configuration. With no Claude Code session running, create an empty directory and change into it, then set
@@ -298,6 +302,10 @@ sound.
   [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration)
 
 ## Audit and length warnings
+
+- When responses seem lower quality than usual, one cause is stale instructions: large or outdated `CLAUDE.md` files
+  consume context and can steer responses. The `/doctor` checkup flags oversized memory files.
+  [errors › Responses seem lower quality than usual](https://code.claude.com/docs/en/errors#responses-seem-lower-quality-than-usual)
 
 - Run `/doctor prompt-audit` in a session to have Claude check your instruction files for outdated or conflicting
   content. Claude looks for problems such as instructions written for older models, references to files or commands
@@ -338,6 +346,12 @@ sound.
 
 ## Not stated by the documentation
 
+- `--safe-mode` doesn't stop the `cc-plugin-agents-md` built-in mod, which reads `AGENTS.md` only where no
+  `CLAUDE.md` or `CLAUDE.local.md` sits in the working directory or above it; the documentation does not say whether
+  a `CLAUDE.md` that safe mode turns off still counts for that check.
+  [debug-your-config › Test against a clean configuration](https://code.claude.com/docs/en/debug-your-config#test-against-a-clean-configuration),
+  [plugins/mods/overview › Mods built into Claude Code](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code),
+  [memory › My AGENTS.md isn't loading](https://code.claude.com/docs/en/memory#my-agents-md-isn’t-loading)
 - hooks › InstructionsLoaded names `CLAUDE.md` and `.claude/rules/*.md` files, and memory › Claude isn't
   following my CLAUDE.md says "rules files" without a scope; neither says whether the hook fires for user-level
   rules in `~/.claude/rules/`.
@@ -349,6 +363,8 @@ sound.
 - `/doctor prompt-audit` covers rules files and `AGENTS.md`; the documentation does not say whether the `/doctor`
   checkup proposes trims for rules files or `AGENTS.md`.
   [memory › My CLAUDE.md is too large](https://code.claude.com/docs/en/memory#my-claude-md-is-too-large)
-- Are rules files listed under the **Memory files** heading of `/context`?
+- `/context` shows whether rules are present; the documentation does not say whether rules files are listed under
+  its **Memory files** heading, which it names for CLAUDE.md and CLAUDE.local.md files.
   [debug-your-config › See what loaded into context](https://code.claude.com/docs/en/debug-your-config#see-what-loaded-into-context),
-  [memory › View and edit with `/memory`](https://code.claude.com/docs/en/memory#view-and-edit-with-/memory)
+  [memory › Set up a project CLAUDE.md](https://code.claude.com/docs/en/memory#set-up-a-project-claude-md),
+  [memory › Claude isn't following my CLAUDE.md](https://code.claude.com/docs/en/memory#claude-isn’t-following-my-claude-md)

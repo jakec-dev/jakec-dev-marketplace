@@ -45,6 +45,9 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - When Claude enters a path outside the repository's `.claude/worktrees/` directory, the move takes project
   configuration such as `CLAUDE.md` to that location.
   [worktrees › Ask Claude to create a worktree](https://code.claude.com/docs/en/worktrees#ask-claude-to-create-a-worktree)
+- In a worktree session you start from the desktop app, Claude Code reads project configuration such as settings from
+  the main checkout's root, but `CLAUDE.md` files and `.claude/rules/` still load from the worktree.
+  [worktrees › What worktrees share with the main checkout](https://code.claude.com/docs/en/worktrees#what-worktrees-share-with-the-main-checkout)
 - In a prompt, @ file references add `CLAUDE.md` in the file's directory and parent directories to context.
   [common-workflows › Reference files and directories](https://code.claude.com/docs/en/common-workflows#reference-files-and-directories)
 - When you run `/cd <path>` to move the session to a different primary working directory, Claude Code keeps the
@@ -74,15 +77,14 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 
 ## After compaction
 
-- When a long session compacts, Claude Code summarizes the conversation history to fit the context window. What
-  happens to each kind of content depends on how it was loaded:
+- When a long session compacts, Claude Code summarizes the conversation history to fit the context window.
   [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
 
   | Mechanism | After compaction |
   | :- | :- |
   | Project-root CLAUDE.md and unscoped rules | Re-injected from disk |
-  | Rules with `paths:` frontmatter | Claude Code reloads them on demand |
-  | Nested CLAUDE.md in subdirectories | Claude Code reloads them on demand |
+  | Rules with `paths:` frontmatter | Claude Code reloads them [on demand](https://code.claude.com/docs/en/memory#path-specific-rules) |
+  | Nested CLAUDE.md in subdirectories | Claude Code reloads them [on demand](https://code.claude.com/docs/en/memory#how-claude-md-files-load) |
 
 - Path-scoped rules and nested CLAUDE.md files load into message history when Claude reads, writes, or edits
   their trigger file, so compaction summarizes them away with everything else. If a rule must persist across
@@ -184,6 +186,10 @@ compaction, after mid-session edits, and in subagents, worktrees, agent teams an
 - After compaction Claude Code re-reads up to five recently modified files Claude read or edited; the documentation
   does not say whether that re-read reloads path-scoped rules or nested CLAUDE.md files that match those files.
   [context-window › What survives compaction](https://code.claude.com/docs/en/context-window#what-survives-compaction)
+- A Bash command that counts as a read loads a matching path-scoped rule or subdirectory CLAUDE.md; the
+  documentation does not say whether one that printed none of the file's text, as when a search matches nothing,
+  still loads them. It says such a command still leaves the read-before-edit check in place.
+  [tools-reference › Edit tool behavior](https://code.claude.com/docs/en/tools-reference#edit-tool-behavior)
 - The documentation does not say what triggers a rules file in a subdirectory's `.claude/rules/` to load, how deep below
   the working directory such directories are found, whether a `paths` field in such a rule must also match, or what
   happens to it after compaction or a mid-session edit, which it states for path-scoped rules and nested CLAUDE.md
